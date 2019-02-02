@@ -22,22 +22,36 @@ impl ThrustGame {
 }
 
 impl ThrustGame {
-	fn sort(&mut self) {
+	fn sort_thrusters(&mut self) {
 		self.thrusters.sort();
 	}
 }
 
+impl ThrustGame {
+	fn sort_thrustees(&mut self) {
+		self.thrustees.sort();
+	}
+}
+
 fn main() {
+	let test_thrusters = vec![String::from("Homosexuality"), String::from("Degeneracy"), String::from("Moefag"), String::from("fuckoff")];
+	let test_thrustees  = vec![String::from("Gay is ____"), String::from("Kenny is ____"), String::from("Fuck you _____")];
 	let thruster = String::from("Your Gay");
 	let thrustee = String::from("The reason Kenny is gay is ________.");
 
 	let mut instance = ThrustGame::default();
 
-	let mut test = ThrustGame{thrusters: vec![String::from("Homosexuality"), String::from("Degeneracy"), String::from("Moefag")], ..Default::default()};
+	let mut test = ThrustGame{thrusters: test_thrusters, thrustees: test_thrustees};
 
-	test.sort();
+	test.sort_thrusters();
 
 	for x in &test.thrusters {
+		println!("{}", x);
+	}
+
+	test.sort_thrustees();
+
+	for x in &test.thrustees {
 		println!("{}", x);
 	}
 }
