@@ -32,22 +32,22 @@ impl Deck {
 
 	fn view_thrusters(&self) {
 		if std::vec::Vec::is_empty(&self.thrusters) {
-			write_to_socket(& String::from("No thrusters in deck!"));
+			write_to_socket(& "No thrusters in deck!".to_string());
 		}
 		else {
 			for thruster in &self.thrusters {
-				write_to_socket(& String::from(thruster));
+				write_to_socket(& (*thruster).to_string());
 			}
 		}
 	}
 
 	fn view_thrustees(&self) {
 		if std::vec::Vec::is_empty(&self.thrustees) {
-			write_to_socket(& String::from("No thrustees in deck!"));
+			write_to_socket(& "No thrustees in deck!".to_string());
 		}
 		else {
-			for thrustee in &self.thrusters {
-				write_to_socket(& String::from(thrustee));
+			for thrustee in &self.thrustees {
+				write_to_socket(& (*thrustee).to_string());
 			}
 		}
 	}
@@ -65,11 +65,13 @@ fn read_from_socket() -> String {
 
 fn handle_input(input: &String, deck: &mut Deck, running: &mut bool) {
 	if input == "1" {
-		write_to_socket(& String::from("Thrusters:\n"));
-		deck
+		write_to_socket(& String::from("Thrusters:"));
+		deck.view_thrusters();
+		write_to_socket(& String::from("Thrustees:"));
+		deck.view_thrustees();
 	}
 	else if input == "2" {
-		write_to_socket(& String::from("Which would you like to edit?\n1. thrusters\n2. thrustees"));
+		write_to_socket(& String::from("Which would you like to edit?\n1. thrusters\n2. thrustees\n3. Go back\n"));
 		let to_edit = read_from_socket();
 		if to_edit == "1" {
 			write_to_socket(& String::from("Please enter what thruster you would like to add to your thrusters."));
@@ -81,6 +83,8 @@ fn handle_input(input: &String, deck: &mut Deck, running: &mut bool) {
 			let new_thrustee = read_from_socket();
 			deck.add_thrustee(&new_thrustee);
 		}
+		else if to_edit == "3" {
+		}
 	}
 	else if input == "3" {
 		join_lobby();
@@ -91,7 +95,6 @@ fn handle_input(input: &String, deck: &mut Deck, running: &mut bool) {
 }
 
 fn join_lobby() {
-
 }
 
 fn main() {
@@ -99,10 +102,11 @@ fn main() {
 	let mut deck = Deck::default();
 
 	while running {
-		write_to_socket(& String::from("Welcome to THRUST. What would you like to do?\n1. View your deck\n2. Edit your deck\n3. Join a lobby\n4. Quit"));
+		write_to_socket(& String::from("What would you like to do?\n\n1. View your deck\n2. Edit your deck\n3. Join a lobby\n4. Quit\n"));
 		let input = read_from_socket();
+		println!("");
 
-		handle_input(&input, &deck, &running);
+		handle_input(&input, &mut deck, &mut running);
 	}
 }
 
