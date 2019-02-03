@@ -1,8 +1,8 @@
-var ws = new WebSocket("ws://localhost:3012/");
+var ws = new WebSocket("ws://192.168.0.4:3012/");
 
 ws.onopen = function () {
     // Web Socket is connected, send data using send()
-    ws.send("Message to send");
+    ws.send("onopen");
 };
 
 ws.onclose = function () {
