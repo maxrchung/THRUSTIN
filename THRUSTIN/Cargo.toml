@@ -5,3 +5,6 @@ authors = ["Max Chung, Alex Liu, Royce Sato"]
 edition = "2018"
 
 [dependencies]
+regex = "1.1.0"
+ws = "*"
+rocket = "*"
