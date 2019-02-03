@@ -97,7 +97,7 @@ pub fn start_game(input: std::vec::Vec<&str>,
 
 
 
-    for p in &lob.list {
+    for p in &mut lob.list {
         p.state = player::PlayerState::Playing;
     }
 }
