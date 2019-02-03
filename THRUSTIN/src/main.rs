@@ -1,8 +1,11 @@
 #![feature(proc_macro_hygiene, decl_macro)] // Macro stuff to make rocket work
 #[macro_use] extern crate rocket; // Macro stuff to make rocket work
+#[macro_use] extern crate lazy_static; //alexgarbage
+extern crate regex; //alexgarbage
 mod lobby;
 mod networking; // Get networking module
 mod player;
+mod thrust;
 
 fn main() {
     let mut communication = networking::Networking::init();
