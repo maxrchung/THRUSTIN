@@ -82,17 +82,17 @@ impl Networking {
         let connections_clone = Arc::clone(&self.connections);
         thread::spawn(move || {
             listen("0.0.0.0:3012", |out| { 
-            Connection { 
-                out: out, 
-                commands: commands_clone.clone(),
-                connections: connections_clone.clone()
-            }
+                Connection { 
+                    out: out, 
+                    commands: commands_clone.clone(),
+                    connections: connections_clone.clone()
+                }
             }).unwrap()
         });
     }
 
     // Block and read from queue 
-    pub fn read_queue(&mut self) -> (Token, String) {
+    pub fn read_message(&mut self) -> (Token, String) {
         let mut length = 0;
         while length == 0 {
             // println!("commands: {:#?}", self.commands);

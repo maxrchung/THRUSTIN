@@ -15,8 +15,8 @@ fn main() {
     let mut communication = Networking::init();
 
     loop {
-        // How to read from queue
-        let (token, message) = communication.read_queue();
+        // How to read message
+        let (token, message) = communication.read_message();
         println!("Received: {:#?}", (&token, &message));
 
         // How to send message to a particular client
