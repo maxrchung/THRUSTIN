@@ -1,12 +1,13 @@
 use crate::player;
 use crate::networking;
 
-pub enum lobby_state {
-    waiting,
-    playing
+#[derive(Debug)]
+pub enum LobbyState {
+    Waiting,
+    Playing
 }
 
-
+#[derive(Debug)]
 pub struct Lobby {
     //name of lobby
     pub name: std::string::String,
@@ -24,7 +25,7 @@ pub struct Lobby {
     pub max: u32,
 
     //state of the lobby
-    pub state: lobby_state,
+    pub state: LobbyState,
 
     //lobby id
     pub id: u32,
@@ -43,7 +44,7 @@ pub fn new(name: std::string::String,
         list: std::vec::Vec::with_capacity(max as usize),
         count: 0,
         max: max,
-        state: lobby_state::waiting,
+        state: LobbyState::Waiting,
         id: id
     }
 }
@@ -51,40 +52,40 @@ pub fn new(name: std::string::String,
 
 pub fn make_lobby(input: std::vec::Vec<&str>, 
                   id: ws::util::Token,
-                  lobby: &mut std::collections::HashMap<std::string::String, Lobby>,
-                  player: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                  lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
+                  players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
 
     let name = input[1].to_string();
     let max = 64;
-    let lobby_id: u32 = lobby.len() as u32;
+    let lobby_id: u32 = lobbies.len() as u32;
 
-    player.get_mut(&id).unwrap().lobby = lobby_id.clone() as i32;
+    players.get_mut(&id).unwrap().lobby = lobby_id.clone() as i32;
 
     let mut new_lobby = new(name.clone(), "".to_string(), max, lobby_id);
-    new_lobby.list.push((*player.get(&id).unwrap()).clone());
+    new_lobby.list.push((*players.get(&id).unwrap()).clone());
     new_lobby.count += 1;
 
-    lobby.insert(name.clone(), new_lobby);
+    lobbies.insert(name.clone(), new_lobby);
     communication.send_message(&id, &format!("Created lobby: {}", name));
 }
 
 
 pub fn delete_lobby(input: std::vec::Vec<&str>, 
                     id: ws::util::Token, 
-                    lobby: &mut std::collections::HashMap<std::string::String, Lobby>,
+                    lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
                     communication: &mut networking::Networking) {
     let name = input[1];
-    lobby.remove(name);
+    lobbies.remove(name);
 }
 
 
 pub fn start_game(input: std::vec::Vec<&str>, 
                   id: ws::util::Token,
-                  lobby: &mut std::collections::HashMap<u32, Lobby>,
-                  player: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                  lobbies: &mut std::collections::HashMap<u32, Lobby>,
+                  players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
-    lobby.get_mut(&(player.get(&id).unwrap().lobby as u32)).unwrap().state = lobby_state::playing;
+    lobbies.get_mut(&(players.get(&id).unwrap().lobby as u32)).unwrap().state = LobbyState::Playing;
     //do call back or something here?
 }
 
@@ -92,30 +93,24 @@ pub fn start_game(input: std::vec::Vec<&str>,
 pub fn join_lobby(input: std::vec::Vec<&str>, 
                   id: ws::util::Token,
                   lobby: &mut std::collections::HashMap<std::string::String, Lobby>,
-                  player: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                  players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
     let lobby_name = input[1].to_string();
 
     let lob: &mut Lobby = lobby.get_mut(&lobby_name).unwrap();
-    lob.list.push((*player.get(&id).unwrap()).clone());
+    lob.list.push((*players.get(&id).unwrap()).clone());
 }
 
 
 pub fn leave_lobby(input: std::vec::Vec<&str>, 
                    id: ws::util::Token, 
-                   lobby: &mut std::collections::HashMap<std::string::String, Lobby>,
+                   lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
                    communication: &mut networking::Networking) {
 }
 
 
 pub fn list_lobby(id: ws::util::Token,
-                  lobby: &mut std::collections::HashMap<std::string::String, Lobby>,
+                  lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
                   communication: &mut networking::Networking) {
-    for l in lobby.values() {
-        println!("{}: {}", l.id, l.name);
-
-        for p in &l.list {
-            println!("    {}", p.name);
-        }
-    }
+    communication.send_message(&id, &format!("{:#?}", lobbies));
 }

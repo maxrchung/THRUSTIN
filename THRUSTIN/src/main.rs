@@ -7,7 +7,7 @@ use std::io::Read;
 use std::io::Write;
 
 fn handle_input(token: ws::util::Token,
-                mut input: std::string::String,
+                input: std::string::String,
                 lobbies: &mut std::collections::HashMap<std::string::String, lobby::Lobby>,
                 lob_ids: &mut std::collections::HashMap<u32, lobby::Lobby>,
                 players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
@@ -25,6 +25,8 @@ fn handle_input(token: ws::util::Token,
                                              &*"join",
                                              &*"leave",
                                              &*"list"
+                                             &*"thrust"
+
     };
     
     let mut ind:i32 = -1;
@@ -43,7 +45,7 @@ fn handle_input(token: ws::util::Token,
         3 => lobby::join_lobby(split, token, lobbies, players, communication),
         4 => lobby::leave_lobby(split, token, lobbies, communication),
         5 => lobby::list_lobby(token, lobbies, communication),
-        _ => communication.send_message(&token, "Invalid argument!")
+        _ => communication.send_message(&token, &format!("Invalid argument! Valid commands: {:#?}", commands))
     }
 
 }
