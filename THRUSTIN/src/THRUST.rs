@@ -79,8 +79,17 @@ fn handle_input(input: &String, deck: &mut Deck, running: &mut bool) {
 			deck.add_thruster(&new_thruster);
 		}
 		else if to_edit == "2" {
+			let mut new_thrustee = String::new();
 			write_to_socket(& String::from("Please enter what thrustee you would like to add to your thrustees."));
-			let new_thrustee = read_from_socket();
+			
+			while {
+				new_thrustee = read_from_socket();
+				if !new_thrustee.contains("_") {
+					println!("Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
+				}
+				!new_thrustee.contains("_")
+			} {}
+			
 			deck.add_thrustee(&new_thrustee);
 		}
 		else if to_edit == "3" {
