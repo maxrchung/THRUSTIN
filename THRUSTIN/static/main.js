@@ -1,21 +1,21 @@
 var ws = new WebSocket("ws://192.168.0.4:3012/");
 
 ws.onmessage = function (e) {
-    appendLine("THRUSTY: " + e.data);
+    addMessage(e.data);
 };
 
 function send() {
     var command = document.getElementById("command");
     var text = command.value;
-    appendLine("You: " + text);
+    addMessage(text, true);
     ws.send(text);
     command.value = "";
 }
 
 function clear() {
     console.log("clear()");
-    var response = document.getElementById("response");
-    response.innerHTML = "";
+    var messages = document.getElementById("messages");
+    messages.innerHTML = "";
 }
 
 function handleEnter(e){
@@ -25,13 +25,17 @@ function handleEnter(e){
     }
 }
 
-function appendLine(text) {
+function addMessage(text, fromSelf) {
     var line = document.createElement("p");
-    var content = document.createTextNode(text);
-    line.appendChild(content);
+    if (fromSelf) {
+        line.classList.add("from-self");
+    }
+    var date = new Date();
+    var content = document.createTextNode("[" + date.toLocaleTimeString() + "] " + text);
+    line.append(content);
 
-    var response = document.getElementById("response");
-    response.appendChild(line);
+    var messages = document.getElementById("messages");
+    messages.prepend(line);
 }
 
 var sendButton = document.getElementById("send");
@@ -42,3 +46,5 @@ clearButton.addEventListener("click", clear, false);
 
 var command = document.getElementById("command");
 command.addEventListener("keypress", handleEnter, false);
+
+addMessage("Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to thrusting!");

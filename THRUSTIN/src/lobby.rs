@@ -70,8 +70,8 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
     communication.send_message(&id, &format!("Created lobby: {}", name));
 }
 
-
-pub fn delete_lobby(input: std::vec::Vec<&str>, 
+// Users should not delete lobbies manually so this should be private
+fn delete_lobby(input: std::vec::Vec<&str>, 
                     id: ws::util::Token, 
                     lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
                     communication: &mut networking::Networking) {
