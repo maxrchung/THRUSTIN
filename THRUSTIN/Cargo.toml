@@ -1,7 +1,7 @@
 [package]
 name = "THRUSTIN"
 version = "0.1.0"
-authors = ["Royce <rrysato@gmail.com>"]
+authors = ["Max Chung, Alex Liu, Royce Sato"]
 edition = "2018"
 
 [dependencies]

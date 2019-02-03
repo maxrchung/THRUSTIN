@@ -1,6 +1,5 @@
 #[derive(Clone, Debug)]
 pub enum PlayerState {
-    GettingName,
     OutOfLobby,
     InLobby,
     Playing
@@ -25,7 +24,7 @@ pub struct Player {
 pub fn new(name: std::string::String) -> Player{
     Player {
         name: name,
-        state: PlayerState::GettingName,
+        state: PlayerState::OutOfLobby,
         host: false,
         lobby: -1
     }

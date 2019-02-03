@@ -85,8 +85,21 @@ pub fn start_game(input: std::vec::Vec<&str>,
                   lobbies: &mut std::collections::HashMap<u32, Lobby>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
-    lobbies.get_mut(&(players.get(&id).unwrap().lobby as u32)).unwrap().state = LobbyState::Playing;
-    //do call back or something here?
+
+    let mut pl: &mut player::Player = players.get_mut(&id).unwrap();
+    pl.host = true;
+    
+    let mut lob: &mut Lobby = lobbies.get_mut(&(pl.lobby as u32) ).unwrap();
+
+    //lobbies.get_mut(&(players.get(&id).unwrap().lobby as u32)).unwrap().state = LobbyState::Playing;
+    lob.state = LobbyState::Playing;
+    //lobbies.get_mut(pl.lobby).unwrap().state = LobbyState::Playing;
+
+
+
+    for p in &lob.list {
+        p.state = player::PlayerState::Playing;
+    }
 }
 
 
