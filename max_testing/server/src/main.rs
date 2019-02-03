@@ -19,14 +19,14 @@ struct Server {
 
 impl Handler for Server {
     fn on_open(&mut self, _: Handshake) -> Result<()> {
-        let mut connections_handle = self.connections.lock().unwrap();
-        (*connections_handle).insert(self.out.token(), self.out.clone());
+        let mut connections_lock = self.connections.lock().unwrap();
+        connections_lock.insert(self.out.token(), self.out.clone());
         Ok(())
     }
 
     fn on_message(&mut self, msg: Message) -> Result<()> {
-        let mut commands_handle = self.commands.lock().unwrap();
-        (*commands_handle).push_back((self.out.token(), msg.to_string()));
+        let mut commands_lock = self.commands.lock().unwrap();
+        commands_lock.push_back((self.out.token(), msg.to_string()));
         Ok(())
     }
 
@@ -75,6 +75,21 @@ fn main() {
   loop {
     println!("commands: {:#?}", commands);
     println!("connections: {:#?}", connections);
+
+    let mut commands_lock = commands.lock().unwrap();
+    match commands_lock.pop_front() {
+      Some((token, message)) => {
+        let mut connections_lock = connections.lock().unwrap();
+        match connections_lock.get(&token) {
+          Some(sender) => {
+            sender.send(message);
+          },
+          None => ()
+        }
+      },
+      None => ()
+    };
+
     thread::sleep(time::Duration::from_millis(5000));
   }
 }
