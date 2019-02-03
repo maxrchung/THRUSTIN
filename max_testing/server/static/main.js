@@ -1,14 +1,5 @@
 var ws = new WebSocket("ws://192.168.0.4:3012/");
 
-ws.onopen = function () {
-    // Web Socket is connected, send data using send()
-    ws.send("onopen");
-};
-
-ws.onclose = function () {
-    // websocket is closed.
-};
-
 ws.onmessage = function (e) {
     appendLine("THRUSTY: " + e.data);
 };

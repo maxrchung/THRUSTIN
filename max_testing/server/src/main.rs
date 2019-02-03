@@ -3,7 +3,7 @@
 #[macro_use] extern crate rocket;
 extern crate ws;
 
-use ws::{listen, Handler, Sender, Result, Message, CloseCode};
+use ws::{listen, Handler, Sender, Handshake, Result, Message, CloseCode, util::Token};
 use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::{env, io, thread, time};
@@ -13,13 +13,21 @@ use rocket::response::NamedFile;
 
 struct Server {
   out: Sender,
-  commands: Arc:<Mutex<VecDeque<String, ws::util::Token));
+  commands: Arc<Mutex<VecDeque<(Token, String)>>>,
+  connections: Arc<Mutex<HashMap<Token, Sender>>>
 }
 
 impl Handler for Server {
+    fn on_open(&mut self, _: Handshake) -> Result<()> {
+        let mut connections_handle = self.connections.lock().unwrap();
+        (*connections_handle).insert(self.out.token(), self.out.clone());
+        Ok(())
+    }
+
     fn on_message(&mut self, msg: Message) -> Result<()> {
-        // Echo the message back
-        self.out.send(msg)
+        let mut commands_handle = self.commands.lock().unwrap();
+        (*commands_handle).push_back((self.out.token(), msg.to_string()));
+        Ok(())
     }
 
     fn on_close(&mut self, code: CloseCode, reason: &str) {
@@ -30,7 +38,6 @@ impl Handler for Server {
         }
     }
 }
-
 
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
@@ -45,32 +52,29 @@ fn file(file: PathBuf) -> Option<NamedFile> {
 fn main() {
   env::set_var("ROCKET_ENV", "staging");
 
+  // Serve files
   thread::spawn(|| {
     rocket::ignite().mount("/", routes![index, file]).launch();
   });
 
+  // Websockets
   let commands = Arc::new(Mutex::new(VecDeque::new()));
-  // let mut connections = HashMap::new();
-
-  let commands = Arc::clone(&commands);
+  let connections = Arc::new(Mutex::new(HashMap::new()));
+  let commands_clone = Arc::clone(&commands);
+  let connections_clone = Arc::clone(&connections);
   thread::spawn(move || {
-    listen("0.0.0.0:3012", |out| {
-      // connections.insert(out.token(), out.clone());
-      // println!("connections: {:#?}", connections);
-
-      move |msg| {
-        let mut commandsHandle = commands.lock().unwrap();
-        (*commandsHandle).push_back((msg,
-                                     out.token()));
-        println!("commands: {:#?}", commandsHandle);
-        // out.send(msg)
-        Ok(())
+    listen("0.0.0.0:3012", |out| { 
+      Server { 
+        out: out, 
+        commands: commands_clone.clone(),
+        connections: connections_clone.clone()
       }
-    }).unwrap();
+    }).unwrap()
   });
 
   loop {
-    println!("commands: {:#?}", "asdf");
+    println!("commands: {:#?}", commands);
+    println!("connections: {:#?}", connections);
     thread::sleep(time::Duration::from_millis(5000));
   }
-} 
+}
