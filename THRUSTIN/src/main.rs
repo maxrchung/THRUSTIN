@@ -36,6 +36,13 @@ fn handle_input(token: ws::util::Token,
 
     let player = players.get(&token).unwrap();
     match &player.state {
+        player::PlayerState::GettingName => {
+            match &*com {
+                "name" => {
+
+                }
+            }
+        },
         player::PlayerState::OutOfLobby => {
             match &*com {
                 "make" => {
