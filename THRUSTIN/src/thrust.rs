@@ -94,7 +94,7 @@ impl Deck {
 		self.thrustees.pop().unwrap()
 	}
 
-	fn thrust(index: i32, thruster: &String, thrustee: &String) -> String {
+	pub fn thrust(index: i32, thruster: &String, thrustee: &String) -> String {
 		lazy_static! {
 			static ref RE: Regex = Regex::new("[_]+").unwrap();
 		}

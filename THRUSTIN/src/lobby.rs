@@ -20,6 +20,10 @@ pub struct Lobby {
     //lobby
 
     pub deck: thrust::Deck,
+
+    pub current_thrustee: String,
+
+    pub current_thrusters: Vec<String>,
 }
 
 
@@ -33,13 +37,13 @@ pub fn new(pw: std::string::String,
         max: max,
         id: id,
         deck: thrust::Deck::default(),
+        current_thrustee: String::new(),
+        current_thrusters: Vec::new(),
     };
 
     lobby.deck.sort();
     thread_rng().shuffle(&mut lobby.deck.thrusters);
     thread_rng().shuffle(&mut lobby.deck.thrustees);
-
-    println!("{:#?}", lobby.deck);
     lobby
 }
 
@@ -64,6 +68,39 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
 
     lobbies.insert(lobby_id, new_lobby.clone());
     communication.send_message(&id, &format!("Created lobby: {}", lobby_id));
+}
+
+pub fn handle_thrust(split: std::vec::Vec<&str>, 
+                 token: ws::util::Token, 
+                 lobbies: &mut std::collections::HashMap<i32, Lobby>, 
+                 players: &mut std::collections::HashMap<ws::util::Token, player::Player>, 
+                 communication: &mut networking::Networking) {
+
+    let player: &mut player::Player = players.get_mut(&token).unwrap();
+    
+    if player.is_thrustee {
+        communication.send_message(&token, &"You are not allowed to thrust because you are a thrustee");
+    }
+    else {
+        match split[1].parse::<i32>() {
+            Ok(index) => {
+                if index < player.deck.thrusters.len() as i32 {
+                    let lob: &mut Lobby = lobbies.get_mut(&player.lobby ).unwrap();
+                    let picked_thruster = player.deck.thrusters.remove(index as usize);
+                    let resulting_thrust = thrust::Deck::thrust(index, &picked_thruster, &lob.current_thrustee);
+                    lob.current_thrusters.push(resulting_thrust.clone());
+                    communication.send_message(&token, &format!("{}. {}", lob.current_thrusters.len() - 1, &resulting_thrust));
+                }
+                else {
+                    communication.send_message(&token, &"That shit's out of bound bro");
+                }
+            },
+            _ => {
+                communication.send_message(&token, &"That is an invalid parameter, use an index instead");
+            }
+        };
+
+    }
 }
 
 // Users should not delete lobbies manually so this should be private
@@ -92,21 +129,10 @@ pub fn start_game(input: std::vec::Vec<&str>,
                   lobbies: &mut std::collections::HashMap<i32, Lobby>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
-    println!("1");
-
     let mut p: &mut player::Player = players.get_mut(&id).unwrap();
-    p.host = true;
     p.is_thrustee = true;
-    println!("222");
-
-    println!("lobby: {}", p.lobby);
-    println!("{:#?}", lobbies);
     let lob: &mut Lobby = lobbies.get_mut(&p.lobby ).unwrap();
-    println!("13");
-
-    let current_thrustee = lob.deck.thrustees.pop().unwrap();
-
-    println!("4444");
+    lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
 
     for token in &mut lob.list {
         let mut p = players.get_mut(&token).unwrap();
@@ -127,15 +153,13 @@ pub fn start_game(input: std::vec::Vec<&str>,
         p.deck.thrusters.push(thruster5.clone());
 
         let mut instructions = if p.host {
-            "You are being thrusted!"
+            "You are the thrustee."
         }
         else {
-            "You are thrusting!"
+            "You are a thruster."
         };
 
-        println!("{:#?}", &p.state);
-
-        communication.send_message(&p.token, &format!("This is your thrustee: {}", &current_thrustee));
+        communication.send_message(&p.token, &format!("This is your thrustee: {}", &lob.current_thrustee));
         display_thrusters(&p.token, communication, &p.deck.thrusters);
         communication.send_message(&p.token, &format!("{}", instructions));
     }
