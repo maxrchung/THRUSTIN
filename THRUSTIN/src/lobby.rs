@@ -223,6 +223,12 @@ pub fn start_game(input: std::vec::Vec<&str>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
     let mut p: &mut player::Player = players.get_mut(&id).unwrap();
+
+    if(p.host != true) {
+        communication.send_message(&p.token, &format!("Only host can start game!"));
+        return;
+    }
+
     p.is_thrustee = true;
     let lob: &mut Lobby = lobbies.get_mut(&p.lobby ).unwrap();
     lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
@@ -268,7 +274,7 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
 
-    if input.len() < 1 {
+    if input.len() < 2 {
         communication.send_message(&id, &"Lobby name required!");
         return;
     }
@@ -347,7 +353,7 @@ pub fn set_name(input: std::vec::Vec<&str>,
                 players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                 communication: &mut networking::Networking) {
 
-    if input.len() < 1 {
+    if input.len() < 2 {
         communication.send_message(&id, &format!("You need a name!"));
         return;
     }
