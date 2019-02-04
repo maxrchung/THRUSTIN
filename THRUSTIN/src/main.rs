@@ -73,12 +73,16 @@ fn handle_input(token: ws::util::Token,
         player::PlayerState::Playing => {
             match &*com {
                 "thrust" => {
+                    lobby::handle_thrust(split, token, lobbies, players, communication);
                 },
                 "decide" => {
                 },
                 "thrusters" => {
                     lobby::show_thrusters(token, players, communication);
-                }
+                },
+                "thrustee" => {
+
+                },
                 _ => {
                     communication.send_message(&token, &format!("Invalid argument!"));
                 }
