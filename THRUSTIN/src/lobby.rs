@@ -95,8 +95,6 @@ pub fn start_game(input: std::vec::Vec<&str>,
     lob.state = LobbyState::Playing;
     //lobbies.get_mut(pl.lobby).unwrap().state = LobbyState::Playing;
 
-
-
     for p in &mut lob.list {
         p.state = player::PlayerState::Playing;
     }
@@ -113,7 +111,7 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
     let lob =  lobby.get_mut(&lobby_name);
 
     if let None = lob {
-        println!("Lobby does not exist.");
+        communication.send_message(&id, &format!("Lobby does not exist."));
     } else {
         lob.unwrap().list.push((*players.get(&id).unwrap()).clone())
     }
@@ -134,5 +132,14 @@ pub fn list_lobby(id: ws::util::Token,
 }
 
 
-pub fn set_name() {
+pub fn set_name(input: std::vec::Vec<&str>,
+                id: ws::util::Token,
+                players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                communication: &mut networking::Networking) {
+
+    let p_name = input[1].to_string();
+
+    let player: &mut player::Player = players.get_mut(&id).unwrap();
+
+    player.name = p_name.clone();
 }
