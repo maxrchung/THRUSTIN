@@ -46,6 +46,9 @@ impl Default for Deck {
 		"buying keycaps".to_string(),
 		"getting baited".to_string(),
 		"Good Vibes".to_string(),
+		"hitting retards on the head with a bat".to_string(),
+		"snapped my spine when I tried sucking my own dick".to_string(),
+		"accidentally whacked it to a dude".to_string()
 		],
 
 		 thrustees: 
@@ -69,6 +72,7 @@ impl Default for Deck {
 		 "If I'm really mad at someone, I _____.".to_string(),
 	 	 "Contrary to popular belief, I really like Kenny. I think he's good at _____".to_string(),
 		 "Bruh, can you like not _____.".to_string(),
+		 "Whenever I see a black person on the streets I always make sure to _____".to_string()
 		 ]}
 	}
 }
