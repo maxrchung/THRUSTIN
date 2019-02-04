@@ -47,7 +47,6 @@ impl Default for Deck {
 		"getting baited".to_string(),
 		"Good Vibes".to_string(),
 		],
->>>>>>> 0190794b2eeaddbf003acac998cd8fc23e9148fc
 
 		 thrustees: 
 		 vec!["Every day before Kenny sleeps he really likes _____.".to_string(), "Before heading over to the cotton fields you need to make sure to grab your _____.".to_string(),
