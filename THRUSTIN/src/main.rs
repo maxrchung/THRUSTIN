@@ -9,8 +9,7 @@ mod thrust;
 
 fn main() {
     let mut communication = networking::Networking::init();
-    let mut lobbies: std::collections::HashMap<std::string::String, lobby::Lobby> = std::collections::HashMap::new();
-    let mut lob_ids: std::collections::HashMap<u32, lobby::Lobby> = std::collections::HashMap::new();
+    let mut lobbies: std::collections::HashMap<i32, lobby::Lobby> = std::collections::HashMap::new();
     let mut players: std::collections::HashMap<ws::util::Token, player::Player> = std::collections::HashMap::new();
     
     loop {
@@ -20,15 +19,14 @@ fn main() {
         if let None = players.get(&token)  {
             players.insert(token.clone(), player::new(&token));
         }
-        handle_input(token, message, &mut lobbies, &mut lob_ids, &mut players, &mut communication);
+        handle_input(token, message, &mut lobbies, &mut players, &mut communication);
     }
 }
 
 
 fn handle_input(token: ws::util::Token,
                 input: std::string::String,
-                lobbies: &mut std::collections::HashMap<std::string::String, lobby::Lobby>,
-                lob_ids: &mut std::collections::HashMap<u32, lobby::Lobby>,
+                lobbies: &mut std::collections::HashMap<i32, lobby::Lobby>,
                 players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                 communication: &mut networking::Networking) {
 
@@ -61,7 +59,7 @@ fn handle_input(token: ws::util::Token,
         player::PlayerState::InLobby => {
             match &*com {
                 "start" => {
-                    lobby::start_game(split, token, lob_ids, players, communication)
+                    lobby::start_game(split, token, lobbies, players, communication)
                 },
                 "leave" => {
                     lobby::leave_lobby(split, token, lobbies, communication)

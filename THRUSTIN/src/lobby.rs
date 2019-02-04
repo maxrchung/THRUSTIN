@@ -1,6 +1,7 @@
 use crate::player;
 use crate::networking;
 use crate::thrust;
+use rand::{thread_rng, Rng};
 
 #[derive(Clone, Debug)]
 pub struct Lobby {
@@ -42,6 +43,9 @@ pub fn new(name: std::string::String,
         deck: thrust::Deck::default(),
     };
     lobby.deck.sort();
+    thread_rng().shuffle(&mut lobby.deck.thrusters);
+    thread_rng().shuffle(&mut lobby.deck.thrustees);
+
     println!("{:#?}", lobby.deck);
     lobby
 }
@@ -49,7 +53,7 @@ pub fn new(name: std::string::String,
 
 pub fn make_lobby(input: std::vec::Vec<&str>, 
                   id: ws::util::Token,
-                  lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
+                  lobbies: &mut std::collections::HashMap<i32, Lobby>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
 
@@ -67,23 +71,27 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
     new_lobby.list.push((*player).clone());
     new_lobby.count += 1;
 
-    lobbies.insert(name.clone(), new_lobby.clone());
+    lobbies.insert(lobby_id, new_lobby.clone());
     communication.send_message(&id, &format!("Created lobby: {}", name));
 }
 
 // Users should not delete lobbies manually so this should be private
 fn delete_lobby(input: std::vec::Vec<&str>, 
                     id: ws::util::Token, 
-                    lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
+                    lobbies: &mut std::collections::HashMap<i32, Lobby>,
                     communication: &mut networking::Networking) {
-    let name = input[1];
-    lobbies.remove(name);
+    match input[1].parse::<i32>() {
+        Ok(name) => {
+            lobbies.remove(&name);
+        },
+        _ => ()
+    };
 }
 
 
 pub fn start_game(input: std::vec::Vec<&str>, 
                   id: ws::util::Token,
-                  lobbies: &mut std::collections::HashMap<u32, Lobby>,
+                  lobbies: &mut std::collections::HashMap<i32, Lobby>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
     println!("1");
@@ -95,7 +103,7 @@ pub fn start_game(input: std::vec::Vec<&str>,
 
     println!("lobby: {}", p.lobby);
     println!("{:#?}", lobbies);
-    let lob: &mut Lobby = lobbies.get_mut(&(p.lobby as u32) ).unwrap();
+    let lob: &mut Lobby = lobbies.get_mut(&p.lobby ).unwrap();
     println!("13");
 
     let current_thrustee = lob.deck.thrustees.pop().unwrap();
@@ -104,47 +112,74 @@ pub fn start_game(input: std::vec::Vec<&str>,
 
     for p in &mut lob.list {
         p.state = player::PlayerState::Playing;
-        p.deck.thrusters.push(lob.deck.thrusters.pop().unwrap());
-        p.deck.thrusters.push(lob.deck.thrusters.pop().unwrap());
-        p.deck.thrusters.push(lob.deck.thrusters.pop().unwrap());
-        p.deck.thrusters.push(lob.deck.thrusters.pop().unwrap());
-        p.deck.thrusters.push(lob.deck.thrusters.pop().unwrap());
-        communication.send_message(&p.token, &format!("{:#?}", &current_thrustee));
+        let thruster1 = lob.deck.thrusters.pop().unwrap();
+        p.deck.thrusters.push(thruster1.clone());
+
+        let thruster2 = lob.deck.thrusters.pop().unwrap();
+        p.deck.thrusters.push(thruster2.clone());
+
+        let thruster3 = lob.deck.thrusters.pop().unwrap();
+        p.deck.thrusters.push(thruster3.clone());
+
+        let thruster4 = lob.deck.thrusters.pop().unwrap();
+        p.deck.thrusters.push(thruster4.clone());
+
+        let thruster5 = lob.deck.thrusters.pop().unwrap();
+        p.deck.thrusters.push(thruster5.clone());
+
+        let mut instructions = if p.host {
+            "You are being thrusted!"
+        }
+        else {
+            "You are thrusting!"
+        };
+
+        communication.send_message(&p.token, &format!("This is your thrustee: {}", &current_thrustee));
+        communication.send_message(&p.token, &format!("Here are your thrusters:"));
+        communication.send_message(&p.token, &format!("{}", &thruster1));
+        communication.send_message(&p.token, &format!("{}", &thruster2));
+        communication.send_message(&p.token, &format!("{}", &thruster3));
+        communication.send_message(&p.token, &format!("{}", &thruster4));
+        communication.send_message(&p.token, &format!("{}", &thruster5));
+        communication.send_message(&p.token, &format!("{}", instructions));
     }
 }
 
 
 pub fn join_lobby(input: std::vec::Vec<&str>, 
                   id: ws::util::Token,
-                  lobby: &mut std::collections::HashMap<std::string::String, Lobby>,
+                  lobby: &mut std::collections::HashMap<i32, Lobby>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
-    let lobby_name = input[1].to_string();
-    let mut lob =  lobby.get_mut(&lobby_name);
+    match input[1].to_string().parse::<i32>() {
+        Ok(lobby_id) => {
+            let mut lob =  lobby.get_mut(&lobby_id);
 
-    if let None = lob {
-        communication.send_message(&id, &format!("Lobby does not exist."));
-    } else {
-        let l = lob.unwrap();
-        let mut p: &mut player::Player = players.get_mut(&id).unwrap();
-        p.state = player::PlayerState::InLobby;
-        p.lobby = l.id;
-        p.host = true;
-        l.list.push(p.clone());
-        communication.send_message(&id, &format!("Joined: {:#?}", &lobby_name));
+            if let None = lob {
+                communication.send_message(&id, &format!("Lobby does not exist."));
+            } else {
+                let l = lob.unwrap();
+                let mut p: &mut player::Player = players.get_mut(&id).unwrap();
+                p.state = player::PlayerState::InLobby;
+                p.lobby = l.id;
+                l.list.push(p.clone());
+                communication.send_message(&id, &format!("Joined: {:#?}", &lobby_id));
+            }
+        },
+        _ => ()
     }
 }
 
 
 pub fn leave_lobby(input: std::vec::Vec<&str>, 
                    id: ws::util::Token, 
-                   lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
+                   lobbies: &mut std::collections::HashMap<i32, Lobby>,
                    communication: &mut networking::Networking) {
 }
 
 
 pub fn list_lobby(id: ws::util::Token,
-                  lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
+                  lobbies: &mut std::collections::HashMap<i32, Lobby>,
                   communication: &mut networking::Networking) {
     communication.send_message(&id, &format!("{:#?}", lobbies));
 }
