@@ -161,6 +161,11 @@ pub fn handle_thrust(split: std::vec::Vec<&str>,
         communication.send_message(&token, &"You are not allowed to THRUST because you are a THRUSTEE");
     }
     else {
+        if split.len() < 2 {
+        communication.send_message(&token, &"Index required!");
+        return;
+        }
+
         match split[1].parse::<i32>() {
             Ok(index) => {
                 if index < player.deck.thrusters.len() as i32 {
