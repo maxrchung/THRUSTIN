@@ -289,8 +289,27 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
                 let l = lob.unwrap();
                 let mut p: &mut player::Player = players.get_mut(&id).unwrap();
                 p.state = if l.state == lobby_state::playing {
+                    let thruster1 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster1.clone());
+
+                    let thruster2 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster2.clone());
+
+                    let thruster3 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster3.clone());
+
+                    let thruster4 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster4.clone());
+
+                    let thruster5 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster5.clone());
+
+                    let mut instructions = "You are a THRUSTER.";
+
+                    communication.send_message(&p.token, &format!("This is your THRUSTEE: {}", &l.current_thrustee));
+                    display_thrusters(&p.token, communication, &p.deck.thrusters);
+                    communication.send_message(&p.token, &format!("{}", instructions));
                     player::PlayerState::Playing
-                    
                 } else {
                     player::PlayerState::InLobby
                 };
