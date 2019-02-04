@@ -32,7 +32,7 @@ pub struct Lobby {
 
     pub current_thrusters: Vec<String>,
 
-    pub players_who_have_thrusted: Vec<ws::util::Token>
+    pub thrusted_players: Vec<ws::util::Token>
 }
 
 
@@ -49,7 +49,7 @@ pub fn new(pw: std::string::String,
         deck: thrust::Deck::default(),
         current_thrustee: String::new(),
         current_thrusters: Vec::new(),
-        players_who_have_thrusted: Vec::new()
+        thrusted_players: Vec::new()
     };
 
     lobby.deck.sort();
@@ -97,13 +97,10 @@ pub fn decide(split: std::vec::Vec<&str>,
             Ok(index) => {
                 let lob: &mut Lobby = lobbies.get_mut(&player.lobby ).unwrap();
                 if index < lob.current_thrusters.len() as i32 {
-                    println!("0");
-
-
                     let chosen_thrust = lob.current_thrusters.remove(index as usize).clone();
                     lob.current_thrusters.clear();
 
-                    lob.players_who_have_thrusted.clear();
+                    lob.thrusted_players.clear();
 
                     for (index, player_token) in lob.list.iter().enumerate() {
                         communication.send_message(&player_token, & format!("THRUSTER has chosen this THRUST as the chosen THRUST, bois: {}.", &chosen_thrust));
@@ -164,11 +161,17 @@ pub fn handle_thrust(split: std::vec::Vec<&str>,
         communication.send_message(&token, &"You are not allowed to THRUST because you are a THRUSTEE");
     }
     else {
-
         match split[1].parse::<i32>() {
             Ok(index) => {
                 if index < player.deck.thrusters.len() as i32 {
                     let lob: &mut Lobby = lobbies.get_mut(&player.lobby ).unwrap();
+                    for (index, player_token) in lob.thrusted_players.iter().enumerate() {
+                        if token == *player_token {
+                            communication.send_message(&player_token, &format!("You have already THRUSTED, you cannot THRUST again."));
+                            return;
+                        }
+                    }
+
                     let picked_thruster = player.deck.thrusters.remove(index as usize);
                     let resulting_thrust = thrust::Deck::thrust(index, &picked_thruster, &lob.current_thrustee);
                     lob.current_thrusters.push(resulting_thrust.clone());
@@ -179,7 +182,7 @@ pub fn handle_thrust(split: std::vec::Vec<&str>,
                     let replenished_thruster = lob.deck.thrusters.pop().unwrap();
                     player.deck.thrusters.push(replenished_thruster.clone());
 
-                    players_who_have_thrusted.push(player.token.clone());
+                    lob.thrusted_players.push(player.token.clone());
                 }
                 else {
                     communication.send_message(&token, &"That shit's out of bound bro");
