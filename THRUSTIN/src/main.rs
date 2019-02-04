@@ -1,8 +1,11 @@
 #![feature(proc_macro_hygiene, decl_macro)] // Macro stuff to make rocket work
 #[macro_use] extern crate rocket; // Macro stuff to make rocket work
+#[macro_use] extern crate lazy_static; //alexgarbage
+extern crate regex; //alexgarbage
 mod lobby;
 mod networking; // Get networking module
 mod player;
+mod thrust;
 
 fn main() {
     let mut communication = networking::Networking::init();
@@ -15,7 +18,7 @@ fn main() {
 
         // Add to players list if not already
         if let None = players.get(&token)  {
-            players.insert(token.clone(), player::new("some_shit".to_string()));
+            players.insert(token.clone(), player::new(&token));
         }
         handle_input(token, message, &mut lobbies, &mut lob_ids, &mut players, &mut communication);
     }
