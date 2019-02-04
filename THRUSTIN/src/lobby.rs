@@ -108,10 +108,13 @@ pub fn decide(split: std::vec::Vec<&str>,
 
                     lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
                     player.is_thrustee = false;
+
+                    let mut next = "".to_string();
                     for (index, player_token) in lob.list.iter().enumerate() {
                         if token == *player_token {
                             let mut next_thrustee = players.get_mut(&lob.list[(index + 1) % lob.list.len()]).unwrap();
                             next_thrustee.is_thrustee = true;
+                            next = next_thrustee.name.clone();
                             break;
                         }
                     }
@@ -126,7 +129,8 @@ pub fn decide(split: std::vec::Vec<&str>,
                                 communication.send_message(&player_token, &"ur a fkin thruster..now.");
                             }
                         };
-                        communication.send_message(&player_token, &format!("HERE Is the next THRUSTEE: {}", &lob.current_thrustee));
+
+                        communication.send_message(&player_token, &format!("HERE Is the next THRUSTEE for {}: {}", next, &lob.current_thrustee));
 
                         // why are we here on this earth?
                         match players.get(&player_token).unwrap().is_thrustee {
@@ -239,6 +243,7 @@ pub fn start_game(input: std::vec::Vec<&str>,
     lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
     lob.state = lobby_state::playing;
 
+    let mut next = "".to_string();
     for token in &mut lob.list {
         let mut p = players.get_mut(&token).unwrap();
         p.state = player::PlayerState::Playing;
@@ -258,13 +263,15 @@ pub fn start_game(input: std::vec::Vec<&str>,
         p.deck.thrusters.push(thruster5.clone());
 
         let mut instructions = if p.is_thrustee {
+            next = p.name.clone();
             "You are the THRUSTEE."
         }
         else {
             "You are a THRUSTER."
         };
 
-        communication.send_message(&p.token, &format!("This is your THRUSTEE: {}", &lob.current_thrustee));
+
+        communication.send_message(&p.token, &format!("This is your THRUSTEE for {}: {}", next, &lob.current_thrustee));
         if !p.is_thrustee {
             display_thrusters(&p.token, communication, &p.deck.thrusters);
         };
@@ -438,27 +445,34 @@ pub fn list_lobby_players(id: ws::util::Token,
 }
 
 
-pub fn list_commands(id: ws::util::Token,
+pub fn list_out_commands(id: ws::util::Token,
                      communication: &mut networking::Networking) {
-    
-    communication.send_message(&id, &"Outside of Lobby");
+
     communication.send_message(&id, &"'make' make a lobby");
     communication.send_message(&id, &"'join <#>' join lobby <#>");
     communication.send_message(&id, &"'list' list lobbies");
     communication.send_message(&id, &"'name <name>' change your name to <name>");
     communication.send_message(&id, &"'who' list everyone playing");
     communication.send_message(&id, &"'help' this is it chief");
+}
 
-    communication.send_message(&id, &"Inside of Lobby");
+pub fn list_in_commands(id: ws::util::Token,
+                     communication: &mut networking::Networking) {
+    communication.send_message(&id, &"Valid commands:");
     communication.send_message(&id, &"'start' start game");
     communication.send_message(&id, &"'leave' leave lobby");
     communication.send_message(&id, &"'who' list everyone in lobby");
     communication.send_message(&id, &"'help' this is it chief");
+}
 
-    communication.send_message(&id, &"Playing");
+
+pub fn list_playing_commands(id: ws::util::Token,
+                     communication: &mut networking::Networking) {
+    communication.send_message(&id, &"Valid commands:");
     communication.send_message(&id, &"'thrust <#>' THRUST your <#> card");
     communication.send_message(&id, &"'decide <#>' pick <#> card as THE THRUST");
     communication.send_message(&id, &"'thrusters' show your THRUSTS");
     communication.send_message(&id, &"'thrustee' show the current THRUSTEE");
     communication.send_message(&id, &"'help' this is it chief");
 }
+
