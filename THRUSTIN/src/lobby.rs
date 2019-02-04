@@ -386,7 +386,12 @@ pub fn list_lobby_players(id: ws::util::Token,
     let lob: &mut Lobby = lobbies.get_mut(&lob_id).unwrap();
 
     for pl_tok in &lob.list {
-        let name = &players.get(&pl_tok).unwrap().name;
-        communication.send_message(&id, &format!("{}", name));
+        let play = players.get(&pl_tok).unwrap();
+        let name = &play.name;
+        if play.host == true {
+            communication.send_message(&id, &format!("{}: host", name));
+        } else {
+            communication.send_message(&id, &format!("{}", name));
+        }
     }
 }
