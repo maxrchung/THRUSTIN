@@ -109,7 +109,7 @@ fn handle_input(token: ws::util::Token,
                 },
 
                 "thrustee" => {
-
+                    lobby::show_thrustee(token, lobbies, players, communication);
                 },
                 
                 "help" => {

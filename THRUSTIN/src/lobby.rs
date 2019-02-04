@@ -161,6 +161,11 @@ pub fn handle_thrust(split: std::vec::Vec<&str>,
         communication.send_message(&token, &"You are not allowed to THRUST because you are a THRUSTEE");
     }
     else {
+        if split.len() < 2 {
+        communication.send_message(&token, &"Index required!");
+        return;
+        }
+
         match split[1].parse::<i32>() {
             Ok(index) => {
                 if index < player.deck.thrusters.len() as i32 {
@@ -324,11 +329,22 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
 
 }
 
+
 pub fn show_thrusters(id: ws::util::Token,
                       players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                       communication: &mut networking::Networking) {
     let mut p = players.get_mut(&id).unwrap();
     display_thrusters(&p.token, communication, &p.deck.thrusters);
+}
+
+
+pub fn show_thrustee(id: ws::util::Token,
+                     lobbies: &mut std::collections::HashMap<i32, Lobby>,
+                     players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                     communication: &mut networking::Networking) {
+    let mut p: &mut player::Player = players.get_mut(&id).unwrap();
+    let lob: &mut Lobby = lobbies.get_mut(&p.lobby).unwrap();
+    communication.send_message(&id, &format!("Current THRUSTEE: {}", lob.current_thrustee));
 }
 
 
