@@ -117,8 +117,13 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
                   communication: &mut networking::Networking) {
     let lobby_name = input[1].to_string();
 
-    let lob: &mut Lobby = lobby.get_mut(&lobby_name).unwrap();
-    lob.list.push((*players.get(&id).unwrap()).clone());
+    let lob =  lobby.get_mut(&lobby_name);
+
+    if let None = lob {
+        println!("Lobby does not exist.");
+    } else {
+        lob.unwrap().list.push((*players.get(&id).unwrap()).clone())
+    }
 }
 
 
@@ -133,4 +138,8 @@ pub fn list_lobby(id: ws::util::Token,
                   lobbies: &mut std::collections::HashMap<std::string::String, Lobby>,
                   communication: &mut networking::Networking) {
     communication.send_message(&id, &format!("{:#?}", lobbies));
+}
+
+
+pub fn set_name() {
 }
