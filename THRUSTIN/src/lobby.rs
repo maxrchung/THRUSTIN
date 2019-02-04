@@ -57,10 +57,14 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
     let max = 64;
     let lobby_id: i32 = lobbies.len() as i32;
 
-    players.get_mut(&id).unwrap().lobby = lobby_id.clone() as i32;
+    let player: &mut player::Player = players.get_mut(&id).unwrap();
+
+    player.lobby = lobby_id.clone() as i32;
+    player.host = true;
+    player.state = player::PlayerState::InLobby;
 
     let mut new_lobby = new(name.clone(), "".to_string(), max, lobby_id);
-    new_lobby.list.push((*players.get(&id).unwrap()).clone());
+    new_lobby.list.push((*player).clone());
     new_lobby.count += 1;
 
     lobbies.insert(name.clone(), new_lobby);
@@ -89,17 +93,15 @@ pub fn start_game(input: std::vec::Vec<&str>,
     p.is_thrustee = true;
     println!("222");
 
-
-    let mut lob: &mut Lobby = lobbies.get_mut(&(p.lobby as u32) ).unwrap();
+    println!("lobby: {}", p.lobby);
+    println!("{:#?}", lobbies);
+    let lob: &mut Lobby = lobbies.get_mut(&(p.lobby as u32) ).unwrap();
     println!("13");
 
-<<<<<<< HEAD
     let current_thrustee = lob.deck.thrustees.pop().unwrap();
 
     println!("4444");
 
-=======
->>>>>>> 2e239ceea9d91403e40dc4bea4181cf3f544bc3f
     for p in &mut lob.list {
         p.state = player::PlayerState::Playing;
         p.deck.thrusters.push(lob.deck.thrusters.pop().unwrap());
@@ -121,16 +123,13 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
     let mut lob =  lobby.get_mut(&lobby_name);
 
     if let None = lob {
-<<<<<<< HEAD
-        communication.send_message(&id, &"Lobby does not exist.");
-=======
         communication.send_message(&id, &format!("Lobby does not exist."));
->>>>>>> 2e239ceea9d91403e40dc4bea4181cf3f544bc3f
     } else {
         let l = lob.unwrap();
         let mut p: &mut player::Player = players.get_mut(&id).unwrap();
         p.state = player::PlayerState::InLobby;
         p.lobby = l.id;
+        p.host = true;
         l.list.push(p.clone());
         communication.send_message(&id, &format!("Joined: {:#?}", &lobby_name));
     }
