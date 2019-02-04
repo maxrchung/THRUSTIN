@@ -322,14 +322,12 @@ pub fn list_lobby(id: ws::util::Token,
                   communication: &mut networking::Networking) {
     for lob in lobbies.values() {
         let state = match &lob.state {
-            playing => "Playing",
-            waiting => "Waiting",
+            lobby_state::playing => "Playing",
+            lobby_state::waiting => "Waiting",
             _ => "wth is this lobby doing?"
         };
         communication.send_message(&id, &format!("id: {} | {}/{} players | {}", lob.id, lob.list.len(), lob.max, state));
     }
-
-    //communication.send_message(&id, &format!("{:#?}", lobbies));
 }
 
 
@@ -358,7 +356,11 @@ pub fn list_all_players(id: ws::util::Token,
                         communication: &mut networking::Networking) {
 
     for pl in players.values() {
-        communication.send_message(&id, &format!("{}", pl.name));
+        if pl.lobby >= 0 {
+            communication.send_message(&id, &format!("{} in {}", pl.name, pl.lobby));
+        } else {
+            communication.send_message(&id, &format!("{}", pl.name));
+        }
     }
 }
 
