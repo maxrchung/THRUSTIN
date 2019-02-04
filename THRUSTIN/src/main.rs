@@ -50,6 +50,9 @@ fn handle_input(token: ws::util::Token,
                 "list" => {
                     lobby::list_lobby(token, lobbies, communication)
                 },
+                "name" => {
+                    lobby::set_name(split, token, players, communication)
+                }
                 _ => {
                     communication.send_message(&token, &format!("Invalid argument!"));
                 }
