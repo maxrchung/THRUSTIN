@@ -1,6 +1,6 @@
 use regex::Regex;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Deck {
 	pub thrusters: Vec<String>,
 	pub thrustees: Vec<String>,
@@ -25,13 +25,13 @@ impl Default for Deck {
 }
 
 impl Deck {
-	fn new() -> Deck {
+	pub fn new() -> Deck {
 		Deck {
 			thrusters: Vec::new(),
 			thrustees: Vec::new(),
 		}
 	}
-	
+
 	fn add_thruster(&mut self, thruster: & std::string::String) {
 		self.thrusters.push(thruster.to_string());
 		self.sort_thrusters();

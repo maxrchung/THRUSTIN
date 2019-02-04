@@ -18,7 +18,7 @@ fn main() {
 
         // Add to players list if not already
         if let None = players.get(&token)  {
-            players.insert(token.clone(), player::new("some_shit".to_string()));
+            players.insert(token.clone(), player::new(&token));
         }
         handle_input(token, message, &mut lobbies, &mut lob_ids, &mut players, &mut communication);
     }

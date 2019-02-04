@@ -9,6 +9,8 @@ pub enum PlayerState {
 
 #[derive(Clone, Debug)]
 pub struct Player {
+    pub token: ws::util::Token,
+
     //name of player
     pub name: std::string::String,
 
@@ -21,16 +23,20 @@ pub struct Player {
     pub lobby: i32,
 
     pub deck: thrust::Deck,
+
+    pub is_thrustee: bool,
         
 }
 
 
-pub fn new(name: std::string::String) -> Player {
+pub fn new(token: &ws::util::Token) -> Player {
     Player {
-        name: name,
+        token: token.clone(),
+        name: "some_SHIT".to_string(),
         state: PlayerState::OutOfLobby,
         host: false,
         lobby: -1,
-        deck: thrust::Deck::new()
+        deck: thrust::Deck::new(),
+        is_thrustee: false,
     }
 }
