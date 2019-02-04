@@ -23,7 +23,7 @@ impl Default for Deck {
 		"wiring up my dick to work as a tablet pen".to_string(), "a fast forward/backward movement of the hips, usually in sexual activity".to_string(), "when a guy goes in and out of a girl's vagina really fast getting ready to cum kind of like humping".to_string(),
 		"a sexual act in which the man inserts a cigar into the vagina of his female partner, and then he smokes the cigar while blowing the smoke into his partner's orafice".to_string(),
 		"trust, the hardest thing to gain and the easiest thing to lose".to_string(), "I actually want to die".to_string(), "I'm going to fucking kill you".to_string(), "shitting in a girl's vagina and fucking it".to_string(),
-		"digging up a mostly rotted corpse, hook it up with wires that connect to a source of electricity, puppeteer it and have people pay to have sex with it".to_string(), "gayme jam".to_string(), "who wrote these".to_string(), "I gurgled a moist egg yolk and vomited from my jowls a chunky curd of phlegm that was dripping with roaches, maggots and mucus.".to_string()]
+		"digging up a mostly rotted corpse, hook it up with wires that connect to a source of electricity, puppeteer it and have people pay to have sex with it".to_string(), "gayme jam".to_string(), "who wrote these".to_string(), "I gurgled a moist egg yolk and vomited from my jowls a chunky curd of phlegm that was dripping with roaches, maggots and mucus.".to_string()],
 
 		 thrustees: 
 		 vec!["Every day before Kenny sleeps he really likes _____".to_string(), "Before heading over to the cotton fields you need to make sure to grab your _____".to_string(),
