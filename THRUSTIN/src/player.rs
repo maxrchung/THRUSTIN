@@ -32,7 +32,7 @@ pub struct Player {
 pub fn new(token: &ws::util::Token) -> Player {
     Player {
         token: token.clone(),
-        name: "some_SHIT".to_string(),
+        name: token.0.to_string(),
         state: PlayerState::OutOfLobby,
         host: false,
         lobby: -1,

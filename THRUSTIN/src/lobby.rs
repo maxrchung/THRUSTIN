@@ -31,6 +31,8 @@ pub struct Lobby {
     pub current_thrustee: String,
 
     pub current_thrusters: Vec<String>,
+
+    pub thrusted_players: Vec<ws::util::Token>
 }
 
 
@@ -47,6 +49,7 @@ pub fn new(pw: std::string::String,
         deck: thrust::Deck::default(),
         current_thrustee: String::new(),
         current_thrusters: Vec::new(),
+        thrusted_players: Vec::new()
     };
 
     lobby.deck.sort();
@@ -94,11 +97,10 @@ pub fn decide(split: std::vec::Vec<&str>,
             Ok(index) => {
                 let lob: &mut Lobby = lobbies.get_mut(&player.lobby ).unwrap();
                 if index < lob.current_thrusters.len() as i32 {
-                    println!("0");
-
-
                     let chosen_thrust = lob.current_thrusters.remove(index as usize).clone();
                     lob.current_thrusters.clear();
+
+                    lob.thrusted_players.clear();
 
                     for (index, player_token) in lob.list.iter().enumerate() {
                         communication.send_message(&player_token, & format!("THRUSTER has chosen this THRUST as the chosen THRUST, bois: {}.", &chosen_thrust));
@@ -163,6 +165,13 @@ pub fn handle_thrust(split: std::vec::Vec<&str>,
             Ok(index) => {
                 if index < player.deck.thrusters.len() as i32 {
                     let lob: &mut Lobby = lobbies.get_mut(&player.lobby ).unwrap();
+                    for (index, player_token) in lob.thrusted_players.iter().enumerate() {
+                        if token == *player_token {
+                            communication.send_message(&player_token, &format!("You have already THRUSTED, you cannot THRUST again."));
+                            return;
+                        }
+                    }
+
                     let picked_thruster = player.deck.thrusters.remove(index as usize);
                     let resulting_thrust = thrust::Deck::thrust(index, &picked_thruster, &lob.current_thrustee);
                     lob.current_thrusters.push(resulting_thrust.clone());
@@ -172,6 +181,8 @@ pub fn handle_thrust(split: std::vec::Vec<&str>,
                     }
                     let replenished_thruster = lob.deck.thrusters.pop().unwrap();
                     player.deck.thrusters.push(replenished_thruster.clone());
+
+                    lob.thrusted_players.push(player.token.clone());
                 }
                 else {
                     communication.send_message(&token, &"That shit's out of bound bro");
@@ -341,14 +352,12 @@ pub fn list_lobby(id: ws::util::Token,
                   communication: &mut networking::Networking) {
     for lob in lobbies.values() {
         let state = match &lob.state {
-            playing => "Playing",
-            waiting => "Waiting",
+            lobby_state::playing => "Playing",
+            lobby_state::waiting => "Waiting",
             _ => "wth is this lobby doing?"
         };
         communication.send_message(&id, &format!("id: {} | {}/{} players | {}", lob.id, lob.list.len(), lob.max, state));
     }
-
-    //communication.send_message(&id, &format!("{:#?}", lobbies));
 }
 
 
@@ -377,7 +386,11 @@ pub fn list_all_players(id: ws::util::Token,
                         communication: &mut networking::Networking) {
 
     for pl in players.values() {
-        communication.send_message(&id, &format!("{}", pl.name));
+        if pl.lobby >= 0 {
+            communication.send_message(&id, &format!("{} in {}", pl.name, pl.lobby));
+        } else {
+            communication.send_message(&id, &format!("{}", pl.name));
+        }
     }
 }
 
@@ -392,7 +405,12 @@ pub fn list_lobby_players(id: ws::util::Token,
     let lob: &mut Lobby = lobbies.get_mut(&lob_id).unwrap();
 
     for pl_tok in &lob.list {
-        let name = &players.get(&pl_tok).unwrap().name;
-        communication.send_message(&id, &format!("{}", name));
+        let play = players.get(&pl_tok).unwrap();
+        let name = &play.name;
+        if play.host == true {
+            communication.send_message(&id, &format!("{}: host", name));
+        } else {
+            communication.send_message(&id, &format!("{}", name));
+        }
     }
 }
