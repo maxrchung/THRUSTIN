@@ -46,7 +46,11 @@ impl Default for Deck {
 		"buying keycaps".to_string(),
 		"getting baited".to_string(),
 		"Good Vibes".to_string(),
+		"hitting retards on the head with a bat".to_string(),
+		"snapped my spine when I tried sucking my own dick".to_string(),
+		"accidentally whacked it to a dude".to_string()
 		],
+>>>>>>> 0190794b2eeaddbf003acac998cd8fc23e9148fc
 
 		 thrustees: 
 		 vec!["Every day before Kenny sleeps he really likes _____.".to_string(), "Before heading over to the cotton fields you need to make sure to grab your _____.".to_string(),
@@ -69,6 +73,7 @@ impl Default for Deck {
 		 "If I'm really mad at someone, I _____.".to_string(),
 	 	 "Contrary to popular belief, I really like Kenny. I think he's good at _____".to_string(),
 		 "Bruh, can you like not _____.".to_string(),
+		 "Whenever I see a black person on the streets I always make sure to _____".to_string()
 		 ]}
 	}
 }
