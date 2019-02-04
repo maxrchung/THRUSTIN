@@ -47,4 +47,4 @@ clearButton.addEventListener("click", clear, false);
 var command = document.getElementById("command");
 command.addEventListener("keypress", handleEnter, false);
 
-addMessage("Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to thrusting!");
+addMessage("Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to thrusting! Type 'help' for help (obviously).");

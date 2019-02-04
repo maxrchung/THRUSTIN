@@ -62,11 +62,12 @@ fn handle_input(token: ws::util::Token,
                 },
                 
                 "help" => {
-                    lobby::list_commands(token, communication);
+                    lobby::list_out_commands(token, communication);
                 },
 
                 _ => {
-                    lobby::list_commands(token, communication);
+                    communication.send_message(&token, &"Invalid command.");
+                    lobby::list_out_commands(token, communication);
                 }
             }
         },
@@ -85,11 +86,12 @@ fn handle_input(token: ws::util::Token,
                 },
                 
                 "help" => {
-                    lobby::list_commands(token, communication);
+                    lobby::list_in_commands(token, communication);
                 },
 
                 _ => {
-                    lobby::list_commands(token, communication);
+                    communication.send_message(&token, &"Invalid command.");
+                    lobby::list_in_commands(token, communication);
                 }
             }
         },
@@ -113,11 +115,12 @@ fn handle_input(token: ws::util::Token,
                 },
                 
                 "help" => {
-                    lobby::list_commands(token, communication);
+                    lobby::list_playing_commands(token, communication);
                 },
 
                 _ => {
-                    lobby::list_commands(token, communication);
+                    communication.send_message(&token, &"Invalid command.");
+                    lobby::list_playing_commands(token, communication);
                 }
             }
         }
