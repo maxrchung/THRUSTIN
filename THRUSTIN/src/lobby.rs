@@ -223,6 +223,12 @@ pub fn start_game(input: std::vec::Vec<&str>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
     let mut p: &mut player::Player = players.get_mut(&id).unwrap();
+
+    if(p.host != true) {
+        communication.send_message(&p.token, &format!("Only host can start game!"));
+        return;
+    }
+
     p.is_thrustee = true;
     let lob: &mut Lobby = lobbies.get_mut(&p.lobby ).unwrap();
     lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
@@ -268,7 +274,7 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
 
-    if input.len() < 1 {
+    if input.len() < 2 {
         communication.send_message(&id, &"Lobby name required!");
         return;
     }
@@ -283,8 +289,27 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
                 let l = lob.unwrap();
                 let mut p: &mut player::Player = players.get_mut(&id).unwrap();
                 p.state = if l.state == lobby_state::playing {
+                    let thruster1 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster1.clone());
+
+                    let thruster2 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster2.clone());
+
+                    let thruster3 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster3.clone());
+
+                    let thruster4 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster4.clone());
+
+                    let thruster5 = l.deck.thrusters.pop().unwrap();
+                    p.deck.thrusters.push(thruster5.clone());
+
+                    let mut instructions = "You are a THRUSTER.";
+
+                    communication.send_message(&p.token, &format!("This is your THRUSTEE: {}", &l.current_thrustee));
+                    display_thrusters(&p.token, communication, &p.deck.thrusters);
+                    communication.send_message(&p.token, &format!("{}", instructions));
                     player::PlayerState::Playing
-                    
                 } else {
                     player::PlayerState::InLobby
                 };
@@ -344,14 +369,12 @@ pub fn list_lobby(id: ws::util::Token,
                   communication: &mut networking::Networking) {
     for lob in lobbies.values() {
         let state = match &lob.state {
-            playing => "Playing",
-            waiting => "Waiting",
+            lobby_state::playing => "Playing",
+            lobby_state::waiting => "Waiting",
             _ => "wth is this lobby doing?"
         };
         communication.send_message(&id, &format!("id: {} | {}/{} players | {}", lob.id, lob.list.len(), lob.max, state));
     }
-
-    //communication.send_message(&id, &format!("{:#?}", lobbies));
 }
 
 
@@ -360,7 +383,7 @@ pub fn set_name(input: std::vec::Vec<&str>,
                 players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                 communication: &mut networking::Networking) {
 
-    if input.len() < 1 {
+    if input.len() < 2 {
         communication.send_message(&id, &format!("You need a name!"));
         return;
     }
@@ -380,7 +403,11 @@ pub fn list_all_players(id: ws::util::Token,
                         communication: &mut networking::Networking) {
 
     for pl in players.values() {
-        communication.send_message(&id, &format!("{}", pl.name));
+        if pl.lobby >= 0 {
+            communication.send_message(&id, &format!("{} in {}", pl.name, pl.lobby));
+        } else {
+            communication.send_message(&id, &format!("{}", pl.name));
+        }
     }
 }
 
@@ -395,7 +422,12 @@ pub fn list_lobby_players(id: ws::util::Token,
     let lob: &mut Lobby = lobbies.get_mut(&lob_id).unwrap();
 
     for pl_tok in &lob.list {
-        let name = &players.get(&pl_tok).unwrap().name;
-        communication.send_message(&id, &format!("{}", name));
+        let play = players.get(&pl_tok).unwrap();
+        let name = &play.name;
+        if play.host == true {
+            communication.send_message(&id, &format!("{}: host", name));
+        } else {
+            communication.send_message(&id, &format!("{}", name));
+        }
     }
 }
