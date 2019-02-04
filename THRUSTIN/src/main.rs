@@ -61,8 +61,12 @@ fn handle_input(token: ws::util::Token,
                     lobby::list_all_players(token, players, communication);
                 },
                 
+                "help" => {
+                    lobby::list_commands(token, communication);
+                },
+
                 _ => {
-                    communication.send_message(&token, &format!("Invalid argument!"));
+                    lobby::list_commands(token, communication);
                 }
             }
         },
@@ -80,8 +84,12 @@ fn handle_input(token: ws::util::Token,
                     lobby::list_lobby_players(token, lobbies, players, communication);
                 },
                 
+                "help" => {
+                    lobby::list_commands(token, communication);
+                },
+
                 _ => {
-                    communication.send_message(&token, &format!("Invalid argument!"));
+                    lobby::list_commands(token, communication);
                 }
             }
         },
@@ -99,11 +107,17 @@ fn handle_input(token: ws::util::Token,
                 "thrusters" => {
                     lobby::show_thrusters(token, players, communication);
                 },
+
                 "thrustee" => {
 
                 },
+                
+                "help" => {
+                    lobby::list_commands(token, communication);
+                },
+
                 _ => {
-                    communication.send_message(&token, &format!("Invalid argument!"));
+                    lobby::list_commands(token, communication);
                 }
             }
         }
