@@ -103,7 +103,7 @@ pub fn decide(split: std::vec::Vec<&str>,
                     lob.thrusted_players.clear();
 
                     for (index, player_token) in lob.list.iter().enumerate() {
-                        communication.send_message(&player_token, & format!("THRUSTER has chosen this THRUST as the chosen THRUST, bois: {}.", &chosen_thrust));
+                        communication.send_message(&player_token, & format!("THRUSTER  has chosen this THRUST as the chosen THRUST, bois: {}.", &chosen_thrust));
                     }
 
                     lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
