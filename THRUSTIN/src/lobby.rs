@@ -5,17 +5,11 @@ use rand::{thread_rng, Rng};
 
 #[derive(Clone, Debug)]
 pub struct Lobby {
-    //name of lobby
-    pub name: std::string::String,
-
     //optional password for lobby
     pw: std::string::String,
 
     //list of players
     pub list: std::vec::Vec<ws::util::Token>,
-
-    //number of players in room
-    pub count: u32,
 
     //max number of players
     pub max: u32,
@@ -29,16 +23,13 @@ pub struct Lobby {
 }
 
 
-pub fn new(name: std::string::String, 
-           pw: std::string::String, 
+pub fn new(pw: std::string::String, 
            max: u32, 
            id: i32) -> Lobby {
 
     let mut lobby = Lobby {
-        name: name,
         pw: pw,
         list: std::vec::Vec::with_capacity(max as usize),
-        count: 0,
         max: max,
         id: id,
         deck: thrust::Deck::default(),
@@ -59,7 +50,6 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
 
-    let name = input[1].to_string();
     let max = 64;
     let lobby_id: i32 = lobbies.len() as i32;
 
@@ -69,12 +59,11 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
     player.host = true;
     player.state = player::PlayerState::InLobby;
 
-    let mut new_lobby = new(name.clone(), "".to_string(), max, lobby_id);
+    let mut new_lobby = new("".to_string(), max, lobby_id);
     new_lobby.list.push(id.clone());
-    new_lobby.count += 1;
 
     lobbies.insert(lobby_id, new_lobby.clone());
-    communication.send_message(&id, &format!("Created lobby: {}", name));
+    communication.send_message(&id, &format!("Created lobby: {}", lobby_id));
 }
 
 // Users should not delete lobbies manually so this should be private
@@ -185,10 +174,20 @@ pub fn show_thrusters(id: ws::util::Token,
 }
 
 
-pub fn leave_lobby(input: std::vec::Vec<&str>, 
-                   id: ws::util::Token, 
+
+pub fn leave_lobby(id: ws::util::Token,
                    lobbies: &mut std::collections::HashMap<i32, Lobby>,
+                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                    communication: &mut networking::Networking) {
+
+    let pl = players.get_mut(&id).unwrap();
+    let lob_id = pl.lobby;
+    let lob: &mut Lobby = lobbies.get_mut(&lob_id).unwrap();
+
+    pl.state = player::PlayerState::OutOfLobby;
+
+    lob.list.remove_item(&id);
+    communication.send_message(&id, &format!("Left lobby: {}.", lob_id));
 }
 
 
@@ -196,8 +195,7 @@ pub fn list_lobby(id: ws::util::Token,
                   lobbies: &mut std::collections::HashMap<i32, Lobby>,
                   communication: &mut networking::Networking) {
     for lob in lobbies.values() {
-        communication.send_message(&id, &format!("id: {}", lob.id));
-        communication.send_message(&id, &format!("{}/{} players", lob.count, lob.max));
+        communication.send_message(&id, &format!("id: {} | {}/{} players", lob.id, lob.list.len(), lob.max));
     }
 
     //communication.send_message(&id, &format!("{:#?}", lobbies));
@@ -215,5 +213,32 @@ pub fn set_name(input: std::vec::Vec<&str>,
 
     player.name = p_name.clone();
 
-    communication.send_message(&id, &format!("Name set to {}", &player.name));
+    communication.send_message(&id, &format!("Name set to: {}", &player.name));
+}
+
+
+
+pub fn list_all_players(id: ws::util::Token,
+                        players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                        communication: &mut networking::Networking) {
+
+    for pl in players.values() {
+        communication.send_message(&id, &format!("{}", pl.name));
+    }
+}
+
+
+pub fn list_lobby_players(id: ws::util::Token,
+                   lobbies: &mut std::collections::HashMap<i32, Lobby>,
+                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                   communication: &mut networking::Networking) {
+
+    let pl = players.get_mut(&id).unwrap();
+    let lob_id = pl.lobby;
+    let lob: &mut Lobby = lobbies.get_mut(&lob_id).unwrap();
+
+    for pl_tok in &lob.list {
+        let name = &players.get(&pl_tok).unwrap().name;
+        communication.send_message(&id, &format!("{}", name));
+    }
 }
