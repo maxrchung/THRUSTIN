@@ -48,9 +48,21 @@ impl Default for Deck {
 		"Good Vibes".to_string(),
 		"hitting retards on the head with a bat".to_string(),
 		"snapped my spine when I tried sucking my own dick".to_string(),
-		"accidentally whacked it to a dude".to_string()
+		"accidentally whacked it to a dude".to_string(),
+		"letting out a smelly hot load in my pants".to_string(),
+		"going to a slave auction".to_string(),
+		"getting a hand injury slamming immigrants in the face".to_string(),
+		"a billion dollars".to_string(),
+		"smearing shit all over my face".to_string(),
+		"bomb vests".to_string(),
+		"Peppy".to_string(),
+		"shoving my fresh shit up someone's asshole".to_string(),
+		"dominating my sister before going to sleep".to_string(),
+		"the taste of dog meat".to_string(),
+		"blowing up disability centers".to_string(),
+		"sharpening the tip of my dick".to_string(),
+		"the pain of a thousand slaves".to_string()
 		],
->>>>>>> 0190794b2eeaddbf003acac998cd8fc23e9148fc
 
 		 thrustees: 
 		 vec!["Every day before Kenny sleeps he really likes _____.".to_string(), "Before heading over to the cotton fields you need to make sure to grab your _____.".to_string(),
@@ -73,7 +85,12 @@ impl Default for Deck {
 		 "If I'm really mad at someone, I _____.".to_string(),
 	 	 "Contrary to popular belief, I really like Kenny. I think he's good at _____".to_string(),
 		 "Bruh, can you like not _____.".to_string(),
-		 "Whenever I see a black person on the streets I always make sure to _____".to_string()
+		 "Whenever I see a black person on the streets I always make sure to _____".to_string(),
+		 "The only thing better than the satisfaction of _____ is reading through articles of the Holocaust".to_string(),
+		 "My favorite topping for icecream is _____".to_string(),
+		 "While pissing on the nearest retard's head I put a _____ on my dick".to_string(),
+		 "I expected a local to blow me up when I visited the Middle East but I was pleasantly surprised by _____".to_string(),
+		 "The reason my gun clip is empty is because of _____".to_string()
 		 ]}
 	}
 }
