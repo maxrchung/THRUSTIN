@@ -38,7 +38,6 @@ fn handle_input(token: ws::util::Token,
     com = com[..com.len()].to_string();
 
     let player = players.get(&token).unwrap();
-    println!("{:#?}", &player.state);
     match &player.state {
         player::PlayerState::OutOfLobby => {
             match &*com {
@@ -94,6 +93,7 @@ fn handle_input(token: ws::util::Token,
                 },
 
                 "decide" => {
+                    lobby::decide(split, token, lobbies, players, communication);
                 },
 
                 "thrusters" => {
