@@ -33,6 +33,7 @@ pub fn new(name: std::string::String,
            pw: std::string::String, 
            max: u32, 
            id: i32) -> Lobby {
+
     let mut lobby = Lobby {
         name: name,
         pw: pw,
@@ -42,6 +43,7 @@ pub fn new(name: std::string::String,
         id: id,
         deck: thrust::Deck::default(),
     };
+
     lobby.deck.sort();
     thread_rng().shuffle(&mut lobby.deck.thrusters);
     thread_rng().shuffle(&mut lobby.deck.thrustees);
@@ -181,7 +183,12 @@ pub fn leave_lobby(input: std::vec::Vec<&str>,
 pub fn list_lobby(id: ws::util::Token,
                   lobbies: &mut std::collections::HashMap<i32, Lobby>,
                   communication: &mut networking::Networking) {
-    communication.send_message(&id, &format!("{:#?}", lobbies));
+    for lob in lobbies.values() {
+        communication.send_message(&id, &format!("id: {}", lob.id));
+        communication.send_message(&id, &format!("{}/{} players", lob.count, lob.max));
+    }
+
+    //communication.send_message(&id, &format!("{:#?}", lobbies));
 }
 
 
@@ -195,4 +202,6 @@ pub fn set_name(input: std::vec::Vec<&str>,
     let player: &mut player::Player = players.get_mut(&id).unwrap();
 
     player.name = p_name.clone();
+
+    communication.send_message(&id, &format!("Name set to {}", &player.name));
 }

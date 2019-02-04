@@ -100,7 +100,6 @@ impl Networking {
             let commands_lock = self.commands.lock().unwrap();
             length = commands_lock.len();
         }
-
         let mut commands_lock = self.commands.lock().unwrap();
         commands_lock.pop_front().unwrap()
     }

@@ -11,14 +11,16 @@ fn main() {
     let mut communication = networking::Networking::init();
     let mut lobbies: std::collections::HashMap<i32, lobby::Lobby> = std::collections::HashMap::new();
     let mut players: std::collections::HashMap<ws::util::Token, player::Player> = std::collections::HashMap::new();
-    
-    loop {
-        let (token, message) = communication.read_message();
 
+    loop {
+        println!("shit");
+        let (token, message) = communication.read_message();
+        println!("shit2");
         // Add to players list if not already
         if let None = players.get(&token)  {
             players.insert(token.clone(), player::new(&token));
         }
+        println!("shit3");
         handle_input(token, message, &mut lobbies, &mut players, &mut communication);
     }
 }
