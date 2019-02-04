@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 var ws = new WebSocket("ws://localhost:3012/");
+=======
+var ws = new WebSocket("ws://192.168.0.2:3012/");
+>>>>>>> ce7af2ab9bfdd2f5d30d17ffd00d8b91d555358c
 
 ws.onmessage = function (e) {
     addMessage(e.data);
