@@ -187,6 +187,10 @@ pub fn leave_lobby(id: ws::util::Token,
     pl.state = player::PlayerState::OutOfLobby;
 
     lob.list.remove_item(&id);
+
+    if(lob.list.len() == 0) {
+        lobbies.remove(&lob_id);
+    }
     communication.send_message(&id, &format!("Left lobby: {}.", lob_id));
 }
 
@@ -207,6 +211,10 @@ pub fn set_name(input: std::vec::Vec<&str>,
                 players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                 communication: &mut networking::Networking) {
 
+    if input.len() < 2 {
+        communication.send_message(&id, &format!("You need a name!"));
+        return;
+    }
     let p_name = input[1].to_string();
 
     let player: &mut player::Player = players.get_mut(&id).unwrap();
