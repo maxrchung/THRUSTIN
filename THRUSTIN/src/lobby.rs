@@ -12,7 +12,7 @@ pub struct Lobby {
     pw: std::string::String,
 
     //list of players
-    pub list: std::vec::Vec<player::Player>,
+    pub list: std::vec::Vec<ws::util::Token>,
 
     //number of players in room
     pub count: u32,
@@ -68,7 +68,7 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
     player.state = player::PlayerState::InLobby;
 
     let mut new_lobby = new(name.clone(), "".to_string(), max, lobby_id);
-    new_lobby.list.push((*player).clone());
+    new_lobby.list.push(id.clone());
     new_lobby.count += 1;
 
     lobbies.insert(lobby_id, new_lobby.clone());
@@ -86,6 +86,13 @@ fn delete_lobby(input: std::vec::Vec<&str>,
         },
         _ => ()
     };
+}
+
+pub fn display_thrusters(token: & ws::util::Token, communication: &mut networking::Networking, thrusters: & Vec<String>) {
+    communication.send_message(&token, &"Here are your thrusters:");
+    for (index, thruster) in thrusters.iter().enumerate() {
+        communication.send_message(&token, &format!("{}. {}", index, &thruster));
+    }
 }
 
 
@@ -110,7 +117,8 @@ pub fn start_game(input: std::vec::Vec<&str>,
 
     println!("4444");
 
-    for p in &mut lob.list {
+    for token in &mut lob.list {
+        let mut p = players.get_mut(&token).unwrap();
         p.state = player::PlayerState::Playing;
         let thruster1 = lob.deck.thrusters.pop().unwrap();
         p.deck.thrusters.push(thruster1.clone());
@@ -134,13 +142,10 @@ pub fn start_game(input: std::vec::Vec<&str>,
             "You are thrusting!"
         };
 
+        println!("{:#?}", &p.state);
+
         communication.send_message(&p.token, &format!("This is your thrustee: {}", &current_thrustee));
-        communication.send_message(&p.token, &format!("Here are your thrusters:"));
-        communication.send_message(&p.token, &format!("{}", &thruster1));
-        communication.send_message(&p.token, &format!("{}", &thruster2));
-        communication.send_message(&p.token, &format!("{}", &thruster3));
-        communication.send_message(&p.token, &format!("{}", &thruster4));
-        communication.send_message(&p.token, &format!("{}", &thruster5));
+        display_thrusters(&p.token, communication, &p.deck.thrusters);
         communication.send_message(&p.token, &format!("{}", instructions));
     }
 }
@@ -162,12 +167,19 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
                 let mut p: &mut player::Player = players.get_mut(&id).unwrap();
                 p.state = player::PlayerState::InLobby;
                 p.lobby = l.id;
-                l.list.push(p.clone());
+                l.list.push(p.token);
                 communication.send_message(&id, &format!("Joined: {:#?}", &lobby_id));
             }
         },
         _ => ()
     }
+}
+
+pub fn show_thrusters(id: ws::util::Token, 
+                      players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                      communication: &mut networking::Networking) {
+    let mut p = players.get_mut(&id).unwrap();
+    display_thrusters(&p.token, communication, &p.deck.thrusters);   
 }
 
 

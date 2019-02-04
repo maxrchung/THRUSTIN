@@ -36,6 +36,7 @@ fn handle_input(token: ws::util::Token,
     com = com[..com.len()].to_string();
 
     let player = players.get(&token).unwrap();
+    println!("{:#?}", &player.state);
     match &player.state {
         player::PlayerState::OutOfLobby => {
             match &*com {
@@ -66,7 +67,7 @@ fn handle_input(token: ws::util::Token,
                 },
                 _ => {
                     communication.send_message(&token, &format!("Invalid argument!"));
-                }
+                },
             }
         },
         player::PlayerState::Playing => {
@@ -75,6 +76,9 @@ fn handle_input(token: ws::util::Token,
                 },
                 "decide" => {
                 },
+                "thrusters" => {
+                    lobby::show_thrusters(token, players, communication);
+                }
                 _ => {
                     communication.send_message(&token, &format!("Invalid argument!"));
                 }
