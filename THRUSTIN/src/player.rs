@@ -1,3 +1,5 @@
+use crate::thrust;
+
 #[derive(Clone, Debug)]
 pub enum PlayerState {
     OutOfLobby,
@@ -16,16 +18,19 @@ pub struct Player {
     //host
     pub host: bool,
 
-    pub lobby: i32
+    pub lobby: i32,
+
+    pub deck: thrust::Deck,
         
 }
 
 
-pub fn new(name: std::string::String) -> Player{
+pub fn new(name: std::string::String) -> Player {
     Player {
         name: name,
         state: PlayerState::OutOfLobby,
         host: false,
-        lobby: -1
+        lobby: -1,
+        deck: thrust::Deck::new()
     }
 }

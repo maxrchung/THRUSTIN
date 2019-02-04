@@ -1,5 +1,6 @@
 use crate::player;
 use crate::networking;
+use crate::thrust;
 
 #[derive(Debug)]
 pub enum LobbyState {
@@ -31,6 +32,8 @@ pub struct Lobby {
     pub id: u32,
 
     //lobby
+
+    pub deck: thrust::Deck,
 }
 
 
@@ -38,15 +41,19 @@ pub fn new(name: std::string::String,
            pw: std::string::String, 
            max: u32, 
            id: u32) -> Lobby {
-    Lobby {
+    let mut lobby = Lobby {
         name: name,
         pw: pw,
         list: std::vec::Vec::with_capacity(max as usize),
         count: 0,
         max: max,
         state: LobbyState::Waiting,
-        id: id
-    }
+        id: id,
+        deck: thrust::Deck::default(),
+    };
+    lobby.deck.sort();
+    println!("{:#?}", lobby.deck);
+    lobby
 }
 
 
