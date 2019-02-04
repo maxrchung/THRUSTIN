@@ -67,7 +67,7 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
     new_lobby.list.push((*player).clone());
     new_lobby.count += 1;
 
-    lobbies.insert(name.clone(), new_lobby);
+    lobbies.insert(name.clone(), new_lobby.clone());
     communication.send_message(&id, &format!("Created lobby: {}", name));
 }
 
