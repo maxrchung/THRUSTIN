@@ -460,5 +460,5 @@ pub fn list_commands(id: ws::util::Token,
     communication.send_message(&id, &"'decide <#>' pick <#> card as THE THRUST");
     communication.send_message(&id, &"'thrusters' show your THRUSTS");
     communication.send_message(&id, &"'thrustee' show the current THRUSTEE");
-    communication.send_message(&id, &"'hellp' this is it chief");
+    communication.send_message(&id, &"'help' this is it chief");
 }
