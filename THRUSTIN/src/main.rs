@@ -100,7 +100,7 @@ fn handle_input(token: ws::util::Token,
                     lobby::show_thrusters(token, players, communication);
                 },
                 "thrustee" => {
-
+                    lobby::show_thrustee(token, lobbies, players, communication);
                 },
                 _ => {
                     communication.send_message(&token, &format!("Invalid argument!"));
