@@ -49,7 +49,7 @@ pub fn new(pw: std::string::String,
         max: max,
         id: id,
         state: lobby_state::waiting,
-        host: 0;
+        host: 0,
         deck: thrust::Deck::default(),
         current_thrustee: String::new(),
         current_thrusters: Vec::new(),
@@ -483,10 +483,15 @@ pub fn list_playing_commands(id: ws::util::Token,
 }
 
 
-pub fn search_player(player: &mut player::Player, lobby: &lobby::Lobby) -> usize {
+pub fn search_player(player: &mut player::Player, lobby: &Lobby) -> usize {
+/*
     for (i, pl) in lobby.list.iter().enumerate() {
-        if pl.token == player.token {
+        if pl == player.token {
             return i;
         }
     }
+
+    0
+     */
+    0
 }
