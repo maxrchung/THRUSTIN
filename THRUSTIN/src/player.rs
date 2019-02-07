@@ -17,7 +17,6 @@ pub struct Player {
     //player state
     pub state: PlayerState,
 
-    //host
     pub host: bool,
 
     pub lobby: i32,

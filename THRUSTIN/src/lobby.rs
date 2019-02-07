@@ -1,6 +1,7 @@
 use crate::player;
 use crate::networking;
 use crate::thrust;
+use std::collections::HashMap;
 use rand::{thread_rng, Rng};
 
 #[derive(Clone, PartialEq, Debug)]
@@ -26,6 +27,8 @@ pub struct Lobby {
     //lobby state
     pub state: lobby_state,
 
+    pub host: usize,
+
     pub deck: thrust::Deck,
 
     pub current_thrustee: String,
@@ -46,6 +49,7 @@ pub fn new(pw: std::string::String,
         max: max,
         id: id,
         state: lobby_state::waiting,
+        host: 0;
         deck: thrust::Deck::default(),
         current_thrustee: String::new(),
         current_thrusters: Vec::new(),
@@ -61,8 +65,8 @@ pub fn new(pw: std::string::String,
 
 pub fn make_lobby(input: std::vec::Vec<&str>,
                   id: ws::util::Token,
-                  lobbies: &mut std::collections::HashMap<i32, Lobby>,
-                  players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                  lobbies: &mut HashMap<i32, Lobby>,
+                  players: &mut HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
 
     let max = 64;
@@ -71,7 +75,6 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
     let player: &mut player::Player = players.get_mut(&id).unwrap();
 
     player.lobby = lobby_id.clone() as i32;
-    player.host = true;
     player.state = player::PlayerState::InLobby;
 
     let mut new_lobby = new("".to_string(), max, lobby_id);
@@ -83,8 +86,8 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
 
 pub fn decide(split: std::vec::Vec<&str>,
                  token: ws::util::Token,
-                 lobbies: &mut std::collections::HashMap<i32, Lobby>,
-                 players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                 lobbies: &mut HashMap<i32, Lobby>,
+                 players: &mut HashMap<ws::util::Token, player::Player>,
                  communication: &mut networking::Networking) {
 
     let player: &mut player::Player = players.get_mut(&token).unwrap();
@@ -156,8 +159,8 @@ pub fn decide(split: std::vec::Vec<&str>,
 
 pub fn handle_thrust(split: std::vec::Vec<&str>,
                  token: ws::util::Token,
-                 lobbies: &mut std::collections::HashMap<i32, Lobby>,
-                 players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                 lobbies: &mut HashMap<i32, Lobby>,
+                 players: &mut HashMap<ws::util::Token, player::Player>,
                  communication: &mut networking::Networking) {
 
     let player: &mut player::Player = players.get_mut(&token).unwrap();
@@ -209,7 +212,7 @@ pub fn handle_thrust(split: std::vec::Vec<&str>,
 // Users should not delete lobbies manually so this should be private
 fn delete_lobby(input: std::vec::Vec<&str>,
                     id: ws::util::Token,
-                    lobbies: &mut std::collections::HashMap<i32, Lobby>,
+                    lobbies: &mut HashMap<i32, Lobby>,
                     communication: &mut networking::Networking) {
     match input[1].parse::<i32>() {
         Ok(name) => {
@@ -231,8 +234,8 @@ pub fn display_thrusters(token: & ws::util::Token, communication: &mut networkin
 
 pub fn start_game(input: std::vec::Vec<&str>,
                   id: ws::util::Token,
-                  lobbies: &mut std::collections::HashMap<i32, Lobby>,
-                  players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                  lobbies: &mut HashMap<i32, Lobby>,
+                  players: &mut HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
     let mut p: &mut player::Player = players.get_mut(&id).unwrap();
 
@@ -285,8 +288,8 @@ pub fn start_game(input: std::vec::Vec<&str>,
 
 pub fn join_lobby(input: std::vec::Vec<&str>,
                   id: ws::util::Token,
-                  lobby: &mut std::collections::HashMap<i32, Lobby>,
-                  players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                  lobby: &mut HashMap<i32, Lobby>,
+                  players: &mut HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
 
     if input.len() < 2 {
@@ -341,7 +344,7 @@ pub fn join_lobby(input: std::vec::Vec<&str>,
 
 
 pub fn show_thrusters(id: ws::util::Token,
-                      players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                      players: &mut HashMap<ws::util::Token, player::Player>,
                       communication: &mut networking::Networking) {
     let mut p = players.get_mut(&id).unwrap();
     display_thrusters(&p.token, communication, &p.deck.thrusters);
@@ -349,8 +352,8 @@ pub fn show_thrusters(id: ws::util::Token,
 
 
 pub fn show_thrustee(id: ws::util::Token,
-                     lobbies: &mut std::collections::HashMap<i32, Lobby>,
-                     players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                     lobbies: &mut HashMap<i32, Lobby>,
+                     players: &mut HashMap<ws::util::Token, player::Player>,
                      communication: &mut networking::Networking) {
     let mut p: &mut player::Player = players.get_mut(&id).unwrap();
     let lob: &mut Lobby = lobbies.get_mut(&p.lobby).unwrap();
@@ -360,8 +363,8 @@ pub fn show_thrustee(id: ws::util::Token,
 
 
 pub fn leave_lobby(id: ws::util::Token,
-                   lobbies: &mut std::collections::HashMap<i32, Lobby>,
-                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                   lobbies: &mut HashMap<i32, Lobby>,
+                   players: &mut HashMap<ws::util::Token, player::Player>,
                    communication: &mut networking::Networking) {
 
     let pl = players.get_mut(&id).unwrap();
@@ -380,7 +383,7 @@ pub fn leave_lobby(id: ws::util::Token,
 
 
 pub fn list_lobby(id: ws::util::Token,
-                  lobbies: &mut std::collections::HashMap<i32, Lobby>,
+                  lobbies: &mut HashMap<i32, Lobby>,
                   communication: &mut networking::Networking) {
     for lob in lobbies.values() {
         let state = match &lob.state {
@@ -395,7 +398,7 @@ pub fn list_lobby(id: ws::util::Token,
 
 pub fn set_name(input: std::vec::Vec<&str>,
                 id: ws::util::Token,
-                players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                players: &mut HashMap<ws::util::Token, player::Player>,
                 communication: &mut networking::Networking) {
 
     if input.len() < 2 {
@@ -414,7 +417,7 @@ pub fn set_name(input: std::vec::Vec<&str>,
 
 
 pub fn list_all_players(id: ws::util::Token,
-                        players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                        players: &mut HashMap<ws::util::Token, player::Player>,
                         communication: &mut networking::Networking) {
 
     for pl in players.values() {
@@ -428,8 +431,8 @@ pub fn list_all_players(id: ws::util::Token,
 
 
 pub fn list_lobby_players(id: ws::util::Token,
-                   lobbies: &mut std::collections::HashMap<i32, Lobby>,
-                   players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+                   lobbies: &mut HashMap<i32, Lobby>,
+                   players: &mut HashMap<ws::util::Token, player::Player>,
                    communication: &mut networking::Networking) {
 
     let pl = players.get_mut(&id).unwrap();
@@ -479,3 +482,11 @@ pub fn list_playing_commands(id: ws::util::Token,
     communication.send_message(&id, &"'help' this is it chief");
 }
 
+
+pub fn search_player(player: &mut player::Player, lobby: &lobby::Lobby) -> usize {
+    for (i, pl) in lobby.list.iter().enumerate() {
+        if pl.token == player.token {
+            return i;
+        }
+    }
+}
