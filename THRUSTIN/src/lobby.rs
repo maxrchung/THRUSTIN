@@ -502,9 +502,8 @@ pub fn add_thrustee(input: std::vec::Vec<&str>,
                     lobby: &mut HashMap<i32, Lobby>,
                     players: &mut HashMap<ws::util::Token, player::Player>,
                     communication: &mut networking::Networking) {
-    communication.send_message(&id, &"Fuck off NIGGER");
+    communication.send_message(&id, &"Entered add_thrustee");
     communication.send_message(&id, &format!("{:?}", input));
-    // testing fuck off fuck off fuck off fuck off fuck off
     
     let player: &mut player::Player = players.get_mut(&id).unwrap();
     let mut new_thrustee = String::new();
