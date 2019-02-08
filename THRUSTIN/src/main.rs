@@ -65,6 +65,10 @@ fn handle_input(token: ws::util::Token,
                     lobby::list_out_commands(token, communication);
                 },
 
+                ".thrustee" => {
+                    lobby::add_thrustee(split, token, lobbies, players, communication)
+                },
+
                 _ => {
                     communication.send_message(&token, &"Invalid command.");
                     lobby::list_out_commands(token, communication);
