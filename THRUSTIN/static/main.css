@@ -6,3 +6,7 @@ body {
 p.from-self {
     color: black;
 }
+
+.container {
+    overflow-y: scroll;
+}

@@ -2,15 +2,47 @@ import React, { Component } from 'react';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import Form from 'react-bootstrap/Form'
+
+class Client extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+
+        };
+    }
+
+    handleKeyPress(event) {
+        if (event.key == "Enter") {
+            console.log("Pressed Enter!")
+        }
+    }
+    render() {
+        return(
+            <Container bsPrefix="container d-flex flex-column">
+                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse vulputate molestie posuere. Praesent ac nibh accumsan, facilisis sem laoreet, vestibulum metus. Nunc suscipit scelerisque turpis, quis pharetra lorem viverra a. Aenean dignissim bibendum turpis, sit amet molestie tortor fermentum in. Phasellus vestibulum mi eu dui ultrices accumsan. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed nec nulla at augue imperdiet interdum. Nullam gravida, erat et luctus interdum, ex libero semper orci, volutpat congue urna nunc quis lacus. Phasellus luctus sapien sit amet consequat euismod. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras lobortis sed ipsum at congue. Ut ac orci arcu. Duis in pulvinar purus. Suspendisse nec dui convallis sapien auctor fermentum. Pellentesque sed lorem quis lacus tempus consequat sit amet ac risus.
+Quisque tincidunt quam et quam malesuada, sed mollis risus vulputate. Cras urna quam, accumsan at magna vitae, posuere consectetur tortor. Curabitur nec bibendum sapien, eu porttitor sem. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum pretium viverra dui. Morbi semper tellus ullamcorper eros luctus, dignissim pharetra sem dictum. Sed commodo, purus sit amet posuere mattis, elit eros sollicitudin nisi, vehicula placerat velit lectus sit amet ligula. Nam sit amet nisl ex. Proin posuere arcu lectus, et mattis erat aliquet at. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque dapibus, libero vel aliquam efficitur, tortor nisl vehicula erat, in tempor nibh velit eget neque. Sed quis eros at enim hendrerit rhoncus ut id nisi.
+Fusce bibendum ligula ac pharetra commodo. Fusce luctus fringilla nunc, vitae accumsan enim tincidunt vel. Curabitur vel justo posuere, pulvinar urna id, efficitur nisi. Curabitur justo ligula, vehicula et euismod et, vehicula eu quam. Nullam nec gravida ipsum. Mauris non ante odio. Donec euismod elit ut gravida convallis. Curabitur porttitor scelerisque diam sed convallis. Donec euismod efficitur magna consequat aliquam.
+Curabitur aliquam, nisi sed egestas finibus, est est dapibus nisl, efficitur dictum ipsum lacus eget libero. Aenean leo nulla, eleifend ac varius id, elementum placerat nibh. Morbi iaculis malesuada lectus et fringilla. Etiam laoreet dignissim erat, quis maximus nisl sagittis non. Quisque posuere ornare auctor. Curabitur at velit pulvinar, eleifend tellus sit amet, malesuada sapien. Nulla a libero eleifend, semper justo et, vulputate diam. Mauris molestie venenatis arcu, eu aliquam ex congue sed. Aliquam dui arcu, porta sit amet nisl eget, semper bibendum risus. Fusce cursus massa id nisi posuere molestie. Quisque neque urna, pharetra eget lacinia molestie, facilisis a lacus. Nulla eget dictum ante.
+Phasellus finibus, purus ultrices lacinia venenatis, magna mauris varius lorem, ornare sodales ex neque a erat. Vivamus mollis euismod lectus sed eleifend. Vivamus lacinia nisl ac risus dictum commodo. In dictum sodales consequat. Aenean rhoncus viverra diam. Aliquam auctor dui sed hendrerit egestas. Nunc tincidunt lectus sed odio ullamcorper, eget vehicula ex accumsan. Fusce dignissim ligula at elit dapibus, quis semper neque ornare. Integer laoreet urna lacus, sit amet tempus ex dapibus vel. Mauris sed libero in libero vehicula sodales. Donec ac metus id nunc venenatis lacinia. Ut sodales metus magna, eget maximus leo molestie in. Praesent vitae sollicitudin magna. Quisque nec semper ante.
+Nam sed bibendum risus, vel scelerisque ante. Morbi erat tortor, lacinia eu gravida a, ornare id ex. Praesent in tincidunt mauris. Praesent sagittis justo sagittis auctor convallis. Aliquam vel accumsan enim, eu tincidunt erat. Phasellus aliquet dolor diam, eu molestie orci malesuada vitae. Pellentesque vel ex scelerisque, tristique lacus eget, cursus purus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin vel ex non lectus gravida bibendum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer egestas libero a metus rutrum imperdiet. Vestibulum fermentum quam ac massa congue, id facilisis odio volutpat.
+Cras aliquam ut ante id semper. Ut vulputate bibendum condimentum. Quisque ac est imperdiet, viverra elit sed, sollicitudin dui. In elementum ipsum augue, commodo accumsan quam interdum ac. Phasellus eget luctus sapien, in consectetur felis. Suspendisse vitae sem finibus, egestas purus ut, venenatis odio. In hac habitasse platea dictumst. Suspendisse tincidunt varius orci in efficitur. In hac habitasse platea dictumst.
+Duis placerat sollicitudin arcu nec dictum. Vestibulum blandit massa vitae nisi dignissim, vel fringilla sapien auctor. Maecenas aliquet sit amet dolor eu blandit. Ut at leo ex. Donec ac arcu nec risus malesuada imperdiet. Nulla facilisi. Morbi vestibulum eget justo vel mollis. Donec scelerisque risus dapibus felis fringilla vulputate. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Curabitur molestie consequat ex, in vulputate turpis elementum non. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur ut nibh at ipsum auctor ultricies ut nec erat. Pellentesque nec tortor magna. Maecenas non molestie turpis.
+Aenean velit massa, tempus vitae urna non, bibendum tempor nisl. Sed luctus turpis nibh, in laoreet nulla molestie eget. Sed tellus justo, semper non fermentum quis, sollicitudin nec libero. Integer a vehicula ipsum. Nulla a luctus purus, vel cursus risus. Aenean non consectetur nisl, sit amet tempor velit. Sed nec dapibus felis. Sed commodo eros lacus. Quisque ac consectetur lorem. Aenean ac ante et leo eleifend viverra. Ut semper tempor rhoncus. Integer bibendum fermentum ante, ac dictum magna imperdiet vitae. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus efficitur urna risus. In hac habitasse platea dictumst.
+Morbi in malesuada mauris. Vestibulum efficitur rhoncus aliquam. Donec in felis elementum eros ultrices consectetur pellentesque eu sem. Ut bibendum neque augue, non sodales mauris blandit semper. Nullam sit amet ipsum nunc. Suspendisse mattis mollis interdum. Donec sodales libero non eros molestie, quis congue mi fringilla. Phasellus suscipit porta ultrices. Integer sed mauris quam. Donec a lobortis metus. Sed vehicula, dui eu finibus pellentesque, turpis nunc porttitor purus, ac varius est sapien sit amet dui. Integer in diam at lacus vestibulum aliquet. Integer nisl mi, dignissim id malesuada a, condimentum ut ligula. Fusce suscipit risus sit amet lacus rutrum sodales.
+Pellentesque posuere ante vel interdum efficitur. Praesent ante risus, malesuada in vehicula ac, interdum ut ipsum. Mauris congue sapien justo, in convallis lectus auctor sed. Donec ornare accumsan ligula at congue. Vestibulum laoreet accumsan mi, sed pretium orci dictum nec. In hac habitasse platea dictumst. Cras in neque nec eros egestas elementum eu nec lacus. Vivamus ut sollicitudin massa, ac pulvinar nisi. Curabitur in ante leo.
+In malesuada a urna id faucibus. Donec porttitor gravida fermentum. Aenean dictum leo eu nisl posuere, id varius augue bibendum. Phasellus eget erat eu magna tincidunt consequat sed sollicitudin nulla. Nulla eu convallis quam. Duis cursus dolor sit amet sodales hendrerit. Duis tempor ultrices ex ultricies posuere. Phasellus odio ipsum, tincidunt eget ultrices id, dignissim nec enim. Aenean ac ipsum ac purus posuere interdum. Morbi non turpis finibus, rhoncus erat a, sollicitudin odio. Sed neque dolor, ornare eu eleifend a, tincidunt lobortis est. Nam id arcu urna. Cras dapibus mi diam, quis porta lacus finibus id.
+Curabitur vel erat posuere, aliquam neque nec, ultrices dui. Fusce vel vestibulum justo. Sed consequat neque in metus sollicitudin tincidunt. In consequat ipsum sed ligula hendrerit aliquet. Pellentesque id venenatis sapien, eu efficitur sapien. Nam cursus tincidunt urna venenatis placerat. Suspendisse porttitor felis sit amet felis pretium, nec imperdiet risus vehicula. Aliquam dictum suscipit rutrum. Ut placerat tincidunt est sit amet molestie. Proin dignissim sapien ac scelerisque feugiat. Mauris non felis sit amet augue pretium eleifend. Nulla facilisi. Suspendisse enim ipsum, commodo eget accumsan sed, porta ac lectus. Aenean quis tortor magna. Integer dapibus dui sit amet eros congue sagittis. Vivamus hendrerit turpis tempus, molestie ipsum ac, finibus dolor.
+Nam pulvinar euismod dolor in gravida. Donec vehicula purus quis dolor sagittis pellentesque. Aenean blandit enim eu tincidunt elementum. Donec ornare sem a neque iaculis pretium. In hac habitasse platea dictumst. In laoreet pharetra congue. Aenean et augue sit amet dui tincidunt tempus. In vehicula sed leo sed condimentum.
+Proin vitae mi eu lectus maximus scelerisque eget euismod risus. Aliquam elementum pretium hendrerit. Curabitur massa quam, interdum hendrerit feugiat rhoncus, accumsan a quam. Vivamus suscipit sem eget arcu elementum gravida. Aenean blandit ex non turpis sollicitudin iaculis et eget augue. In tempor bibendum maximus. Aenean fringilla nulla ac est pellentesque eleifend. Nullam facilisis congue nisi non aliquet. Sed vel dui cursus, sollicitudin magna ut, tempus nunc. Nulla accumsan rhoncus quam. Suspendisse eleifend ex a ex euismod, ac rutrum purus fringilla. Suspendisse dignissim dui urna, sit amet eleifend turpis elementum ac. Duis eget sollicitudin libero. Cras eget vehicula ante, vel aliquam ante.</div>
+                <Form.Control type="text" placeholder="Enter command..." onKeyPress={this.handleKeyPress}></Form.Control>
+            </Container>
+        );
+    }
+}
 
 
 ReactDOM.render(
-    <Container>
-        <Row>
-            <Col>
-                Hello, world!
-            </Col>
-        </Row>
-    </Container>,
+    <Client />,
     document.getElementById('test')
 );
