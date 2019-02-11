@@ -1,0 +1,1 @@
+npx babel --watch jsx --out-dir ../static --presets @babel/preset-react

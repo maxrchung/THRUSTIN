@@ -61,7 +61,10 @@ impl Default for Deck {
 		"the taste of dog meat".to_string(),
 		"blowing up disability centers".to_string(),
 		"sharpening the tip of my dick".to_string(),
-		"the pain of a thousand slaves".to_string()
+		"the pain of a thousand slaves".to_string(),
+		"the feel when you go take a piss and lift up the seat butt then you want to take a dump so you put down the seat and poop".to_string(),
+		"come on and slam".to_string(),
+		"welcome to the jam".to_string(),
 		],
 
 		 thrustees: 

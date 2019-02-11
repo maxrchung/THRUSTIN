@@ -2,20 +2,33 @@
 <html lang=en>
 
 <head>
+    <title>THRUSTIN</title>
     <meta charset=UTF-8>
     <meta name=viewport content="width=device-width,initial-scale=1">
-    <title>THRUSTIN</title>
-    <link rel="stylesheet" href="/static/main.css">
     <link href="https://fonts.googleapis.com/css?family=Cousine" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
 </head>
 
 <body>
-    <input id="command" />
+    <!-- <input id="command" />
     <button id="send">Send</button>
     <button id="clear">Clear</button>
     <div id="messages" style="color: white">
-    </div>
-    <script type="text/javascript" src="/static/main.js"></script>
+    </div> -->
+
+    <div id="test"></div>
+
+
+    <!-- <script type="text/javascript" src="/static/main.js"></script> -->
+
+    <!-- Load React. -->
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js" crossorigin></script>
+
+    <!-- Load our React component. -->
+    <script src="/static/bundle.js"></script>
 </body>
 
 </html>
