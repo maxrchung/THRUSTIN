@@ -222,6 +222,12 @@ fn delete_lobby(input: std::vec::Vec<&str>,
     };
 }
 
+
+fn is_host(player: &player::Player, lobby: &Lobby) -> bool{
+    lobby.host == search_player(&player, &lobby)
+}
+
+
 pub fn display_thrusters(token: & ws::util::Token, communication: &mut networking::Networking, thrusters: & Vec<String>) {
     communication.send_message(&token, &"Here are your THRUSTERS:");
     for (index, thruster) in thrusters.iter().enumerate() {
@@ -238,14 +244,14 @@ pub fn start_game(input: std::vec::Vec<&str>,
                   players: &mut HashMap<ws::util::Token, player::Player>,
                   communication: &mut networking::Networking) {
     let mut p: &mut player::Player = players.get_mut(&id).unwrap();
-
-    if(p.host != true) {
+    let lob: &mut Lobby = lobbies.get_mut(&p.lobby ).unwrap();
+    if !is_host(&p, &lob) {
         communication.send_message(&p.token, &format!("Only host can start game!"));
         return;
     }
 
     p.is_thrustee = true;
-    let lob: &mut Lobby = lobbies.get_mut(&p.lobby ).unwrap();
+
     lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
     lob.state = lobby_state::playing;
 
@@ -442,7 +448,7 @@ pub fn list_lobby_players(id: ws::util::Token,
     for pl_tok in &lob.list {
         let play = players.get(&pl_tok).unwrap();
         let name = &play.name;
-        if play.host == true {
+        if is_host(&play, &lob) {
             communication.send_message(&id, &format!("{}: host", name));
         } else {
             communication.send_message(&id, &format!("{}", name));
@@ -484,17 +490,14 @@ pub fn list_playing_commands(id: ws::util::Token,
 }
 
 
-pub fn search_player(player: &mut player::Player, lobby: &Lobby) -> usize {
-/*
+fn search_player(player: &player::Player, lobby: &Lobby) -> usize {
     for (i, pl) in lobby.list.iter().enumerate() {
-        if pl == player.token {
+        if pl == &player.token {
             return i;
         }
     }
 
-v    0
-     */
-    0
+    lobby.list.len()
 }
 
 pub fn add_thrustee(input: std::vec::Vec<&str>,
