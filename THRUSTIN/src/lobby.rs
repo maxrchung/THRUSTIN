@@ -459,6 +459,7 @@ pub fn list_out_commands(id: ws::util::Token,
     communication.send_message(&id, &"'list' list lobbies");
     communication.send_message(&id, &"'name <name>' change your name to <name>");
     communication.send_message(&id, &"'who' list everyone playing");
+    communication.send_message(&id, &".thrustee \"Some thrustee\" to add thrustee");
     communication.send_message(&id, &"'help' this is it chief");
 }
 
@@ -494,4 +495,23 @@ pub fn search_player(player: &mut player::Player, lobby: &Lobby) -> usize {
 v    0
      */
     0
+}
+
+pub fn add_thrustee(input: std::vec::Vec<&str>,
+                    id: ws::util::Token,
+                    lobby: &mut HashMap<i32, Lobby>,
+                    players: &mut HashMap<ws::util::Token, player::Player>,
+                    communication: &mut networking::Networking) {
+    communication.send_message(&id, &"Entered add_thrustee");
+    communication.send_message(&id, &format!("{:?}", input));
+    
+    let player: &mut player::Player = players.get_mut(&id).unwrap();
+    let mut new_thrustee = String::new();
+    for i in 1..input.len() {
+        new_thrustee.push_str(input[i as usize]);
+        new_thrustee.push_str(" ");
+    }
+    new_thrustee.pop();
+
+    communication.send_message(&id, &format!("{:?}", &new_thrustee));
 }

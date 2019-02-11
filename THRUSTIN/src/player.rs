@@ -24,6 +24,8 @@ pub struct Player {
     pub deck: thrust::Deck,
 
     pub is_thrustee: bool,
+
+    pub personal_deck: thrust::Deck,
         
 }
 
@@ -37,5 +39,6 @@ pub fn new(token: &ws::util::Token) -> Player {
         lobby: -1,
         deck: thrust::Deck::new(),
         is_thrustee: false,
+        personal_deck: thrust::Deck::new(),
     }
 }
