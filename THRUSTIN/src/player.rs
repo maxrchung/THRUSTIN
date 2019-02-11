@@ -1,6 +1,6 @@
 use crate::thrust;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum PlayerState {
     OutOfLobby,
     InLobby,
