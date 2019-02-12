@@ -1,12 +1,13 @@
 body {
     font-family: 'Cousine', monospace;
-    background: lightcoral;
+    /* background: lightcoral; */
+    max-height: 100%;
+}
+
+html {
+    height: 100%;
 }
 
 p.from-self {
     color: black;
-}
-
-.container {
-    overflow-y: scroll;
 }
