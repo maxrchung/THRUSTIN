@@ -41,7 +41,8 @@ pub struct Lobby {
 
 pub fn new(pw: std::string::String,
            max: u32,
-           id: i32) -> Lobby {
+           id: i32,
+           pers_deck: &mut thrust::Deck) -> Lobby {
 
     let mut lobby = Lobby {
         pw: pw,
@@ -56,6 +57,8 @@ pub fn new(pw: std::string::String,
         thrusted_players: Vec::new()
     };
 
+    lobby.deck.thrustees.append(&mut pers_deck.thrustees.clone()); //addin "personal decks" to lobby(default) deck. .
+    lobby.deck.thrusters.append(&mut pers_deck.thrusters.clone());
     lobby.deck.sort();
     thread_rng().shuffle(&mut lobby.deck.thrusters);
     thread_rng().shuffle(&mut lobby.deck.thrustees);
@@ -77,8 +80,7 @@ pub fn make_lobby(input: std::vec::Vec<&str>,
     player.lobby = lobby_id.clone() as i32;
     player.state = player::PlayerState::InLobby;
 
-    let mut new_lobby = new("".to_string(), max, lobby_id);
-    new_lobby.list.push(id.clone());
+    let mut new_lobby = new("".to_string(), max, lobby_id, &mut player.personal_deck);
 
     lobbies.insert(lobby_id, new_lobby.clone());
     communication.send_message(&id, &format!("Created lobby: {}", lobby_id));
@@ -459,6 +461,7 @@ pub fn list_out_commands(id: ws::util::Token,
     communication.send_message(&id, &"'list' list lobbies");
     communication.send_message(&id, &"'name <name>' change your name to <name>");
     communication.send_message(&id, &"'who' list everyone playing");
+    communication.send_message(&id, &".thruster \"Some thruster\" to add thruster");
     communication.send_message(&id, &".thrustee \"Some thrustee\" to add thrustee");
     communication.send_message(&id, &"'help' this is it chief");
 }
@@ -497,21 +500,44 @@ pub fn search_player(player: &mut player::Player, lobby: &Lobby) -> usize {
     0
 }
 
-pub fn add_thrustee(input: std::vec::Vec<&str>,
+pub fn add_item(input: &std::vec::Vec<&str>,
                     id: ws::util::Token,
                     lobby: &mut HashMap<i32, Lobby>,
                     players: &mut HashMap<ws::util::Token, player::Player>,
-                    communication: &mut networking::Networking) {
-    communication.send_message(&id, &"Entered add_thrustee");
-    communication.send_message(&id, &format!("{:?}", input));
+                    communication: &mut networking::Networking,
+                    thruster: bool) -> bool {
+    if input.len() < 2 {
+        communication.send_message(&id, &"Thruster/thrustee required!");
+        return true;
+    }
     
     let player: &mut player::Player = players.get_mut(&id).unwrap();
-    let mut new_thrustee = String::new();
+    let mut new_item = String::new();
     for i in 1..input.len() {
-        new_thrustee.push_str(input[i as usize]);
-        new_thrustee.push_str(" ");
+        new_item.push_str(input[i as usize]);
+        new_item.push_str(" ");
     }
-    new_thrustee.pop();
+    new_item.pop();
+    if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap() || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap() {
+        communication.send_message(&id, &"Please surround the thruster/thrustee with quotes.");
+        return true;
+    }
+    //communication.send_message(&id, &format!("new item : {:?}", new_item));
+    new_item.pop();
+    new_item.remove(0);
 
-    communication.send_message(&id, &format!("{:?}", &new_thrustee));
+    if !thruster && !new_item.contains("_") {
+        return false;
+    }
+
+    if thruster {
+        player.personal_deck.add_thruster(&new_item);
+    }
+    else {
+        player.personal_deck.add_thrustee(&new_item);
+    }
+
+    //communication.send_message(&id, &format!("updated thrustees: {:?}", &player.personal_deck.thrustees));
+    //communication.send_message(&id, &format!("updated thrusters: {:?}", &player.personal_deck.thrusters));
+    true
 }

@@ -103,12 +103,12 @@ impl Deck {
 		}
 	}
 
-	fn add_thruster(&mut self, thruster: & std::string::String) {
+	pub fn add_thruster(&mut self, thruster: & std::string::String) {
 		self.thrusters.push(thruster.to_string());
 		self.sort_thrusters();
 	}
 
-	fn add_thrustee(&mut self, thrustee: & std::string::String) {
+	pub fn add_thrustee(&mut self, thrustee: & std::string::String) {
 		self.thrustees.push(thrustee.to_string());
 		self.sort_thrustees();
 	}
