@@ -1,6 +1,6 @@
 use crate::thrust;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum PlayerState {
     OutOfLobby,
     InLobby,
@@ -16,8 +16,6 @@ pub struct Player {
 
     //player state
     pub state: PlayerState,
-
-    pub host: bool,
 
     pub lobby: i32,
 
@@ -35,7 +33,6 @@ pub fn new(token: &ws::util::Token) -> Player {
         token: token.clone(),
         name: token.0.to_string(),
         state: PlayerState::OutOfLobby,
-        host: false,
         lobby: -1,
         deck: thrust::Deck::new(),
         is_thrustee: false,
