@@ -7,7 +7,7 @@ import Form from 'react-bootstrap/Form'
 function Message(props) {
     return (
         <p>
-            <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br></br>
+            <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br/>
             {props.content}
         </p>
     );
@@ -35,6 +35,7 @@ class Client extends React.Component {
         this.setState({
             messages: this.state.messages.concat(<Message key={this.updateMessageCounter} from="THRUSTY" content={e.data} />)
         });
+        this.scrollToDummy();
     }
 
     handleKeyDown(e) {
@@ -52,11 +53,19 @@ class Client extends React.Component {
         return counter;
     }
 
+    scrollToDummy() {
+        this.dummy.scrollIntoView({ behavior: "smooth"});
+    }
+
     render() {
         return (
-            <Container>
-                {this.state.messages}
-                <Form.Control type="text" placeholder="Type command..." onKeyDown={this.handleKeyDown}></Form.Control>
+            <Container bsPrefix="container">
+                <div id="messages">
+                    {this.state.messages}
+                    <div ref={ (element) => { this.dummy = element; }}>
+                    </div>
+                </div>
+                <Form.Control id="message" type="text" placeholder="Type command..." onKeyDown={this.handleKeyDown}></Form.Control>
             </Container>
         );
     }
