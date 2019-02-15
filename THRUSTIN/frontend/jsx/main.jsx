@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
-import Container from 'react-bootstrap/Container'
-import Form from 'react-bootstrap/Form'
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import SanitizedHTML from "react-sanitized-html";
 
 function Message(props) {
     return (
         <p>
             <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
-            {props.content}
+            <SanitizedHTML allowedTags={["br"]} html={props.content} />
         </p>
     );
 }
@@ -76,10 +77,9 @@ class Client extends React.Component {
             <Container>
                 <div id="messages" onScroll={this.handleScroll}>
                     {this.state.messages}
-                    <div ref={el => this.dummy = el}>
-                    </div>
+                    <div ref={el => this.dummy = el} />
                 </div>
-                <Form.Control type="text" placeholder="Enter command..." onKeyDown={this.handleKeyDown}></Form.Control>
+                <Form.Control type="text" placeholder="Enter command..." onKeyDown={this.handleKeyDown} />
             </Container>
         );
     }
