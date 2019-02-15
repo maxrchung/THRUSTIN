@@ -2,7 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-  entry: "./jsx/test.jsx",
+  entry: "./jsx/main.jsx",
   mode: "development",
   module: {
     rules: [
