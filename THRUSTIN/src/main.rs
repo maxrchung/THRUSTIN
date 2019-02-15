@@ -32,17 +32,17 @@ fn handle_input(token: ws::util::Token,
                 players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
                 communication: &mut networking::Networking) {
 
-    // input.0.pop();
     let split: std::vec::Vec<&str> = input.split(' ').collect();
     let mut com = split[0].to_string();
     com = com[..com.len()].to_string();
+    let isThruster: bool = true;
 
     let player = players.get(&token).unwrap();
     match &player.state {
         player::PlayerState::OutOfLobby => {
             match &*com {
                 "make" => {
-                    lobby::make_lobby(split, token, lobbies, players, communication)
+                    lobby::Lobby::make_lobby(split, token, lobbies, players, communication)
                 },
 
                 "join" => {
@@ -65,6 +65,17 @@ fn handle_input(token: ws::util::Token,
                     lobby::list_out_commands(token, communication);
                 },
 
+                ".thruster" => {
+                    lobby::add_item(&split, token, lobbies, players, communication, isThruster);
+                },
+
+                ".thrustee" => {
+                    let valid = lobby::add_item(&split, token, lobbies, players, communication, !isThruster);
+                    if !valid {
+                        communication.send_message(&token, &"Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
+                    }
+                },
+
                 _ => {
                     communication.send_message(&token, &"Invalid command.");
                     lobby::list_out_commands(token, communication);
@@ -72,17 +83,22 @@ fn handle_input(token: ws::util::Token,
             }
         },
         player::PlayerState::InLobby => {
+            let mut lobby = lobbies.get_mut(&player.lobby).unwrap();
+
             match &*com {
                 "start" => {
-                    lobby::start_game(split, token, lobbies, players, communication)
+                    lobby.start_game(split, token, players, communication);
                 },
 
                 "leave" => {
-                    lobby::leave_lobby(token, lobbies, players, communication)
+                    if(lobby.leave_lobby(token, players, communication)) {
+                        let mut id = lobby.id;
+                        lobbies.remove(&id);
+                    }
                 },
 
                 "who" => {
-                    lobby::list_lobby_players(token, lobbies, players, communication);
+                    lobby.list_lobby_players(token, players, communication);
                 },
                 
                 "help" => {
