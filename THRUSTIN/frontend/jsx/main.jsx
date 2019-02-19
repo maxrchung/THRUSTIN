@@ -18,11 +18,9 @@ class Client extends React.Component {
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
-        this.handleScroll = this.handleScroll.bind(this);
         this.updateMessageCounter = this.updateMessageCounter.bind(this);
 
         this.state = {
-            scrolledToBottom: true,
             messageCounter: 0,
             messages: [
                 <Message key={this.updateMessageCounter} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Type 'help' for help (obviously)." />,
@@ -40,16 +38,7 @@ class Client extends React.Component {
             messages: this.state.messages.concat(<Message key={this.updateMessageCounter} from="THRUSTY" content={e.data} />)
         });
 
-        if (this.state.scrolledToBottom) {
-            this.scrollToDummy();
-        }
-    }
-
-    handleScroll(e) {
-        const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
-        this.setState({
-            scrolledToBottom: bottom ? true : false
-        });
+        this.scrollToDummy();
     }
 
     handleKeyDown(e) {
@@ -75,7 +64,7 @@ class Client extends React.Component {
     render() {
         return (
             <Container>
-                <div id="messages" onScroll={this.handleScroll}>
+                <div id="messages">
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>
