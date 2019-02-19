@@ -17,7 +17,7 @@ fn main() {
         let (token, message) = communication.read_message();
 
         // Add to players list if not already
-        if let None = players.get(&token)  {
+        if let None = players.get(&token) {
             players.insert(token.clone(), player::new(&token));
         }
 
@@ -77,7 +77,6 @@ fn handle_input(token: ws::util::Token,
                 },
 
                 _ => {
-                    communication.send_message(&token, &"Invalid command.");
                     lobby::list_out_commands(token, communication);
                 }
             }
@@ -106,7 +105,6 @@ fn handle_input(token: ws::util::Token,
                 },
 
                 _ => {
-                    communication.send_message(&token, &"Invalid command.");
                     lobby::list_in_commands(token, communication);
                 }
             }
@@ -135,7 +133,6 @@ fn handle_input(token: ws::util::Token,
                 },
 
                 _ => {
-                    communication.send_message(&token, &"Invalid command.");
                     lobby::list_playing_commands(token, communication);
                 }
             }

@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::{env, io, thread};
 use std::path::{Path, PathBuf};
+use std::vec::Vec;
 use std::sync::{Arc, Mutex};
 use rocket::response::NamedFile;
 
@@ -105,9 +106,16 @@ impl Networking {
     }
 
     // Send message to client with the corresponding token
-    pub fn send_message(&mut self, token: &Token , message: &str) {
+    pub fn send_message(&mut self, token: &Token, message: &str) {
         let connections_lock = self.connections.lock().unwrap();
         let sender = connections_lock.get(&token).unwrap();
+        sender.send(message).unwrap();
+    }
+
+    pub fn send_messages(&mut self, token: &Token, messages: Vec<String>) {
+        let connections_lock = self.connections.lock().unwrap();
+        let sender = connections_lock.get(&token).unwrap();
+        let message = messages.join("<br/>");
         sender.send(message).unwrap();
     }
 }

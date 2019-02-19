@@ -341,11 +341,11 @@ fn delete_lobby(input: std::vec::Vec<&str>,
 
 
 pub fn display_thrusters(token: & ws::util::Token, communication: &mut networking::Networking, thrusters: & Vec<String>) {
-    communication.send_message(&token, &"Here are your THRUSTERS:");
+    let mut messages = vec!["Here are your THRUSTERS:".to_string()];
     for (index, thruster) in thrusters.iter().enumerate() {
-        communication.send_message(&token, &format!("{}. {}", index, &thruster));
+        messages.push(format!("{}. {}", &index, &thruster).to_string());
     }
-    communication.send_message(&token, "");
+    communication.send_messages(&token, messages);
 
 }
 
@@ -497,35 +497,37 @@ pub fn list_all_players(id: ws::util::Token,
 
 pub fn list_out_commands(id: ws::util::Token,
                      communication: &mut networking::Networking) {
-
-    communication.send_message(&id, &"'make' make a lobby");
-    communication.send_message(&id, &"'join <#>' join lobby <#>");
-    communication.send_message(&id, &"'list' list lobbies");
-    communication.send_message(&id, &"'name <name>' change your name to <name>");
-    communication.send_message(&id, &"'who' list everyone playing");
-    communication.send_message(&id, &".thruster \"Some thruster\" to add thruster");
-    communication.send_message(&id, &".thrustee \"Some thrustee\" to add thrustee");
-    communication.send_message(&id, &"'help' this is it chief");
+    communication.send_messages(&id, vec!["Invalid command.".to_string(),
+                                          "'.make' make a lobby".to_string(),
+                                          "'.join [#]' join lobby [#]".to_string(),
+                                          "'.list' list lobbies".to_string(),
+                                          "'.name [name]' change your name to [name]".to_string(),
+                                          "'.who' list everyone playing".to_string(),
+                                          "'.thruster' \"Some thruster\" to add thruster".to_string(),
+                                          "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
+                                          "'.help' this is it chief".to_string()]);
 }
 
 pub fn list_in_commands(id: ws::util::Token,
                      communication: &mut networking::Networking) {
-    communication.send_message(&id, &"Valid commands:");
-    communication.send_message(&id, &"'start' start game");
-    communication.send_message(&id, &"'leave' leave lobby");
-    communication.send_message(&id, &"'who' list everyone in lobby");
-    communication.send_message(&id, &"'help' this is it chief");
+    communication.send_messages(&id, vec!["Invalid command.".to_string(),
+                                          "Valid commands:".to_string(),
+                                          "'.start' start game".to_string(),
+                                          "'.leave' leave lobby".to_string(),
+                                          "'.who' list everyone in lobby".to_string(),
+                                          "'.help' this is it chief".to_string()]);
 }
 
 
 pub fn list_playing_commands(id: ws::util::Token,
                      communication: &mut networking::Networking) {
-    communication.send_message(&id, &"Valid commands:");
-    communication.send_message(&id, &"'thrust <#>' THRUST your <#> card");
-    communication.send_message(&id, &"'decide <#>' pick <#> card as THE THRUST");
-    communication.send_message(&id, &"'thrusters' show your THRUSTS");
-    communication.send_message(&id, &"'thrustee' show the current THRUSTEE");
-    communication.send_message(&id, &"'help' this is it chief");
+    communication.send_messages(&id, vec!["Invalid command.".to_string(),
+                                          "Valid commands:".to_string(),
+                                          "'.thrust [#]' THRUST your [#] card".to_string(),
+                                          "'.decide [#]' pick [#] card as THE THRUST".to_string(),
+                                          "'.thrusters' show your THRUSTS".to_string(),
+                                          "'.thrustee' show the current THRUSTEE".to_string(),
+                                          "'.help' this is it chief".to_string()]);
 }
 
 
