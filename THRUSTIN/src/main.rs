@@ -46,7 +46,7 @@ fn handle_input(
     let split: std::vec::Vec<&str> = input.split(' ').collect();
     let mut com = split[0].to_string();
     com = com[..com.len()].to_string();
-    let isThruster: bool = true;
+    let is_thruster: bool = true;
 
     let player = players.get(&token).unwrap();
     match &player.state {
@@ -65,14 +65,14 @@ fn handle_input(
 
             ".thrustee" => {
                 let valid =
-                    lobby::add_item(&split, token, lobbies, players, communication, !isThruster);
+                    lobby::add_item(&split, token, lobbies, players, communication, !is_thruster);
                 if !valid {
                     communication.send_message(&token, &"Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
                 }
             }
 
             ".thruster" => {
-                lobby::add_item(&split, token, lobbies, players, communication, isThruster);
+                lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
             }
 
             ".who" => {
@@ -84,7 +84,7 @@ fn handle_input(
             }
         },
         player::PlayerState::InLobby => {
-            let mut lobby = lobbies.get_mut(&player.lobby).unwrap();
+            let lobby = lobbies.get_mut(&player.lobby).unwrap();
 
             match &*com {
                 ".help" => {
@@ -92,8 +92,8 @@ fn handle_input(
                 }
 
                 ".leave" => {
-                    if (lobby.leave_lobby(token, players, communication)) {
-                        let mut id = lobby.id;
+                    if lobby.leave_lobby(token, players, communication) {
+                        let id = lobby.id;
                         lobbies.remove(&id);
                     }
                 }

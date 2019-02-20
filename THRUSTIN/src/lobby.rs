@@ -132,7 +132,7 @@ impl Lobby {
             let thruster5 = self.deck.thrusters.pop().unwrap();
             p.deck.thrusters.push(thruster5.clone());
 
-            let mut instructions = if p.is_thrustee {
+            let instructions = if p.is_thrustee {
                 next = p.name.clone();
                 "You are the THRUSTEE."
             } else {
@@ -177,7 +177,7 @@ impl Lobby {
         self.list.remove_item(&id);
 
         communication.send_message(&id, &format!("Left lobby: {}.", lob_id));
-        if (self.list.len() == 0) {
+        if self.list.len() == 0 {
             true
         } else {
             false
@@ -191,7 +191,6 @@ impl Lobby {
         communication: &mut networking::Networking,
     ) {
         let pl = players.get_mut(&id).unwrap();
-        let lob_id = pl.lobby;
 
         for pl_tok in &self.list {
             let play = players.get(&pl_tok).unwrap();
@@ -408,7 +407,7 @@ pub fn join_lobby(
 
     match input[1].to_string().parse::<i32>() {
         Ok(lobby_id) => {
-            let mut lob = lobby.get_mut(&lobby_id);
+            let lob = lobby.get_mut(&lobby_id);
 
             if let None = lob {
                 communication.send_message(&id, &format!("Lobby does not exist."));
@@ -554,7 +553,6 @@ pub fn list_out_commands(id: Token, communication: &mut networking::Networking) 
     communication.send_messages(
         &id,
         vec![
-            "Invalid command.".to_string(),
             "Valid commands:".to_string(),
             "'.help' this is it chief".to_string(),
             "'.join [#]' join lobby [#]".to_string(),
@@ -572,7 +570,6 @@ pub fn list_in_commands(id: Token, communication: &mut networking::Networking) {
     communication.send_messages(
         &id,
         vec![
-            "Invalid command.".to_string(),
             "Valid commands:".to_string(),
             "'.help' this is it chief".to_string(),
             "'.leave' leave lobby".to_string(),
@@ -586,7 +583,6 @@ pub fn list_playing_commands(id: Token, communication: &mut networking::Networki
     communication.send_messages(
         &id,
         vec![
-            "Invalid command.".to_string(),
             "Valid commands:".to_string(),
             "'.decide [#]' pick [#] card as THE THRUST".to_string(),
             "'.help' this is it chief".to_string(),
