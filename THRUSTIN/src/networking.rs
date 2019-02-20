@@ -96,8 +96,6 @@ impl Networking {
     pub fn read_message(&mut self) -> (Token, String) {
         let mut length = 0;
         while length == 0 {
-            // println!("commands: {:#?}", self.commands);
-            // println!("connections: {:#?}", self.connections);
             let commands_lock = self.commands.lock().unwrap();
             length = commands_lock.len();
         }

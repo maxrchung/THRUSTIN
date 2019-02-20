@@ -8,10 +8,13 @@ mod networking; // Get networking module
 mod player;
 mod thrust;
 
+use ws::util::Token;
+use std::collections::HashMap;
+
 fn main() {
     let mut communication = networking::Networking::init();
-    let mut lobbies: std::collections::HashMap<i32, lobby::Lobby> = std::collections::HashMap::new();
-    let mut players: std::collections::HashMap<ws::util::Token, player::Player> = std::collections::HashMap::new();
+    let mut lobbies: HashMap<i32, lobby::Lobby> = HashMap::new();
+    let mut players: HashMap<Token, player::Player> = HashMap::new();
 
     loop {
         let (token, message) = communication.read_message();
@@ -26,10 +29,10 @@ fn main() {
 }
 
 
-fn handle_input(token: ws::util::Token,
-                input: std::string::String,
-                lobbies: &mut std::collections::HashMap<i32, lobby::Lobby>,
-                players: &mut std::collections::HashMap<ws::util::Token, player::Player>,
+fn handle_input(token: Token,
+                input: String,
+                lobbies: &mut HashMap<i32, lobby::Lobby>,
+                players: &mut HashMap<Token, player::Player>,
                 communication: &mut networking::Networking) {
 
     let split: std::vec::Vec<&str> = input.split(' ').collect();
@@ -41,27 +44,27 @@ fn handle_input(token: ws::util::Token,
     match &player.state {
         player::PlayerState::OutOfLobby => {
             match &*com {
-                "make" => {
+                ".make" => {
                     lobby::Lobby::make_lobby(split, token, lobbies, players, communication)
                 },
 
-                "join" => {
+                ".join" => {
                     lobby::join_lobby(split, token, lobbies, players, communication)
                 },
 
-                "list" => {
+                ".list" => {
                     lobby::list_lobby(token, lobbies, communication)
                 },
 
-                "name" => {
+                ".name" => {
                     lobby::set_name(split, token, players, communication)
                 },
 
-                "who" => {
+                ".who" => {
                     lobby::list_all_players(token, players, communication);
                 },
                 
-                "help" => {
+                ".help" => {
                     lobby::list_out_commands(token, communication);
                 },
 
@@ -85,22 +88,22 @@ fn handle_input(token: ws::util::Token,
             let mut lobby = lobbies.get_mut(&player.lobby).unwrap();
 
             match &*com {
-                "start" => {
+                ".start" => {
                     lobby.start_game(split, token, players, communication);
                 },
 
-                "leave" => {
+                ".leave" => {
                     if(lobby.leave_lobby(token, players, communication)) {
                         let mut id = lobby.id;
                         lobbies.remove(&id);
                     }
                 },
 
-                "who" => {
+                ".who" => {
                     lobby.list_lobby_players(token, players, communication);
                 },
                 
-                "help" => {
+                ".help" => {
                     lobby::list_in_commands(token, communication);
                 },
 
@@ -112,23 +115,23 @@ fn handle_input(token: ws::util::Token,
 
         player::PlayerState::Playing => {
             match &*com {
-                "thrust" => {
+                ".thrust" => {
                     lobby::handle_thrust(split, token, lobbies, players, communication);
                 },
 
-                "decide" => {
+                ".decide" => {
                     lobby::decide(split, token, lobbies, players, communication);
                 },
 
-                "thrusters" => {
+                ".thrusters" => {
                     lobby::show_thrusters(token, players, communication);
                 },
 
-                "thrustee" => {
+                ".thrustee" => {
                     lobby::show_thrustee(token, lobbies, players, communication);
                 },
                 
-                "help" => {
+                ".help" => {
                     lobby::list_playing_commands(token, communication);
                 },
 
