@@ -4,7 +4,7 @@ use crate::thrust;
 pub enum PlayerState {
     OutOfLobby,
     InLobby,
-    Playing
+    Playing,
 }
 
 #[derive(Clone, Debug)]
@@ -24,9 +24,7 @@ pub struct Player {
     pub is_thrustee: bool,
 
     pub personal_deck: thrust::Deck,
-        
 }
-
 
 pub fn new(token: &ws::util::Token) -> Player {
     Player {

@@ -1,11 +1,11 @@
-use ws::{listen, Handler, Sender, Handshake, Result, Message, CloseCode, util::Token};
+use rocket::response::NamedFile;
 use std::collections::HashMap;
 use std::collections::VecDeque;
-use std::{env, io, thread};
 use std::path::{Path, PathBuf};
-use std::vec::Vec;
 use std::sync::{Arc, Mutex};
-use rocket::response::NamedFile;
+use std::vec::Vec;
+use std::{env, io, thread};
+use ws::{listen, util::Token, CloseCode, Handler, Handshake, Message, Result, Sender};
 
 // Returns main site file
 #[get("/")]
@@ -23,7 +23,7 @@ fn file(file: PathBuf) -> Option<NamedFile> {
 struct Connection {
     out: Sender,
     commands: Arc<Mutex<VecDeque<(Token, String)>>>,
-    connections: Arc<Mutex<HashMap<Token, Sender>>>
+    connections: Arc<Mutex<HashMap<Token, Sender>>>,
 }
 
 impl Handler for Connection {
@@ -45,7 +45,7 @@ impl Handler for Connection {
     fn on_close(&mut self, code: CloseCode, reason: &str) {
         match code {
             CloseCode::Normal => println!("The client is done with the connection."),
-            CloseCode::Away   => println!("The client is leaving the site."),
+            CloseCode::Away => println!("The client is leaving the site."),
             _ => println!("The client encountered an error: {}", reason),
         }
     }
@@ -54,7 +54,7 @@ impl Handler for Connection {
 // Main Networking component that public can use
 pub struct Networking {
     commands: Arc<Mutex<VecDeque<(Token, String)>>>,
-    connections: Arc<Mutex<HashMap<Token, Sender>>>
+    connections: Arc<Mutex<HashMap<Token, Sender>>>,
 }
 
 impl Networking {
@@ -62,7 +62,7 @@ impl Networking {
     pub fn init() -> Networking {
         let mut communication = Networking {
             commands: Arc::new(Mutex::new(VecDeque::new())),
-            connections: Arc::new(Mutex::new(HashMap::new()))
+            connections: Arc::new(Mutex::new(HashMap::new())),
         };
         communication.spawn();
         communication
@@ -82,17 +82,16 @@ impl Networking {
         let commands_clone = Arc::clone(&self.commands);
         let connections_clone = Arc::clone(&self.connections);
         thread::spawn(move || {
-            listen("0.0.0.0:3012", |out| { 
-                Connection { 
-                    out: out, 
-                    commands: commands_clone.clone(),
-                    connections: connections_clone.clone()
-                }
-            }).unwrap()
+            listen("0.0.0.0:3012", |out| Connection {
+                out: out,
+                commands: commands_clone.clone(),
+                connections: connections_clone.clone(),
+            })
+            .unwrap()
         });
     }
 
-    // Block and read from queue 
+    // Block and read from queue
     pub fn read_message(&mut self) -> (Token, String) {
         let mut length = 0;
         while length == 0 {
