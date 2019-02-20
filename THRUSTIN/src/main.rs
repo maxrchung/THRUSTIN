@@ -44,8 +44,8 @@ fn handle_input(token: Token,
     match &player.state {
         player::PlayerState::OutOfLobby => {
             match &*com {
-                ".make" => {
-                    lobby::Lobby::make_lobby(split, token, lobbies, players, communication)
+                ".help" => {
+                    lobby::list_out_commands(token, communication);
                 },
 
                 ".join" => {
@@ -56,20 +56,12 @@ fn handle_input(token: Token,
                     lobby::list_lobby(token, lobbies, communication)
                 },
 
+                ".make" => {
+                    lobby::Lobby::make_lobby(split, token, lobbies, players, communication)
+                },
+
                 ".name" => {
                     lobby::set_name(split, token, players, communication)
-                },
-
-                ".who" => {
-                    lobby::list_all_players(token, players, communication);
-                },
-                
-                ".help" => {
-                    lobby::list_out_commands(token, communication);
-                },
-
-                ".thruster" => {
-                    lobby::add_item(&split, token, lobbies, players, communication, isThruster);
                 },
 
                 ".thrustee" => {
@@ -77,6 +69,14 @@ fn handle_input(token: Token,
                     if !valid {
                         communication.send_message(&token, &"Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
                     }
+                },
+
+                ".thruster" => {
+                    lobby::add_item(&split, token, lobbies, players, communication, isThruster);
+                },
+
+                ".who" => {
+                    lobby::list_all_players(token, players, communication);
                 },
 
                 _ => {
@@ -88,8 +88,8 @@ fn handle_input(token: Token,
             let mut lobby = lobbies.get_mut(&player.lobby).unwrap();
 
             match &*com {
-                ".start" => {
-                    lobby.start_game(split, token, players, communication);
+                ".help" => {
+                    lobby::list_in_commands(token, communication);
                 },
 
                 ".leave" => {
@@ -99,14 +99,14 @@ fn handle_input(token: Token,
                     }
                 },
 
+                ".start" => {
+                    lobby.start_game(split, token, players, communication);
+                },
+
                 ".who" => {
                     lobby.list_lobby_players(token, players, communication);
                 },
                 
-                ".help" => {
-                    lobby::list_in_commands(token, communication);
-                },
-
                 _ => {
                     lobby::list_in_commands(token, communication);
                 }
@@ -115,24 +115,24 @@ fn handle_input(token: Token,
 
         player::PlayerState::Playing => {
             match &*com {
-                ".thrust" => {
-                    lobby::handle_thrust(split, token, lobbies, players, communication);
-                },
-
                 ".decide" => {
                     lobby::decide(split, token, lobbies, players, communication);
                 },
+                
+                ".help" => {
+                    lobby::list_playing_commands(token, communication);
+                },
 
-                ".thrusters" => {
-                    lobby::show_thrusters(token, players, communication);
+                ".thrust" => {
+                    lobby::handle_thrust(split, token, lobbies, players, communication);
                 },
 
                 ".thrustee" => {
                     lobby::show_thrustee(token, lobbies, players, communication);
                 },
-                
-                ".help" => {
-                    lobby::list_playing_commands(token, communication);
+
+                ".thrusters" => {
+                    lobby::show_thrusters(token, players, communication);
                 },
 
                 _ => {

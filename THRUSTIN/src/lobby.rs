@@ -499,24 +499,26 @@ pub fn list_all_players(id: Token,
 pub fn list_out_commands(id: Token,
                      communication: &mut networking::Networking) {
     communication.send_messages(&id, vec!["Invalid command.".to_string(),
-                                          "'.make' make a lobby".to_string(),
+                                          "Valid commands:".to_string(),
+                                          "'.help' this is it chief".to_string(),
                                           "'.join [#]' join lobby [#]".to_string(),
                                           "'.list' list lobbies".to_string(),
+                                          "'.make' make a lobby".to_string(),
                                           "'.name [name]' change your name to [name]".to_string(),
-                                          "'.who' list everyone playing".to_string(),
-                                          "'.thruster' \"Some thruster\" to add thruster".to_string(),
                                           "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
-                                          "'.help' this is it chief".to_string()]);
+                                          "'.thruster' \"Some thruster\" to add thruster".to_string(),
+                                          "'.who' list everyone playing".to_string()]);
 }
 
 pub fn list_in_commands(id: Token,
                      communication: &mut networking::Networking) {
     communication.send_messages(&id, vec!["Invalid command.".to_string(),
                                           "Valid commands:".to_string(),
+                                          "'.help' this is it chief".to_string(),
+                                          "'.leave' leave lobby".to_string(), 
                                           "'.start' start game".to_string(),
-                                          "'.leave' leave lobby".to_string(),
-                                          "'.who' list everyone in lobby".to_string(),
-                                          "'.help' this is it chief".to_string()]);
+                                          "'.who' list everyone in lobby".to_string()]);
+
 }
 
 
@@ -524,11 +526,11 @@ pub fn list_playing_commands(id: Token,
                      communication: &mut networking::Networking) {
     communication.send_messages(&id, vec!["Invalid command.".to_string(),
                                           "Valid commands:".to_string(),
-                                          "'.thrust [#]' THRUST your [#] card".to_string(),
                                           "'.decide [#]' pick [#] card as THE THRUST".to_string(),
-                                          "'.thrusters' show your THRUSTS".to_string(),
+                                          "'.help' this is it chief".to_string(), 
+                                          "'.thrust [#]' THRUST your [#] card".to_string(),
                                           "'.thrustee' show the current THRUSTEE".to_string(),
-                                          "'.help' this is it chief".to_string()]);
+                                          "'.thrusters' show your THRUSTS".to_string()]);
 }
 
 

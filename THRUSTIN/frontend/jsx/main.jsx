@@ -23,7 +23,7 @@ class Client extends React.Component {
         this.state = {
             messageCounter: 0,
             messages: [
-                <Message key={this.updateMessageCounter} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Type 'help' for help (obviously)." />,
+                <Message key={this.updateMessageCounter} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Enter '.help' for help (obviously)." />,
             ]
         };
     }
