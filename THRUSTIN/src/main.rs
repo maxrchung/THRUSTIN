@@ -106,6 +106,18 @@ fn handle_input(
                     lobby.list_lobby_players(token, players, communication);
                 }
 
+                ".thrustee" => {
+                    let valid =
+                        lobby::add_item(&split, token, lobbies, players, communication, !is_thruster);
+                    if !valid {
+                        communication.send_message(&token, &"Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
+                    }
+                }
+
+                ".thruster" => {
+                    lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
+                }
+
                 _ => {
                     lobby::list_in_commands(token, communication);
                 }
