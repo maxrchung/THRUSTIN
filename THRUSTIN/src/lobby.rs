@@ -599,13 +599,13 @@ pub fn add_item(
     communication: &mut networking::Networking,
     thruster: bool,
 ) -> bool {
+
     if input.len() < 2 {
         communication.send_message(&id, &"Thruster/thrustee required!");
         return true;
     }
-    
+
     let player: &mut player::Player = players.get_mut(&id).unwrap();
-    let lob: &mut Lobby = lobby.get_mut(&player.lobby).unwrap();
 
     let mut new_item = String::new();
     for i in 1..input.len() {
@@ -613,6 +613,7 @@ pub fn add_item(
         new_item.push_str(" ");
     }
     new_item.pop();
+
     if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
         || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
     {
@@ -634,16 +635,22 @@ pub fn add_item(
         communication.send_message(&id, &format!("Added \"{}\" to thrustees!", &new_item));
     }
 
-    if lob.state == LobbyState::Waiting {
-        lob
-          .deck
-          .thrustees
-          .append(&mut player.personal_deck.thrustees.clone());
-        lob
-          .deck
-          .thrusters
-          .append(&mut player.personal_deck.thrusters.clone());
+    let lobby_option: std::option::Option<&mut Lobby> = lobby.get_mut(&player.lobby);
+
+    if lobby_option.is_some() {
+        let lob: &mut Lobby = lobby_option.unwrap();
+
+        if lob.state == LobbyState::Waiting {
+            lob
+            .deck
+            .thrustees
+            .append(&mut player.personal_deck.thrustees.clone());
+            lob
+            .deck
+            .thrusters
+            .append(&mut player.personal_deck.thrusters.clone());
+        }
     }
-    
+        
     true
 }
