@@ -34,7 +34,9 @@ pub struct Lobby {
 
     pub current_thrustee: String,
 
-    pub current_thrusters: Vec<String>,
+    pub current_thrusts: HashMap<Token, String>,
+    //maps thrust index to token (end me)
+    pub index_to_token: HashMap<i32, Token>,
 
     pub thrusted_players: Vec<Token>,
 }
@@ -50,7 +52,8 @@ impl Lobby {
             host: 0,
             deck: thrust::Deck::default(),
             current_thrustee: String::new(),
-            current_thrusters: Vec::new(),
+            current_thrusts: HashMap::new(),
+            index_to_token: HashMap::new(),
             thrusted_players: Vec::new(),
         };
 
@@ -223,9 +226,9 @@ pub fn decide(
         match split[1].parse::<i32>() {
             Ok(index) => {
                 let lob: &mut Lobby = lobbies.get_mut(&player.lobby).unwrap();
-                if index < lob.current_thrusters.len() as i32 && index >= 0 {
-                    let chosen_thrust = lob.current_thrusters.remove(index as usize).clone();
-                    lob.current_thrusters.clear();
+                if index < lob.current_thrusts.len() as i32 && index >= 0 {
+                    let chosen_thrust = lob.current_thrusts.remove(&lob.index_to_token.get(&index).unwrap()).unwrap();
+                    lob.current_thrusts.clear();
                     lob.thrusted_players.clear();
 
                     // This block also helps solve single player mut reference issues
@@ -330,12 +333,13 @@ pub fn handle_thrust(
                     let picked_thruster = player.deck.thrusters.remove(index as usize);
                     let resulting_thrust =
                         thrust::Deck::thrust(index, &picked_thruster, &lob.current_thrustee);
-                    lob.current_thrusters.push(resulting_thrust.clone());
+                    lob.current_thrusts.insert(player.token, resulting_thrust.clone());
+                    lob.index_to_token.insert((lob.current_thrusts.len() - 1) as i32, player.token);
 
-                    for (index, player_token) in lob.list.iter().enumerate() {
+                    for player_token in lob.list.iter() {
                         communication.send_message(
                             &player_token,
-                            &format!("{}. {}", lob.current_thrusters.len() - 1, &resulting_thrust),
+                            &format!("{}. {}", &(lob.current_thrusts.len() as i32 - 1), &resulting_thrust),
                         );
                     }
                     let replenished_thruster = lob.deck.thrusters.pop().unwrap();
@@ -479,7 +483,7 @@ pub fn leave_lobby(
 
     lob.list.remove_item(&id);
 
-    if (lob.list.len() == 0) {
+    if lob.list.len() == 0 {
         lobbies.remove(&lob_id);
     }
     communication.send_message(&id, &format!("Left lobby: {}.", lob_id));
@@ -651,6 +655,30 @@ pub fn add_item(
             .append(&mut player.personal_deck.thrusters.clone());
         }
     }
-        
+
     true
+}
+
+pub fn show_thrusts(id: Token, lobby: &mut HashMap<i32, Lobby>,
+    players: &mut HashMap<Token, player::Player>,
+    communication: &mut networking::Networking) {
+        
+    let player: &mut player::Player = players.get_mut(&id).unwrap();
+    let lob: &mut Lobby = lobby.get_mut(&player.lobby).unwrap();
+
+    // for identifier in lob.current_thrusts {
+    //     communication.send_message(
+    //         &id,
+    //         &format!("{}. {}", identifier, lob.current_thrusts.get(&identifier))
+    //     );
+    // }
+    let indexes = &mut lob.index_to_token.keys().collect::<Vec<&i32>>();
+    indexes.sort();
+
+    for index in indexes {
+        communication.send_message(
+            &id,
+            &format!("{}. {}", index, lob.current_thrusts.get(&lob.index_to_token.get(&index).unwrap()).unwrap())
+        );
+    }
 }

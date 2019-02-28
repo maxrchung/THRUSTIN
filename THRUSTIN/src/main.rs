@@ -145,6 +145,10 @@ fn handle_input(
                 lobby::show_thrusters(token, players, communication);
             }
 
+            ".thrusts" => {
+                lobby::show_thrusts(token, lobbies, players, communication);
+            }
+
             _ => {
                 lobby::list_playing_commands(token, communication);
             }
