@@ -22,6 +22,9 @@ pub struct Lobby {
     //max number of players
     pub max: u32,
 
+    //max hand size
+    pub hand_size: u32,
+
     //lobby id
     pub id: i32,
 
@@ -49,6 +52,7 @@ impl Lobby {
             max: max,
             id: id,
             state: LobbyState::Waiting,
+            hand_size: 5,
             host: 0,
             deck: thrust::Deck::default(),
             current_thrustee: String::new(),
@@ -120,20 +124,16 @@ impl Lobby {
         for token in &mut self.list {
             let mut p = players.get_mut(&token).unwrap();
             p.state = player::PlayerState::Playing;
-            let thruster1 = self.deck.thrusters.pop().unwrap();
-            p.deck.thrusters.push(thruster1.clone());
 
-            let thruster2 = self.deck.thrusters.pop().unwrap();
-            p.deck.thrusters.push(thruster2.clone());
+            for i in 0..self.hand_size {
+                if let Some(card) = self.deck.thrusters.pop() {
+                    p.deck.thrusters.push(card.clone());
 
-            let thruster3 = self.deck.thrusters.pop().unwrap();
-            p.deck.thrusters.push(thruster3.clone());
-
-            let thruster4 = self.deck.thrusters.pop().unwrap();
-            p.deck.thrusters.push(thruster4.clone());
-
-            let thruster5 = self.deck.thrusters.pop().unwrap();
-            p.deck.thrusters.push(thruster5.clone());
+                } else {
+                    communication.send_message(&id, &format!("chief called and said we outta cards"));
+                    return;
+                }
+            }
 
             let instructions = if p.is_thrustee {
                 next = p.name.clone();
@@ -181,6 +181,8 @@ impl Lobby {
         self.list.remove_item(&id);
 
         communication.send_message(&id, &format!("Left lobby: {}.", lob_id));
+        self.send_message(&format!("{} has left the lobby.", pl.name), communication);
+
         if self.list.len() == 0 {
             true
         } else {
@@ -206,6 +208,12 @@ impl Lobby {
             }
         }
         communication.send_messages(&id, messages);
+    }
+
+    pub fn send_message(&self, message: &str, communication: &mut networking::Networking) {
+        for pl in &self.list {
+            communication.send_message(pl, &message);
+        }
     }
 }
 
@@ -400,26 +408,22 @@ pub fn join_lobby(
             let lob = lobby.get_mut(&lobby_id);
 
             let mut messages = Vec::new();
-            if let None = lob {
-                communication.send_message(&id, &format!("Lobby does not exist."));
-            } else {
-                let l = lob.unwrap();
+            if let Some(l) = lob {
                 let mut p: &mut player::Player = players.get_mut(&id).unwrap();
+
                 p.state = if l.state == LobbyState::Playing {
-                    let thruster1 = l.deck.thrusters.pop().unwrap();
-                    p.deck.thrusters.push(thruster1.clone());
+                    for i in 0..l.hand_size {
+                        //let card = l.deck.thrusters.pop();
 
-                    let thruster2 = l.deck.thrusters.pop().unwrap();
-                    p.deck.thrusters.push(thruster2.clone());
-
-                    let thruster3 = l.deck.thrusters.pop().unwrap();
-                    p.deck.thrusters.push(thruster3.clone());
-
-                    let thruster4 = l.deck.thrusters.pop().unwrap();
-                    p.deck.thrusters.push(thruster4.clone());
-
-                    let thruster5 = l.deck.thrusters.pop().unwrap();
-                    p.deck.thrusters.push(thruster5.clone());
+                        if let Some(card) = l.deck.thrusters.pop() {
+                            p.deck.thrusters.push(card.clone());
+                        } else {
+                            communication.send_message(&id, &format!("Out of cards!"));
+                            return;
+                        }
+                    }
+                    
+                    l.send_message(&format!("{} has joined the lobby.", p.name), communication);
 
                     messages.push("You are a THRUSTER.".to_string());
                     messages.push(
@@ -428,6 +432,8 @@ pub fn join_lobby(
                     messages.extend(get_thrusters(&p.deck.thrusters));
                     player::PlayerState::Playing
                 } else {
+                    l.send_message(&format!("{} has joined the lobby.", p.name), communication);
+
                     player::PlayerState::InLobby
                 };
                 p.lobby = l.id;
@@ -444,7 +450,11 @@ pub fn join_lobby(
                 .thrusters
                 .append(&mut p.personal_deck.thrusters.clone());
             }
+        } else {
+            communication.send_message(&id, &format!("Lobby does not exist."));
         }
+
+
         _ => communication.send_message(&id, &"Lmao make a lobby first dumbass"),
     }
 }
@@ -469,25 +479,6 @@ pub fn show_thrustee(
     communication.send_message(&id, &format!("Current THRUSTEE: {}", lob.current_thrustee));
 }
 
-pub fn leave_lobby(
-    id: Token,
-    lobbies: &mut HashMap<i32, Lobby>,
-    players: &mut HashMap<Token, player::Player>,
-    communication: &mut networking::Networking,
-) {
-    let pl = players.get_mut(&id).unwrap();
-    let lob_id = pl.lobby;
-    let lob: &mut Lobby = lobbies.get_mut(&lob_id).unwrap();
-
-    pl.state = player::PlayerState::OutOfLobby;
-
-    lob.list.remove_item(&id);
-
-    if lob.list.len() == 0 {
-        lobbies.remove(&lob_id);
-    }
-    communication.send_message(&id, &format!("Left lobby: {}.", lob_id));
-}
 
 pub fn list_lobby(
     id: Token,
