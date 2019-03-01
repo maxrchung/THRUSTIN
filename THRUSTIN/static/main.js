@@ -1,4 +1,4 @@
-var ws = new WebSocket("ws://192.168.0.2:3012/");
+var ws = new WebSocket("ws://192.168.86.179:8000/");
 
 ws.onmessage = function (e) {
     addMessage(e.data);
