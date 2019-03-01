@@ -449,11 +449,10 @@ pub fn join_lobby(
                 .deck
                 .thrusters
                 .append(&mut p.personal_deck.thrusters.clone());
+            } else {
+                communication.send_message(&id, &format!("Lobby does not exist."));
             }
-        } else {
-            communication.send_message(&id, &format!("Lobby does not exist."));
         }
-
 
         _ => communication.send_message(&id, &"Lmao make a lobby first dumbass"),
     }
