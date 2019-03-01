@@ -1,7 +1,25 @@
-body {
-    background: lightcoral;
+html {
+    height: 100%;
 }
 
-p.from-self {
-    color: black;
+
+body {
+    font-family: 'Cousine', monospace;
+    height: 100%;
+}
+
+#root {
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+#messages {
+    max-height: 100%;
+    overflow-y: auto;
 }
