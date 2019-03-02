@@ -25,6 +25,10 @@ pub struct Lobby {
     //max hand size
     pub hand_size: u32,
 
+    //points
+    pub curr_points: std::vec::Vec<u32>,
+    pub max_points: u32,
+
     //lobby id
     pub id: i32,
 
@@ -53,6 +57,8 @@ impl Lobby {
             id: id,
             state: LobbyState::Waiting,
             hand_size: 5,
+            curr_points: std::vec!(0; max as usize),
+            max_points: 7,
             host: 0,
             deck: thrust::Deck::default(),
             current_thrustee: String::new(),
@@ -183,11 +189,7 @@ impl Lobby {
         communication.send_message(&id, &format!("Left lobby: {}.", lob_id));
         self.send_message(&format!("{} has left the lobby.", pl.name), communication);
 
-        if self.list.len() == 0 {
-            true
-        } else {
-            false
-        }
+        self.list.len() == 0
     }
 
     pub fn list_lobby_players(
@@ -201,11 +203,12 @@ impl Lobby {
             let play = players.get(&pl_tok).unwrap();
             let name = &play.name;
 
-            if self.is_host(&play) {
-                messages.push(format!("{}: host", name).to_string());
+            let message = if self.is_host(&play) {
+                format!("{}: host", name).to_string()
             } else {
-                messages.push(format!("{}", name).to_string());
-            }
+                format!("{}", name).to_string()
+            };
+            messages.push(message);
         }
         communication.send_messages(&id, messages);
     }
@@ -413,7 +416,6 @@ pub fn join_lobby(
 
                 p.state = if l.state == LobbyState::Playing {
                     for i in 0..l.hand_size {
-                        //let card = l.deck.thrusters.pop();
 
                         if let Some(card) = l.deck.thrusters.pop() {
                             p.deck.thrusters.push(card.clone());
@@ -423,8 +425,6 @@ pub fn join_lobby(
                         }
                     }
                     
-                    l.send_message(&format!("{} has joined the lobby.", p.name), communication);
-
                     messages.push("You are a THRUSTER.".to_string());
                     messages.push(
                         format!("This is your THRUSTEE: {}", &l.current_thrustee).to_string(),
@@ -432,10 +432,11 @@ pub fn join_lobby(
                     messages.extend(get_thrusters(&p.deck.thrusters));
                     player::PlayerState::Playing
                 } else {
-                    l.send_message(&format!("{} has joined the lobby.", p.name), communication);
-
                     player::PlayerState::InLobby
                 };
+
+                l.send_message(&format!("{} has joined the lobby.", p.name), communication);
+
                 p.lobby = l.id;
                 l.list.push(p.token);
                 messages.push(format!("Joined: {:#?}", &lobby_id));
@@ -530,11 +531,13 @@ pub fn list_all_players(
 ) {
     let mut messages = Vec::new();
     for pl in players.values() {
-        if pl.state == player::PlayerState::InLobby || pl.state == player::PlayerState::Playing {
-            messages.push(format!("{} in {}", pl.name, pl.lobby).to_string());
+        let message = if pl.state == player::PlayerState::InLobby || pl.state == player::PlayerState::Playing {
+            format!("{} in {}", pl.name, pl.lobby).to_string()
         } else {
-            messages.push(format!("{}", pl.name).to_string());
-        }
+            format!("{}", pl.name).to_string()
+        };
+
+        messages.push(message);
     }
     communication.send_messages(&id, messages);
 }
@@ -629,11 +632,7 @@ pub fn add_item(
         communication.send_message(&id, &format!("Added \"{}\" to thrustees!", &new_item));
     }
 
-    let lobby_option: std::option::Option<&mut Lobby> = lobby.get_mut(&player.lobby);
-
-    if lobby_option.is_some() {
-        let lob: &mut Lobby = lobby_option.unwrap();
-
+    if let Some(lob) = lobby.get_mut(&player.lobby) {
         if lob.state == LobbyState::Waiting {
             lob
             .deck
