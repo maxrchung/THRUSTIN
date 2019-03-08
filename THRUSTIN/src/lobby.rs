@@ -1,7 +1,8 @@
 use crate::networking;
 use crate::player;
 use crate::thrust;
-use rand::{thread_rng, Rng};
+use rand::thread_rng;
+use rand::seq::SliceRandom;
 use std::collections::HashMap;
 use ws::util::Token;
 
@@ -81,8 +82,10 @@ impl Lobby {
             .thrusters
             .append(&mut pers_deck.thrusters.clone());
         lobby.deck.sort();
-        thread_rng().shuffle(&mut lobby.deck.thrusters);
-        thread_rng().shuffle(&mut lobby.deck.thrustees);
+        //thread_rng().shuffle(&mut lobby.deck.thrusters);
+        //thread_rng().shuffle(&mut lobby.deck.thrustees);
+        lobby.deck.thrusters.shuffle(&mut thread_rng());
+        lobby.deck.thrustees.shuffle(&mut thread_rng());
         lobby
     }
 
@@ -139,7 +142,7 @@ impl Lobby {
                     p.deck.thrusters.push(card.clone());
 
                 } else {
-                    communication.send_message(&id, &format!("chief called and said we outta cards"));
+                    communication.send_message(&id, &format!("Chief, there ain't enough cards to start"));
                     return;
                 }
             }
@@ -219,6 +222,34 @@ impl Lobby {
         communication.send_messages(&id, messages);
     }
 
+    pub fn restart_game(&mut self, 
+        communication: &mut networking::Networking,
+        players: &mut HashMap<Token, player::Player>
+    ) {
+        self.state = LobbyState::Waiting;
+        self.curr_points = std::vec!(0; self.max as usize);
+        self.deck = thrust::Deck::default();
+        self.current_thrustee = String::new();
+        self.current_thrusts = HashMap::new();
+        self.index_to_token = HashMap::new();
+        self.thrusted_players = Vec::new();
+
+        //add all personal decks and change to inlobby state
+        for token in &self.list {
+            let player: &mut player::Player = players.get_mut(&token).unwrap();
+            self.deck.thrustees.append(&mut player.personal_deck.thrustees.clone());
+            self.deck.thrusters.append(&mut player.personal_deck.thrusters.clone());
+            player.deck = thrust::Deck::new();
+            player.state = player::PlayerState::InLobby;
+        }
+
+        self.deck.sort();
+        self.deck.thrusters.shuffle(&mut thread_rng());
+        self.deck.thrustees.shuffle(&mut thread_rng());
+
+        self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.", communication);
+    }
+
     pub fn send_message(&self, message: &str, communication: &mut networking::Networking) {
         for pl in &self.list {
             communication.send_message(pl, &message);
@@ -258,8 +289,15 @@ pub fn decide(
                     &player.name, &chosen_thrust
                 )
                                   .to_string()];
-
-                lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
+                if let Some(card) = lob.deck.thrustees.pop() {
+                    lob.current_thrustee = card;
+                }
+                else {
+                    lob.restart_game(communication, players);
+                    communication.send_message(&token, &"chief has notified us and said that we are out of cards");
+                    return;
+                }
+                //lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
 
                 let mut next = "".to_string();
                 
@@ -356,8 +394,16 @@ pub fn handle_thrust(
                         &format!("{}. {}", &(lob.current_thrusts.len() as i32 - 1), &resulting_thrust),
                     );
                 }
-                let replenished_thruster = lob.deck.thrusters.pop().unwrap();
-                player.deck.thrusters.push(replenished_thruster.clone());
+
+                if let Some(card) = lob.deck.thrusters.pop() {
+                    let replenished_thruster = card;
+                    player.deck.thrusters.push(replenished_thruster.clone());
+                }
+                else {
+                    lob.restart_game(communication, players);
+                    communication.send_message(&token, &"Outta cards, we restartin");
+                    return;
+                }
 
                 lob.thrusted_players.push(player.token.clone());
             } else {
@@ -423,7 +469,8 @@ pub fn join_lobby(
                         if let Some(card) = l.deck.thrusters.pop() {
                             p.deck.thrusters.push(card.clone());
                         } else {
-                            communication.send_message(&id, &format!("Out of cards!"));
+                            l.restart_game(communication, players);
+                            communication.send_message(&id, &format!("Not enough thrusters to distribute"));
                             return;
                         }
                     }
@@ -658,12 +705,6 @@ pub fn show_thrusts(id: Token, lobby: &mut HashMap<i32, Lobby>,
     let player: &mut player::Player = players.get_mut(&id).unwrap();
     let lob: &mut Lobby = lobby.get_mut(&player.lobby).unwrap();
 
-    // for identifier in lob.current_thrusts {
-    //     communication.send_message(
-    //         &id,
-    //         &format!("{}. {}", identifier, lob.current_thrusts.get(&identifier))
-    //     );
-    // }
     let indexes = &mut lob.index_to_token.keys().collect::<Vec<&i32>>();
     indexes.sort();
 
