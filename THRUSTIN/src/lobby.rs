@@ -694,6 +694,7 @@ pub fn list_in_commands(id: Token, communication: &mut networking::Networking) {
             "Valid commands:".to_string(),
             "'.help' this is it chief".to_string(),
             "'.leave' leave lobby".to_string(),
+            "'.name [name]' change your name to [name]".to_string(),
             "'.start' start game".to_string(),
             "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
             "'.thruster' \"Some thruster\" to add thruster".to_string(),
