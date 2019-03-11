@@ -635,11 +635,19 @@ pub fn set_name(
 
     let p_name = input[1].to_string();
 
-    let player: &mut player::Player = players.get_mut(&id).unwrap();
+    for names in players.values() {
+        if p_name == names.name {
+            communication.send_message(&id, "yo that name exists ya gotta pick something else aight?");
+            return;
+        }
+    }
 
-    player.name = p_name.clone();
-
-    communication.send_message(&id, &format!("Name set to: {}", &player.name));
+    if let Some(player) = players.get_mut(&id) {
+        player.name = p_name.clone();
+        communication.send_message(&id, &format!("Name set to: {}", &player.name));
+    } else {
+        communication.send_message(&id, "Something ain't right here");
+    }
 }
 
 pub fn list_all_players(
