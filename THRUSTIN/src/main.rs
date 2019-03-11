@@ -51,9 +51,7 @@ fn handle_input(
     let player = players.get(&token).unwrap();
     match &player.state {
         player::PlayerState::OutOfLobby => match &*com {
-            ".help" => {
-                lobby::list_out_commands(token, communication);
-            }
+            ".help" => lobby::list_out_commands(token, communication),
 
             ".join" => lobby::join_lobby(split, token, lobbies, players, communication),
 
@@ -75,9 +73,7 @@ fn handle_input(
                 lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
             }
             
-            ".who" => {
-                lobby::list_all_players(token, players, communication);
-            }
+            ".who" => lobby::list_all_players(token, players, communication),
 
             _ => {
                 communication.send_message(&token, "Bruh that's an invalid command.");
@@ -87,9 +83,7 @@ fn handle_input(
             let lobby = lobbies.get_mut(&player.lobby).unwrap();
 
             match &*com {
-                ".help" => {
-                    lobby::list_in_commands(token, communication);
-                }
+                ".help" => lobby::list_in_commands(token, communication),
 
                 ".leave" => {
                     if lobby.leave_lobby(token, players, communication) {
@@ -98,13 +92,9 @@ fn handle_input(
                     }
                 }
 
-                ".start" => {
-                    lobby.start_game(split, token, players, communication);
-                }
+                ".start" => lobby.start_game(token, players, communication),
 
-                ".who" => {
-                    lobby.list_lobby_players(token, players, communication);
-                }
+                ".who" => lobby.list_lobby_players(token, players, communication),
                 
                 ".thrustee" => {
                     let valid = lobby::add_item(
@@ -126,13 +116,11 @@ fn handle_input(
                     lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
                 }
 
-                ".host" => {
-                    lobby.switch_host(split, token, players, communication);
-                }
+                ".host" => lobby.switch_host(split, token, players, communication),
+
+                ".kick" => lobby.kick(split, token, players, communication),
                 
-                _ => {
-                    communication.send_message(&token, "Bruh that's an invalid command.");
-                }
+                _ => communication.send_message(&token, "Bruh that's an invalid command."),
             }
         }
 
