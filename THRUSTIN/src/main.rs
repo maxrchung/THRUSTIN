@@ -51,7 +51,7 @@ fn handle_input(
     let player = players.get(&token).unwrap();
     match &player.state {
         player::PlayerState::ChooseName => match &*com {
-            ".name" => lobby::set_name(split, token, players, communication),
+            ".name" => player::set_name(split, token, players, communication),
 
             ".help" => lobby::list_choose_name_commands(token, communication),
 
@@ -70,7 +70,7 @@ fn handle_input(
 
             ".make" => lobby::Lobby::make_lobby(split, token, lobbies, players, communication),
 
-            ".name" => lobby::set_name(split, token, players, communication),
+            ".name" => player::set_name(split, token, players, communication),
 
             ".thrustee" => {
                 let valid =
@@ -122,7 +122,7 @@ fn handle_input(
                     }
                 }
 
-                ".name" => lobby::set_name(split, token, players, communication),
+                ".name" => player::set_name(split, token, players, communication),
                 
                 ".thruster" => {
                     lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
