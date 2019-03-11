@@ -195,7 +195,13 @@ impl Lobby {
         communication.send_message(&id, &format!("Left lobby: {}.", lob_id));
         self.send_message(&format!("{} has left the lobby.", pl.name), communication);
 
-        self.list.len() == 0
+        let len = self.list.len();
+        if (len != 0) && (len >= self.host) {
+            self.host = 0;
+            communication.send_message(&self.list[self.host], "u host now!!");
+        }
+
+        len == 0
     }
 
     pub fn list_lobby_players(
@@ -264,7 +270,45 @@ impl Lobby {
             communication.send_message(pl, &message);
         }
     }
+    pub fn switch_host(&mut self, split: std::vec::Vec<&str>, token: Token,
+                       players: &mut HashMap<Token, player::Player>,
+                       communication: &mut networking::Networking) {
+        if token != self.list[self.host] {
+            communication.send_message(&token, "Only host can change the host!");
+            return;
+        }
+
+        if split.len() < 2 {
+            communication.send_message(&token, "Who's the new host tho");
+            return;
+        }
+        
+        let new_host = split[1];
+        if let Some(cur) = players.get(&token) {
+            if new_host == cur.name {
+                communication.send_message(&token, "You're already host!!");
+                return;
+            }
+        }
+        
+        for (i, tok) in self.list.iter().enumerate() {
+            if let Some(pl) = players.get(tok) {
+                if pl.name == new_host {
+                    self.host = i;
+                    communication.send_message(&tok, "You are now host!");
+                    communication.send_message(&token, &format!("{} is now host!", pl.name));
+                    return;
+                }
+            } else {
+                communication.send_message(&token, "Player in lobby isn't in the player registry?");
+            }
+        }
+
+        communication.send_message(&token, "Player not in lobby.");
+    }
+
 }
+
 
 pub fn decide(
     split: std::vec::Vec<&str>,
@@ -282,6 +326,11 @@ pub fn decide(
             &"You are not allowed to decide because you are a THRUSTER",
         );
 
+        return;
+    }
+
+    if split.len() < 2 {
+        communication.send_message(&token, "ya need to pick a numbert boi");
         return;
     }
 

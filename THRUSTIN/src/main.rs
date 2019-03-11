@@ -74,7 +74,7 @@ fn handle_input(
             ".thruster" => {
                 lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
             }
-
+            
             ".who" => {
                 lobby::list_all_players(token, players, communication);
             }
@@ -105,7 +105,7 @@ fn handle_input(
                 ".who" => {
                     lobby.list_lobby_players(token, players, communication);
                 }
-
+                
                 ".thrustee" => {
                     let valid = lobby::add_item(
                         &split,
@@ -120,10 +120,16 @@ fn handle_input(
                     }
                 }
 
+                ".name" => lobby::set_name(split, token, players, communication),
+                
                 ".thruster" => {
                     lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
                 }
 
+                ".host" => {
+                    lobby.switch_host(split, token, players, communication);
+                }
+                
                 _ => {
                     communication.send_message(&token, "Bruh that's an invalid command.");
                 }
