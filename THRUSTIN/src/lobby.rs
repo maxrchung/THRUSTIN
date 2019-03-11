@@ -566,7 +566,7 @@ pub fn list_lobby(
         );
     }
 
-    if (messages.is_empty()) {
+    if messages.is_empty() {
         messages.push("No lobbies bro...".to_string());
     }
 

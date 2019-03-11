@@ -43,14 +43,18 @@ class Client extends React.Component {
 
     handleKeyDown(e) {
         if (e.key == "Enter") {
-            this.connection.send(e.target.value);
+            const command = e.target.value;
+            this.connection.send(command);
+            this.setState({
+                messages: this.state.messages.concat(<Message key={this.updateMessageCounter} from="YOU" content={command} />)
+            });
             e.target.value = "";
             this.scrollToDummy();
         }
     }
 
     updateMessageCounter() {
-        var counter = this.state.messageCounter;
+        const counter = this.state.messageCounter;
         this.setState({
             messageCounter: messageCounter + 1
         });
