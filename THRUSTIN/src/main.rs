@@ -80,7 +80,7 @@ fn handle_input(
             }
 
             _ => {
-                lobby::list_out_commands(token, communication);
+                communication.send_message(&token, "Bruh that's an invalid command.");
             }
         },
         player::PlayerState::InLobby => {
@@ -107,8 +107,14 @@ fn handle_input(
                 }
 
                 ".thrustee" => {
-                    let valid =
-                        lobby::add_item(&split, token, lobbies, players, communication, !is_thruster);
+                    let valid = lobby::add_item(
+                        &split,
+                        token,
+                        lobbies,
+                        players,
+                        communication,
+                        !is_thruster,
+                    );
                     if !valid {
                         communication.send_message(&token, &"Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
                     }
@@ -119,7 +125,7 @@ fn handle_input(
                 }
 
                 _ => {
-                    lobby::list_in_commands(token, communication);
+                    communication.send_message(&token, "Bruh that's an invalid command.");
                 }
             }
         }
@@ -150,7 +156,7 @@ fn handle_input(
             }
 
             _ => {
-                lobby::list_playing_commands(token, communication);
+                communication.send_message(&token, "Bruh that's an invalid command.");
             }
         },
     }
