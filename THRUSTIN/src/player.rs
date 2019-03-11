@@ -2,6 +2,7 @@ use crate::thrust;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum PlayerState {
+    ChooseName,
     OutOfLobby,
     InLobby,
     Playing,
@@ -28,7 +29,7 @@ pub fn new(token: &ws::util::Token) -> Player {
     Player {
         token: token.clone(),
         name: token.0.to_string(),
-        state: PlayerState::OutOfLobby,
+        state: PlayerState::ChooseName,
         lobby: -1,
         deck: thrust::Deck::new(),
         personal_deck: thrust::Deck::new(),

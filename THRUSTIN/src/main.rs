@@ -50,6 +50,17 @@ fn handle_input(
 
     let player = players.get(&token).unwrap();
     match &player.state {
+        player::PlayerState::ChooseName => match &*com {
+            ".name" => lobby::set_name(split, token, players, communication),
+
+            ".help" => lobby::list_choose_name_commands(token, communication),
+
+            _ => {
+                communication.send_message(&token, "Bruh that's an invalid command.");
+                lobby::list_choose_name_commands(token, communication);
+            }
+        },
+        
         player::PlayerState::OutOfLobby => match &*com {
             ".help" => lobby::list_out_commands(token, communication),
 
@@ -79,6 +90,7 @@ fn handle_input(
                 communication.send_message(&token, "Bruh that's an invalid command.");
             }
         },
+        
         player::PlayerState::InLobby => {
             let lobby = lobbies.get_mut(&player.lobby).unwrap();
 

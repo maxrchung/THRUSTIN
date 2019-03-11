@@ -218,10 +218,14 @@ impl Lobby {
             let play = players.get(&pl_tok).unwrap();
             let name = &play.name;
 
+            let mut person = "";
+            if pl_tok == &id {
+                person = " (You)";
+            }
             let message = if self.is_host(&play) {
-                format!("{}: host", name).to_string()
+                format!("{}: host{}", name, person).to_string()
             } else {
-                format!("{}", name).to_string()
+                format!("{}{}", name, person).to_string()
             };
 
             messages.push(message);
@@ -703,6 +707,9 @@ pub fn set_name(
     if let Some(player) = players.get_mut(&id) {
         player.name = p_name.clone();
         communication.send_message(&id, &format!("Name set to: {}", &player.name));
+        if player.state == player::PlayerState::ChooseName {
+            player.state = player::PlayerState::OutOfLobby;
+        }
     } else {
         communication.send_message(&id, "Something ain't right here");
     }
@@ -715,12 +722,18 @@ pub fn list_all_players(
 ) {
     let mut messages = Vec::new();
     for pl in players.values() {
+
+        let mut person = "";
+        if pl.token == id {
+            person = " (You)";
+        }
+        
         let message = if pl.state == player::PlayerState::InLobby
             || pl.state == player::PlayerState::Playing
         {
-            format!("{} in {}", pl.name, pl.lobby).to_string()
+            format!("{} in {}{}", pl.name, pl.lobby, person).to_string()
         } else {
-            format!("{}", pl.name).to_string()
+            format!("{}{}", pl.name, person).to_string()
         };
 
         messages.push(message);
@@ -741,6 +754,17 @@ pub fn list_out_commands(id: Token, communication: &mut networking::Networking) 
             "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
             "'.thruster' \"Some thruster\" to add thruster".to_string(),
             "'.who' list everyone playing".to_string(),
+        ],
+    );
+}
+
+pub fn list_choose_name_commands(id: Token, communication: &mut networking::Networking) {
+    communication.send_messages(
+        &id,
+        vec![
+            "Valid commands:".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.name [name]' change your name to [name]".to_string(),
         ],
     );
 }
