@@ -246,6 +246,8 @@ impl Lobby {
         self.deck.sort();
         self.deck.thrusters.shuffle(&mut thread_rng());
         self.deck.thrustees.shuffle(&mut thread_rng());
+        //thread_rng().shuffle(&mut self.deck.thrusters);
+        //thread_rng().shuffle(&mut self.deck.thrustees);
 
         self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.", communication);
     }
@@ -369,9 +371,16 @@ pub fn handle_thrust(
 
     match split[1].parse::<i32>() {
         Ok(index) => {
+            for i in 1..split.len() {
+                let dex = split[i].parse::<i32>().unwrap();
+                if dex >= player.deck.thrusters.len() as i32 || index < 0 {
+                    communication.send_message(&token, &"That shit's out of bound bro");
+                    return;
+                }
+            }
+
             if index < player.deck.thrusters.len() as i32 && index >= 0 {
                 let lob: &mut Lobby = lobbies.get_mut(&player.lobby).unwrap();
-
                 for player_token in &lob.thrusted_players {
                     if token == *player_token {
                         communication.send_message(
@@ -381,10 +390,25 @@ pub fn handle_thrust(
                         return;
                     }
                 }
+                let mut resulting_thrust: String = lob.current_thrustee.clone();
+                let mut to_remove: std::vec::Vec<String> = Vec::new();
 
-                let picked_thruster = player.deck.thrusters.remove(index as usize);
-                let resulting_thrust =
-                    thrust::Deck::thrust(index, &picked_thruster, &lob.current_thrustee);
+                // Handle mutliple underscores
+                for i in 1..split.len() {
+                    let picked_thruster = player.deck.thrusters[split[i].parse::<usize>().unwrap()].clone();
+                    to_remove.push(picked_thruster.clone());
+                    resulting_thrust = thrust::Deck::thrust(split[i].parse::<i32>().unwrap(), &picked_thruster, &resulting_thrust);
+                }
+                
+                // Remove thrusted thrusters
+                let mut updated_thrusters: std::vec::Vec<String> = Vec::new();
+                for thruster in &player.deck.thrusters {
+                    if !to_remove.contains(thruster) {
+                        updated_thrusters.push(thruster.clone())
+                    }
+                }
+                player.deck.thrusters = updated_thrusters;
+
                 lob.current_thrusts.insert(player.token, resulting_thrust.clone());
                 lob.index_to_token.insert((lob.current_thrusts.len() - 1) as i32, player.token);
 
