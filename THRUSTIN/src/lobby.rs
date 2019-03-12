@@ -96,23 +96,24 @@ impl Lobby {
     pub fn make_lobby(
         input: std::vec::Vec<&str>,
         id: Token,
+        lobby_id: &mut i32,
         lobbies: &mut HashMap<i32, Lobby>,
         players: &mut HashMap<Token, player::Player>,
         communication: &mut networking::Networking,
     ) {
         let max = 64;
-        let lobby_id: i32 = lobbies.len() as i32;
 
         let player: &mut player::Player = players.get_mut(&id).unwrap();
 
-        player.lobby = lobby_id.clone() as i32;
+        player.lobby = lobby_id.clone();
         player.state = player::PlayerState::InLobby;
 
-        let mut new_lobby = Lobby::new("".to_string(), max, lobby_id, &mut player.personal_deck);
+        let mut new_lobby = Lobby::new("".to_string(), max, lobby_id.clone(), &mut player.personal_deck);
         new_lobby.list.push(id.clone());
 
-        lobbies.insert(lobby_id, new_lobby.clone());
+        lobbies.insert(lobby_id.clone(), new_lobby.clone());
         communication.send_message(&id, &format!("Created lobby: {}", lobby_id));
+        *lobby_id = *lobby_id + 1;
     }
 
     pub fn start_game(

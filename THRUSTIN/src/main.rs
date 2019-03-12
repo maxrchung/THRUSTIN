@@ -16,6 +16,7 @@ use ws::util::Token;
 fn main() {
     let mut communication = networking::Networking::init();
     let mut lobbies: HashMap<i32, lobby::Lobby> = HashMap::new();
+    let mut lobby_id = 0;
     let mut players: HashMap<Token, player::Player> = HashMap::new();
 
     loop {
@@ -29,6 +30,7 @@ fn main() {
         handle_input(
             token,
             message,
+            &mut lobby_id,
             &mut lobbies,
             &mut players,
             &mut communication,
@@ -39,6 +41,7 @@ fn main() {
 fn handle_input(
     token: Token,
     input: String,
+    lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
     players: &mut HashMap<Token, player::Player>,
     communication: &mut networking::Networking,
@@ -59,7 +62,9 @@ fn handle_input(
 
             ".list" => lobby::list_lobby(token, lobbies, communication),
 
-            ".make" => lobby::Lobby::make_lobby(split, token, lobbies, players, communication),
+            ".make" => {
+                lobby::Lobby::make_lobby(split, token, lobby_id, lobbies, players, communication);
+            }
 
             ".name" => lobby::set_name(split, token, players, communication),
 
