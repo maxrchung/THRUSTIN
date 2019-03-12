@@ -768,9 +768,34 @@ pub fn list_playing_commands(id: Token, communication: &mut networking::Networki
         &id,
         vec![
             "Valid commands:".to_string(),
-            "'.decide [#]' pick [#] card as THE THRUSTEE".to_string(),
             "'.help' this is it chief".to_string(),
             "'.thrust [#]' THRUST your [#] card".to_string(),
+            "'.thrustee' show the current THRUSTEE".to_string(),
+            "'.thrusters' show your THRUSTERS".to_string(),
+        ],
+    );
+}
+
+pub fn list_choosing_commands(id: Token, communication: &mut networking::Networking) {
+    communication.send_messages(
+        &id,
+        vec![
+            "Valid commands:".to_string(),
+            "'.choose [#]' choose [#] card as THE NEXT THRUSTEE".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.thrustee' show the current THRUSTEE".to_string(),
+            "'.thrusters' show your THRUSTERS".to_string(),
+        ],
+    );
+}
+
+pub fn list_deciding_commands(id: Token, communication: &mut networking::Networking) {
+    communication.send_messages(
+        &id,
+        vec![
+            "Valid commands:".to_string(),
+            "'.decide [#]' pick [#] card as THE THRUSTEE".to_string(),
+            "'.help' this is it chief".to_string(),
             "'.thrustee' show the current THRUSTEE".to_string(),
             "'.thrusters' show your THRUSTERS".to_string(),
         ],

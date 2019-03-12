@@ -9,6 +9,8 @@ pub enum PlayerState {
     OutOfLobby,
     InLobby,
     Playing,
+    Choosing, // Thrustee is choosing the next thrustee
+    Deciding // Thrustee is choosing the winning thrustee
 }
 
 #[derive(Clone, Debug)]

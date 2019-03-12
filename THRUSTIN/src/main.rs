@@ -10,14 +10,17 @@ mod networking; // Get networking module
 mod player;
 mod thrust;
 
+use crate::lobby::Lobby;
+use crate::player::{Player, PlayerState};
+use crate::networking::Networking;
 use std::collections::HashMap;
 use ws::util::Token;
 
 fn main() {
-    let mut communication = networking::Networking::init();
-    let mut lobbies: HashMap<i32, lobby::Lobby> = HashMap::new();
+    let mut communication = Networking::init();
+    let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
     let mut lobby_id = 0;
-    let mut players: HashMap<Token, player::Player> = HashMap::new();
+    let mut players: HashMap<Token, Player> = HashMap::new();
 
     loop {
         let (token, message) = communication.read_message();
@@ -43,8 +46,8 @@ fn handle_input(
     input: String,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
-    players: &mut HashMap<Token, player::Player>,
-    communication: &mut networking::Networking,
+    players: &mut HashMap<Token, Player>,
+    communication: &mut Networking,
 ) {
     let split: std::vec::Vec<&str> = input.split(' ').collect();
     let mut com = split[0].to_string();
@@ -53,7 +56,7 @@ fn handle_input(
 
     let player = players.get(&token).unwrap();
     match &player.state {
-        player::PlayerState::ChooseName => match &*com {
+        PlayerState::ChooseName => match &*com {
             ".name" => player::set_name(split, token, players, communication),
 
             ".help" => lobby::list_choose_name_commands(token, communication),
@@ -64,7 +67,7 @@ fn handle_input(
             }
         },
 
-        player::PlayerState::OutOfLobby => match &*com {
+        PlayerState::OutOfLobby => match &*com {
             ".help" => lobby::list_out_commands(token, communication),
 
             ".join" => lobby::join_lobby(split, token, lobbies, players, communication),
@@ -96,7 +99,7 @@ fn handle_input(
             }
         },
 
-        player::PlayerState::InLobby => {
+        PlayerState::InLobby => {
             let lobby = lobbies.get_mut(&player.lobby).unwrap();
 
             match &*com {
@@ -141,11 +144,7 @@ fn handle_input(
             }
         }
 
-        player::PlayerState::Playing => match &*com {
-            ".decide" => {
-                lobby::decide(split, token, lobbies, players, communication);
-            }
-
+        PlayerState::Playing => match &*com {
             ".help" => {
                 lobby::list_playing_commands(token, communication);
             }
@@ -170,5 +169,57 @@ fn handle_input(
                 communication.send_message(&token, "Bruh that's an invalid command.");
             }
         },
+
+        PlayerState::Choosing => match &*com {
+            ".decide" => {
+                lobby::decide(split, token, lobbies, players, communication);
+            }
+
+            ".help" => {
+                lobby::list_choosing_commands(token, communication);
+            }
+
+            ".thrustee" => {
+                lobby::show_thrustee(token, lobbies, players, communication);
+            }
+
+            ".thrusters" => {
+                lobby::show_thrusters(token, players, communication);
+            }
+
+            ".thrusts" => {
+                lobby::show_thrusts(token, lobbies, players, communication);
+            }
+
+            _ => {
+                communication.send_message(&token, "Bruh... that's invalid...");
+            }
+        }
+
+        PlayerState::Deciding => match &*com {
+            ".decide" => {
+                lobby::decide(split, token, lobbies, players, communication);
+            }
+
+            ".help" => {
+                lobby::list_deciding_commands(token, communication);
+            }
+
+            ".thrustee" => {
+                lobby::show_thrustee(token, lobbies, players, communication);
+            }
+
+            ".thrusters" => {
+                lobby::show_thrusters(token, players, communication);
+            }
+
+            ".thrusts" => {
+                lobby::show_thrusts(token, lobbies, players, communication);
+            }
+
+            _ => {
+                communication.send_message(&token, "Bruh... that's invalid...");
+            }
+        }
     }
 }
