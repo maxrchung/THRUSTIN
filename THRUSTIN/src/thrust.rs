@@ -247,7 +247,7 @@ impl Deck {
         lazy_static! {
             static ref RE: Regex = Regex::new("[_]+").unwrap();
         }
-        let result = RE.replace_all(&thrustee, &(thruster)[..]);
+        let result = RE.replace(&thrustee, &(thruster)[..]);
         result.to_string()
     }
 }
