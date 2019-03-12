@@ -12,18 +12,20 @@ mod thrust;
 
 use std::collections::HashMap;
 use ws::util::Token;
+use std::rc::Rc;
+use std::cell::RefCell;
 
 fn main() {
     let mut communication = networking::Networking::init();
     let mut lobbies: HashMap<i32, lobby::Lobby> = HashMap::new();
-    let mut players: HashMap<Token, player::Player> = HashMap::new();
+    let mut players: HashMap<Token, Rc<RefCell<player::Player>>> = HashMap::new();
 
     loop {
         let (token, message) = communication.read_message();
 
         // Add to players list if not already
         if let None = players.get(&token) {
-            players.insert(token.clone(), player::new(&token));
+            players.insert(token.clone(), Rc::new(RefCell::new(player::new(&token))));
         }
 
         handle_input(
@@ -40,7 +42,7 @@ fn handle_input(
     token: Token,
     input: String,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
-    players: &mut HashMap<Token, player::Player>,
+    players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
     communication: &mut networking::Networking,
 ) {
     let split: std::vec::Vec<&str> = input.split(' ').collect();
@@ -48,7 +50,7 @@ fn handle_input(
     com = com[..com.len()].to_string();
     let is_thruster: bool = true;
 
-    let player = players.get(&token).unwrap();
+    let player = Rc::get_mut(players.get_mut(&token).unwrap()).unwrap().borrow();
     match &player.state {
         player::PlayerState::ChooseName => match &*com {
             ".name" => player::set_name(split, token, players, communication),
@@ -98,15 +100,15 @@ fn handle_input(
                 ".help" => lobby::list_in_commands(token, communication),
 
                 ".leave" => {
-                    if lobby.leave_lobby(token, players, communication) {
+                    if lobby.leave_lobby(token, communication) {
                         let id = lobby.id;
                         lobbies.remove(&id);
                     }
                 }
 
-                ".start" => lobby.start_game(token, players, communication),
+                ".start" => lobby.start_game(token, communication),
 
-                ".who" => lobby.list_lobby_players(token, players, communication),
+                ".who" => lobby.list_lobby_players(token, communication),
                 
                 ".thrustee" => {
                     let valid = lobby::add_item(
@@ -128,9 +130,9 @@ fn handle_input(
                     lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
                 }
 
-                ".host" => lobby.switch_host(split, token, players, communication),
+                ".host" => lobby.switch_host(split, token, communication),
 
-                ".kick" => lobby.kick(split, token, players, communication),
+                ".kick" => lobby.kick(split, token, communication),
                 
                 _ => communication.send_message(&token, "Bruh that's an invalid command."),
             }

@@ -1,10 +1,13 @@
 use crate::networking;
-use crate::player;
+use crate::player::Player;
+use crate::player::PlayerState;
 use crate::thrust;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use std::collections::HashMap;
 use ws::util::Token;
+use std::rc::Rc;
+use std::cell::RefCell;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum LobbyState {
@@ -18,7 +21,7 @@ pub struct Lobby {
     pw: String,
 
     //list of players
-    pub list: std::vec::Vec<Token>,
+    pub list: std::vec::Vec<Rc<RefCell<Player>>>,
 
     //max number of players
     pub max: u32,
@@ -89,7 +92,7 @@ impl Lobby {
         lobby
     }
 
-    fn is_host(&self, player: &player::Player) -> bool {
+    fn is_host(&self, player: &Player) -> bool {
         self.host == self.search_player(&player)
     }
 
@@ -97,19 +100,20 @@ impl Lobby {
         input: std::vec::Vec<&str>,
         id: Token,
         lobbies: &mut HashMap<i32, Lobby>,
-        players: &mut HashMap<Token, player::Player>,
+        players: &mut HashMap<Token, Rc<RefCell<Player>>>,
         communication: &mut networking::Networking,
     ) {
         let max = 64;
         let lobby_id: i32 = lobbies.len() as i32;
 
-        if let Some(player) = players.get_mut(&id) {
+        if let Some(player_p) = players.get_mut(&id) {
 
+            let player = Rc::get_mut(player_p).unwrap().borrow();
             player.lobby = lobby_id.clone() as i32;
-            player.state = player::PlayerState::InLobby;
+            player.state = PlayerState::InLobby;
 
             let mut new_lobby = Lobby::new("".to_string(), max, lobby_id, &mut player.personal_deck);
-            new_lobby.list.push(id.clone());
+            new_lobby.list.push(player_p.clone());
 
             lobbies.insert(lobby_id, new_lobby.clone());
             communication.send_message(&id, &format!("Created lobby: {}", lobby_id));
@@ -119,9 +123,9 @@ impl Lobby {
     pub fn start_game(
         &mut self,
         id: Token,
-        players: &mut HashMap<Token, player::Player>,
         communication: &mut networking::Networking,
     ) {
+/*
         if let Some(pl) = players.get_mut(&id) {
             if !self.is_host(&pl) {
                 communication.send_message(&pl.token, &format!("Only host can start game!"));
@@ -135,7 +139,7 @@ impl Lobby {
         let mut next = "".to_string();
         for (i, token) in &mut self.list.iter().enumerate() {
             let mut p = players.get_mut(&token).unwrap();
-            p.state = player::PlayerState::Playing;
+            p.state = PlayerState::Playing;
 
             for _ in 0..self.hand_size {
                 if let Some(card) = self.deck.thrusters.pop() {
@@ -167,11 +171,24 @@ impl Lobby {
             }
             communication.send_messages(&p.token, messages);
         }
+*/
     }
 
-    fn search_player(&self, player: &player::Player) -> usize {
-        for (i, pl) in self.list.iter().enumerate() {
-            if pl == &player.token {
+    fn search_player(&self, player: &Player) -> usize {
+        for (i, pl) in self.list.iter_mut().enumerate() {
+            let token = Rc::get_mut(pl).unwrap().borrow().token;
+            if token == player.token {
+                return i;
+            }
+        }
+
+        self.list.len()
+    }
+
+    fn search_token(&self, token: &Token) -> usize {
+        for (i, pl) in self.list.iter_mut().enumerate() {
+            let tok = Rc::get_mut(pl).unwrap().borrow().token;
+            if tok == *token {
                 return i;
             }
         }
@@ -182,23 +199,26 @@ impl Lobby {
     pub fn leave_lobby(
         &mut self,
         id: Token,
-        players: &mut HashMap<Token, player::Player>,
         communication: &mut networking::Networking,
     ) -> bool {
-        let pl = players.get_mut(&id).unwrap();
-        let lob_id = pl.lobby;
 
-        pl.state = player::PlayerState::OutOfLobby;
+        let pl_ind = self.search_token(&id);
+        let pl = self.list[pl_ind];
+        let player = Rc::get_mut(&mut pl).unwrap().borrow();
+        let lob_id = player.lobby;
 
-        self.list.remove_item(&id);
+        player.state = PlayerState::OutOfLobby;
+
+        self.list.remove(pl_ind);
 
         communication.send_message(&id, &format!("Left lobby: {}.", lob_id));
-        self.send_message(&format!("{} has left the lobby.", pl.name), communication);
+        self.send_message(&format!("{} has left the lobby.", player.name), communication);
 
         let len = self.list.len();
         if (len != 0) && (len >= self.host) {
             self.host = 0;
-            communication.send_message(&self.list[self.host], "u host now!!");
+            let host = Rc::get_mut(&mut self.list[self.host]).unwrap().borrow().token;
+            communication.send_message(&host, "u host now!!");
         }
 
         len == 0
@@ -207,20 +227,20 @@ impl Lobby {
     pub fn list_lobby_players(
         &self,
         id: Token,
-        players: &mut HashMap<Token, player::Player>,
         communication: &mut networking::Networking,
     ) {
         let mut messages = Vec::new();
 
-        for pl_tok in &self.list {
-            let play = players.get(&pl_tok).unwrap();
-            let name = &play.name;
+        for pl in &self.list {
+            let player = Rc::get_mut(&mut pl).unwrap().borrow();
+
+            let name = &player.name;
 
             let mut person = "";
-            if pl_tok == &id {
+            if &player.token == &id {
                 person = " (You)";
             }
-            let message = if self.is_host(&play) {
+            let message = if self.is_host(&player) {
                 format!("{}: host{}", name, person).to_string()
             } else {
                 format!("{}{}", name, person).to_string()
@@ -239,8 +259,9 @@ impl Lobby {
     pub fn restart_game(
         &mut self,
         communication: &mut networking::Networking,
-        players: &mut HashMap<Token, player::Player>,
+        players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     ) {
+/*
         self.state = LobbyState::Waiting;
         self.curr_points = std::vec!(0; self.max as usize);
         self.deck = thrust::Deck::default();
@@ -251,7 +272,7 @@ impl Lobby {
 
         //add all personal decks and change to inlobby state
         for token in &self.list {
-            let player: &mut player::Player = players.get_mut(&token).unwrap();
+            let player: &mut Player = players.get_mut(&token).unwrap();
             self.deck
                 .thrustees
                 .append(&mut player.personal_deck.thrustees.clone());
@@ -259,7 +280,7 @@ impl Lobby {
                 .thrusters
                 .append(&mut player.personal_deck.thrusters.clone());
             player.deck = thrust::Deck::new();
-            player.state = player::PlayerState::InLobby;
+            player.state = PlayerState::InLobby;
         }
 
         self.deck.sort();
@@ -269,17 +290,21 @@ impl Lobby {
         //thread_rng().shuffle(&mut self.deck.thrustees);
 
         self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.", communication);
+*/
     }
 
     pub fn send_message(&self, message: &str, communication: &mut networking::Networking) {
-        for pl in &self.list {
+/*
+        for player in &self.list {
+            let pl = Rc::get_mut(player).borrow();
             communication.send_message(pl, &message);
         }
+*/
     }
 
     pub fn switch_host(&mut self, split: std::vec::Vec<&str>, token: Token,
-                       players: &mut HashMap<Token, player::Player>,
                        communication: &mut networking::Networking) {
+/*
         if token != self.list[self.host] {
             communication.send_message(&token, "Only host can change the host!");
             return;
@@ -312,12 +337,13 @@ impl Lobby {
         }
 
         communication.send_message(&token, "Player not in lobby.");
+        */
     }
 
 
     pub fn kick(&mut self, split: std::vec::Vec<&str>, token: Token,
-                       players: &mut HashMap<Token, player::Player>,
                        communication: &mut networking::Networking) {
+/*
         if token != self.list[self.host] {
             communication.send_message(&token, "Only host can kick em!");
             return;
@@ -356,6 +382,7 @@ impl Lobby {
         }
 
         communication.send_message(&token, "Player not in lobby.");
+    */
     }
 }
 
@@ -364,9 +391,10 @@ pub fn decide(
     split: std::vec::Vec<&str>,
     token: Token,
     lobbies: &mut HashMap<i32, Lobby>,
-    players: &mut HashMap<Token, player::Player>,
+    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     communication: &mut networking::Networking,
 ) {
+/*
     let player = players.get_mut(&token).unwrap();
     let lob: &mut Lobby = lobbies.get_mut(&player.lobby).unwrap();
 
@@ -450,16 +478,18 @@ pub fn decide(
             );
         }
     };
+*/
 }
 
 pub fn handle_thrust(
     split: std::vec::Vec<&str>,
     token: Token,
     lobbies: &mut HashMap<i32, Lobby>,
-    players: &mut HashMap<Token, player::Player>,
+    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     communication: &mut networking::Networking,
 ) {
-    let player: &mut player::Player = players.get_mut(&token).unwrap();
+/*
+    let player: &mut Player = players.get_mut(&token).unwrap();
     let lob: &mut Lobby = lobbies.get_mut(&player.lobby).unwrap();
 
     if lob.search_player(player) == lob.thrustee {
@@ -556,6 +586,7 @@ pub fn handle_thrust(
             );
         }
     };
+*/
 }
 
 
@@ -571,9 +602,10 @@ pub fn join_lobby(
     input: std::vec::Vec<&str>,
     id: Token,
     lobby: &mut HashMap<i32, Lobby>,
-    players: &mut HashMap<Token, player::Player>,
+    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     communication: &mut networking::Networking,
 ) {
+/*
     if input.len() < 2 {
         communication.send_message(&id, &"Lobby name required!");
         return;
@@ -585,7 +617,7 @@ pub fn join_lobby(
 
             let mut messages = Vec::new();
             if let Some(l) = lob {
-                let mut p: &mut player::Player = players.get_mut(&id).unwrap();
+                let mut p: &mut Player = players.get_mut(&id).unwrap();
 
                 p.state = if l.state == LobbyState::Playing {
                     for _ in 0..l.hand_size {
@@ -604,9 +636,9 @@ pub fn join_lobby(
                         format!("This is your THRUSTEE: {}", &l.current_thrustee).to_string(),
                     );
                     messages.extend(get_thrusters(&p.deck.thrusters));
-                    player::PlayerState::Playing
+                    PlayerState::Playing
                 } else {
-                    player::PlayerState::InLobby
+                    PlayerState::InLobby
                 };
 
                 l.send_message(&format!("{} has joined the lobby.", p.name), communication);
@@ -629,26 +661,31 @@ pub fn join_lobby(
 
         _ => communication.send_message(&id, &"Lmao make a lobby first dumbass"),
     }
+*/
 }
 
 pub fn show_thrusters(
     id: Token,
-    players: &mut HashMap<Token, player::Player>,
+    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     communication: &mut networking::Networking,
 ) {
+/*
     let p = players.get_mut(&id).unwrap();
     communication.send_messages(&p.token, get_thrusters(&p.deck.thrusters));
+*/
 }
 
 pub fn show_thrustee(
     id: Token,
     lobbies: &mut HashMap<i32, Lobby>,
-    players: &mut HashMap<Token, player::Player>,
+    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     communication: &mut networking::Networking,
 ) {
-    let p: &mut player::Player = players.get_mut(&id).unwrap();
+/*
+    let p: &mut Player = players.get_mut(&id).unwrap();
     let lob: &mut Lobby = lobbies.get_mut(&p.lobby).unwrap();
     communication.send_message(&id, &format!("Current THRUSTEE: {}", lob.current_thrustee));
+*/
 }
 
 pub fn list_lobby(
@@ -685,9 +722,10 @@ pub fn list_lobby(
 
 pub fn list_all_players(
     id: Token,
-    players: &mut HashMap<Token, player::Player>,
+    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     communication: &mut networking::Networking,
 ) {
+/*
     let mut messages = Vec::new();
     for pl in players.values() {
 
@@ -696,8 +734,8 @@ pub fn list_all_players(
             person = " (You)";
         }
         
-        let message = if pl.state == player::PlayerState::InLobby
-            || pl.state == player::PlayerState::Playing
+        let message = if pl.state == PlayerState::InLobby
+            || pl.state == PlayerState::Playing
         {
             format!("{} in {}{}", pl.name, pl.lobby, person).to_string()
         } else {
@@ -707,6 +745,7 @@ pub fn list_all_players(
         messages.push(message);
     }
     communication.send_messages(&id, messages);
+*/
 }
 
 pub fn list_out_commands(id: Token, communication: &mut networking::Networking) {
@@ -771,16 +810,17 @@ pub fn add_item(
     input: &std::vec::Vec<&str>,
     id: Token,
     lobby: &mut HashMap<i32, Lobby>,
-    players: &mut HashMap<Token, player::Player>,
+    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     communication: &mut networking::Networking,
     thruster: bool,
 ) -> bool {
+/*
     if input.len() < 2 {
         communication.send_message(&id, &"Thruster/thrustee required!");
         return true;
     }
 
-    let player: &mut player::Player = players.get_mut(&id).unwrap();
+    let player: &mut Player = players.get_mut(&id).unwrap();
 
     let mut new_item = String::new();
     for i in 1..input.len() {
@@ -820,17 +860,18 @@ pub fn add_item(
                 .append(&mut player.personal_deck.thrusters.clone());
         }
     }
-
+*/
     true
 }
 
 pub fn show_thrusts(
     id: Token,
     lobby: &mut HashMap<i32, Lobby>,
-    players: &mut HashMap<Token, player::Player>,
+    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     communication: &mut networking::Networking,
 ) {
-    let player: &mut player::Player = players.get_mut(&id).unwrap();
+/*
+    let player: &mut Player = players.get_mut(&id).unwrap();
     let lob: &mut Lobby = lobby.get_mut(&player.lobby).unwrap();
 
     let indexes = &mut lob.index_to_token.keys().collect::<Vec<&i32>>();
@@ -848,4 +889,5 @@ pub fn show_thrusts(
             ),
         );
     }
+*/
 }
