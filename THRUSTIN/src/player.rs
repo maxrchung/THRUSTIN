@@ -56,15 +56,15 @@ pub fn set_name(
     let p_name = input[1].to_string();
 
     for pl in players.values() {
-        let name = Rc::get_mut(&mut pl).unwrap().borrow().name;
-        if p_name == name {
+        let name = &pl.borrow().name;
+        if &p_name == name {
             communication.send_message(&id, "yo that name exists ya gotta pick something else aight?");
             return;
         }
     }
 
     if let Some(pl) = players.get_mut(&id) {
-        let pl = Rc::get_mut(pl).unwrap().borrow();
+        let mut pl = pl.borrow_mut();
         pl.name = p_name.clone();
         communication.send_message(&id, &format!("Name set to: {}", &pl.name));
         if pl.state == PlayerState::ChooseName {
