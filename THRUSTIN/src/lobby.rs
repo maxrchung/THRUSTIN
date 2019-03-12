@@ -530,88 +530,84 @@ impl Lobby {
             return;
         }
 
-        match split[1].parse::<i32>() {
-            Ok(index) => {
-                for i in 1..split.len() {
-                    let dex = split[i].parse::<i32>().unwrap();
-                    if dex >= player.deck.thrusters.len() as i32 || index < 0 {
-                        communication.send_message(&token, &"That shit's out of bound bro");
-                        return;
-                    }
-                }
 
-                if index < player.deck.thrusters.len() as i32 && index >= 0 {
-                    for player_token in &self.thrusted_players {
-                        if token == *player_token {
-                            communication.send_message(
-                                &player_token,
-                                &format!("You have already THRUSTED, you cannot THRUST again."),
-                            );
-                            return;
-                        }
-                    }
-                    let mut resulting_thrust: String = self.current_thrustee.clone();
-                    let mut to_remove: std::vec::Vec<String> = Vec::new();
-
-                    // Handle mutliple underscores
-                    for i in 1..split.len() {
-                        let picked_thruster = player.deck.thrusters[split[i].parse::<usize>().unwrap()].clone();
-                        to_remove.push(picked_thruster.clone());
-                        resulting_thrust = thrust::Deck::thrust(split[i].parse::<i32>().unwrap(), &picked_thruster, &resulting_thrust);
-                    }
-                    
-                    // Remove thrusted thrusters
-                    let mut updated_thrusters: std::vec::Vec<String> = Vec::new();
-                    for thruster in &player.deck.thrusters {
-                        if !to_remove.contains(thruster) {
-                            updated_thrusters.push(thruster.clone())
-                        }
-                    }
-                    player.deck.thrusters = updated_thrusters;
-
-                    let picked_thruster = player.deck.thrusters.remove(index as usize);
-                    let resulting_thrust =
-                        thrust::Deck::thrust(index, &picked_thruster, &self.current_thrustee);
-                    self.current_thrusts
-                        .insert(player.token, resulting_thrust.clone());
-                    self.index_to_token
-                        .insert((self.current_thrusts.len() - 1) as i32, player.token);
-
-                    for pl in self.list.iter() {
-                        
-                        communication.send_message(
-                            &pl.borrow().token,
-                            &format!(
-                                "{}. {}",
-                                &(self.current_thrusts.len() as i32 - 1),
-                                &resulting_thrust
-                            ),
-                        );
-                    }
-
-                    if let Some(card) = self.deck.thrusters.pop() {
-                        let replenished_thruster = card;
-                        player.deck.thrusters.push(replenished_thruster.clone());
-                    } else {
-                        self.restart_game(communication);
-                        communication.send_message(&token, &"Outta cards, we restartin");
-                        return;
-                    }
-
-                    self.thrusted_players.push(player.token.clone());
-                } else {
-                    communication.send_message(&token, &"That shit's out of bound bro");
-                }
-            }
-            _ => {
+        for player_token in &self.thrusted_players {
+            if token == *player_token {
                 communication.send_message(
-                    &token,
-                    &"That is an invalid parameter, use an index instead",
+                    &player_token,
+                    &format!("You have already THRUSTED, you cannot THRUST again."),
                 );
+                return;
             }
-        };
-    }
+        }
+        /*
+        let count = ;
+        //check all of inputs within range
+        let index = Vec::with_capacity(split.len());
+        for i in 1..split.len() {
+            if let Some(dex) = split[i].parse::<i32>() {
+                if dex >= player.deck.thrusters.len() as i32 || dex < 0 {
+                    communication.send_message(&token, &"That shit's out of bound bro");
+                    return;
+                }
+            } else {
+                communication.send_message(&token, &"That is an invalid parameter, use an index instead");
+                return;
+            }
+        }
 
+        let mut resulting_thrust: String = self.current_thrustee.clone();
+        let mut to_remove: std::vec::Vec<String> = Vec::new();
+
+        // Handle mutliple underscores
+        for i in 1..split.len() {
+            let picked_thruster = player.deck.thrusters[split[i].parse::<usize>().unwrap()].clone();
+            to_remove.push(picked_thruster.clone());
+            resulting_thrust = thrust::Deck::thrust(split[i].parse::<i32>().unwrap(), &picked_thruster, &resulting_thrust);
+        }
+
+        // Remove thrusted thrusters
+        let mut updated_thrusters: std::vec::Vec<String> = Vec::new();
+        for thruster in &player.deck.thrusters {
+            if !to_remove.contains(thruster) {
+                updated_thrusters.push(thruster.clone())
+            }
+        }
+        player.deck.thrusters = updated_thrusters;
+        let picked_thruster = player.deck.thrusters.remove(index as usize);
+
+        let resulting_thrust =
+            thrust::Deck::thrust(index, &picked_thruster, &self.current_thrustee);
+
+        self.current_thrusts
+            .insert(player.token, resulting_thrust.clone());
+
+        self.index_to_token
+            .insert((self.current_thrusts.len() - 1) as i32, player.token);
+
+        for pl in self.list.iter() {
+            communication.send_message(
+                &pl.borrow().token,
+                &format!(
+                    "{}. {}",
+                    &(self.current_thrusts.len() as i32 - 1),
+                    &resulting_thrust
+                ),
+            );
+        }
+
+        if let Some(card) = self.deck.thrusters.pop() {
+            let replenished_thruster = card;
+            player.deck.thrusters.push(replenished_thruster.clone());
+        } else {
+            self.restart_game(communication);
+            communication.send_message(&token, &"Outta cards, we restartin");
+            return;
+        }
+
+        self.thrusted_players.push(player.token.clone());
+         */
+    }
 }
 
 
