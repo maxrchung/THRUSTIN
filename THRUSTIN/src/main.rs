@@ -151,20 +151,21 @@ fn handle_input(
 
         player::PlayerState::Playing => {
             let lobby = {
-                let player = players.get_mut(&token).unwrap().borrow();
+                let player: std::cell::Ref<player::Player> = players.get_mut(&token).unwrap().borrow();
                 lobbies.get_mut(&player.lobby).unwrap()
             };
             match &*com {
-                ".decide" => {
-                    lobby.decide(split, token, communication);
-                }
-
                 ".help" => {
                     lobby::list_playing_commands(token, communication);
                 }
 
                 ".thrust" => {
-                    lobby.handle_thrust(split, token, communication);
+                    if !(lobby.search_token(&token) == lobby.thrustee) {
+                        lobby.handle_thrust(split, token, communication);
+                    }
+                    else {
+                        lobby.decide(split, token, communication);
+                    }
                 }
 
                 ".thrustee" => {

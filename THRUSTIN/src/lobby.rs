@@ -110,18 +110,6 @@ impl Lobby {
         self.list.len()
     }
 
-    fn search_token(&self, token: &Token) -> usize {
-        for (i, pl) in self.list.iter().enumerate() {
-            let tok = pl.borrow().token;
-            if tok == *token {
-                return i;
-            }
-        }
-
-        self.list.len()
-    }
-
-    
     fn send_message(&self, message: &str, communication: &mut networking::Networking) {
         for player in &self.list {
             let pl = player.borrow();
@@ -134,6 +122,17 @@ impl Lobby {
     //////////
     //public//
     //////////
+
+    pub fn search_token(&self, token: &Token) -> usize {
+        for (i, pl) in self.list.iter().enumerate() {
+            let tok = pl.borrow().token;
+            if tok == *token {
+                return i;
+            }
+        }
+
+        self.list.len()
+    }
 
     pub fn make_lobby(
         input: std::vec::Vec<&str>,
@@ -573,10 +572,6 @@ impl Lobby {
             }
         }
         player.deck.thrusters = updated_thrusters;
-        let picked_thruster = player.deck.thrusters.remove(index as usize);
-
-        let resulting_thrust =
-            thrust::Deck::thrust(index, &picked_thruster, &self.current_thrustee);
 
         self.current_thrusts
             .insert(player.token, resulting_thrust.clone());
