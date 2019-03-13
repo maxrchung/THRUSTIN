@@ -151,7 +151,7 @@ impl Lobby {
             player.lobby = lobby_id.clone() as i32;
             player.state = PlayerState::InLobby;
 
-            let mut new_lobby = Lobby::new("".to_string(), max, lobby_id, &mut player.personal_deck);
+            let mut new_lobby = Lobby::new("".to_string(), max, *lobby_id, &mut player.personal_deck);
             new_lobby.list.push(player_p.clone());
 
             lobbies.insert(lobby_id.clone(), new_lobby.clone());

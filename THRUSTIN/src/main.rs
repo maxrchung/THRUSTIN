@@ -17,6 +17,7 @@ use std::cell::RefCell;
 
 fn main() {
     let mut communication = networking::Networking::init();
+    let mut lobby_id = 0;
     let mut lobbies: HashMap<i32, lobby::Lobby> = HashMap::new();
     let mut players: HashMap<Token, Rc<RefCell<player::Player>>> = HashMap::new();
 
