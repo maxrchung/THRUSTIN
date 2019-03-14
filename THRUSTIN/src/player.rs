@@ -9,6 +9,8 @@ pub enum PlayerState {
     OutOfLobby,
     InLobby,
     Playing,
+    Choosing,
+    Deciding
 }
 
 #[derive(Clone, Debug)]

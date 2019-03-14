@@ -51,6 +51,10 @@ pub struct Lobby {
     pub index_to_token: HashMap<i32, Token>,
 
     pub thrusted_players: Vec<Token>,
+
+    pub thrustee_choices: Vec<String>,
+
+    pub max_thrustee_choices: i32
 }
 
 impl Lobby {
@@ -66,6 +70,8 @@ impl Lobby {
             max_points: 7,
             host: 0,
             thrustee: 0,
+            thrustee_choices: Vec::new(),
+            max_thrustee_choices: 3,
             deck: thrust::Deck::default(),
             current_thrustee: String::new(),
             current_thrusts: HashMap::new(),
@@ -137,7 +143,6 @@ impl Lobby {
         self.current_thrustee = self.deck.thrustees.pop().unwrap();
         self.state = LobbyState::Playing;
 
-        let mut next = "".to_string();
         for (i, token) in &mut self.list.iter().enumerate() {
             let mut p = players.get_mut(&token).unwrap();
             p.state = PlayerState::Playing;
@@ -152,26 +157,24 @@ impl Lobby {
                 }
             }
 
-            let instructions = if i == self.thrustee {
-                p.state = PlayerState::Choosing;
-                next = p.name.clone();
-                "You are the THRUSTEE."
-            } else {
-                "You are a THRUSTER."
-            };
+            if i == self.thrustee {
+                // Setup new thrustees
+                for _ in 0..self.max_thrustee_choices {
+                    if let Some(card) = self.deck.thrustees.pop() {
+                        self.thrustee_choices.push(card);
+                    } else {
+                        self.restart_game(communication, players);
+                        return;
+                    }
+                }
 
-            let mut messages = vec![format!("{}", instructions).to_string()];
-            messages.push(
-                format!(
-                    "This is your THRUSTEE for {}: {}",
-                    next, &self.current_thrustee
-                )
-                .to_string(),
-            );
-            if i != self.thrustee {
-                messages.extend(get_thrusters(&p.deck.thrusters));
+                p.state = PlayerState::Choosing;
+                let mut messages = vec!["You are the THRUSTEE. CHOOSE NOW..........".to_string()];
+                messages.extend(self.print_thrustee_choices());
+                communication.send_messages(&p.token, messages);
+            } else {
+                communication.send_message(&p.token, "You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!");
             }
-            communication.send_messages(&p.token, messages);
         }
     }
 
@@ -368,6 +371,14 @@ impl Lobby {
 
         communication.send_message(&token, "Player not in lobby.");
     }
+
+    pub fn print_thrustee_choices(&self) -> Vec<String> {
+        let mut messages = vec!["btw, your THRUSTEE Choices:".to_string()];
+        for (index, thrustee) in self.thrustee_choices.iter().enumerate() {
+            messages.push(format!("{}. {}", &index, &thrustee).to_string());
+        }
+        messages
+    }
 }
 
 pub fn choose(
@@ -381,63 +392,34 @@ pub fn choose(
     let lob = lobbies.get_mut(&player.lobby).unwrap();
 
     if split.len() < 2 {
-        communication.send_message(&token, "ya need to pick a numbert boi");
+        communication.send_message(&token, "ya need to pick a NUMERIC, Boy");
         return;
     }
 
     match split[1].parse::<i32>() {
         Ok(index) => {
-            if index < lob.current_thrusts.len() as i32 && index >= 0 {
-                let chosen_thrust = lob
-                    .current_thrusts
-                    .remove(&lob.index_to_token.get(&index).unwrap())
-                    .unwrap();
-                lob.current_thrusts.clear();
-                lob.thrusted_players.clear();
+            if index < lob.max_thrustee_choices && index >= 0 {
+                let card = lob.thrustee_choices.remove(index as usize);
+                lob.current_thrustee = card;
 
-                // This block also helps solve single player mut reference issues
-                let common = vec![format!(
-                    "THRUSTEE {} has chosen this THRUSTER as the chosen THRUST, bois: {}<br/>",
-                    &player.name, &chosen_thrust
-                )
-                .to_string()];
-                if let Some(card) = lob.deck.thrustees.pop() {
-                    lob.current_thrustee = card;
-                } else {
-                    lob.restart_game(communication, players);
-                    communication.send_message(
-                        &token,
-                        &"chief has notified us and said that we are out of cards",
-                    );
-                    return;
+                for choice in lob.thrustee_choices.iter() {
+                    lob.deck.thrustees.push(choice.clone());
                 }
+                lob.thrustee_choices.clear();
 
-                let next = "".to_string();
-
-                lob.thrustee = (lob.thrustee + 1) % lob.list.len();
-
-                for (i, pl) in lob.list.iter().enumerate() {
-                    let mut messages = common.clone();
+                player.state = PlayerState::Deciding;
+                for (i, token) in lob.list.iter().enumerate() {
+                    let p = players.get(&token).unwrap();
+                    let mut messages = vec![format!("{} has chosen this new THRUSTEE:<br/>{}", &p.name, &lob.current_thrustee).to_string()];
 
                     if i == lob.thrustee {
-                        messages
-                            .push("You are the neXt THRUSTEE! GetT ready to decide!".to_string());
-                        messages.push(
-                            format!("HERE Is your THRUSTEE: {}", &lob.current_thrustee).to_string(),
-                        );
-                    } else {
-                        messages.push("ur a fkin thruster..now.".to_string());
-                        messages.push(
-                            format!(
-                                "HERE Is the next THRUSTEE for {}: {}",
-                                next, &lob.current_thrustee
-                            )
-                            .to_string(),
-                        );
-                        messages.extend(get_thrusters(&players.get(&pl).unwrap().deck.thrusters));
+                        messages.push("get Ready to DECIDE best THRUSTER for THRUSTING!".to_string());
+                        communication.send_messages(token, messages);
                     }
-
-                    communication.send_messages(pl, messages);
+                    else {
+                        messages.extend(get_thrusters(&p.deck.thrusters));
+                        communication.send_messages(token, messages);
+                    }
                 }
             } else {
                 communication.send_message(&token, &"That shit's out of bound bro");
@@ -462,15 +444,6 @@ pub fn decide(
     let player = players.get_mut(&token).unwrap();
     let lob: &mut Lobby = lobbies.get_mut(&player.lobby).unwrap();
 
-    if lob.search_player(&player) != lob.thrustee {
-        communication.send_message(
-            &token,
-            &"You are not allowed to decide because you are a THRUSTER",
-        );
-
-        return;
-    }
-
     if split.len() < 2 {
         communication.send_message(&token, "ya need to pick a numbert boi");
         return;
@@ -486,25 +459,20 @@ pub fn decide(
                 lob.current_thrusts.clear();
                 lob.thrusted_players.clear();
 
-                // This block also helps solve single player mut reference issues
                 let common = vec![format!(
-                    "THRUSTEE {} has chosen this THRUSTER as the chosen THRUST, bois: {}<br/>",
+                    "{} has chosen this THRUSTER as the chosen THRUST, bois:<br/>{}",
                     &player.name, &chosen_thrust
                 )
                 .to_string()];
-                if let Some(card) = lob.deck.thrustees.pop() {
-                    lob.current_thrustee = card;
-                } else {
-                    lob.restart_game(communication, players);
-                    communication.send_message(
-                        &token,
-                        &"chief has notified us and said that we are out of cards",
-                    );
-                    return;
-                }
-                //lob.current_thrustee = lob.deck.thrustees.pop().unwrap();
 
-                let next = "".to_string();
+                for _ in 0..lob.max_thrustee_choices {
+                    if let Some(card) = lob.deck.thrustees.pop() {
+                        lob.thrustee_choices.push(card);
+                    } else {
+                        lob.restart_game(communication, players);
+                        return;
+                    }
+                }
 
                 lob.thrustee = (lob.thrustee + 1) % lob.list.len();
 
@@ -513,20 +481,11 @@ pub fn decide(
 
                     if i == lob.thrustee {
                         messages
-                            .push("You are the neXt THRUSTEE! GetT ready to decide!".to_string());
-                        messages.push(
-                            format!("HERE Is your THRUSTEE: {}", &lob.current_thrustee).to_string(),
-                        );
+                            .push("You are the neXt THRUSTEE! GetT ready to CHOOSE a good THRUSTEE!".to_string());
+                        messages
+                            .extend(lob.print_thrustee_choices());
                     } else {
-                        messages.push("ur a fkin thruster..now.".to_string());
-                        messages.push(
-                            format!(
-                                "HERE Is the next THRUSTEE for {}: {}",
-                                next, &lob.current_thrustee
-                            )
-                            .to_string(),
-                        );
-                        messages.extend(get_thrusters(&players.get(&pl).unwrap().deck.thrusters));
+                        messages.push("get rdy to thrust.....".to_string());
                     }
 
                     communication.send_messages(pl, messages);
@@ -553,15 +512,6 @@ pub fn handle_thrust(
 ) {
     let player: &mut Player = players.get_mut(&token).unwrap();
     let lob: &mut Lobby = lobbies.get_mut(&player.lobby).unwrap();
-
-    if lob.search_player(player) == lob.thrustee {
-        communication.send_message(
-            &token,
-            &"You are not allowed to THRUST because you are a THRUSTEE",
-        );
-
-        return;
-    }
 
     if split.len() < 2 {
         communication.send_message(&token, &"Index required!");
@@ -613,6 +563,7 @@ pub fn handle_thrust(
                 }
                 player.deck.thrusters = updated_thrusters;
 
+                // Handle picked
                 let picked_thruster = player.deck.thrusters.remove(index as usize);
                 let resulting_thrust =
                     thrust::Deck::thrust(index, &picked_thruster, &lob.current_thrustee);
@@ -637,7 +588,6 @@ pub fn handle_thrust(
                     player.deck.thrusters.push(replenished_thruster.clone());
                 } else {
                     lob.restart_game(communication, players);
-                    communication.send_message(&token, &"Outta cards, we restartin");
                     return;
                 }
 

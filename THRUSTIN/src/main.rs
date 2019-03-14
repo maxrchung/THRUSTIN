@@ -62,8 +62,7 @@ fn handle_input(
             ".help" => lobby::list_choose_name_commands(token, communication),
 
             _ => {
-                communication.send_message(&token, "Bruh that's an invalid command.");
-                lobby::list_choose_name_commands(token, communication);
+                communication.send_message(&token, "Bruh that's an invalid command....    enter .help");
             }
         },
 
@@ -95,7 +94,7 @@ fn handle_input(
             ".who" => lobby::list_all_players(token, players, communication),
 
             _ => {
-                communication.send_message(&token, "Bruh that's an invalid command.");
+                communication.send_message(&token, "Bruh that's an invalid command...!.    try .help");
             }
         },
 
@@ -140,7 +139,7 @@ fn handle_input(
 
                 ".kick" => lobby.kick(split, token, players, communication),
 
-                _ => communication.send_message(&token, "Bruh that's an invalid command."),
+                _ => communication.send_message(&token, "Bruh that's an invalid command. enter .help"),
             }
         }
 
@@ -166,12 +165,12 @@ fn handle_input(
             }
 
             _ => {
-                communication.send_message(&token, "Bruh that's an invalid command.");
+                communication.send_message(&token, "Bruh that's an invalid command. enter .help");
             }
         },
 
         PlayerState::Choosing => match &*com {
-            ".decide" => {
+            ".choose" => {
                 lobby::choose(split, token, lobbies, players, communication);
             }
 
@@ -192,7 +191,7 @@ fn handle_input(
             }
 
             _ => {
-                communication.send_message(&token, "Bruh... that's invalid...");
+                communication.send_message(&token, "Bruh... that's invalid... enter .help");
             }
         }
 
@@ -218,7 +217,7 @@ fn handle_input(
             }
 
             _ => {
-                communication.send_message(&token, "Bruh... that's invalid...");
+                communication.send_message(&token, "Broski... that's invalid... enter .help");
             }
         }
     }
