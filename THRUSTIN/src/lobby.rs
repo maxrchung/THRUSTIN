@@ -169,7 +169,7 @@ impl Lobby {
                 }
 
                 p.state = PlayerState::Choosing;
-                let mut messages = vec!["You are the THRUSTEE. CHOOSE NOW..........".to_string()];
+                let mut messages = vec!["You are the THRUSTEE. CHOOSE NOW..........<br/>".to_string()];
                 messages.extend(self.print_thrustee_choices());
                 communication.send_messages(&p.token, messages);
             } else {
@@ -373,7 +373,7 @@ impl Lobby {
     }
 
     pub fn print_thrustee_choices(&self) -> Vec<String> {
-        let mut messages = vec!["btw, your THRUSTEE Choices:".to_string()];
+        let mut messages = vec!["your THRUSTEE Choices:".to_string()];
         for (index, thrustee) in self.thrustee_choices.iter().enumerate() {
             messages.push(format!("{}. {}", &index, &thrustee).to_string());
         }
@@ -410,7 +410,7 @@ pub fn choose(
                 player.state = PlayerState::Deciding;
                 for (i, token) in lob.list.iter().enumerate() {
                     let p = players.get(&token).unwrap();
-                    let mut messages = vec![format!("{} has chosen this new THRUSTEE:<br/>{}", &p.name, &lob.current_thrustee).to_string()];
+                    let mut messages = vec![format!("{} has chosen this new THRUSTEE:<br/>{}<br/>", &p.name, &lob.current_thrustee).to_string()];
 
                     if i == lob.thrustee {
                         messages.push("get Ready to DECIDE best THRUSTER for THRUSTING!".to_string());
@@ -459,8 +459,10 @@ pub fn decide(
                 lob.current_thrusts.clear();
                 lob.thrusted_players.clear();
 
+                player.state = PlayerState::Playing;
+
                 let common = vec![format!(
-                    "{} has chosen this THRUSTER as the chosen THRUST, bois:<br/>{}",
+                    "{} has chosen this THRUSTER as the chosen THRUST, bois:<br/>{}<br/>",
                     &player.name, &chosen_thrust
                 )
                 .to_string()];
@@ -480,6 +482,8 @@ pub fn decide(
                     let mut messages = common.clone();
 
                     if i == lob.thrustee {
+                        let thrustee_player = players.get_mut(&pl).unwrap();
+                        thrustee_player.state = PlayerState::Choosing;
                         messages
                             .push("You are the neXt THRUSTEE! GetT ready to CHOOSE a good THRUSTEE!".to_string());
                         messages
