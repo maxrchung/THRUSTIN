@@ -112,6 +112,8 @@ fn handle_input(
             match &*com {
                 ".help" => lobby::list_in_commands(token, communication),
 
+                ".name" => player::set_name(split, token, players, communication),
+                
                 ".leave" => {
                     if lobby.leave_lobby(token, communication) {
                         let id = lobby.id;
@@ -119,10 +121,22 @@ fn handle_input(
                     }
                 }
 
-                ".start" => lobby.start_game(token, communication),
+                ".info" => lobby.info(token, communication),
 
                 ".who" => lobby.list_lobby_players(token, communication),
 
+                ".host" => lobby.switch_host(split, token, communication),
+
+                ".kick" => lobby.kick(split, token, communication),
+
+                ".pass" => lobby.set_password(split, token, communication),
+
+                ".points" => lobby.point_max(split, token, communication),
+
+                ".players" => lobby.player_max(split, token, communication),
+
+                ".start" => lobby.start_game(token, communication),
+                
                 ".thrustee" => {
                     let valid = lobby::add_item(
                         &split,
@@ -137,15 +151,9 @@ fn handle_input(
                     }
                 }
 
-                ".name" => player::set_name(split, token, players, communication),
-
                 ".thruster" => {
                     lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
                 }
-
-                ".host" => lobby.switch_host(split, token, communication),
-
-                ".kick" => lobby.kick(split, token, communication),
                 
                 _ => communication.send_message(&token, "Bruh that's an invalid command. enter .help"),
             }
