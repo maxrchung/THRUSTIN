@@ -103,13 +103,13 @@ impl Networking {
     }
 
     // Send message to client with the corresponding token
-    pub fn send_message(&mut self, token: &Token, message: &str) {
+    pub fn send_message(&self, token: &Token, message: &str) {
         let connections_lock = self.connections.lock().unwrap();
         let sender = connections_lock.get(&token).unwrap();
         sender.send(message).unwrap();
     }
 
-    pub fn send_messages(&mut self, token: &Token, messages: Vec<String>) {
+    pub fn send_messages(&self, token: &Token, messages: Vec<String>) {
         let connections_lock = self.connections.lock().unwrap();
         let sender = connections_lock.get(&token).unwrap();
         let message = messages.join("<br/>");
