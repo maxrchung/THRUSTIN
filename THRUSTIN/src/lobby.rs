@@ -525,7 +525,6 @@ impl Lobby {
         &mut self,
         communication: &Networking
     ) {
-/*
         self.state = LobbyState::Waiting;
         self.curr_points = std::vec!(0; self.max as usize);
         self.deck = thrust::Deck::default();
@@ -533,9 +532,10 @@ impl Lobby {
         self.current_thrusts = HashMap::new();
         self.index_to_token = HashMap::new();
         self.thrusted_players = Vec::new();
+
         //add all personal decks and change to inlobby state
-        for token in &self.list {
-            let player: &mut Player = players.get_mut(&token).unwrap();
+        for rc in &self.list {
+            let mut player = self.list[self.search_token(&rc.borrow_mut().token)].borrow_mut();
             self.deck
                 .thrustees
                 .append(&mut player.personal_deck.thrustees.clone());
@@ -549,7 +549,6 @@ impl Lobby {
         self.deck.thrusters.shuffle(&mut thread_rng());
         self.deck.thrustees.shuffle(&mut thread_rng());
         self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.", communication);
-*/
     }
 
     
@@ -967,52 +966,52 @@ pub fn add_item(
     communication: &Networking,
     thruster: bool,
 ) -> bool {
-/*
     if input.len() < 2 {
         communication.send_message(&token, &"Thruster/thrustee required!");
         return true;
     }
 
-    let player: &mut Player = players.get_mut(&token).unwrap();
+    if let Some(player_p) = players.get_mut(&token) {
+        let mut player = player_p.borrow_mut();
 
-    let mut new_item = String::new();
-    for i in 1..input.len() {
-        new_item.push_str(input[i as usize]);
-        new_item.push_str(" ");
-    }
-    new_item.pop();
+        let mut new_item = String::new();
+        for i in 1..input.len() {
+            new_item.push_str(input[i as usize]);
+            new_item.push_str(" ");
+        }
+        new_item.pop();
 
-    if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
-        || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
-    {
-        communication.send_message(&token, &"Please surround the thruster/thrustee with quotes.");
-        return true;
-    }
-    new_item.pop();
-    new_item.remove(0);
+        if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
+            || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
+        {
+            communication.send_message(&token, &"Please surround the thruster/thrustee with quotes.");
+            return true;
+        }
+        new_item.pop();
+        new_item.remove(0);
 
-    if !thruster && !new_item.contains("_") {
-        return false;
-    }
+        if !thruster && !new_item.contains("_") {
+            return false;
+        }
 
-    if thruster {
-        player.personal_deck.add_thruster(&new_item);
-        communication.send_message(&token, &format!("Added \"{}\" to thrusters!", &new_item));
-    } else {
-        player.personal_deck.add_thrustee(&new_item);
-        communication.send_message(&token, &format!("Added \"{}\" to thrustees!", &new_item));
-    }
+        if thruster {
+            player.personal_deck.add_thruster(&new_item);
+            communication.send_message(&token, &format!("Added \"{}\" to thrusters!", &new_item));
+        } else {
+            player.personal_deck.add_thrustee(&new_item);
+            communication.send_message(&token, &format!("Added \"{}\" to thrustees!", &new_item));
+        }
 
-    if let Some(lob) = lobby.get_mut(&player.lobby) {
-        if lob.state == LobbyState::Waiting {
-            lob.deck
-                .thrustees
-                .append(&mut player.personal_deck.thrustees.clone());
-            lob.deck
-                .thrusters
-                .append(&mut player.personal_deck.thrusters.clone());
+        if let Some(lob) = lobby.get_mut(&player.lobby) {
+            if lob.state == LobbyState::Waiting {
+                lob.deck
+                    .thrustees
+                    .append(&mut player.personal_deck.thrustees.clone());
+                lob.deck
+                    .thrusters
+                    .append(&mut player.personal_deck.thrusters.clone());
+            }
         }
     }
-*/
     true
 }
