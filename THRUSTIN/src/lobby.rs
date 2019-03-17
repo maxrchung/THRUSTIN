@@ -532,10 +532,11 @@ impl Lobby {
         self.current_thrusts = HashMap::new();
         self.index_to_token = HashMap::new();
         self.thrusted_players = Vec::new();
+        self.thrustee_choices = Vec::new();
 
         //add all personal decks and change to inlobby state
         for rc in &self.list {
-            let mut player = self.list[self.search_token(&rc.borrow_mut().token)].borrow_mut();
+            let mut player = rc.borrow_mut();
             self.deck
                 .thrustees
                 .append(&mut player.personal_deck.thrustees.clone());
@@ -665,6 +666,7 @@ impl Lobby {
 
                     if restart {
                         self.restart_game(communication);
+                        return;
                     }
 
                     // Assign next THRUSTEE
@@ -792,6 +794,7 @@ impl Lobby {
 
                 if restart {
                     self.restart_game(communication);
+                    return;
                 }
                 else {
                     // Notify message
