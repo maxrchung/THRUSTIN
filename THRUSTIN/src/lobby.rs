@@ -190,7 +190,7 @@ impl Lobby {
         for pl in &self.list {
             let player = pl.borrow();
             let name = &player.name;
-
+ 
             let mut person = "";
             if &player.token == &token {
                 person = " (You)";
@@ -263,6 +263,11 @@ impl Lobby {
 
         match input[1].to_string().parse::<usize>() {
             Ok(max) => {
+                if max > 64 {
+                    communication.send_message(&token, &format!("woah thats 2many people chill! haha"));
+                    return;
+                }
+
                 if max < self.list.len() {
                     communication.send_message(&token, &format!("too many players in here right now man!"));
                     return;
@@ -336,18 +341,25 @@ impl Lobby {
         for (i, players) in self.list.iter().enumerate() {
             let pl = players.borrow();
             if pl.name == kick {
-                communication.send_message(&pl.token, "ur r kicked!!");
-                communication.send_message(&token, &format!("u rly kicedk {} out!", pl.name));
                 kick_ind = i as i32;
+
+
                 break;
             }
         }
 
         if kick_ind >= 0 {
-            self.list[kick_ind as usize].borrow_mut().state = PlayerState::OutOfLobby;
-            self.list[kick_ind as usize].borrow_mut().lobby = -1;
+            {
+                let mut pl = self.list[kick_ind as usize].borrow_mut();
+                pl.state = PlayerState::OutOfLobby;
+                pl.lobby = -1;
+                communication.send_message(&pl.token, "ur r kicked!!");
+                communication.send_message(&token, &format!("u rly kicedk {} out!", pl.name));
+            }
 
             self.list.remove(kick_ind as usize);
+
+
             return;
         }
 
@@ -369,7 +381,6 @@ impl Lobby {
 
         match input[1].to_string().parse::<i32>() {
             Ok(lobby_id) => {
-                
 
                 let mut messages = Vec::new();
                 if let Some(lob) = lobby.get_mut(&lobby_id) {
