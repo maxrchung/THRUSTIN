@@ -732,9 +732,22 @@ impl Lobby {
                     let player_clone = self.list[self.search_token(&token)].clone();
                     let mut player = player_clone.borrow_mut();
 
+                    // Check correct # of thrusters
+                    let num_thrusters = input.len() as i32 - 1;
+                    let num_underscore = thrust::Deck::count_underscore(&self.current_thrustee);
+                    if num_thrusters != num_underscore {
+                        communication.send_message(&token, &"bro that ain't the right number of thrusters");
+                        return;
+                    }
+                    let mut indexes: Vec<i32> = Vec::new();
                     // Check thrust out of bounds
                     for i in 1..input.len() {
                         let dex = input[i].parse::<i32>().unwrap();
+                        if indexes.contains(&dex) { // Check if dupes
+                            communication.send_message(&token, &"y'ain't allowed to thrust duplicate thrusters broski");
+                            return;
+                        }
+                        indexes.push(dex);
                         if dex >= player.deck.thrusters.len() as i32 || index < 0 {
                             communication.send_message(&token, &"That shit's out of bound bro");
                             return;

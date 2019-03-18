@@ -141,7 +141,7 @@ impl Default for Deck {
 		],
 
 		 thrustees: 
-		  vec!["Every day before Kenny sleeps he really likes _____.".to_string(), 
+		  vec!["Every day before Kenny sleeps he really likes _____.".to_string(),
          "Before heading over to the cotton fields you need to make sure to grab your _____.".to_string(),
 		 "I like whacking it to _____ while playing osu!.".to_string(), 
          "Before _____ was banned I really liked it.".to_string(), 
@@ -249,6 +249,17 @@ impl Deck {
         }
         let result = RE.replace(&thrustee, &(thruster)[..]);
         result.to_string()
+    }
+
+    pub fn count_underscore(thrustee: &String) -> i32 {
+        lazy_static! {
+            static ref RE: Regex = Regex::new("([_]+)").unwrap();
+        }
+        let mut count: i32 = 0;
+        for _ in RE.find_iter(thrustee) {
+            count += 1;
+        }
+        return count;
     }
 }
 
