@@ -41,11 +41,11 @@ pub struct Lobby {
     //host of lobby
     pub host: usize,
 
-    //current thrustee
+    //current thrustee (player)
     pub thrustee: usize,
 
     pub deck: thrust::Deck,
-
+    // current thrustee (card)
     pub current_thrustee: String,
 
     pub current_thrusts: HashMap<Token, String>,
@@ -385,14 +385,16 @@ impl Lobby {
                 let mut messages = Vec::new();
                 if let Some(lob) = lobby.get_mut(&lobby_id) {
 
+                    // Lobby full check
                     if lob.list.len() >= lob.max {
                         communication.send_message(&token, &"bro this lobbBY is FULLLLL!!");
                         return;
                     }
-
+                    
+                    //Lobby Password Check
                     if lob.pw != "" {
                         if input.len() < 3 {
-                            communication.send_message(&token, &"Ya need a password BR)");
+                            communication.send_message(&token, &"Ya need a password BR)"); 
                             return;
                         } else if lob.pw != input[2] {
                             communication.send_message(&token, &"loll wrong pw haha");
@@ -402,8 +404,19 @@ impl Lobby {
 
                     if let Some(player_p) = players.get_mut(&token) {
                         let mut p = player_p.borrow_mut();
+                        messages.push(format!("Joined: {:#?}", &lobby_id));
+
+                        // add players' personal deck (.thrustee/.thruster) to lobby deck
+                        lob.deck
+                            .thrustees
+                            .append(&mut p.personal_deck.thrustees.clone());
+                        lob.deck
+                            .thrusters
+                            .append(&mut p.personal_deck.thrusters.clone());
 
                         p.state = if lob.state == LobbyState::Playing {
+                            
+                            // Distribute thrusters to player
                             for _ in 0..lob.hand_size {
                                 if let Some(card) = lob.deck.thrusters.pop() {
                                     p.deck.thrusters.push(card.clone());
@@ -414,31 +427,49 @@ impl Lobby {
                                     return;
                                 }
                             }
+                            
+                            let thrustee = lob.list[lob.thrustee].borrow();
+                            let mut wait: bool = false;
+                            // Handle cases where thrustee is currently choosing/deciding differently
+                            match thrustee.state {
+                                PlayerState::Playing => {
+                                    messages.push(
+                                        format!("This is your THRUSTEE: {}", &lob.current_thrustee).to_string(),
+                                    );
+                                    messages.extend(get_thrusters(&p.deck.thrusters));
+                                }
 
-                            messages.push("You are a THRUSTER.".to_string());
-                            messages.push(
-                                format!("This is your THRUSTEE: {}", &lob.current_thrustee).to_string(),
-                            );
-                            messages.extend(get_thrusters(&p.deck.thrusters));
-                            PlayerState::Playing
+                                PlayerState::Choosing => { // NOTE: Player is currently able to thrust into PREVIOUS thrustee gotta FIXER it later 
+                                    wait = true;
+                                    messages.push(
+                                        "Thrustee is currently CHOOSING next thrustee. Hold on tight!".to_string()
+                                    );
+                                }
+
+                                PlayerState::Deciding => {
+                                    messages.push(
+                                        format!("This is your THRUSTEE: {}", &lob.current_thrustee).to_string(),
+                                    );
+                                    messages.extend(get_thrusters(&p.deck.thrusters));
+                                }
+
+                                _ => ()
+                            }
+
+                            if wait {
+                                PlayerState::Waiting
+                            } else {
+                                PlayerState::Playing
+                            }
                         } else {
                             PlayerState::InLobby
                         };
 
                         lob.send_message(&format!("{} has joined the lobby.", p.name), communication);
-
+                        // adding the new player to lobby 
                         p.lobby = lob.id;
                         lob.list.push(player_p.clone());
-                        messages.push(format!("Joined: {:#?}", &lobby_id));
                         communication.send_messages(&token, messages);
-
-                        // add players' personal deck (.thrustee/.thruster) to lobby deck
-                        lob.deck
-                            .thrustees
-                            .append(&mut p.personal_deck.thrustees.clone());
-                        lob.deck
-                            .thrusters
-                            .append(&mut p.personal_deck.thrusters.clone());
                         }
                     else {
                         return;
@@ -448,7 +479,7 @@ impl Lobby {
                 }
             }
 
-            _ => communication.send_message(&token, &"Lmao make a lobby first dumbass"),
+            _ => communication.send_message(&token, &"nibba that is a invalid input my nibba"),
         }
     }
 
@@ -605,8 +636,13 @@ impl Lobby {
 
                     // Notify players
                     for (i, player_cell) in self.list.iter().enumerate() {
-                        let p = player_cell.borrow();
+                        let mut p = player_cell.borrow_mut();
                         let mut messages = vec![format!("{} has chosen this new THRUSTEE:<br/>{}<br/>", &p.name, &self.current_thrustee).to_string()];
+
+                        // Change Waiting players to Playing
+                        if p.state == PlayerState::Waiting {
+                            p.state = PlayerState::Playing;
+                        }
 
                         if i == self.thrustee {
                             messages.push("get Ready to DECIDE best THRUSTER for THRUSTING!".to_string());

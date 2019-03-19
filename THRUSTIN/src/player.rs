@@ -13,7 +13,8 @@ pub enum PlayerState {
     InLobby,
     Playing,
     Choosing,
-    Deciding
+    Deciding,
+    Waiting,
 }
 
 #[derive(Clone, Debug)]

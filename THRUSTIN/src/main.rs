@@ -217,6 +217,17 @@ fn handle_input(
                     communication.send_message(&token, "Broski... that's invalid... enter .help");
                 }
             }
+        },
+
+        PlayerState::Waiting => {
+            match &*com {
+                ".thrust" => {
+                    communication.send_message(&token, "Chill out homeboy... you needa w8 for THRUSTEE to CHOOSE...");
+                }
+                _ => {
+                    communication.send_message(&token, "Broham you gotta wait it out brother");
+                }
+            }
         }
     }
 }
