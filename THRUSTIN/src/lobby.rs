@@ -904,6 +904,21 @@ impl Lobby {
             }
         };
     }
+
+    pub fn display_points(
+        &self,
+        token: Token,
+        communication: &Networking,
+    ) {
+        let mut messages = Vec::new();
+
+        for rc in &self.list {
+            let player = rc.borrow();
+            messages.push(format!("{}: {}", player.name, player.points));
+        }
+        
+        communication.send_messages(&token, messages);
+    }
 }
 
 pub fn get_thrusters(thrusters: &Vec<String>) -> Vec<String> {
@@ -1026,6 +1041,7 @@ pub fn list_playing_commands(token: Token, communication: &Networking) {
             "'.thrust [#]' THRUST your [#] card".to_string(),
             "'.thrustee' show the current THRUSTEE".to_string(),
             "'.thrusters' show your THRUSTERS".to_string(),
+            "'.points' to see current points".to_string(),
         ],
     );
 }
@@ -1039,6 +1055,7 @@ pub fn list_choosing_commands(token: Token, communication: &Networking) {
             "'.help' this is it chief".to_string(),
             "'.thrustee' show the current THRUSTEE".to_string(),
             "'.thrusters' show your THRUSTERS".to_string(),
+            "'.points' to see current points".to_string(),
         ],
     );
 }
@@ -1052,6 +1069,18 @@ pub fn list_deciding_commands(token: Token, communication: &Networking) {
             "'.help' this is it chief".to_string(),
             "'.thrustee' show the current THRUSTEE".to_string(),
             "'.thrusters' show your THRUSTERS".to_string(),
+            "'.points' to see current points".to_string(),
+        ],
+    );
+}
+
+pub fn list_waiting_commands(token: Token, communication: &Networking) {
+    communication.send_messages(
+        &token,
+        vec![
+            "Valid commands:".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.points' to see current points".to_string(),
         ],
     );
 }

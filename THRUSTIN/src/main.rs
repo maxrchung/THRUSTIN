@@ -173,6 +173,10 @@ fn handle_input(
                     lobby.handle_thrust(split, token, communication);
                 }
 
+                ".points" => {
+                    lobby.display_points(token, communication);
+                }
+
                 _ => {
                     communication.send_message(&token, "Bruh that's an invalid command.");
                 }
@@ -191,6 +195,10 @@ fn handle_input(
 
                 ".help" => {
                     lobby::list_choosing_commands(token, communication);
+                }
+
+                ".points" => {
+                    lobby.display_points(token, communication);
                 }
 
                 _ => {
@@ -213,6 +221,10 @@ fn handle_input(
                     lobby::list_deciding_commands(token, communication);
                 }
 
+                ".points" => {
+                    lobby.display_points(token, communication);
+                }
+
                 _ => {
                     communication.send_message(&token, "Broski... that's invalid... enter .help");
                 }
@@ -220,12 +232,24 @@ fn handle_input(
         },
 
         PlayerState::Waiting => {
+            let lobby = {
+                let player = players.get_mut(&token).unwrap().borrow();
+                lobbies.get_mut(&player.lobby).unwrap()
+            };
             match &*com {
+                ".points" => {
+                    lobby.display_points(token, communication);
+                }
+
                 ".thrust" => {
                     communication.send_message(&token, "Chill out homeboy... you needa w8 for THRUSTEE to CHOOSE...");
                 }
+
+                ".help" => {
+                    lobby::list_waiting_commands(token, communication);
+                }
                 _ => {
-                    communication.send_message(&token, "Broham you gotta wait it out brother");
+                    communication.send_message(&token, "Broham you gotta wait it out brother.. enter .help");
                 }
             }
         }
