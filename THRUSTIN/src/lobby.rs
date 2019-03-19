@@ -29,7 +29,6 @@ pub struct Lobby {
     pub hand_size: u32,
 
     //points
-    pub curr_points: std::vec::Vec<u32>,
     pub max_points: u32,
 
     //lobby id
@@ -45,7 +44,7 @@ pub struct Lobby {
     pub thrustee: usize,
 
     pub deck: thrust::Deck,
-    // current thrustee (card)
+    //current thrustee (card)
     pub current_thrustee: String,
 
     pub current_thrusts: HashMap<Token, String>,
@@ -68,7 +67,6 @@ impl Lobby {
             id: id,
             state: LobbyState::Waiting,
             hand_size: 5,
-            curr_points: std::vec!(0; max as usize),
             max_points: 7,
             host: 0,
             thrustee: 0,
@@ -90,8 +88,6 @@ impl Lobby {
             .thrusters
             .append(&mut pers_deck.thrusters.clone());
         lobby.deck.sort();
-        //thread_rng().shuffle(&mut lobby.deck.thrusters);
-        //thread_rng().shuffle(&mut lobby.deck.thrustees);
         lobby.deck.thrusters.shuffle(&mut thread_rng());
         lobby.deck.thrustees.shuffle(&mut thread_rng());
         lobby
@@ -240,6 +236,10 @@ impl Lobby {
 
         match input[1].to_string().parse::<u32>() {
             Ok(max) => {
+                if max == 0 {
+                    communication.send_message(&token, "bro dont make it 0 wtf man");
+                    return;
+                }
                 self.max_points = max;
                 communication.send_message(&token, &format!("max points set to {}", self.max_points));
             },
@@ -406,6 +406,9 @@ impl Lobby {
                         let mut p = player_p.borrow_mut();
                         messages.push(format!("Joined: {:#?}", &lobby_id));
 
+                        // Set points to 0 (just in case?)
+                        p.points = 0;
+
                         // add players' personal deck (.thrustee/.thruster) to lobby deck
                         lob.deck
                             .thrustees
@@ -562,13 +565,11 @@ impl Lobby {
         }
     }
 
-    
-    pub fn restart_game(
+    pub fn clear_game(
         &mut self,
         communication: &Networking
     ) {
         self.state = LobbyState::Waiting;
-        self.curr_points = std::vec!(0; self.max as usize);
         self.deck = thrust::Deck::default();
         self.current_thrustee = String::new();
         self.current_thrusts = HashMap::new();
@@ -579,6 +580,8 @@ impl Lobby {
         //add all personal decks and change to inlobby state
         for rc in &self.list {
             let mut player = rc.borrow_mut();
+            player.points = 0; // RESET PTS
+
             self.deck
                 .thrustees
                 .append(&mut player.personal_deck.thrustees.clone());
@@ -591,9 +594,25 @@ impl Lobby {
         self.deck.sort();
         self.deck.thrusters.shuffle(&mut thread_rng());
         self.deck.thrustees.shuffle(&mut thread_rng());
-        self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.", communication);
     }
 
+    pub fn handle_winner(
+        &mut self,
+        communication: &Networking,
+        winner_dex: usize
+    ) {
+        self.clear_game(communication);
+        let winner_name = self.list[winner_dex].borrow_mut().name.clone();
+        self.send_message(&format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, Thrustin'ers!", winner_name), communication);
+    }
+    
+    pub fn restart_game(
+        &mut self,
+        communication: &Networking
+    ) {
+        self.clear_game(communication);
+        self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.", communication);
+    }
     
     pub fn print_thrustee_choices(&self) -> Vec<String> {
         let mut messages = vec!["your THRUSTEE Choices:".to_string()];
@@ -711,6 +730,23 @@ impl Lobby {
                         }
                     }
 
+                    { // wew lad
+                        // Assign picked thruster a point
+                        let tkn = self.search_token(self.index_to_token.get(&index).unwrap());
+
+                        let pts: u32 = {
+                            let mut chosen_thruster = self.list[tkn].borrow_mut();
+                            chosen_thruster.points += 1;
+                            chosen_thruster.points.clone()
+                        };
+
+                        // Check if winner
+                        if pts >= self.max_points {
+                            self.handle_winner(communication, tkn); 
+                            return;
+                        }
+                    }
+
                     if restart {
                         self.restart_game(communication);
                         return;
@@ -725,7 +761,6 @@ impl Lobby {
                         &name, &chosen_thrust
                     )
                     .to_string()];
-
 
                     for (i, pl) in self.list.iter().enumerate() {
                         let mut messages = common.clone();

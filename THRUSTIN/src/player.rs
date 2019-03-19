@@ -32,6 +32,8 @@ pub struct Player {
     pub deck: thrust::Deck,
 
     pub personal_deck: thrust::Deck,
+
+    pub points: u32,
 }
 
 pub fn new(token: &ws::util::Token) -> Player {
@@ -42,6 +44,7 @@ pub fn new(token: &ws::util::Token) -> Player {
         lobby: -1,
         deck: thrust::Deck::new(),
         personal_deck: thrust::Deck::new(),
+        points: 0,
     }
 }
 
