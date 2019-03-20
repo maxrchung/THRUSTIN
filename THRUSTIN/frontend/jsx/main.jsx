@@ -5,10 +5,13 @@ import SanitizedHTML from "react-sanitized-html";
 
 function Message(props) {
     return (
-        <p>
-            <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
-            <SanitizedHTML allowedTags={["br"]} html={props.content} />
-        </p>
+        <div>
+            <p>
+                <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
+                <SanitizedHTML allowedTags={["br"]} html={props.content} />
+            </p>
+            <hr/>
+        </div>
     );
 }
 
@@ -67,8 +70,9 @@ class Client extends React.Component {
 
     render() {
         return (
-            <Container>
+            <Container fluid={true}>
                 <div id="messages">
+                    <hr/>
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>

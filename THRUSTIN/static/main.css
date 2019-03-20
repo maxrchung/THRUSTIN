@@ -6,13 +6,15 @@ html {
 body {
     font-family: 'Cousine', monospace;
     height: 100%;
+    color: #ffd1dc;
+    background-color: black;
 }
 
 #root {
     height: 100%;
 }
 
-.container {
+.container-fluid {
     display: flex;
     height: 100%;
     flex-direction: column;
@@ -22,4 +24,9 @@ body {
 #messages {
     max-height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+}
+
+hr {
+    border-top: 1px solid rgba(255,209,220,.2);
 }
