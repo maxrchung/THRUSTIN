@@ -851,8 +851,11 @@ impl Lobby {
                     let mut to_remove: std::vec::Vec<String> = Vec::new();
                     // Handle mutliple underscores
                     for i in 1..input.len() {
-                        let picked_thruster =
-                            player.deck.thrusters[input[i].parse::<usize>().unwrap()].clone();
+                        // Surround with <u> to underline text
+                        let picked_thruster = format!(
+                            "<u>{}</u>",
+                            player.deck.thrusters[input[i].parse::<usize>().unwrap()].clone()
+                        );
                         to_remove.push(picked_thruster.clone());
                         resulting_thrust = thrust::Deck::thrust(
                             input[i].parse::<i32>().unwrap(),

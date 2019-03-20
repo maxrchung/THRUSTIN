@@ -8,7 +8,7 @@ function Message(props) {
         <div>
             <p>
                 <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
-                <SanitizedHTML allowedTags={["br"]} html={props.content} />
+                <SanitizedHTML allowedTags={["br","u"]} html={props.content} />
             </p>
             <hr/>
         </div>
