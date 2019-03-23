@@ -543,7 +543,7 @@ impl Lobby {
 
         for (i, players) in self.list.iter().enumerate() {
             let mut p = players.borrow_mut();
-            p.state = PlayerState::Playing;
+            p.state = PlayerState::Waiting;
 
             for _ in 0..self.hand_size {
                 if let Some(card) = self.deck.thrusters.pop() {
@@ -718,7 +718,7 @@ impl Lobby {
                         self.thrusted_players.clear();
 
                         // Set current THRUSTEE to THRUSTER state
-                        player.state = PlayerState::Playing;
+                        player.state = PlayerState::Waiting;
 
                         // Get new thrustee_choices for next THRUSTEE
                         for _ in 0..self.max_thrustee_choices {
@@ -1054,7 +1054,7 @@ pub fn list_choosing_commands(token: Token, communication: &Networking) {
         &token,
         vec![
             "Valid commands:".to_string(),
-            "'.choose [#]' choose [#] card as THE NEXT THRUSTEE".to_string(),
+            "'.thrust [#]' thrust [#] card as THE NEXT THRUSTEE".to_string(),
             "'.help' this is it chief".to_string(),
             "'.thrustee' show the current THRUSTEE".to_string(),
             "'.thrusters' show your THRUSTERS".to_string(),

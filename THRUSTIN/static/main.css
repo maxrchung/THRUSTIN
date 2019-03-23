@@ -6,7 +6,7 @@ html {
 body {
     font-family: 'Cousine', monospace;
     height: 100%;
-    color: #ffd1dc;
+    color: #B7410E;
     background-color: black;
 }
 
@@ -28,5 +28,5 @@ body {
 }
 
 hr {
-    border-top: 1px solid rgba(255,209,220,.2);
+    border-top: 1px solid rgba(183,65,14,.4);
 }

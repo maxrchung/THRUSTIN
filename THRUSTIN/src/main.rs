@@ -189,7 +189,7 @@ fn handle_input(
                 lobbies.get_mut(&player.lobby).unwrap()
             };
             match &*com {
-                ".choose" => {
+                ".thrust" => {
                     lobby.choose(split, token, communication);
                 }
 
