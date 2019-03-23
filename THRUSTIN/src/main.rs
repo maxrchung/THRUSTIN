@@ -5,6 +5,7 @@ extern crate rocket; // Macro stuff to make rocket work
 #[macro_use]
 extern crate lazy_static; //alexgarbage
 extern crate regex; //alexgarbage
+mod commands;
 mod lobby;
 mod networking; // Get networking module
 mod player;
@@ -52,111 +53,22 @@ fn handle_input(
     communication: &mut Networking,
 ) {
     let split: std::vec::Vec<&str> = input.split(' ').collect();
+/*
     let mut com = split[0].to_string();
     com = com[..com.len()].to_string();
-    let is_thruster: bool = true;
+*/
 
     let state = {
         let player = players.get_mut(&token).unwrap().borrow(); 
         player.state.clone()
     };
+
     match state {
-        PlayerState::ChooseName => match &*com {
-            ".name" => player::set_name(split, token, players, communication),
+        PlayerState::ChooseName => commands::ChooseNameCommands(split, token, players, communication),
 
-            ".help" => lobby::list_choose_name_commands(token, communication),
-
-            _ => {
-                communication.send_message(&token, "Bruh that's an invalid command....    enter .help");
-            }
-        },
-
-        PlayerState::OutOfLobby => match &*com {
-            ".help" => lobby::list_out_commands(token, communication),
-
-            ".join" => Lobby::join_lobby(split, token, lobbies, players, communication),
-
-            ".list" => lobby::list_lobby(token, lobbies, communication),
-
-            ".make" => {
-                Lobby::make_lobby(split, token, lobby_id, lobbies, players, communication);
-            }
-
-            ".name" => player::set_name(split, token, players, communication),
-
-            ".thrustee" => {
-                let valid =
-                    lobby::add_item(&split, token, lobbies, players, communication, !is_thruster);
-                if !valid {
-                    communication.send_message(&token, &"Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
-                }
-            }
-
-            ".thruster" => {
-                lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
-            }
-
-            ".who" => lobby::list_all_players(token, players, communication),
-
-            _ => {
-                communication.send_message(&token, "Bruh that's an invalid command...!.    try .help");
-            }
-        },
-
+        PlayerState::OutOfLobby => commands::OutOfLobbyCommands(split, token, players, lobby_id, lobbies, communication),
         PlayerState::InLobby => {
-            let lobby = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                lobbies.get_mut(&player.lobby).unwrap()
-            };
-
-            match &*com {
-                ".help" => lobby::list_in_commands(token, communication),
-
-                ".name" => player::set_name(split, token, players, communication),
-                
-                ".leave" => {
-                    if lobby.leave_lobby(token, communication) {
-                        let id = lobby.id;
-                        lobbies.remove(&id);
-                    }
-                }
-
-                ".info" => lobby.info(token, communication),
-
-                ".who" => lobby.list_lobby_players(token, communication),
-
-                ".host" => lobby.switch_host(split, token, communication),
-
-                ".kick" => lobby.kick(split, token, communication),
-
-                ".pass" => lobby.set_password(split, token, communication),
-
-                ".points" => lobby.point_max(split, token, communication),
-
-                ".players" => lobby.player_max(split, token, communication),
-
-                ".start" => lobby.start_game(token, communication),
-                
-                ".thrustee" => {
-                    let valid = lobby::add_item(
-                        &split,
-                        token,
-                        lobbies,
-                        players,
-                        communication,
-                        !is_thruster,
-                    );
-                    if !valid {
-                        communication.send_message(&token, &"Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
-                    }
-                }
-
-                ".thruster" => {
-                    lobby::add_item(&split, token, lobbies, players, communication, is_thruster);
-                }
-                
-                _ => communication.send_message(&token, "Bruh that's an invalid command. enter .help"),
-            }
+            commands::InLobbyCommands(split, token, players, lobbies, communication);
         }
 
         PlayerState::Playing => {
@@ -164,23 +76,8 @@ fn handle_input(
                 let player = players.get_mut(&token).unwrap().borrow();
                 lobbies.get_mut(&player.lobby).unwrap()
             };
-            match &*com {
-                ".help" => {
-                    lobby::list_playing_commands(token, communication);
-                }
 
-                ".thrust" => {
-                    lobby.handle_thrust(split, token, communication);
-                }
-
-                ".points" => {
-                    lobby.display_points(token, communication);
-                }
-
-                _ => {
-                    communication.send_message(&token, "Bruh that's an invalid command.");
-                }
-            }
+            commands::PlayingCommands(split, token, lobby, communication);
         },
 
         PlayerState::Choosing => {
@@ -188,23 +85,8 @@ fn handle_input(
                 let player = players.get_mut(&token).unwrap().borrow();
                 lobbies.get_mut(&player.lobby).unwrap()
             };
-            match &*com {
-                ".thrust" => {
-                    lobby.choose(split, token, communication);
-                }
 
-                ".help" => {
-                    lobby::list_choosing_commands(token, communication);
-                }
-
-                ".points" => {
-                    lobby.display_points(token, communication);
-                }
-
-                _ => {
-                    communication.send_message(&token, "Bruh... that's invalid... enter .help");
-                }
-            }
+            commands::ChoosingCommands(split, token, lobby, communication);
         },
 
         PlayerState::Deciding => {
@@ -212,23 +94,9 @@ fn handle_input(
                 let player = players.get_mut(&token).unwrap().borrow();
                 lobbies.get_mut(&player.lobby).unwrap()
             };
-            match &*com {
-                ".thrust" => {
-                    lobby.decide(split, token, communication);
-                }
 
-                ".help" => {
-                    lobby::list_deciding_commands(token, communication);
-                }
 
-                ".points" => {
-                    lobby.display_points(token, communication);
-                }
-
-                _ => {
-                    communication.send_message(&token, "Broski... that's invalid... enter .help");
-                }
-            }
+            commands::DecidingCommands(split, token, lobby, communication);
         },
 
         PlayerState::Waiting => {
@@ -236,22 +104,8 @@ fn handle_input(
                 let player = players.get_mut(&token).unwrap().borrow();
                 lobbies.get_mut(&player.lobby).unwrap()
             };
-            match &*com {
-                ".points" => {
-                    lobby.display_points(token, communication);
-                }
 
-                ".thrust" => {
-                    communication.send_message(&token, "Chill out homeboy... you needa w8 for THRUSTEE to CHOOSE...");
-                }
-
-                ".help" => {
-                    lobby::list_waiting_commands(token, communication);
-                }
-                _ => {
-                    communication.send_message(&token, "Broham you gotta wait it out brother.. enter .help");
-                }
-            }
+            commands::WaitingCommands(split, token, lobby, communication);
         }
     }
 }

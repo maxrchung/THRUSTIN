@@ -52,7 +52,7 @@ pub fn set_name(
     input: std::vec::Vec<&str>,
     id: Token,
     players: &mut HashMap<Token, Rc<RefCell<Player>>>,
-    communication: &mut networking::Networking,
+    communication: &networking::Networking,
 ) {
     if input.len() < 2 {
         communication.send_message(&id, &format!("You need a name!"));
