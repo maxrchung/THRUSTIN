@@ -75,7 +75,10 @@ pub fn set_name(
         communication.send_message(&id, &format!("Name set to: {}", &pl.name));
         if pl.state == PlayerState::ChooseName {
             pl.state = PlayerState::OutOfLobby;
+            communication.send_message(&id, &format!("ok {}, now ur redy 2 thrust, try '.help' for sum more information", &pl.name));
         }
+
+
     } else {
         communication.send_message(&id, "Something ain't right here");
     }

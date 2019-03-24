@@ -21,7 +21,7 @@ pub fn ChooseNameCommands(input: std::vec::Vec<&str>,
         ".help" => lobby::list_choose_name_commands(token, communication),
 
         _ => {
-            communication.send_message(&token, "Bruh that's an invalid command....    enter .help");
+            communication.send_message(&token, "u gotta pick a name bro, try '.name URNAMeHERE'");
         }
     }
 }
