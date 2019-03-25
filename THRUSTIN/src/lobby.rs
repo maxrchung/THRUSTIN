@@ -55,7 +55,9 @@ pub struct Lobby {
 
     pub thrustee_choices: Vec<String>,
 
-    pub max_thrustee_choices: i32
+    pub max_thrustee_choices: i32,
+
+    pub use_house: bool,
 }
 
 impl Lobby {
@@ -72,11 +74,12 @@ impl Lobby {
             thrustee: 0,
             thrustee_choices: Vec::new(),
             max_thrustee_choices: 3,
-            deck: thrust::Deck::default(),
+            deck: thrust::Deck::new(),
             current_thrustee: String::new(),
             current_thrusts: HashMap::new(),
             index_to_token: HashMap::new(),
             thrusted_players: Vec::new(),
+            use_house: true,
         };
 
         lobby
@@ -514,6 +517,20 @@ impl Lobby {
         len == 0
     }
 
+    pub fn toggle_house(
+        &mut self,
+        token: Token,
+        communication: &Networking,
+    ) {
+        self.use_house = !self.use_house;
+        if self.use_house {
+            communication.send_message(&token, &"Now using house cards!");
+        }
+        else {
+            communication.send_message(&token, &"No longer using house cards!...");
+        }
+    }
+
     
     /////////////////
     //game commands//
@@ -530,6 +547,13 @@ impl Lobby {
         }
 
         self.state = LobbyState::Playing;
+        
+        // Add in house cards to lobby deck if bool is true
+        if self.use_house {
+            let default_deck = thrust::Deck::default();
+            self.deck.thrusters.extend(default_deck.thrusters);
+            self.deck.thrustees.extend(default_deck.thrustees);
+        }
 
         // Setup new thrustee choices
         for _ in 0..self.max_thrustee_choices {

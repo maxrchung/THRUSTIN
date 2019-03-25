@@ -47,7 +47,7 @@ let is_thruster = true;
 
         ".make" => lobby::Lobby::make_lobby(input, token, lobby_id, lobbies, players, communication),
 
-        ".name" => player::set_name(input, token, players, communication),
+        ".name" => player::set_name(input, token, players, communication), 
 
         ".thrustee" => {
             let valid =
@@ -113,6 +113,8 @@ pub fn InLobbyCommands(input: std::vec::Vec<&str>,
         ".players" => lobby.player_max(input, token, communication),
 
         ".start" => lobby.start_game(token, communication),
+
+        ".house" => lobby.toggle_house(token, communication),
 
         ".thrustee" => {
             let valid = lobby::add_item(
