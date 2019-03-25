@@ -7,7 +7,10 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use std::cell::RefCell;
 
-pub fn ChooseNameCommands(input: std::vec::Vec<&str>,
+///////////////
+//choose name//
+///////////////
+pub fn choose_name_commands(input: std::vec::Vec<&str>,
                        token: Token,
                        players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
                        communication: &Networking) {
@@ -18,7 +21,7 @@ pub fn ChooseNameCommands(input: std::vec::Vec<&str>,
     match &*com {
         ".name" => player::set_name(input, token, players, communication),
 
-        ".help" => lobby::list_choose_name_commands(token, communication),
+        ".help" => list_choose_name_commands(token, communication),
 
         _ => {
             communication.send_message(&token, "u gotta pick a name bro, try '.name URNAMeHERE'");
@@ -26,8 +29,23 @@ pub fn ChooseNameCommands(input: std::vec::Vec<&str>,
     }
 }
 
+fn list_choose_name_commands(token: Token, communication: &Networking) {
+    communication.send_messages(
+        &token,
+        vec![
+            "Valid commands:".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.name [name]' change your name to [name]".to_string(),
+        ],
+    );
+}
 
-pub fn OutOfLobbyCommands(input: std::vec::Vec<&str>,
+
+
+////////////////
+//out of lobby//
+////////////////
+pub fn out_of_lobby_commands(input: std::vec::Vec<&str>,
                       token: Token,
                       players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
                       lobby_id: &mut i32,
@@ -39,7 +57,7 @@ let is_thruster = true;
     com = com[..com.len()].to_string();
 
     match &*com {
-        ".help" => lobby::list_out_commands(token, communication),
+        ".help" => list_out_commands(token, communication),
 
         ".join" => lobby::Lobby::join_lobby(input, token, lobbies, players, communication),
 
@@ -70,7 +88,31 @@ let is_thruster = true;
 }
     
 
-pub fn InLobbyCommands(input: std::vec::Vec<&str>,
+fn list_out_commands(token: Token, communication: &Networking) {
+    communication.send_messages(
+        &token,
+        vec![
+            "Valid commands:".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.join [#]' join lobby [#]".to_string(),
+            "'.list' list lobbies".to_string(),
+            "'.make' make a lobby".to_string(),
+            "'.name [name]' change your name to [name]".to_string(),
+            "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
+            "'.thruster' \"Some thruster\" to add thruster".to_string(),
+            "'.who' list everyone playing".to_string(),
+        ],
+    );
+}
+
+
+
+
+
+////////////
+//in lobby//
+////////////
+pub fn in_lobby_commands(input: std::vec::Vec<&str>,
                    token: Token,
                    players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
                    lobbies: &mut HashMap<i32, lobby::Lobby>,
@@ -87,7 +129,7 @@ pub fn InLobbyCommands(input: std::vec::Vec<&str>,
 
 
     match &*com {
-        ".help" => lobby::list_in_commands(token, communication),
+        ".help" => list_in_commands(token, communication),
 
         ".name" => player::set_name(input, token, players, communication),
 
@@ -136,8 +178,27 @@ pub fn InLobbyCommands(input: std::vec::Vec<&str>,
     }
 }
 
+fn list_in_commands(token: Token, communication: &Networking) {
+    communication.send_messages(
+        &token,
+        vec![
+            "Valid commands:".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.leave' leave lobby".to_string(),
+            "'.name [name]' change your name to [name]".to_string(),
+            "'.start' start game".to_string(),
+            "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
+            "'.thruster' \"Some thruster\" to add thruster".to_string(),
+            "'.who' list everyone in lobby".to_string(),
+        ],
+    );
+}
 
-pub fn PlayingCommands(input: std::vec::Vec<&str>,
+
+////////////////////
+//playing commands//
+////////////////////
+pub fn playing_commands(input: std::vec::Vec<&str>,
                    token: Token,
                    lobby: &mut lobby::Lobby,
                    communication: &Networking) {
@@ -145,7 +206,7 @@ pub fn PlayingCommands(input: std::vec::Vec<&str>,
     com = com[..com.len()].to_string();
 
     match &*com {
-        ".help" => lobby::list_playing_commands(token, communication),
+        ".help" => list_playing_commands(token, communication),
 
         ".thrust" => lobby.handle_thrust(input, token, communication),
 
@@ -155,8 +216,25 @@ pub fn PlayingCommands(input: std::vec::Vec<&str>,
     }
 }
 
+fn list_playing_commands(token: Token, communication: &Networking) {
+    communication.send_messages(
+        &token,
+        vec![
+            "Valid commands:".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.thrust [#]' THRUST your [#] card".to_string(),
+            "'.thrustee' show the current THRUSTEE".to_string(),
+            "'.thrusters' show your THRUSTERS".to_string(),
+            "'.points' to see current points".to_string(),
+        ],
+    );
+}
 
-pub fn ChoosingCommands(input: std::vec::Vec<&str>,
+
+////////////
+//choosing//
+////////////
+pub fn choosing_commands(input: std::vec::Vec<&str>,
                    token: Token,
                    lobby: &mut lobby::Lobby,
                    communication: &Networking) {
@@ -164,7 +242,7 @@ pub fn ChoosingCommands(input: std::vec::Vec<&str>,
     com = com[..com.len()].to_string();
 
     match &*com {
-        ".help" => lobby::list_playing_commands(token, communication),
+        ".help" => list_playing_commands(token, communication),
 
         ".thrust" => lobby.choose(input, token, communication),
 
@@ -174,7 +252,26 @@ pub fn ChoosingCommands(input: std::vec::Vec<&str>,
     }
 }
 
-pub fn DecidingCommands(input: std::vec::Vec<&str>,
+fn list_choosing_commands(token: Token, communication: &Networking) {
+    communication.send_messages(
+        &token,
+        vec![
+            "Valid commands:".to_string(),
+            "'.thrust [#]' thrust [#] card as THE NEXT THRUSTEE".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.thrustee' show the current THRUSTEE".to_string(),
+            "'.thrusters' show your THRUSTERS".to_string(),
+            "'.points' to see current points".to_string(),
+        ],
+    );
+}
+
+
+
+////////////
+//deciding//
+////////////
+pub fn deciding_commands(input: std::vec::Vec<&str>,
                    token: Token,
                    lobby: &mut lobby::Lobby,
                    communication: &Networking) {
@@ -182,7 +279,7 @@ pub fn DecidingCommands(input: std::vec::Vec<&str>,
     com = com[..com.len()].to_string();
 
     match &*com {
-        ".help" => lobby::list_playing_commands(token, communication),
+        ".help" => list_playing_commands(token, communication),
 
         ".thrust" => lobby.decide(input, token, communication),
 
@@ -192,7 +289,24 @@ pub fn DecidingCommands(input: std::vec::Vec<&str>,
     }
 }
 
-pub fn WaitingCommands(input: std::vec::Vec<&str>,
+fn list_deciding_commands(token: Token, communication: &Networking) {
+    communication.send_messages(
+        &token,
+        vec![
+            "Valid commands:".to_string(),
+            "'.decide [#]' pick [#] card as THE THRUSTEE".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.thrustee' show the current THRUSTEE".to_string(),
+            "'.thrusters' show your THRUSTERS".to_string(),
+            "'.points' to see current points".to_string(),
+        ],
+    );
+}
+
+///////////
+//waiting//
+///////////
+pub fn waiting_commands(input: std::vec::Vec<&str>,
                    token: Token,
                    lobby: &mut lobby::Lobby,
                    communication: &Networking) {
@@ -200,7 +314,7 @@ pub fn WaitingCommands(input: std::vec::Vec<&str>,
     com = com[..com.len()].to_string();
 
     match &*com {
-        ".help" => lobby::list_playing_commands(token, communication),
+        ".help" => list_playing_commands(token, communication),
 
         ".thrust" => communication.send_message(&token, "Chill out homeboy... you needa w8 for THRUSTEE to CHOOSE..."),
 
@@ -209,3 +323,16 @@ pub fn WaitingCommands(input: std::vec::Vec<&str>,
         _ => communication.send_message(&token, "Bruh that's an invalid command."),
     }
 }
+
+fn list_waiting_commands(token: Token, communication: &Networking) {
+    communication.send_messages(
+        &token,
+        vec![
+            "Valid commands:".to_string(),
+            "'.help' this is it chief".to_string(),
+            "'.points' to see current points".to_string(),
+        ],
+    );
+}
+
+

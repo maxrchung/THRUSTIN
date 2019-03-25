@@ -64,11 +64,11 @@ fn handle_input(
     };
 
     match state {
-        PlayerState::ChooseName => commands::ChooseNameCommands(split, token, players, communication),
+        PlayerState::ChooseName => commands::choose_name_commands(split, token, players, communication),
 
-        PlayerState::OutOfLobby => commands::OutOfLobbyCommands(split, token, players, lobby_id, lobbies, communication),
+        PlayerState::OutOfLobby => commands::out_of_lobby_commands(split, token, players, lobby_id, lobbies, communication),
         PlayerState::InLobby => {
-            commands::InLobbyCommands(split, token, players, lobbies, communication);
+            commands::in_lobby_commands(split, token, players, lobbies, communication);
         }
 
         PlayerState::Playing => {
@@ -77,7 +77,7 @@ fn handle_input(
                 lobbies.get_mut(&player.lobby).unwrap()
             };
 
-            commands::PlayingCommands(split, token, lobby, communication);
+            commands::playing_commands(split, token, lobby, communication);
         },
 
         PlayerState::Choosing => {
@@ -86,7 +86,7 @@ fn handle_input(
                 lobbies.get_mut(&player.lobby).unwrap()
             };
 
-            commands::ChoosingCommands(split, token, lobby, communication);
+            commands::choosing_commands(split, token, lobby, communication);
         },
 
         PlayerState::Deciding => {
@@ -96,7 +96,7 @@ fn handle_input(
             };
 
 
-            commands::DecidingCommands(split, token, lobby, communication);
+            commands::deciding_commands(split, token, lobby, communication);
         },
 
         PlayerState::Waiting => {
@@ -105,7 +105,7 @@ fn handle_input(
                 lobbies.get_mut(&player.lobby).unwrap()
             };
 
-            commands::WaitingCommands(split, token, lobby, communication);
+            commands::waiting_commands(split, token, lobby, communication);
         }
     }
 }
