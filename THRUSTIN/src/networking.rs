@@ -52,6 +52,7 @@ impl Handler for Connection {
 }
 
 // Main Networking component that public can use
+#[derive(Debug)]
 pub struct Networking {
     commands: Arc<Mutex<VecDeque<(Token, String)>>>,
     connections: Arc<Mutex<HashMap<Token, Sender>>>,
