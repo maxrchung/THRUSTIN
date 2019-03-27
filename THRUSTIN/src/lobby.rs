@@ -1,4 +1,3 @@
-use crate::networking::Networking;
 use crate::player::{Player, PlayerState};
 use crate::thrust;
 use rand::seq::SliceRandom;
@@ -105,17 +104,6 @@ impl Lobby {
     }
 
 
-    fn search_player(&self, player: &Player) -> usize {
-        for (i, pl) in self.list.iter().enumerate() {
-            let token = pl.borrow().token;
-            if token == player.token {
-                return i;
-            }
-        }
-
-        self.list.len()
-    }
-
     fn search_token(&self, token: &Token) -> usize {
         for (i, pl) in self.list.iter().enumerate() {
             let tok = pl.borrow().token;
@@ -128,9 +116,8 @@ impl Lobby {
     }
 
     fn send_message(&self, message: &str) {
-        for player in &self.list {
-            let pl = player.borrow().send(&message);
-            //communication.send_message(&pl.token, &message);
+        for pl in &self.list {
+            pl.borrow().send(&message);
         }
     }
 
@@ -145,21 +132,20 @@ impl Lobby {
     pub fn make_lobby(
         input: std::vec::Vec<&str>,
         pl_rc: Rc<RefCell<Player>>,
-        players: &mut HashMap<Token, Rc<RefCell<Player>>>,
         lobby_id: &mut i32,
         lobbies: &mut HashMap<i32, Lobby>,
     ) {
-        let mut player = pl_rc.borrow_mut();
+        let mut pl = pl_rc.borrow_mut();
         let max = 64;
+        
+        pl.lobby = lobby_id.clone();
+        pl.state = PlayerState::InLobby;
 
-            player.lobby = lobby_id.clone();
-            player.state = PlayerState::InLobby;
+        let mut new_lobby = Lobby::new(&pl_rc, "".to_string(), max, *lobby_id, &mut pl.personal_deck);
+        new_lobby.list.push(pl_rc.clone());
 
-            let mut new_lobby = Lobby::new(&pl_rc, "".to_string(), max, *lobby_id, &mut player.personal_deck);
-            new_lobby.list.push(pl_rc.clone());
-
-            lobbies.insert(lobby_id.clone(), new_lobby.clone());
-            player.send(&format!("Created lobby: {}", lobby_id));
+        lobbies.insert(lobby_id.clone(), new_lobby.clone());
+        pl.send(&format!("Created lobby: {}", lobby_id));
 
         *lobby_id = *lobby_id + 1;
     }
@@ -315,7 +301,7 @@ impl Lobby {
             return;
         }
         
-        for (i, players_) in self.list.iter().enumerate() {
+        for players_ in self.list.iter() {
             let players = players_.borrow();
             if players.name == new_host {
                 self.host = players_.clone();
@@ -495,33 +481,34 @@ impl Lobby {
         &mut self,
         pl_rc: Rc<RefCell<Player>>
     ) -> bool {
-        let pl = pl_rc.borrow().clone();
-
-        let pl_ind = self.search_token(&pl.token);
-        
-        let lob_id = pl.lobby;
-        let name = pl.name.clone();
-
-        /*
         let (lob_id, name) = {
-            let player = &mut self.list[pl_ind].borrow_mut();
-            player.state = PlayerState::OutOfLobby;
-
-            (player.lobby, player.name.clone())
+            let pl = pl_rc.borrow();
+            
+            let pl_ind = self.search_token(&pl.token);
+        
+            self.list.remove(pl_ind);
+            
+            (pl.lobby, pl.name.clone())
         };
-         */
 
-        if Rc::into_raw(pl_rc) == Rc::into_raw(self.host.clone()) {
-            self.host = self.list[0].clone();
-            &self.host.borrow().send("u host now!!");
+
+        let out: bool = self.list.len() == 0;
+        if !out {
+            if Rc::into_raw(pl_rc.clone()) == Rc::into_raw(self.host.clone()) {
+                self.host = self.list[0].clone();
+                &self.host.borrow().send("u host now!!");
+            }
         }
 
-        self.list.remove(pl_ind);
-
+        let mut pl = pl_rc.borrow_mut();
+        
         pl.send(&format!("Left lobby: {}.", lob_id));
         self.send_message(&format!("{} has left the lobby.", name));
 
-        self.list.len() == 0
+        pl.lobby = -1;
+        pl.state = PlayerState::OutOfLobby;
+
+        out
     }
 
     pub fn toggle_house(
@@ -675,7 +662,7 @@ impl Lobby {
                     // Scope refcell borrow
                     {
                         let mut pl = pl_rc.borrow_mut();
-                        //let mut player = self.list[self.search_token(&pl.token)].borrow_mut();
+
                         // Removed selected choice
                         let card = self.thrustee_choices.remove(index as usize);
                         self.current_thrustee = card;
@@ -829,14 +816,15 @@ impl Lobby {
         input: std::vec::Vec<&str>,
         pl_rc: Rc<RefCell<Player>>,
     ) {
-{
-        let pl = pl_rc.borrow();
-        // Check number of inputs
-        if input.len() < 2 {
-            pl.send(&"Index required!");
-            return;
+        {
+            let mut pl = pl_rc.borrow();
+            // Check number of inputs
+            if input.len() < 2 {
+                pl.send(&"Index required!");
+                return;
+            }
         }
-}
+
         match input[1].parse::<i32>() {
             Ok(index) => {
 
@@ -940,6 +928,7 @@ impl Lobby {
     ) {
         let pl = pl.borrow();
         let mut messages = Vec::new();
+        messages.push(format!("Max: {}", self.max_points));
 
         for rc in &self.list {
             let player = rc.borrow();
@@ -1022,57 +1011,55 @@ pub fn list_all_players(
 pub fn add_item(
     input: &std::vec::Vec<&str>,
     pl_rc: Rc<RefCell<Player>>,
-    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
     lobby: &mut HashMap<i32, Lobby>,
     thruster: bool,
 ) -> bool {
-    let pl = pl_rc.borrow();
+    let mut pl = pl_rc.borrow_mut();
+
     if input.len() < 2 {
         pl.send("Thruster/thrustee required!");
         return true;
     }
 
-    if let Some(player_p) = players.get_mut(&pl.token) {
-        let mut player = player_p.borrow_mut();
 
-        let mut new_item = String::new();
-        for i in 1..input.len() {
-            new_item.push_str(input[i as usize]);
-            new_item.push_str(" ");
-        }
-        new_item.pop();
+    let mut new_item = String::new();
+    for i in 1..input.len() {
+        new_item.push_str(input[i as usize]);
+        new_item.push_str(" ");
+    }
+    new_item.pop();
 
-        if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
-            || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
-        {
-            pl.send("Please surround the thruster/thrustee with quotes.");
-            return true;
-        }
-        new_item.pop();
-        new_item.remove(0);
+    if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
+        || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
+    {
+        pl.send("Please surround the thruster/thrustee with quotes.");
+        return true;
+    }
+    new_item.pop();
+    new_item.remove(0);
 
-        if !thruster && !new_item.contains("_") {
-            return false;
-        }
+    if !thruster && !new_item.contains("_") {
+        return false;
+    }
 
-        if thruster {
-            player.personal_deck.add_thruster(&new_item);
-            pl.send(&format!("Added \"{}\" to thrusters!", &new_item));
-        } else {
-            player.personal_deck.add_thrustee(&new_item);
-            pl.send(&format!("Added \"{}\" to thrustees!", &new_item));
-        }
+    if thruster {
+        pl.personal_deck.add_thruster(&new_item);
+        pl.send(&format!("Added \"{}\" to thrusters!", &new_item));
+    } else {
+        pl.personal_deck.add_thrustee(&new_item);
+        pl.send(&format!("Added \"{}\" to thrustees!", &new_item));
+    }
 
-        if let Some(lob) = lobby.get_mut(&player.lobby) {
-            if lob.state == LobbyState::Waiting {
-                lob.deck
-                    .thrustees
-                    .append(&mut player.personal_deck.thrustees.clone());
-                lob.deck
-                    .thrusters
-                    .append(&mut player.personal_deck.thrusters.clone());
-            }
+    if let Some(lob) = lobby.get_mut(&pl.lobby) {
+        if lob.state == LobbyState::Waiting {
+            lob.deck
+                .thrustees
+                .append(&mut pl.personal_deck.thrustees.clone());
+            lob.deck
+                .thrusters
+                .append(&mut pl.personal_deck.thrusters.clone());
         }
     }
+
     true
 }

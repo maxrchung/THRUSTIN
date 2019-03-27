@@ -20,12 +20,12 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 fn main() {
-    let mut communication = Rc::new(RefCell::new(Networking::init()));
+    let communication = Rc::new(RefCell::new(Networking::init()));
     let mut lobby_id = 0;
     let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
     let mut players: HashMap<Token, Rc<RefCell<Player>>> = HashMap::new();
 
-    let mut read = communication.clone();
+    let read = communication.clone();
 
     loop {
         let (token, message) = read.borrow_mut().read_message();
@@ -41,7 +41,6 @@ fn main() {
             &mut lobby_id,
             &mut lobbies,
             &mut players,
-            &communication.clone().borrow(),
         );
     }
 }
@@ -52,7 +51,6 @@ fn handle_input(
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
-    communication: &Networking,
 ) {
     let split: std::vec::Vec<&str> = input.split(' ').collect();
 /*
@@ -69,44 +67,32 @@ fn handle_input(
     match state {
 
         PlayerState::ChooseName => {
-
-
             commands::choose_name_commands(split, pl, players);
         }
 
         PlayerState::OutOfLobby => {
-            //let pl = {players.get_mut(&token).unwrap().clone()};
-
             commands::out_of_lobby_commands(split, pl, players, lobby_id, lobbies);
         }
 
 
         PlayerState::InLobby => {
-            //let pl = {players.get(&token).unwrap().clone()};
-
             commands::in_lobby_commands(split, pl, players, lobbies);
         }
 
         PlayerState::Playing => {
-            //let pl = {players.get(&token).unwrap().clone()};
-
             commands::playing_commands(split, pl, lobbies);
         },
 
         PlayerState::Choosing => {
-            //let pl = {players.get(&token).unwrap().clone()};
             commands::choosing_commands(split, pl, lobbies);
-
         },
 
         PlayerState::Deciding => {
-
             commands::deciding_commands(split, pl, lobbies);
         },
 
         PlayerState::Waiting => {
             commands::waiting_commands(split, pl, lobbies);
-
         }
     }
 }

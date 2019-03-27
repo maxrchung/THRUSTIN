@@ -62,20 +62,20 @@ pub fn out_of_lobby_commands(input: std::vec::Vec<&str>,
 
         ".list" => lobby::list_lobby(pl, lobbies),
 
-        ".make" => lobby::Lobby::make_lobby(input, pl, players, lobby_id, lobbies),
+        ".make" => lobby::Lobby::make_lobby(input, pl, lobby_id, lobbies),
 
         ".name" => player::set_name(input, pl, players), 
 
         ".thrustee" => {
             let valid =
-                lobby::add_item(&input, pl.clone(), players, lobbies, !is_thruster);
+                lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
                 pl.borrow().send("Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
             }
         }
 
         ".thruster" => {
-            lobby::add_item(&input, pl, players, lobbies, is_thruster);
+            lobby::add_item(&input, pl, lobbies, is_thruster);
         },
 
         ".who" => lobby::list_all_players(pl, players),
@@ -116,7 +116,7 @@ pub fn in_lobby_commands(input: std::vec::Vec<&str>,
     let mut com = input[0].to_string();
     com = com[..com.len()].to_string();
 
-    let mut lobby = {
+    let lobby = {
         lobbies.get_mut(&pl.borrow().lobby).unwrap()
     };
 
@@ -155,7 +155,6 @@ pub fn in_lobby_commands(input: std::vec::Vec<&str>,
             let valid = lobby::add_item(
                 &input,
                 pl.clone(),
-                players,
                 lobbies,
                 !is_thruster,
             );
@@ -165,7 +164,7 @@ pub fn in_lobby_commands(input: std::vec::Vec<&str>,
         },
 
         ".thruster" => {
-            lobby::add_item(&input, pl, players, lobbies, is_thruster);
+            lobby::add_item(&input, pl, lobbies, is_thruster);
         }
 
         _ => pl.borrow().send("Bruh that's an invalid command. enter .help"),
@@ -201,7 +200,7 @@ pub fn playing_commands(input: std::vec::Vec<&str>,
     let mut com = input[0].to_string();
     com = com[..com.len()].to_string();
 
-    let mut lobby = {
+    let lobby = {
         lobbies.get_mut(&pl.borrow().lobby).unwrap()
     };
 
@@ -242,7 +241,7 @@ pub fn choosing_commands(input: std::vec::Vec<&str>,
     com = com[..com.len()].to_string();
     
 
-    let mut lobby = {
+    let lobby = {
         lobbies.get_mut(&pl.borrow().lobby).unwrap()
     };
 
@@ -284,7 +283,7 @@ pub fn deciding_commands(input: std::vec::Vec<&str>,
     com = com[..com.len()].to_string();
 
 
-    let mut lobby = {
+    let lobby = {
         lobbies.get_mut(&pl.borrow().lobby).unwrap()
     };
 
@@ -325,8 +324,8 @@ pub fn waiting_commands(input: std::vec::Vec<&str>,
     let mut com = input[0].to_string();
     com = com[..com.len()].to_string();
 
-    let mut lobby = {
-        lobbies.get_mut(&pl.borrow().lobby).unwrap()
+    let lobby = {
+        lobbies.get(&pl.borrow().lobby).unwrap()
     };
 
     match &*com {

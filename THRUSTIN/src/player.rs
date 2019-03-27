@@ -67,15 +67,18 @@ pub fn set_name(
     players: &mut HashMap<Token, Rc<RefCell<Player>>>,
 ) {
 
-    let p_name = input[1].to_string();
+
 
     {
-        let mut player = play.borrow();
+        let player = play.borrow();
         if input.len() < 2 {
             player.send("You need a name!");
             return;
         }
-        
+    }
+    let p_name = input[1].to_string();        
+
+    {
         for pl in players.values() {
             let name = &pl.borrow().name;
             if &p_name == name {
