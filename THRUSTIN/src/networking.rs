@@ -4,7 +4,7 @@ use std::collections::VecDeque;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::vec::Vec;
-use std::{env, io, thread};
+use std::{io, thread};
 use ws::{listen, util::Token, CloseCode, Handler, Handshake, Message, Result, Sender};
 
 // Returns main site file
@@ -70,9 +70,6 @@ impl Networking {
 
     // Spawn threads for web server use
     fn spawn(&mut self) {
-        // Staging allows LAN server to be used
-        env::set_var("ROCKET_ENV", "staging");
-
         // Serve static files for client website
         thread::spawn(|| {
             rocket::ignite().mount("/", routes![index, file]).launch();

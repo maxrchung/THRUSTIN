@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
+import ReactDOM from 'react-dom';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import SanitizedHTML from "react-sanitized-html";
@@ -32,7 +33,12 @@ class Client extends React.Component {
     }
 
     componentDidMount() {
-        this.connection = new WebSocket("ws://localhost:3012")
+        if (process.env.NODE_ENV === "production") {
+            this.connection = new WebSocket("wss://THRUSTIN.rs:3011")
+        }
+        else {
+            this.connection = new WebSocket("ws://localhost:3012")
+        }
         this.connection.onmessage = this.handleMessage;
     }
 
@@ -48,9 +54,6 @@ class Client extends React.Component {
         if (e.key == "Enter") {
             const command = e.target.value;
             this.connection.send(command);
-            this.setState({
-                messages: this.state.messages.concat(<Message key={this.updateMessageCounter} from="YOU" content={command} />)
-            });
             e.target.value = "";
             this.scrollToDummy();
         }
