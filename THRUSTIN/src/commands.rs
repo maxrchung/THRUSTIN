@@ -103,15 +103,11 @@ fn list_out_commands(pl: &player::Player) {
     );
 }
 
-
-/*
-
-
 ////////////
 //in lobby//
 ////////////
 pub fn in_lobby_commands(input: std::vec::Vec<&str>,
-                            pl: Rc<RefCell<player::Player>>,
+                         pl: Rc<RefCell<player::Player>>,
                          players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
                          lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
@@ -120,51 +116,51 @@ pub fn in_lobby_commands(input: std::vec::Vec<&str>,
     let mut com = input[0].to_string();
     com = com[..com.len()].to_string();
 
-    let lobby = {
-        lobbies.get_mut(&pl.lobby).unwrap()
+    let mut lobby = {
+        lobbies.get_mut(&pl.borrow().lobby).unwrap()
     };
 
 
     match &*com {
-        ".help" => list_in_commands(pl),
+        ".help" => list_in_commands(&pl.borrow()),
 
         ".name" => player::set_name(input, pl, players),
 
         ".leave" => {
-            if lobby.leave_lobby(&pl) {
+            if lobby.leave_lobby(pl) {
                 let id = lobby.id;
                 lobbies.remove(&id);
             }
         }
 
-        ".info" => lobby.info(&pl),
+        ".info" => lobby.info(pl),
 
-        ".who" => lobby.list_lobby_players(&pl),
+        ".who" => lobby.list_lobby_players(pl),
 
-        ".host" => lobby.switch_host(input, &pl),
+        ".host" => lobby.switch_host(input, pl),
 
-        ".kick" => lobby.kick(input, &pl),
+        ".kick" => lobby.kick(input, pl),
 
-        ".pass" => lobby.set_password(input, &pl),
+        ".pass" => lobby.set_password(input, pl),
 
-        ".points" => lobby.point_max(input, &pl),
+        ".points" => lobby.point_max(input, pl),
 
-        ".players" => lobby.player_max(input, &pl),
+        ".players" => lobby.player_max(input, pl),
 
-        ".start" => lobby.start_game(&pl),
+        ".start" => lobby.start_game(pl),
 
-        ".house" => lobby.toggle_house(&pl),
+        ".house" => lobby.toggle_house(pl),
 
         ".thrustee" => {
             let valid = lobby::add_item(
                 &input,
-                pl,
+                pl.clone(),
                 players,
                 lobbies,
                 !is_thruster,
             );
             if !valid {
-                pl.send("Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
+                pl.borrow().send("Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
             }
         },
 
@@ -172,7 +168,7 @@ pub fn in_lobby_commands(input: std::vec::Vec<&str>,
             lobby::add_item(&input, pl, players, lobbies, is_thruster);
         }
 
-        _ => pl.send("Bruh that's an invalid command. enter .help"),
+        _ => pl.borrow().send("Bruh that's an invalid command. enter .help"),
     }
 }
 
@@ -194,24 +190,30 @@ fn list_in_commands(pl: &player::Player) {
 }
 
 
+
 ////////////////////
 //playing commands//
 ////////////////////
 pub fn playing_commands(input: std::vec::Vec<&str>,
                         pl: Rc<RefCell<player::Player>>,
-                   lobby: &mut lobby::Lobby,
+                        lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
     let mut com = input[0].to_string();
     com = com[..com.len()].to_string();
 
+    let mut lobby = {
+        lobbies.get_mut(&pl.borrow().lobby).unwrap()
+    };
+
+
     match &*com {
-        ".help" => list_playing_commands(pl),
+        ".help" => list_playing_commands(&pl.borrow()),
 
         ".thrust" => lobby.handle_thrust(input, pl),
 
         ".points" => lobby.display_points(pl),
 
-        _ => pl.send("Bruh that's an invalid command."),
+        _ => pl.borrow().send("Bruh that's an invalid command."),
     }
 }
 
@@ -233,20 +235,26 @@ fn list_playing_commands(pl: &player::Player) {
 //choosing//
 ////////////
 pub fn choosing_commands(input: std::vec::Vec<&str>,
-                        pl: Rc<RefCell<player::Player>>,
-                         lobby: &mut lobby::Lobby,
+                         pl: Rc<RefCell<player::Player>>,
+                         lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
     let mut com = input[0].to_string();
     com = com[..com.len()].to_string();
     
+
+    let mut lobby = {
+        lobbies.get_mut(&pl.borrow().lobby).unwrap()
+    };
+
+
     match &*com {
-        ".help" => list_playing_commands(pl),
+        ".help" => list_playing_commands(&pl.borrow()),
 
         ".thrust" => lobby.choose(input, pl),
 
         ".points" => lobby.display_points(pl),
 
-        _ => pl.send("Bruh that's an invalid command."),
+        _ => pl.borrow().send("Bruh that's an invalid command."),
     }
 }
 
@@ -264,27 +272,31 @@ fn list_choosing_commands(token: Token, communication: &Networking) {
     );
 }
 
-
-
 ////////////
 //deciding//
 ////////////
 pub fn deciding_commands(input: std::vec::Vec<&str>,
-                        pl: Rc<RefCell<player::Player>>,
-                   lobby: &mut lobby::Lobby,
+                         pl: Rc<RefCell<player::Player>>,
+                         lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
 
     let mut com = input[0].to_string();
     com = com[..com.len()].to_string();
 
+
+    let mut lobby = {
+        lobbies.get_mut(&pl.borrow().lobby).unwrap()
+    };
+
+
     match &*com {
-        ".help" => list_playing_commands(pl),
+        ".help" => list_playing_commands(&pl.borrow()),
 
         ".thrust" => lobby.decide(input, pl),
 
         ".points" => lobby.display_points(pl),
 
-        _ => pl.send("Bruh that's an invalid command."),
+        _ => pl.borrow().send("Bruh that's an invalid command."),
     }
 }
 
@@ -302,24 +314,29 @@ fn list_deciding_commands(token: Token, communication: &Networking) {
     );
 }
 
+
 ///////////
 //waiting//
 ///////////
 pub fn waiting_commands(input: std::vec::Vec<&str>,
                         pl: Rc<RefCell<player::Player>>,
-                        lobby: &mut lobby::Lobby,
+                        lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
     let mut com = input[0].to_string();
     com = com[..com.len()].to_string();
 
-    match &*com {
-        ".help" => list_playing_commands(pl),
+    let mut lobby = {
+        lobbies.get_mut(&pl.borrow().lobby).unwrap()
+    };
 
-        ".thrust" => pl.send("Chill out homeboy... you needa w8 for THRUSTEE to CHOOSE..."),
+    match &*com {
+        ".help" => list_playing_commands(&pl.borrow()),
+
+        ".thrust" => pl.borrow().send("Chill out homeboy... you needa w8 for THRUSTEE to CHOOSE..."),
 
         ".points" => lobby.display_points(pl),
 
-        _ => pl.send("Bruh that's an invalid command."),
+        _ => pl.borrow().send("Bruh that's an invalid command."),
     }
 }
 
@@ -333,6 +350,3 @@ fn list_waiting_commands(token: Token, communication: &Networking) {
         ],
     );
 }
-
-
-*/

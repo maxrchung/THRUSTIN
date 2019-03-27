@@ -61,80 +61,52 @@ fn handle_input(
 */
 
     let state = {
-        let player = players.get_mut(&token).unwrap().borrow(); 
+        let player = players.get(&token).unwrap().borrow(); 
         player.state.clone()
     };
 
+    let pl = {players.get(&token).unwrap().clone()};
     match state {
 
         PlayerState::ChooseName => {
-            let pl = {players.get(&token).unwrap().clone()};
+
 
             commands::choose_name_commands(split, pl, players);
         }
 
         PlayerState::OutOfLobby => {
-            let mut pl = {
-                players.get_mut(&token).unwrap().clone()
-            };
+            //let pl = {players.get_mut(&token).unwrap().clone()};
 
             commands::out_of_lobby_commands(split, pl, players, lobby_id, lobbies);
         }
 
 
         PlayerState::InLobby => {
-/*
-            let (lobby, mut pl) = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                (lobbies.get_mut(&player.lobby).unwrap(), player.clone())
-            };
+            //let pl = {players.get(&token).unwrap().clone()};
 
-            commands::in_lobby_commands(split, &mut pl, players, lobbies);
-*/
+            commands::in_lobby_commands(split, pl, players, lobbies);
         }
 
         PlayerState::Playing => {
-/*
-            let (lobby, pl) = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                (lobbies.get_mut(&player.lobby).unwrap(), player.clone())
-            };
+            //let pl = {players.get(&token).unwrap().clone()};
 
-            commands::playing_commands(split, &pl, lobby);
-*/
+            commands::playing_commands(split, pl, lobbies);
         },
 
         PlayerState::Choosing => {
-/*
-            let (lobby, pl) = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                (lobbies.get_mut(&player.lobby).unwrap(), player.clone())
-                };
+            //let pl = {players.get(&token).unwrap().clone()};
+            commands::choosing_commands(split, pl, lobbies);
 
-            commands::choosing_commands(split, &pl, lobby);
-*/
         },
 
         PlayerState::Deciding => {
-/*
-            let (lobby, pl) = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                (lobbies.get_mut(&player.lobby).unwrap(), player.clone())
-            };
 
-            commands::deciding_commands(split, &pl, lobby);
-*/
+            commands::deciding_commands(split, pl, lobbies);
         },
 
         PlayerState::Waiting => {
-/*
-            let (lobby, pl) = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                (lobbies.get_mut(&player.lobby).unwrap(), player.clone())
-            };
+            commands::waiting_commands(split, pl, lobbies);
 
-            commands::waiting_commands(split, &pl, lobby);
-*/
         }
     }
 }
