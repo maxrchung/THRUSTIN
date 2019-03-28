@@ -20,17 +20,19 @@ use std::rc::Rc;
 use std::cell::RefCell;
 
 fn main() {
-    let mut communication = Networking::init();
+    let communication = Rc::new(RefCell::new(Networking::init()));
     let mut lobby_id = 0;
     let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
     let mut players: HashMap<Token, Rc<RefCell<Player>>> = HashMap::new();
 
+    let read = communication.clone();
+
     loop {
-        let (token, message) = communication.read_message();
+        let (token, message) = read.borrow_mut().read_message();
 
         // Add to players list if not already
         if let None = players.get(&token) {
-            players.insert(token.clone(), Rc::new(RefCell::new(player::new(&token))));
+            players.insert(token.clone(), Rc::new(RefCell::new(player::new(&token, communication.clone()))));
         }
 
         handle_input(
@@ -39,7 +41,6 @@ fn main() {
             &mut lobby_id,
             &mut lobbies,
             &mut players,
-            &mut communication,
         );
     }
 }
@@ -50,7 +51,6 @@ fn handle_input(
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
-    communication: &mut Networking,
 ) {
     let split: std::vec::Vec<&str> = input.split(' ').collect();
 /*
@@ -59,53 +59,40 @@ fn handle_input(
 */
 
     let state = {
-        let player = players.get_mut(&token).unwrap().borrow(); 
+        let player = players.get(&token).unwrap().borrow(); 
         player.state.clone()
     };
 
+    let pl = {players.get(&token).unwrap().clone()};
     match state {
-        PlayerState::ChooseName => commands::choose_name_commands(split, token, players, communication),
 
-        PlayerState::OutOfLobby => commands::out_of_lobby_commands(split, token, players, lobby_id, lobbies, communication),
+        PlayerState::ChooseName => {
+            commands::choose_name_commands(split, pl, players);
+        }
+
+        PlayerState::OutOfLobby => {
+            commands::out_of_lobby_commands(split, pl, players, lobby_id, lobbies);
+        }
+
+
         PlayerState::InLobby => {
-            commands::in_lobby_commands(split, token, players, lobbies, communication);
+            commands::in_lobby_commands(split, pl, players, lobbies);
         }
 
         PlayerState::Playing => {
-            let lobby = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                lobbies.get_mut(&player.lobby).unwrap()
-            };
-
-            commands::playing_commands(split, token, lobby, communication);
+            commands::playing_commands(split, pl, lobbies);
         },
 
         PlayerState::Choosing => {
-            let lobby = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                lobbies.get_mut(&player.lobby).unwrap()
-            };
-
-            commands::choosing_commands(split, token, lobby, communication);
+            commands::choosing_commands(split, pl, lobbies);
         },
 
         PlayerState::Deciding => {
-            let lobby = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                lobbies.get_mut(&player.lobby).unwrap()
-            };
-
-
-            commands::deciding_commands(split, token, lobby, communication);
+            commands::deciding_commands(split, pl, lobbies);
         },
 
         PlayerState::Waiting => {
-            let lobby = {
-                let player = players.get_mut(&token).unwrap().borrow();
-                lobbies.get_mut(&player.lobby).unwrap()
-            };
-
-            commands::waiting_commands(split, token, lobby, communication);
+            commands::waiting_commands(split, pl, lobbies);
         }
     }
 }
