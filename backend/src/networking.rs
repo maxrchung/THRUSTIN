@@ -70,10 +70,14 @@ impl Networking {
 
     // Spawn threads for web server use
     fn spawn(&mut self) {
-        // Serve static files for client website
-        thread::spawn(|| {
-            rocket::ignite().mount("/", routes![index, file]).launch();
-        });
+        // Only run rocket on development build
+        // Production will have NGINX return static files rather than rocket
+        if cfg!(debug_assertions) {
+            // Serve static files for client website
+            thread::spawn(|| {
+                rocket::ignite().mount("/", routes![index, file]).launch();
+            });
+        }
 
         // Websockets
         let commands_clone = Arc::clone(&self.commands);
