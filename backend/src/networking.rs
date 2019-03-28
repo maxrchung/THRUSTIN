@@ -10,13 +10,13 @@ use ws::{listen, util::Token, CloseCode, Handler, Handshake, Message, Result, Se
 // Returns main site file
 #[get("/")]
 fn index() -> io::Result<NamedFile> {
-    NamedFile::open("static/index.html")
+    NamedFile::open("../frontend/build/index.html")
 }
 
 // Allows access to static folder for grabbing CSS/JavaScript files
-#[get("/static/<file..>")]
+#[get("/<file..>")]
 fn file(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("static/").join(file)).ok()
+    NamedFile::open(Path::new("../frontend/build/").join(file)).ok()
 }
 
 // Specifies handler for processing an incoming websocket connection
