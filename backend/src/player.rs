@@ -66,9 +66,6 @@ pub fn set_name(
     play: Rc<RefCell<Player>>,
     players: &mut HashMap<Token, Rc<RefCell<Player>>>,
 ) {
-
-
-
     {
         let player = play.borrow();
         if input.len() < 2 {
@@ -76,13 +73,14 @@ pub fn set_name(
             return;
         }
     }
-    let p_name = input[1].to_string();        
+    let p_name = input[1].to_string();
 
     {
         for pl in players.values() {
             let name = &pl.borrow().name;
             if &p_name == name {
-                play.borrow().send("yo that name exists ya gotta pick something else aight?");
+                play.borrow()
+                    .send("yo that name exists ya gotta pick something else aight?");
                 return;
             }
         }
@@ -95,7 +93,10 @@ pub fn set_name(
 
         if pl.state == PlayerState::ChooseName {
             pl.state = PlayerState::OutOfLobby;
-            pl.send(&format!("ok {}, now ur redy 2 thrust, try '.help' for sum more information", &pl.name));
+            pl.send(&format!(
+                "ok {}, now ur redy 2 thrust, try '.help' for sum more information",
+                &pl.name
+            ));
         }
     }
 }
