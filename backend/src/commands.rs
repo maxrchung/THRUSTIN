@@ -19,9 +19,9 @@ pub fn choose_name_commands(
     com = com[..com.len()].to_string();
 
     match &*com {
-        ".name" => player::set_name(input, pl, players),
+        ".name" | ".n" => player::set_name(input, pl, players),
 
-        ".help" => list_choose_name_commands(&pl.borrow()),
+        ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
 
         _ => {
             pl.borrow()
