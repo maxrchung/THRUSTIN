@@ -1,4 +1,3 @@
-use crate::networking::Networking;
 use crate::player::{Player, PlayerState};
 use crate::thrust;
 use rand::seq::SliceRandom;
@@ -105,17 +104,6 @@ impl Lobby {
     }
 
 
-    fn search_player(&self, player: &Player) -> usize {
-        for (i, pl) in self.list.iter().enumerate() {
-            let token = pl.borrow().token;
-            if token == player.token {
-                return i;
-            }
-        }
-
-        self.list.len()
-    }
-
     fn search_token(&self, token: &Token) -> usize {
         for (i, pl) in self.list.iter().enumerate() {
             let tok = pl.borrow().token;
@@ -127,10 +115,9 @@ impl Lobby {
         self.list.len()
     }
 
-    fn send_message(&self, message: &str, communication: &Networking) {
-        for player in &self.list {
-            let pl = player.borrow();
-            communication.send_message(&pl.token, &message);
+    fn send_message(&self, message: &str) {
+        for pl in &self.list {
+            pl.borrow().send(&message);
         }
     }
 
@@ -144,36 +131,35 @@ impl Lobby {
     
     pub fn make_lobby(
         input: std::vec::Vec<&str>,
-        token: Token,
+        pl_rc: Rc<RefCell<Player>>,
         lobby_id: &mut i32,
         lobbies: &mut HashMap<i32, Lobby>,
-        players: &mut HashMap<Token, Rc<RefCell<Player>>>,
-        communication: &Networking,
     ) {
+        let mut pl = pl_rc.borrow_mut();
         let max = 64;
-        if let Some(player_p) = players.get_mut(&token) {
-            let mut player = player_p.borrow_mut();
-            player.lobby = lobby_id.clone();
-            player.state = PlayerState::InLobby;
+        
+        pl.lobby = lobby_id.clone();
+        pl.state = PlayerState::InLobby;
 
-            let mut new_lobby = Lobby::new(&player_p, "".to_string(), max, *lobby_id, &mut player.personal_deck);
-            new_lobby.list.push(player_p.clone());
+        let mut new_lobby = Lobby::new(&pl_rc, "".to_string(), max, *lobby_id, &mut pl.personal_deck);
+        new_lobby.list.push(pl_rc.clone());
 
-            lobbies.insert(lobby_id.clone(), new_lobby.clone());
-            communication.send_message(&token, &format!("Created lobby: {}", lobby_id));
-        }
+        lobbies.insert(lobby_id.clone(), new_lobby.clone());
+        pl.send(&format!("Created lobby: {}", lobby_id));
+
         *lobby_id = *lobby_id + 1;
     }
 
 
-    pub fn set_password(&mut self, input: std::vec::Vec<&str>, token: Token, communication: &Networking) {
-        if !self.is_host(&token) {
-            communication.send_message(&token, "only host sets password!!!");
+    pub fn set_password(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+        let pl = pl_rc.borrow();
+        if !self.is_host(&pl.token) {
+            pl.send("only host sets password!!!");
             return;
         }
 
         if input.len() < 2 {
-            communication.send_message(&token, "?? what's the pass boss??");
+            pl.send("?? what's the pass boss??");
             return;
         }
 
@@ -184,19 +170,22 @@ impl Lobby {
 
     pub fn list_lobby_players(
         &self,
-        token: Token,
-        communication: &Networking,
+        pl_rc: Rc<RefCell<Player>>,
     ) {
+
+        let pl = pl_rc.borrow();
         let mut messages = Vec::new();
-        for pl in &self.list {
-            let player = pl.borrow();
-            let name = &player.name;
+
+        for pl_i in &self.list {
+            let pl_i = pl_i.borrow();
+            let name = &pl_i.name;
  
             let mut person = "";
-            if &player.token == &token {
+            if &pl_i.token == &pl.token {
                 person = " (You)";
             }
-            let message = if self.is_host(&player.token) {
+
+            let message = if self.is_host(&pl_i.token) {
                 format!("{}: host{}", name, person).to_string()
             } else {
                 format!("{}{}", name, person).to_string()
@@ -209,32 +198,35 @@ impl Lobby {
             messages.push(String::from("There's no players lmfao"));
         }
 
-        communication.send_messages(&token, messages);
+        pl.send_multiple(messages);
     }
 
 
-    pub fn info(&self, token: Token, communication: &Networking) {
+    pub fn info(&self, pl_rc: Rc<RefCell<Player>>) {
+        let pl = pl_rc.borrow();
         let mut info = Vec::new();
         info.push(format!("\\\\Lobby info//"));
         info.push(format!("Name: {}", self.id));
         info.push(format!("Players: {} / {}", self.list.len(), self.max));
+        info.push(format!("Max points: {}", self.max_points));
 
-        if !self.is_host(&token) {
+        if self.is_host(&pl.token) {
             info.push(format!("Pw: {}", self.pw));
         }
 
-        communication.send_messages(&token, info);
+        pl.send_multiple(info);
     }
 
 
-    pub fn point_max(&mut self, input: std::vec::Vec<&str>, token: Token, communication: &Networking) {
-        if !self.is_host(&token) {
-            communication.send_message(&token, "only host sets points!");
+    pub fn point_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+        let pl = pl_rc.borrow();
+        if !self.is_host(&pl.token) {
+            pl.send("only host sets points!");
             return;
         }
 
         if input.len() < 2 {
-            communication.send_message(&token, "ya gotta set the new limit");
+            pl.send("ya gotta set the new limit");
             return;
         }
 
@@ -242,46 +234,47 @@ impl Lobby {
         match input[1].to_string().parse::<u32>() {
             Ok(max) => {
                 if max == 0 {
-                    communication.send_message(&token, "bro dont make it 0 wtf man");
+                    pl.send("bro dont make it 0 wtf man");
                     return;
                 }
                 self.max_points = max;
-                communication.send_message(&token, &format!("max points set to {}", self.max_points));
+                pl.send(&format!("max points set to {}", self.max_points));
             },
 
-            _ => communication.send_message(&token, &"only numbers dude!!!"),
+            _ => pl.send(&"only numbers dude!!!"),
         }
 
     }
 
 
-    pub fn player_max(&mut self, input: std::vec::Vec<&str>, token: Token, communication: &Networking) {
-        if !self.is_host(&token) {
-            communication.send_message(&token, "only host sets MAXP LAYER!");
+    pub fn player_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+        let pl = pl_rc.borrow();
+        if !self.is_host(&pl.token) {
+            pl.send("only host sets MAXP LAYER!");
             return;
         }
 
         if input.len() < 2 {
-            communication.send_message(&token, "ya gotta set the new limit");
+            pl.send("ya gotta set the new limit");
             return;
         }
 
         match input[1].to_string().parse::<usize>() {
             Ok(max) => {
                 if max > 64 {
-                    communication.send_message(&token, &format!("woah thats 2many people chill! haha"));
+                    pl.send(&format!("woah thats 2many people chill! haha"));
                     return;
                 }
 
                 if max < self.list.len() {
-                    communication.send_message(&token, &format!("too many players in here right now man!"));
+                    pl.send(&format!("too many players in here right now man!"));
                     return;
                 }
                 self.max = max;
-                communication.send_message(&token, &format!("max players set to {}", self.max));
+                pl.send(&format!("max players set to {}", self.max));
             },
 
-            _ => communication.send_message(&token, &"only numbers dude!!!"),
+            _ => pl.send(&"only numbers dude!!!"),
         }
 
     }
@@ -289,65 +282,65 @@ impl Lobby {
 
     pub fn switch_host(&mut self, 
 		       input: std::vec::Vec<&str>, 
-		       token: Token,
-                       communication: &Networking) {
-        if !self.is_host(&token) {
-            communication.send_message(&token, "Only host can change the host!");
+                       pl_rc: Rc<RefCell<Player>>
+    ) {
+        let pl = pl_rc.borrow();
+        if !self.is_host(&pl.token) {
+            pl.send("Only host can change the host!");
             return;
         }
 
         if input.len() < 2 {
-            communication.send_message(&token, "Who's the new host tho");
+            pl.send("Who's the new host tho");
             return;
         }
 
         let new_host = input[1];
         if self.host.borrow().name == new_host {
-            communication.send_message(&token, "You're already host!!");
+            pl.send("You're already host!!");
             return;
         }
         
-        for (i, players) in self.list.iter().enumerate() {
-            let pl = players.borrow();
-            if pl.name == new_host {
-                self.host = players.clone();
-                communication.send_message(&pl.token, "You are now host!");
-                communication.send_message(&token, &format!("{} is now host!", pl.name));
+        for players_ in self.list.iter() {
+            let players = players_.borrow();
+            if players.name == new_host {
+                self.host = players_.clone();
+                players.send("You are now host!");
+                pl.send(&format!("{} is now host!", players.name));
                 return;
             } 
         }
 
-        communication.send_message(&token, "Player not in lobby.");
+        pl.send("Player not in lobby.");
     }
 
 
     pub fn kick(&mut self, 
-                input: std::vec::Vec<&str>, 
-		token: Token,
-                communication: &Networking
-	) {
-        if !self.is_host(&token) {
-            communication.send_message(&token, "Only host can kick em!");
+                input: std::vec::Vec<&str>,
+                pl_rc: Rc<RefCell<Player>>
+    ) {
+        let pl = pl_rc.borrow();
+        if !self.is_host(&pl.token) {
+            pl.send("Only host can kick em!");
             return;
         }
 
         if input.len() < 2 {
-            communication.send_message(&token, "who we kickkin");
+            pl.send("who we kickkin");
             return;
         }
 
         let kick = input[1];
         if self.host.borrow().name == kick {
-            communication.send_message(&token, "u cant kick ursel!!");
+            pl.send("u cant kick ursel!!");
             return;
         }
 
         let mut kick_ind = -1;
         for (i, players) in self.list.iter().enumerate() {
-            let pl = players.borrow();
-            if pl.name == kick {
+            let players = players.borrow();
+            if players.name == kick {
                 kick_ind = i as i32;
-
 
                 break;
             }
@@ -355,32 +348,30 @@ impl Lobby {
 
         if kick_ind >= 0 {
             {
-                let mut pl = self.list[kick_ind as usize].borrow_mut();
-                pl.state = PlayerState::OutOfLobby;
-                pl.lobby = -1;
-                communication.send_message(&pl.token, "ur r kicked!!");
-                communication.send_message(&token, &format!("u rly kicedk {} out!", pl.name));
+                let mut player = self.list[kick_ind as usize].borrow_mut();
+                player.state = PlayerState::OutOfLobby;
+                player.lobby = -1;
+                player.send("ur r kicked!!");
+                pl.send(&format!("u rly kicedk {} out!", player.name));
             }
 
             self.list.remove(kick_ind as usize);
 
-
             return;
         }
 
-        communication.send_message(&token, "Player not in lobby.");
+        pl.send("Player not in lobby.");
     }
 
 
     pub fn join_lobby(
         input: std::vec::Vec<&str>,
-        token: Token,
+        pl_rc: Rc<RefCell<Player>>,
         lobby: &mut HashMap<i32, Lobby>,
-        players: &mut HashMap<Token, Rc<RefCell<Player>>>,
-        communication: &Networking,
     ) {
+        let mut pl = pl_rc.borrow_mut();
         if input.len() < 2 {
-            communication.send_message(&token, &"Lobby name required!");
+            pl.send("Lobby name required!");
             return;
         }
 
@@ -392,145 +383,145 @@ impl Lobby {
 
                     // Lobby full check
                     if lob.list.len() >= lob.max {
-                        communication.send_message(&token, &"bro this lobbBY is FULLLLL!!");
+                        pl.send("bro this lobbBY is FULLLLL!!");
                         return;
                     }
                     
                     //Lobby Password Check
                     if lob.pw != "" {
                         if input.len() < 3 {
-                            communication.send_message(&token, &"Ya need a password BR)"); 
+                            pl.send("Ya need a password BR)"); 
                             return;
                         } else if lob.pw != input[2] {
-                            communication.send_message(&token, &"loll wrong pw haha");
+                            pl.send("loll wrong pw haha");
                             return;
                         }
                     }
 
-                    if let Some(player_p) = players.get_mut(&token) {
-                        let mut p = player_p.borrow_mut();
-                        messages.push(format!("Joined: {:#?}", &lobby_id));
+                    messages.push(format!("Joined: {:#?}", &lobby_id));
 
-                        // Set points to 0 (just in case?)
-                        p.points = 0;
+                    // Set points to 0 (just in case?)
+                    pl.points = 0;
 
-                        // add players' personal deck (.thrustee/.thruster) to lobby deck
-                        lob.deck
-                            .thrustees
-                            .append(&mut p.personal_deck.thrustees.clone());
-                        lob.deck
-                            .thrusters
-                            .append(&mut p.personal_deck.thrusters.clone());
+                    // add players' personal deck (.thrustee/.thruster) to lobby deck
+                    lob.deck
+                        .thrustees
+                        .append(&mut pl.personal_deck.thrustees.clone());
+                    lob.deck
+                        .thrusters
+                        .append(&mut pl.personal_deck.thrusters.clone());
 
-                        p.state = if lob.state == LobbyState::Playing {
-                            
-                            // Distribute thrusters to player
-                            for _ in 0..lob.hand_size {
-                                if let Some(card) = lob.deck.thrusters.pop() {
-                                    p.deck.thrusters.push(card.clone());
-                                } else {
-                                    lob.restart_game(communication);
-                                    communication
-                                        .send_message(&token, &format!("Not enough thrusters to distribute"));
-                                    return;
-                                }
-                            }
-                            
-                            let thrustee = lob.list[lob.thrustee].borrow();
-                            let mut wait: bool = false;
-                            // Handle cases where thrustee is currently choosing/deciding differently
-                            match thrustee.state {
-                                PlayerState::Playing => {
-                                    messages.push(
-                                        format!("This is your THRUSTEE: {}", &lob.current_thrustee).to_string(),
-                                    );
-                                    messages.extend(get_thrusters(&p.deck.thrusters));
-                                }
-
-                                PlayerState::Choosing => { // NOTE: Player is currently able to thrust into PREVIOUS thrustee gotta FIXER it later 
-                                    wait = true;
-                                    messages.push(
-                                        "Thrustee is currently CHOOSING next thrustee. Hold on tight!".to_string()
-                                    );
-                                }
-
-                                PlayerState::Deciding => {
-                                    messages.push(
-                                        format!("This is your THRUSTEE: {}", &lob.current_thrustee).to_string(),
-                                    );
-                                    messages.extend(get_thrusters(&p.deck.thrusters));
-                                }
-
-                                _ => ()
-                            }
-
-                            if wait {
-                                PlayerState::Waiting
+                    pl.state = if lob.state == LobbyState::Playing {
+                        
+                        // Distribute thrusters to player
+                        for _ in 0..lob.hand_size {
+                            if let Some(card) = lob.deck.thrusters.pop() {
+                                pl.deck.thrusters.push(card.clone());
                             } else {
-                                PlayerState::Playing
+                                lob.restart_game();
+                                pl.send("Not enough thrusters to distribute");
+                                return;
                             }
-                        } else {
-                            PlayerState::InLobby
-                        };
-
-                        lob.send_message(&format!("{} has joined the lobby.", p.name), communication);
-                        // adding the new player to lobby 
-                        p.lobby = lob.id;
-                        lob.list.push(player_p.clone());
-                        communication.send_messages(&token, messages);
                         }
-                    else {
-                        return;
-                    }
+                        
+                        let thrustee = lob.list[lob.thrustee].borrow();
+                        let mut wait: bool = false;
+                        // Handle cases where thrustee is currently choosing/deciding differently
+                        match thrustee.state {
+                            PlayerState::Playing => {
+                                messages.push(
+                                    format!("This is your THRUSTEE: {}", &lob.current_thrustee).to_string(),
+                                );
+                                messages.extend(get_thrusters(&pl.deck.thrusters));
+                            }
+
+                            // NOTE: Player is currently able to thrust into PREVIOUS thrustee gotta FIXER it later 
+                            PlayerState::Choosing => { 
+                                wait = true;
+                                messages.push(
+                                    "Thrustee is currently CHOOSING next thrustee. Hold on tight!".to_string()
+                                );
+                            }
+
+                            PlayerState::Deciding => {
+                                messages.push(
+                                    format!("This is your THRUSTEE: {}", &lob.current_thrustee).to_string(),
+                                );
+                                messages.extend(get_thrusters(&pl.deck.thrusters));
+                            }
+
+                            _ => ()
+                        }
+
+                        if wait {
+                            PlayerState::Waiting
+                        } else {
+                            PlayerState::Playing
+                        }
+                    } else {
+                        PlayerState::InLobby
+                    };
+
+                    lob.send_message(&format!("{} has joined the lobby.", pl.name));
+                    // adding the new player to lobby 
+                    pl.lobby = lob.id;
+                    lob.list.push(pl_rc.clone());
+                    pl.send_multiple(messages);
                 } else {
-                    communication.send_message(&token, &format!("Lobby does not exist."));
+                    pl.send("Lobby does not exist.");
                 }
             }
 
-            _ => communication.send_message(&token, &"nibba that is a invalid input my nibba"),
+            _ => pl.send("nibba that is a invalid input my nibba"),
         }
     }
 
 
     pub fn leave_lobby(
         &mut self,
-        token: Token,
-        communication: &Networking,
+        pl_rc: Rc<RefCell<Player>>
     ) -> bool {
-        let pl_ind = self.search_token(&token);
-        
         let (lob_id, name) = {
-            let player = &mut self.list[pl_ind].borrow_mut();
-            player.state = PlayerState::OutOfLobby;
-
-            (player.lobby, player.name.clone())
+            let pl = pl_rc.borrow();
+            
+            let pl_ind = self.search_token(&pl.token);
+        
+            self.list.remove(pl_ind);
+            
+            (pl.lobby, pl.name.clone())
         };
 
-        if Rc::into_raw(self.list[pl_ind].clone()) == Rc::into_raw(self.host.clone()) {
-            self.host = self.list[0].clone();
-            communication.send_message(&self.host.borrow().token, "u host now!!");
+
+        let out: bool = self.list.len() == 0;
+        if !out {
+            if Rc::into_raw(pl_rc.clone()) == Rc::into_raw(self.host.clone()) {
+                self.host = self.list[0].clone();
+                &self.host.borrow().send("u host now!!");
+            }
         }
 
+        let mut pl = pl_rc.borrow_mut();
+        
+        pl.send(&format!("Left lobby: {}.", lob_id));
+        self.send_message(&format!("{} has left the lobby.", name));
 
-        self.list.remove(pl_ind);
+        pl.lobby = -1;
+        pl.state = PlayerState::OutOfLobby;
 
-        communication.send_message(&token, &format!("Left lobby: {}.", lob_id));
-        self.send_message(&format!("{} has left the lobby.", name), communication);
-
-        self.list.len() == 0
+        out
     }
 
     pub fn toggle_house(
         &mut self,
-        token: Token,
-        communication: &Networking,
+        pl_rc: Rc<RefCell<Player>>
     ) {
+        let pl = pl_rc.borrow();
         self.use_house = !self.use_house;
         if self.use_house {
-            communication.send_message(&token, &"Now using house cards!");
+            pl.send(&"Now using house cards!");
         }
         else {
-            communication.send_message(&token, &"No longer using house cards!...");
+            pl.send(&"No longer using house cards!...");
         }
     }
 
@@ -541,12 +532,15 @@ impl Lobby {
 
     pub fn start_game(
         &mut self,
-        token: Token,
-        communication: &Networking,
+        pl_rc: Rc<RefCell<Player>>
     ) {
-        if !self.is_host(&token) {
-            communication.send_message(&token, &format!("Only host can start game!"));
-            return;            
+        {
+            let pl = pl_rc.borrow();
+
+            if !self.is_host(&pl.token) {
+                pl.send(&format!("Only host can start game!"));
+                return;            
+            }
         }
 
         self.state = LobbyState::Playing;
@@ -563,38 +557,38 @@ impl Lobby {
             if let Some(card) = self.deck.thrustees.pop() {
                 self.thrustee_choices.push(card);
             } else {
-                self.restart_game(communication);
+                self.restart_game();
                 return;
             }
         }
 
-        for (i, players) in self.list.iter().enumerate() {
-            let mut p = players.borrow_mut();
-            p.state = PlayerState::Waiting;
+
+        for (i, pl) in self.list.iter().enumerate() {
+            let mut pl = pl.borrow_mut();
+            pl.state = PlayerState::Waiting;
 
             for _ in 0..self.hand_size {
                 if let Some(card) = self.deck.thrusters.pop() {
-                    p.deck.thrusters.push(card.clone());
+                    pl.deck.thrusters.push(card.clone());
                 } else {
-                    communication
-                        .send_message(&token, &format!("Chief, there ain't enough cards to start"));
+                    self.host.borrow().send(&"Chief, there ain't enough cards to start");
                     return;
                 }
             }
-	        if i == self.thrustee {
-                p.state = PlayerState::Choosing;
+
+	    if i == self.thrustee {
+                pl.state = PlayerState::Choosing;
                 let mut messages = vec!["You are the THRUSTEE. CHOOSE NOW..........<br/>".to_string()];
-                messages.extend(self.print_thrustee_choices());
-                communication.send_messages(&p.token, messages);
-            } else {
-                communication.send_message(&p.token, "You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!");
+                    messages.extend(self.print_thrustee_choices());
+                    pl.send_multiple(messages);
+                } else {
+                    pl.send("You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!");
             }
         }
     }
 
     pub fn clear_game(
         &mut self,
-        communication: &Networking
     ) {
         self.state = LobbyState::Waiting;
         self.deck = thrust::Deck::default();
@@ -625,20 +619,18 @@ impl Lobby {
 
     pub fn handle_winner(
         &mut self,
-        communication: &Networking,
         winner_dex: usize
     ) {
-        self.clear_game(communication);
+        self.clear_game();
         let winner_name = self.list[winner_dex].borrow_mut().name.clone();
-        self.send_message(&format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, Thrustin'ers!", winner_name), communication);
+        self.send_message(&format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, Thrustin'ers!", winner_name));
     }
     
     pub fn restart_game(
         &mut self,
-        communication: &Networking
     ) {
-        self.clear_game(communication);
-        self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.", communication);
+        self.clear_game();
+        self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.");
     }
     
     pub fn print_thrustee_choices(&self) -> Vec<String> {
@@ -652,12 +644,15 @@ impl Lobby {
     pub fn choose(
         &mut self,
         input: std::vec::Vec<&str>,
-        token: Token,
-        communication: &Networking,
+        pl_rc: Rc<RefCell<Player>>,
     ) {
-        if input.len() < 2 {
-            communication.send_message(&token, "ya need to pick a NUMERIC, Boy");
-            return;
+        {
+            let pl = pl_rc.borrow();
+        
+            if input.len() < 2 {
+                pl.send("ya need to pick a NUMERIC, Boy");
+                return;
+            }
         }
 
         match input[1].parse::<i32>() {
@@ -666,11 +661,12 @@ impl Lobby {
 
                     // Scope refcell borrow
                     {
-                        let mut player = self.list[self.search_token(&token)].borrow_mut();
+                        let mut pl = pl_rc.borrow_mut();
+
                         // Removed selected choice
                         let card = self.thrustee_choices.remove(index as usize);
                         self.current_thrustee = card;
-                        player.state = PlayerState::Deciding;
+                        pl.state = PlayerState::Deciding;
 
 
                         // Put remaining choices back into thrustees deck
@@ -692,22 +688,19 @@ impl Lobby {
 
                         if i == self.thrustee {
                             messages.push("get Ready to DECIDE best THRUSTER for THRUSTING!".to_string());
-                            communication.send_messages(&p.token, messages);
+                            p.send_multiple(messages);
                         }
                         else {
                             messages.extend(get_thrusters(&p.deck.thrusters));
-                            communication.send_messages(&p.token, messages);
+                            p.send_multiple(messages);
                         }
                     }
                 } else {
-                    communication.send_message(&token, &"That shit's out of bound bro");
+                    pl_rc.borrow().send("That shit's out of bound bro");
                 }
             }
             _ => {
-                communication.send_message(
-                    &token,
-                    &"That is an invalid parameter my chieftain, use an index instead dawggo.",
-                );
+                pl_rc.borrow().send("That is an invalid parameter my chieftain, use an index instead dawggo.");
             }
         };
     }
@@ -715,12 +708,14 @@ impl Lobby {
     pub fn decide(
         &mut self,
         input: std::vec::Vec<&str>,
-        token: Token,
-        communication: &Networking,
+        pl_rc: Rc<RefCell<Player>>,
     ) {
-        if input.len() < 2 {
-            communication.send_message(&token, "ya need to pick a numbert boi");
-            return;
+        {
+            let pl = pl_rc.borrow();
+            if input.len() < 2 {
+                pl.send("ya need to pick a numbert boi");
+                return;
+            }
         }
 
         match input[1].parse::<i32>() {
@@ -731,8 +726,8 @@ impl Lobby {
                     let mut name = String::new();
                     let mut chosen_thrust = String::new();
                     {
-                        let mut player = self.list[self.search_token(&token)].borrow_mut();
-                        name = player.name.clone();
+                        let mut pl = pl_rc.borrow_mut();
+                        name = pl.name.clone();
 
                         // Get chosen thrust
                         chosen_thrust = self
@@ -745,7 +740,7 @@ impl Lobby {
                         self.thrusted_players.clear();
 
                         // Set current THRUSTEE to THRUSTER state
-                        player.state = PlayerState::Waiting;
+                        pl.state = PlayerState::Waiting;
 
                         // Get new thrustee_choices for next THRUSTEE
                         for _ in 0..self.max_thrustee_choices {
@@ -769,13 +764,13 @@ impl Lobby {
 
                         // Check if winner
                         if pts >= self.max_points {
-                            self.handle_winner(communication, tkn); 
+                            self.handle_winner(tkn); 
                             return;
                         }
                     }
 
                     if restart {
-                        self.restart_game(communication);
+                        self.restart_game();
                         return;
                     }
 
@@ -803,18 +798,15 @@ impl Lobby {
                         } else {
                             messages.push("get rdy to thrust.....".to_string());
                         }
-
-                        communication.send_messages(&pl.borrow().token, messages);
+                        pl.borrow().send_multiple(messages);
+                        //communication.send_messages(&pl.borrow().token, messages);
                     }
                 } else {
-                    communication.send_message(&token, &"That shit's out of bound bro");
+                    pl_rc.borrow().send("That shit's out of bound bro");
                 }
             }
             _ => {
-                communication.send_message(
-                    &token,
-                    &"That is an invalid parameter, use an index instead",
-                );
+                pl_rc.borrow().send("That is an invalid parameter, use an index instead");
             }
         };
     }
@@ -822,13 +814,15 @@ impl Lobby {
     pub fn handle_thrust(
         &mut self,
         input: std::vec::Vec<&str>,
-        token: Token,
-        communication: &Networking,
+        pl_rc: Rc<RefCell<Player>>,
     ) {
-        // Check number of inputs
-        if input.len() < 2 {
-            communication.send_message(&token, &"Index required!");
-            return;
+        {
+            let mut pl = pl_rc.borrow();
+            // Check number of inputs
+            if input.len() < 2 {
+                pl.send(&"Index required!");
+                return;
+            }
         }
 
         match input[1].parse::<i32>() {
@@ -838,14 +832,13 @@ impl Lobby {
                 let mut restart = false;
                 let mut resulting_thrust = String::new();
                 {
-                    let player_clone = self.list[self.search_token(&token)].clone();
-                    let mut player = player_clone.borrow_mut();
+                    let mut pl = pl_rc.borrow_mut();
 
                     // Check correct # of thrusters
                     let num_thrusters = input.len() as i32 - 1;
                     let num_underscore = thrust::Deck::count_underscore(&self.current_thrustee);
                     if num_thrusters != num_underscore {
-                        communication.send_message(&token, &"bro that ain't the right number of thrusters");
+                        pl.send("bro that ain't the right number of thrusters");
                         return;
                     }
                     let mut indexes: Vec<i32> = Vec::new();
@@ -853,23 +846,20 @@ impl Lobby {
                     for i in 1..input.len() {
                         let dex = input[i].parse::<i32>().unwrap();
                         if indexes.contains(&dex) { // Check if dupes
-                            communication.send_message(&token, &"y'ain't allowed to thrust duplicate thrusters broski");
+                            pl.send("y'ain't allowed to thrust duplicate thrusters broski");
                             return;
                         }
                         indexes.push(dex);
-                        if dex >= player.deck.thrusters.len() as i32 || index < 0 {
-                            communication.send_message(&token, &"That shit's out of bound bro");
+                        if dex >= pl.deck.thrusters.len() as i32 || index < 0 {
+                            pl.send("That shit's out of bound bro");
                             return;
                         }
                     }
 
                     // Check if thrusted
                     for player_token in &self.thrusted_players {
-                        if token == *player_token {
-                            communication.send_message(
-                                &player_token,
-                                &format!("You have already THRUSTED, you cannot THRUST again."),
-                            );
+                        if pl.token == *player_token {
+                            pl.send("You have already THRUSTED, you cannot THRUST again.");
                             return;
                         }
                     }
@@ -881,7 +871,7 @@ impl Lobby {
                         // Surround with <u> to underline text
                         let picked_thruster = format!(
                             "<u>{}</u>",
-                            player.deck.thrusters[input[i].parse::<usize>().unwrap()].clone()
+                            pl.deck.thrusters[input[i].parse::<usize>().unwrap()].clone()
                         );
                         to_remove.push(picked_thruster.clone());
                         resulting_thrust = thrust::Deck::thrust(
@@ -893,24 +883,24 @@ impl Lobby {
 
                     // Remove thrusted thrusters
                     let mut updated_thrusters: std::vec::Vec<String> = Vec::new();
-                    for thruster in &player.deck.thrusters {
+                    for thruster in &pl.deck.thrusters {
                         if !to_remove.contains(thruster) {
                             updated_thrusters.push(thruster.clone())
                         }
                     }
-                    player.deck.thrusters = updated_thrusters;
-                    self.thrusted_players.push(player.token.clone());
+                    pl.deck.thrusters = updated_thrusters;
+                    self.thrusted_players.push(pl.token.clone());
 
                     // Handle picked
                     self.current_thrusts
-                        .insert(player.token, resulting_thrust.clone());
+                        .insert(pl.token, resulting_thrust.clone());
                     self.index_to_token
-                        .insert((self.current_thrusts.len() - 1) as i32, player.token);
+                        .insert((self.current_thrusts.len() - 1) as i32, pl.token);
 
                     // Replenish cards
                     if let Some(card) = self.deck.thrusters.pop() {
                         let replenished_thruster = card;
-                        player.deck.thrusters.push(replenished_thruster.clone());
+                        pl.deck.thrusters.push(replenished_thruster.clone());
 
                     } else {
                         restart = true;
@@ -918,36 +908,34 @@ impl Lobby {
                 }
 
                 if restart {
-                    self.restart_game(communication);
+                    self.restart_game();
                     return;
                 }
                 else {
                     // Notify message
-                    self.send_message(&format!("{}. {}", &(self.current_thrusts.len() as i32 - 1), &resulting_thrust), communication);
+                    self.send_message(&format!("{}. {}", &(self.current_thrusts.len() as i32 - 1), &resulting_thrust));
                 }
             }
             _ => {
-                communication.send_message(
-                    &token,
-                    &"That is an invalid parameter, use an index instead",
-                );
+                pl_rc.borrow().send("That is an invalid parameter, use an index instead");
             }
         };
     }
 
     pub fn display_points(
         &self,
-        token: Token,
-        communication: &Networking,
+        pl: Rc<RefCell<Player>>,
     ) {
+        let pl = pl.borrow();
         let mut messages = Vec::new();
+        messages.push(format!("Max: {}", self.max_points));
 
         for rc in &self.list {
             let player = rc.borrow();
             messages.push(format!("{}: {}", player.name, player.points));
         }
         
-        communication.send_messages(&token, messages);
+        pl.send_multiple(messages);
     }
 }
 
@@ -961,10 +949,10 @@ pub fn get_thrusters(thrusters: &Vec<String>) -> Vec<String> {
 
 
 pub fn list_lobby(
-    token: Token,
+    pl_rc: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>,
-    communication: &Networking,
 ) {
+    let pl = pl_rc.borrow();
     let mut messages = Vec::new();
 
     for lob in lobbies.values() {
@@ -988,91 +976,90 @@ pub fn list_lobby(
         messages.push("No lobbies bro...".to_string());
     }
 
-    communication.send_messages(&token, messages);
+    pl.send_multiple(messages);
 }
 
 
 pub fn list_all_players(
-    token: Token,
+    pl_rc: Rc<RefCell<Player>>,
     players: &mut HashMap<Token, Rc<RefCell<Player>>>,
-    communication: &Networking,
 ) {
+    let pl = pl_rc.borrow();
     let mut messages = Vec::new();
+
     for player in players.values() {
-        let pl = player.borrow();
+        let pl_i = player.borrow();
         let mut person = "";
-        if pl.token == token {
+        if pl_i.token == pl.token {
             person = " (You)";
         }
 
-        let message = if pl.state == PlayerState::InLobby
-            || pl.state == PlayerState::Playing
+        let message = if pl_i.state == PlayerState::InLobby
+            || pl_i.state == PlayerState::Playing
         {
-            format!("{} in {}{}", pl.name, pl.lobby, person).to_string()
+            format!("{} in {}{}", pl_i.name, pl_i.lobby, person).to_string()
         } else {
-            format!("{}{}", pl.name, person).to_string()
+            format!("{}{}", pl_i.name, person).to_string()
         };
 
         messages.push(message);
     }
-    communication.send_messages(&token, messages);
+    pl.send_multiple(messages);
 }
 
 
 pub fn add_item(
     input: &std::vec::Vec<&str>,
-    token: Token,
+    pl_rc: Rc<RefCell<Player>>,
     lobby: &mut HashMap<i32, Lobby>,
-    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
-    communication: &Networking,
     thruster: bool,
 ) -> bool {
+    let mut pl = pl_rc.borrow_mut();
+
     if input.len() < 2 {
-        communication.send_message(&token, &"Thruster/thrustee required!");
+        pl.send("Thruster/thrustee required!");
         return true;
     }
 
-    if let Some(player_p) = players.get_mut(&token) {
-        let mut player = player_p.borrow_mut();
 
-        let mut new_item = String::new();
-        for i in 1..input.len() {
-            new_item.push_str(input[i as usize]);
-            new_item.push_str(" ");
-        }
-        new_item.pop();
+    let mut new_item = String::new();
+    for i in 1..input.len() {
+        new_item.push_str(input[i as usize]);
+        new_item.push_str(" ");
+    }
+    new_item.pop();
 
-        if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
-            || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
-        {
-            communication.send_message(&token, &"Please surround the thruster/thrustee with quotes.");
-            return true;
-        }
-        new_item.pop();
-        new_item.remove(0);
+    if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
+        || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
+    {
+        pl.send("Please surround the thruster/thrustee with quotes.");
+        return true;
+    }
+    new_item.pop();
+    new_item.remove(0);
 
-        if !thruster && !new_item.contains("_") {
-            return false;
-        }
+    if !thruster && !new_item.contains("_") {
+        return false;
+    }
 
-        if thruster {
-            player.personal_deck.add_thruster(&new_item);
-            communication.send_message(&token, &format!("Added \"{}\" to thrusters!", &new_item));
-        } else {
-            player.personal_deck.add_thrustee(&new_item);
-            communication.send_message(&token, &format!("Added \"{}\" to thrustees!", &new_item));
-        }
+    if thruster {
+        pl.personal_deck.add_thruster(&new_item);
+        pl.send(&format!("Added \"{}\" to thrusters!", &new_item));
+    } else {
+        pl.personal_deck.add_thrustee(&new_item);
+        pl.send(&format!("Added \"{}\" to thrustees!", &new_item));
+    }
 
-        if let Some(lob) = lobby.get_mut(&player.lobby) {
-            if lob.state == LobbyState::Waiting {
-                lob.deck
-                    .thrustees
-                    .append(&mut player.personal_deck.thrustees.clone());
-                lob.deck
-                    .thrusters
-                    .append(&mut player.personal_deck.thrusters.clone());
-            }
+    if let Some(lob) = lobby.get_mut(&pl.lobby) {
+        if lob.state == LobbyState::Waiting {
+            lob.deck
+                .thrustees
+                .append(&mut pl.personal_deck.thrustees.clone());
+            lob.deck
+                .thrusters
+                .append(&mut pl.personal_deck.thrusters.clone());
         }
     }
+
     true
 }
