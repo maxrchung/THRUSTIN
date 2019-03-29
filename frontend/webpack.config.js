@@ -1,7 +1,8 @@
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); 
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
   entry: "./src/main.jsx",
@@ -29,12 +30,13 @@ module.exports = {
     filename: "[name].[contenthash].js"
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: "src/index.ejs"
-    }),
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash].css"
-    })
+    }),
+    new HtmlWebpackPlugin({
+      template: "src/index.ejs"
+    }),
+    new CompressionPlugin()
   ]
 };
