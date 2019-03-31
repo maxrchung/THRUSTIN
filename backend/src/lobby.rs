@@ -627,6 +627,7 @@ impl Lobby {
             Ok(index) => {
                 if index < self.max_thrustee_choices && index >= 0 {
                     // Scope refcell borrow
+                    let mut name;
                     {
                         let mut pl = pl_rc.borrow_mut();
 
@@ -640,6 +641,7 @@ impl Lobby {
                             self.deck.thrustees.push(choice.clone());
                         }
                         self.thrustee_choices.clear();
+                        name = pl.name.clone();
                     }
 
                     // Notify players
@@ -647,7 +649,7 @@ impl Lobby {
                         let mut p = player_cell.borrow_mut();
                         let mut messages = vec![format!(
                             "{} has chosen this new THRUSTEE:<br/>{}<br/>",
-                            &p.name, &self.current_thrustee
+                            name, &self.current_thrustee
                         )
                         .to_string()];
 
