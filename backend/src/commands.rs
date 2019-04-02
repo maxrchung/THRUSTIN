@@ -72,7 +72,7 @@ pub fn out_of_lobby_commands(
         ".thrustee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
-                pl.borrow().send("Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
+                pl.borrow().send("Not valid thrustee. Please add blank space to allow THRUSTERS to THRUST into them.");
             }
         }
 
@@ -97,8 +97,8 @@ fn list_out_commands(pl: &player::Player) {
         "'.list' list lobbies".to_string(),
         "'.make' make a lobby".to_string(),
         "'.name [name]' change your name to [name]".to_string(),
-        "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
-        "'.thruster' \"Some thruster\" to add thruster".to_string(),
+        "'.THRUSTEE' \"Some THRUSTEE\" to add THRUSTEE".to_string(),
+        "'.THRUSTER' \"Some THRUSTER\" to add THRUSTER".to_string(),
         "'.who' list everyone playing".to_string(),
     ]);
 }
@@ -148,7 +148,7 @@ pub fn in_lobby_commands(
         ".thrustee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
-                pl.borrow().send("Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
+                pl.borrow().send("Not valid THRUSTEE. Please add blank space to allow THRUSTERS to THRUST into them.");
             }
         }
 
@@ -171,8 +171,8 @@ fn list_in_commands(pl: &player::Player) {
         "'.leave' leave lobby".to_string(),
         "'.name [name]' change your name to [name]".to_string(),
         "'.start' start game".to_string(),
-        "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
-        "'.thruster' \"Some thruster\" to add thruster".to_string(),
+        "'.THRUSTEE' \"Some THRUSTEE\" to add THRUSTEE".to_string(),
+        "'.THRUSTER' \"Some THRUSTER\" to add THRUSTER".to_string(),
         "'.who' list everyone in lobby".to_string(),
     ]);
 }
@@ -202,9 +202,9 @@ fn list_playing_commands(pl: &player::Player) {
     pl.send_multiple(vec![
         "Valid commands:".to_string(),
         "'.help' this is it chief".to_string(),
-        "'.thrust [#]' THRUST your [#] card".to_string(),
-        "'.thrustee' show the current THRUSTEE".to_string(),
-        "'.thrusters' show your THRUSTERS".to_string(),
+        "'.THRUST [#]' THRUST your [#] card".to_string(),
+        "'.THRUSTEE' show the current THRUSTEE".to_string(),
+        "'.THRUSTERS' show your THRUSTERS".to_string(),
         "'.points' to see current points".to_string(),
     ]);
 }
@@ -235,10 +235,10 @@ fn list_choosing_commands(token: Token, communication: &Networking) {
         &token,
         vec![
             "Valid commands:".to_string(),
-            "'.thrust [#]' thrust [#] card as THE NEXT THRUSTEE".to_string(),
+            "'.THRUST [#]' THRUST [#] card as THE NEXT THRUSTEE".to_string(),
             "'.help' this is it chief".to_string(),
-            "'.thrustee' show the current THRUSTEE".to_string(),
-            "'.thrusters' show your THRUSTERS".to_string(),
+            "'.THRUSTEE' show the current THRUSTEE".to_string(),
+            "'.THRUSTERS' show your THRUSTERS".to_string(),
             "'.points' to see current points".to_string(),
         ],
     );
@@ -272,8 +272,8 @@ fn list_deciding_commands(token: Token, communication: &Networking) {
             "Valid commands:".to_string(),
             "'.decide [#]' pick [#] card as THE THRUSTEE".to_string(),
             "'.help' this is it chief".to_string(),
-            "'.thrustee' show the current THRUSTEE".to_string(),
-            "'.thrusters' show your THRUSTERS".to_string(),
+            "'.THRUSTEE' show the current THRUSTEE".to_string(),
+            "'.THRUSTERS' show your THRUSTERS".to_string(),
             "'.points' to see current points".to_string(),
         ],
     );
@@ -294,7 +294,7 @@ pub fn waiting_commands(
 
         ".thrust" => pl
             .borrow()
-            .send("Chill out homeboy... you needa w8 for THRUSTEE to CHOOSE..."),
+            .send("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),
 
         ".points" => lobby.display_points(pl),
 

@@ -406,7 +406,7 @@ impl Lobby {
                                 pl.deck.thrusters.push(card.clone());
                             } else {
                                 lob.restart_game();
-                                pl.send("Not enough thrusters to distribute");
+                                pl.send("Not enough THRUSTERS to distribute");
                                 return;
                             }
                         }
@@ -427,7 +427,7 @@ impl Lobby {
                             PlayerState::Choosing => {
                                 wait = true;
                                 messages.push(
-                                    "Thrustee is currently CHOOSING next thrustee. Hold on tight!"
+                                    "THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!"
                                         .to_string(),
                                 );
                             }
@@ -557,7 +557,7 @@ impl Lobby {
             if i == self.thrustee {
                 pl.state = PlayerState::Choosing;
                 let mut messages =
-                    vec!["You are the THRUSTEE. CHOOSE NOW..........<br/>".to_string()];
+                    vec!["You are the THRUSTEE. Choose NOW..........<br/>".to_string()];
                 messages.extend(self.print_thrustee_choices());
                 pl.send_multiple(messages);
             } else {
@@ -597,7 +597,7 @@ impl Lobby {
     pub fn handle_winner(&mut self, winner_dex: usize) {
         self.clear_game();
         let winner_name = self.list[winner_dex].borrow_mut().name.clone();
-        self.send_message(&format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, Thrustin'ers!", winner_name));
+        self.send_message(&format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!", winner_name));
     }
 
     pub fn restart_game(&mut self) {
@@ -660,7 +660,7 @@ impl Lobby {
 
                         if i == self.thrustee {
                             messages.push(
-                                "get Ready to DECIDE best THRUSTER for THRUSTING!".to_string(),
+                                "get Ready to decide best THRUSTER for THRUSTING!".to_string(),
                             );
                             p.send_multiple(messages);
                         } else {
@@ -769,7 +769,7 @@ impl Lobby {
                             );
                             messages.extend(self.print_thrustee_choices());
                         } else {
-                            messages.push("get rdy to thrust.....".to_string());
+                            messages.push("get rdy to THRUST.....".to_string());
                         }
                         pl.borrow().send_multiple(messages);
                         //communication.send_messages(&pl.borrow().token, messages);
@@ -808,7 +808,7 @@ impl Lobby {
                     let num_thrusters = input.len() as i32 - 1;
                     let num_underscore = thrust::Deck::count_underscore(&self.current_thrustee);
                     if num_thrusters != num_underscore {
-                        pl.send("bro that ain't the right number of thrusters");
+                        pl.send("bro that ain't the right number of THRUSTERS");
                         return;
                     }
                     let mut indexes: Vec<i32> = Vec::new();
@@ -817,7 +817,7 @@ impl Lobby {
                         let dex = input[i].parse::<i32>().unwrap();
                         if indexes.contains(&dex) {
                             // Check if dupes
-                            pl.send("y'ain't allowed to thrust duplicate thrusters broski");
+                            pl.send("y'ain't allowed to thrust duplicate THRUSTERS broski");
                             return;
                         }
                         indexes.push(dex);
@@ -980,7 +980,7 @@ pub fn add_item(
     let mut pl = pl_rc.borrow_mut();
 
     if input.len() < 2 {
-        pl.send("Thruster/thrustee required!");
+        pl.send("THRUSTER/THRUSTEE required!");
         return true;
     }
 
@@ -994,7 +994,7 @@ pub fn add_item(
     if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
         || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
     {
-        pl.send("Please surround the thruster/thrustee with quotes.");
+        pl.send("Please surround the THRUSTER/THRUSTEE with quotes.");
         return true;
     }
     new_item.pop();
@@ -1006,10 +1006,10 @@ pub fn add_item(
 
     if thruster {
         pl.personal_deck.add_thruster(&new_item);
-        pl.send(&format!("Added \"{}\" to thrusters!", &new_item));
+        pl.send(&format!("Added \"{}\" to THRUSTERS!", &new_item));
     } else {
         pl.personal_deck.add_thrustee(&new_item);
-        pl.send(&format!("Added \"{}\" to thrustees!", &new_item));
+        pl.send(&format!("Added \"{}\" to THRUSTEES!", &new_item));
     }
 
     if let Some(lob) = lobby.get_mut(&pl.lobby) {
