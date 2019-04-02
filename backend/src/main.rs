@@ -19,6 +19,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 use ws::util::Token;
 
+const MAX_INPUT: usize = 6669;
 fn main() {
     let communication = Rc::new(RefCell::new(Networking::init()));
     let mut lobby_id = 0;
@@ -49,12 +50,13 @@ fn handle_input(
     lobbies: &mut HashMap<i32, lobby::Lobby>,
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
 ) {
-    let split: std::vec::Vec<&str> = input.split(' ').collect();
-    /*
-        let mut com = split[0].to_string();
-        com = com[..com.len()].to_string();
-    */
+    if input.len() > MAX_INPUT {
+        let player = players.get(&token).unwrap().borrow();
+        player.send("ok bro you are typing way too much lmao");
+        return;
+    }
 
+    let split: std::vec::Vec<&str> = input.split(' ').collect();
     let state = {
         let player = players.get(&token).unwrap().borrow();
         player.state.clone()
