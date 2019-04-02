@@ -839,13 +839,11 @@ impl Lobby {
                     let mut to_remove: std::vec::Vec<String> = Vec::new();
                     // Handle mutliple underscores
                     for i in 1..input.len() {
-                        let picked_thruster = pl.deck.thrusters[input[i].parse::<usize>().unwrap()].clone();
+                        let picked_thruster =
+                            pl.deck.thrusters[input[i].parse::<usize>().unwrap()].clone();
                         to_remove.push(picked_thruster.clone());
                         // Surround with <u> to underline text
-                        let formatted_thruster = format!(
-                            "<u>{}</u>",
-                            picked_thruster
-                        );
+                        let formatted_thruster = format!("<u>{}</u>", picked_thruster);
                         resulting_thrust = thrust::Deck::thrust(
                             input[i].parse::<i32>().unwrap(),
                             &formatted_thruster,

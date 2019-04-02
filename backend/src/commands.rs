@@ -7,17 +7,25 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
+///////////
+//helpers//
+///////////
+// Retrieves command from split input
+// Lowers input so case is insensitive
+fn get_command(input: &Vec<&str>) -> String {
+    let com = input[0].to_string().to_lowercase();
+    return com;
+}
+
 ///////////////
 //choose name//
 ///////////////
 pub fn choose_name_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     match &*com {
         ".name" | ".n" => player::set_name(input, pl, players),
 
@@ -42,17 +50,14 @@ fn list_choose_name_commands(pl: &player::Player) {
 //out of lobby//
 ////////////////
 pub fn out_of_lobby_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
     let is_thruster = true;
-
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     match &*com {
         ".help" => list_out_commands(&pl.borrow()),
 
@@ -102,18 +107,14 @@ fn list_out_commands(pl: &player::Player) {
 //in lobby//
 ////////////
 pub fn in_lobby_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
     let is_thruster = true;
-
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_in_commands(&pl.borrow()),
 
@@ -180,15 +181,12 @@ fn list_in_commands(pl: &player::Player) {
 //playing commands//
 ////////////////////
 pub fn playing_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_playing_commands(&pl.borrow()),
 
@@ -215,15 +213,12 @@ fn list_playing_commands(pl: &player::Player) {
 //choosing//
 ////////////
 pub fn choosing_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_playing_commands(&pl.borrow()),
 
@@ -253,15 +248,12 @@ fn list_choosing_commands(token: Token, communication: &Networking) {
 //deciding//
 ////////////
 pub fn deciding_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_playing_commands(&pl.borrow()),
 
@@ -291,15 +283,12 @@ fn list_deciding_commands(token: Token, communication: &Networking) {
 //waiting//
 ///////////
 pub fn waiting_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_playing_commands(&pl.borrow()),
 
