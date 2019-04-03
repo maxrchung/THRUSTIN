@@ -635,12 +635,10 @@ impl Lobby {
                         let card = self.thrustee_choices.remove(index as usize);
                         self.current_thrustee = card;
                         pl.state = PlayerState::Deciding;
-
-                        // Put remaining choices back into thrustees deck
-                        for choice in self.thrustee_choices.iter() {
-                            self.deck.thrustees.push(choice.clone());
-                        }
+                        
+                        // Clear choices
                         self.thrustee_choices.clear();
+                        
                         name = pl.name.clone();
                     }
 

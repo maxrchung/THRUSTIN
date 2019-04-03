@@ -151,7 +151,10 @@ impl Default for Deck {
             "y01042069sw4g0u1",
             "meme",
             "memes",
-            "dying lol (epic yeet!)"
+            "dying lol (epic yeet!)",
+            "ass flesh",
+            "water the plants",
+            "the feel when you're drinking boba but suck the straw too hard and choke on boba"
         ];
 
         let thrustees = vec![
@@ -202,7 +205,8 @@ impl Default for Deck {
             "One time I _____ my dick, lol!",
             "Hi, I'm a doctor with a PhD, and I'd like to tell you about the _____ epidemic.",
             "Children are _____ in the world, why are you wasting your time _____?",
-            "Dead _____ give(s) me the weirdest boner?"
+            "Dead _____ give(s) me the weirdest boner?",
+            "When I die, make sure to _____"
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
