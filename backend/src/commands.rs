@@ -7,17 +7,25 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
+///////////
+//helpers//
+///////////
+// Retrieves command from split input
+// Lowers input so case is insensitive
+fn get_command(input: &Vec<&str>) -> String {
+    let com = input[0].to_string().to_lowercase();
+    return com;
+}
+
 ///////////////
 //choose name//
 ///////////////
 pub fn choose_name_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     match &*com {
         ".name" | ".n" => player::set_name(input, pl, players),
 
@@ -42,17 +50,14 @@ fn list_choose_name_commands(pl: &player::Player) {
 //out of lobby//
 ////////////////
 pub fn out_of_lobby_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
     let is_thruster = true;
-
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     match &*com {
         ".help" => list_out_commands(&pl.borrow()),
 
@@ -67,7 +72,7 @@ pub fn out_of_lobby_commands(
         ".thrustee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
-                pl.borrow().send("Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
+                pl.borrow().send("Not valid thrustee. Please add blank space to allow THRUSTERS to THRUST into them.");
             }
         }
 
@@ -92,8 +97,8 @@ fn list_out_commands(pl: &player::Player) {
         "'.list' list lobbies".to_string(),
         "'.make' make a lobby".to_string(),
         "'.name [name]' change your name to [name]".to_string(),
-        "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
-        "'.thruster' \"Some thruster\" to add thruster".to_string(),
+        "'.THRUSTEE' \"Some THRUSTEE\" to add THRUSTEE".to_string(),
+        "'.THRUSTER' \"Some THRUSTER\" to add THRUSTER".to_string(),
         "'.who' list everyone playing".to_string(),
     ]);
 }
@@ -102,18 +107,14 @@ fn list_out_commands(pl: &player::Player) {
 //in lobby//
 ////////////
 pub fn in_lobby_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
     let is_thruster = true;
-
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_in_commands(&pl.borrow()),
 
@@ -147,7 +148,7 @@ pub fn in_lobby_commands(
         ".thrustee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
-                pl.borrow().send("Not valid thrustee. Please add blank space to allow thrusters to thrust into them.");
+                pl.borrow().send("Not valid THRUSTEE. Please add blank space to allow THRUSTERS to THRUST into them.");
             }
         }
 
@@ -170,8 +171,8 @@ fn list_in_commands(pl: &player::Player) {
         "'.leave' leave lobby".to_string(),
         "'.name [name]' change your name to [name]".to_string(),
         "'.start' start game".to_string(),
-        "'.thrustee' \"Some thrustee\" to add thrustee".to_string(),
-        "'.thruster' \"Some thruster\" to add thruster".to_string(),
+        "'.THRUSTEE' \"Some THRUSTEE\" to add THRUSTEE".to_string(),
+        "'.THRUSTER' \"Some THRUSTER\" to add THRUSTER".to_string(),
         "'.who' list everyone in lobby".to_string(),
     ]);
 }
@@ -180,15 +181,12 @@ fn list_in_commands(pl: &player::Player) {
 //playing commands//
 ////////////////////
 pub fn playing_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_playing_commands(&pl.borrow()),
 
@@ -204,9 +202,9 @@ fn list_playing_commands(pl: &player::Player) {
     pl.send_multiple(vec![
         "Valid commands:".to_string(),
         "'.help' this is it chief".to_string(),
-        "'.thrust [#]' THRUST your [#] card".to_string(),
-        "'.thrustee' show the current THRUSTEE".to_string(),
-        "'.thrusters' show your THRUSTERS".to_string(),
+        "'.THRUST [#]' THRUST your [#] card".to_string(),
+        "'.THRUSTEE' show the current THRUSTEE".to_string(),
+        "'.THRUSTERS' show your THRUSTERS".to_string(),
         "'.points' to see current points".to_string(),
     ]);
 }
@@ -215,15 +213,12 @@ fn list_playing_commands(pl: &player::Player) {
 //choosing//
 ////////////
 pub fn choosing_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_playing_commands(&pl.borrow()),
 
@@ -240,10 +235,10 @@ fn list_choosing_commands(token: Token, communication: &Networking) {
         &token,
         vec![
             "Valid commands:".to_string(),
-            "'.thrust [#]' thrust [#] card as THE NEXT THRUSTEE".to_string(),
+            "'.THRUST [#]' THRUST [#] card as THE NEXT THRUSTEE".to_string(),
             "'.help' this is it chief".to_string(),
-            "'.thrustee' show the current THRUSTEE".to_string(),
-            "'.thrusters' show your THRUSTERS".to_string(),
+            "'.THRUSTEE' show the current THRUSTEE".to_string(),
+            "'.THRUSTERS' show your THRUSTERS".to_string(),
             "'.points' to see current points".to_string(),
         ],
     );
@@ -253,15 +248,12 @@ fn list_choosing_commands(token: Token, communication: &Networking) {
 //deciding//
 ////////////
 pub fn deciding_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_playing_commands(&pl.borrow()),
 
@@ -280,8 +272,8 @@ fn list_deciding_commands(token: Token, communication: &Networking) {
             "Valid commands:".to_string(),
             "'.decide [#]' pick [#] card as THE THRUSTEE".to_string(),
             "'.help' this is it chief".to_string(),
-            "'.thrustee' show the current THRUSTEE".to_string(),
-            "'.thrusters' show your THRUSTERS".to_string(),
+            "'.THRUSTEE' show the current THRUSTEE".to_string(),
+            "'.THRUSTERS' show your THRUSTERS".to_string(),
             "'.points' to see current points".to_string(),
         ],
     );
@@ -291,21 +283,18 @@ fn list_deciding_commands(token: Token, communication: &Networking) {
 //waiting//
 ///////////
 pub fn waiting_commands(
-    input: std::vec::Vec<&str>,
+    input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let mut com = input[0].to_string();
-    com = com[..com.len()].to_string();
-
+    let com = get_command(&input);
     let lobby = { lobbies.get(&pl.borrow().lobby).unwrap() };
-
     match &*com {
         ".help" => list_playing_commands(&pl.borrow()),
 
         ".thrust" => pl
             .borrow()
-            .send("Chill out homeboy... you needa w8 for THRUSTEE to CHOOSE..."),
+            .send("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),
 
         ".points" => lobby.display_points(pl),
 

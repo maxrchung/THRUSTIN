@@ -107,7 +107,7 @@ pub fn set_name(
         if pl.state == PlayerState::ChooseName {
             pl.state = PlayerState::OutOfLobby;
             pl.send(&format!(
-                "ok {}, now ur redy 2 thrust, try '.help' for sum more information",
+                "ok {}, now ur redy 2 THRUST, try '.help' for sum more information",
                 &pl.name
             ));
         }
