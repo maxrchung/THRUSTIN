@@ -21,11 +21,17 @@ use ws::util::Token;
 
 fn main() {
     let communication = Rc::new(RefCell::new(Networking::init()));
-    let mut lobby_id = 0;
+    let mut lobby_id = 1;
     let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
     let mut players: HashMap<Token, Rc<RefCell<Player>>> = HashMap::new();
 
     let read = communication.clone();
+
+    // Add endless lobby host dummy boi
+    players.insert(Token(72742069), Rc::new(RefCell::new(player::new_endless_host(communication.clone()))));
+
+    // Create Endless Lobby
+    lobby::Lobby::make_endless_lobby(&players.get(&Token(72742069)).unwrap().clone(), &mut 0, &mut lobbies);
 
     loop {
         let (token, message) = read.borrow_mut().read_message();
@@ -61,6 +67,7 @@ fn handle_input(
     };
 
     let pl = { players.get(&token).unwrap().clone() };
+
     match state {
         PlayerState::ChooseName => {
             commands::choose_name_commands(split, pl, players);
