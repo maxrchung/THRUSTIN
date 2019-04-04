@@ -89,29 +89,30 @@ pub fn out_of_lobby_commands(
 ) {
     let is_thruster = true;
     let com = get_command(&input);
+    println!("{}", com);
     match &*com {
-        ".help | .h" => list_out_commands(&pl.borrow()),
+        ".help" | ".h" => list_out_commands(&pl.borrow()),
 
-        ".join | .j" => lobby::Lobby::join_lobby(input, pl, lobbies),
+        ".join" | ".j" => lobby::Lobby::join_lobby(input, pl, lobbies),
 
-        ".list | .l" => lobby::list_lobby(pl, lobbies),
+        ".list" | ".l" => lobby::list_lobby(pl, lobbies),
 
-        ".make | .m" => lobby::Lobby::make_lobby(input, pl, lobby_id, lobbies),
+        ".make" | ".m" => lobby::Lobby::make_lobby(input, pl, lobby_id, lobbies),
 
-        ".name | .n" => player::set_name(input, pl, players),
+        ".name" | ".n" => player::set_name(input, pl, players),
 
-        ".thrustee | .tee" => {
+        ".thrustee" | ".tee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
                 pl.borrow().send("Not valid thrustee. Please add blank space to allow THRUSTERS to THRUST into them.");
             }
         }
 
-        ".thruster | .ter" => {
+        ".thruster" | ".ter" => {
             lobby::add_item(&input, pl, lobbies, is_thruster);
         }
 
-        ".who | .w" => lobby::list_all_players(pl, players),
+        ".who" | ".w" => lobby::list_all_players(pl, players),
 
         _ => {
             pl.borrow()
@@ -147,45 +148,45 @@ pub fn in_lobby_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help | .he" => list_in_commands(&pl.borrow()),
+        ".help" | ".he" => list_in_commands(&pl.borrow()),
 
-        ".host | .hos" => lobby.switch_host(input, pl),
+        ".host" | ".hos" => lobby.switch_host(input, pl),
 
-        ".house | .hou" => lobby.toggle_house(pl),
+        ".house" | ".hou" => lobby.toggle_house(pl),
 
-        ".info | .i" => lobby.info(pl),
+        ".info" | ".i" => lobby.info(pl),
 
-        ".kick | .k" => lobby.kick(input, pl),
+        ".kick" | ".k" => lobby.kick(input, pl),
 
-        ".leave | .l" => {
+        ".leave" | ".l" => {
             if lobby.leave_lobby(pl) {
                 let id = lobby.id;
                 lobbies.remove(&id);
             }
         }
 
-        ".name | .n" => player::set_name(input, pl, players),
+        ".name" | ".n" => player::set_name(input, pl, players),
 
-        ".pass | .pa" => lobby.set_password(input, pl),
+        ".pass" | ".pa" => lobby.set_password(input, pl),
 
-        ".players | .pl" => lobby.player_max(input, pl),
+        ".players" | ".pl" => lobby.player_max(input, pl),
 
-        ".points | .po" => lobby.point_max(input, pl),
+        ".points" | ".po" => lobby.point_max(input, pl),
 
-        ".start | .s" => lobby.start_game(pl),
+        ".start" | ".s" => lobby.start_game(pl),
 
-        ".thrustee | .tee" => {
+        ".thrustee" | ".tee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
                 pl.borrow().send("Not valid THRUSTEE. Please add blank space to allow THRUSTERS to THRUST into them.");
             }
         }
 
-        ".thruster | .ter" => {
+        ".thruster" | ".ter" => {
             lobby::add_item(&input, pl, lobbies, is_thruster);
         }
 
-        ".who | .w" => lobby.list_lobby_players(pl),
+        ".who" | ".w" => lobby.list_lobby_players(pl),
 
         _ => pl
             .borrow()
@@ -217,11 +218,11 @@ pub fn playing_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help | .h" => list_playing_commands(&pl.borrow()),
+        ".help" | ".h" => list_playing_commands(&pl.borrow()),
 
-        ".points | .p" => lobby.display_points(pl),
+        ".points" | ".p" => lobby.display_points(pl),
 
-        ".thrust | .t" => lobby.handle_thrust(input, pl),
+        ".thrust" | ".t" => lobby.handle_thrust(input, pl),
 
         _ => pl.borrow().send("Bruh that's an invalid command."),
     }
@@ -249,11 +250,11 @@ pub fn choosing_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help | .h" => list_choosing_commands(&pl.borrow()),
+        ".help" | ".h" => list_choosing_commands(&pl.borrow()),
 
-        ".points | .p" => lobby.display_points(pl),
+        ".points" | ".p" => lobby.display_points(pl),
 
-        ".thrust | .t" => lobby.choose(input, pl),
+        ".thrust" | ".t" => lobby.choose(input, pl),
 
         _ => pl.borrow().send("Bruh that's an invalid command."),
     }
@@ -281,11 +282,11 @@ pub fn deciding_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help | .h" => list_deciding_commands(&pl.borrow()),
+        ".help" | ".h" => list_deciding_commands(&pl.borrow()),
 
-        ".points | .p" => lobby.display_points(pl),
+        ".points" | ".p" => lobby.display_points(pl),
 
-        ".thrust | .t" => lobby.decide(input, pl),
+        ".thrust" | ".t" => lobby.decide(input, pl),
 
         _ => pl.borrow().send("Bruh that's an invalid command."),
     }
@@ -313,11 +314,11 @@ pub fn waiting_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help | .h" => list_waiting_commands(&pl.borrow()),
+        ".help" | ".h" => list_waiting_commands(&pl.borrow()),
 
-        ".points | .p" => lobby.display_points(pl),
+        ".points" | ".p" => lobby.display_points(pl),
 
-        ".thrust | .t" => pl
+        ".thrust" | ".t" => pl
             .borrow()
             .send("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),
 
