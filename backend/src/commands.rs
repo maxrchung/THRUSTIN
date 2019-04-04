@@ -123,15 +123,17 @@ pub fn out_of_lobby_commands(
 
 fn list_out_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-        "Valid commands:".to_string(),
-        "'.help' this is it chief".to_string(),
-        "'.join [#]' join lobby [#]".to_string(),
-        "'.list' list lobbies".to_string(),
-        "'.make' make a lobby".to_string(),
-        "'.name [name]' change your name to [name]".to_string(),
-        "'.THRUSTEE' \"Some THRUSTEE\" to add THRUSTEE".to_string(),
-        "'.THRUSTER' \"Some THRUSTER\" to add THRUSTER".to_string(),
-        "'.who' list everyone playing".to_string(),
+        String::from("Alright so now you're in like a waiting zone outside of all the lobbies. Here you can browse lobbies, organize your THRUSTS, and (eventually by milestone 5.3) chat with other people in like general chat. Have fun playing THRUSTIN, brought to you by WAXCHUG&daGWADS."),
+        generate_table(vec![
+            (".help", ".h", "this is it chief"),
+            (".join 1", ".j 1", "Join the lobby with ID 1."),
+            (".list", ".l", "Lists info for lobbies that are available"),
+            (".make", ".m", "Make a new lobby"),
+            (".name xx69SWAGGER911xx", ".n", "If you must, do this to change your name to xx69SWAGGER911xx"),
+            (".THRUSTEE' \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", ".tee \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", "This will add new THRUSTEES to your THRUSTEE list. Remember to encapsulate each THRUSTEE with a quotation."),
+            (".THRUSTER' \"Some THRUSTER\" \"Some other THRUSTER\"", ".tee \"Some THRUSTER\" \"Some other THRUSTER\"", "This is for adding a THRUSTER to your THRUSTS."),
+            (".who", ".w", "See who else is swaggin' up in this whack with you"),
+        ])
     ]);
 }
 
@@ -150,13 +152,7 @@ pub fn in_lobby_commands(
     match &*com {
         ".help" | ".he" => list_in_commands(&pl.borrow()),
 
-        ".host" | ".hos" => lobby.switch_host(input, pl),
-
-        ".house" | ".hou" => lobby.toggle_house(pl),
-
         ".info" | ".i" => lobby.info(pl),
-
-        ".kick" | ".k" => lobby.kick(input, pl),
 
         ".leave" | ".l" => {
             if lobby.leave_lobby(pl) {
@@ -166,14 +162,6 @@ pub fn in_lobby_commands(
         }
 
         ".name" | ".n" => player::set_name(input, pl, players),
-
-        ".pass" | ".pa" => lobby.set_password(input, pl),
-
-        ".players" | ".pl" => lobby.player_max(input, pl),
-
-        ".points" | ".po" => lobby.point_max(input, pl),
-
-        ".start" | ".s" => lobby.start_game(pl),
 
         ".thrustee" | ".tee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
@@ -188,6 +176,20 @@ pub fn in_lobby_commands(
 
         ".who" | ".w" => lobby.list_lobby_players(pl),
 
+        ".host" | ".hos" => lobby.switch_host(input, pl),
+
+        ".house" | ".hou" => lobby.toggle_house(pl),
+
+        ".kick" | ".k" => lobby.kick(input, pl),
+
+        ".pass" | ".pa" => lobby.set_password(input, pl),
+
+        ".players" | ".pl" => lobby.player_max(input, pl),
+
+        ".points" | ".po" => lobby.point_max(input, pl),
+
+        ".start" | ".s" => lobby.start_game(pl),
+
         _ => pl
             .borrow()
             .send("Bruh that's an invalid command. enter .help"),
@@ -196,14 +198,23 @@ pub fn in_lobby_commands(
 
 fn list_in_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-        "Valid commands:".to_string(),
-        "'.help' this is it chief".to_string(),
-        "'.leave' leave lobby".to_string(),
-        "'.name [name]' change your name to [name]".to_string(),
-        "'.start' start game".to_string(),
-        "'.THRUSTEE' \"Some THRUSTEE\" to add THRUSTEE".to_string(),
-        "'.THRUSTER' \"Some THRUSTER\" to add THRUSTER".to_string(),
-        "'.who' list everyone in lobby".to_string(),
+        String::from("Hey cool so now you're in the lobby and now you've got some more commands. If you're a host, you've got access to some options to configure the lobby's game experience. Otherwise, normal non-hosters, yall can chill out and wait for the game to start."),
+        generate_table(vec![
+            (".help", ".he", "this is it chief"),
+            (".info", ".i", "I'm pretty sure this will give you some info about the lobby you're in."),
+            (".leave", ".l", "We're sorry to see you go..."),
+            (".name xxXAzn1994", ".n", "Should we really let you change your name at this point? Seems a little bit excessive but oh well yeah you can change your name to xxXAzn1994."),
+            (".THRUSTEE' \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", ".tee \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", "Copy pasted. This will add new THRUSTEES to your THRUSTEE list. Remember to encapsulate each THRUSTEE with a quotation."),
+            (".THRUSTER' \"Some THRUSTER\" \"Some other THRUSTER\"", ".tee \"Some THRUSTER\" \"Some other THRUSTER\"", "Copy pasted. This is for adding a THRUSTER to your THRUSTS."),
+            (".who", ".w", "See who's whacking up this swag lobby with you"),
+            (".host xxXAzn1994", ".hos", "(host-only) Make xxXAzn1994 the chief of the lobby"),
+            (".house", ".hou", "(host-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
+            (".kick YOLOSWAGGER69", ".k YOLOSWAGGER69", "(host-only) Someone causing you trouble? Toxicity got you down? Well if you are a host you can kick YOLOSWAGGER69 out of your lobby using this command."),
+            (".pass passwordspelledbackwards123420", ".pa passwordspelledbackwards123420", "(host-only) Sometimes you want to protect your lobby's privacy by setting your lobby's password to passwordspelledbackwards123420"),
+            (".players 420", ".pl 420", "(host-only) Okay, how many players do you want to allow in your lobby? 420?"),
+            (".points 1", ".po 1", "(host-only) Okay, how many points do you want to go to? 1? Don't do 1... cause then the game will end really fast."),
+            (".start", ".s 1", "(host-only) Yup, naturally as the host you can start up the game."),
+        ])
     ]);
 }
 
@@ -230,12 +241,12 @@ pub fn playing_commands(
 
 fn list_playing_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-        "Valid commands:".to_string(),
-        "'.help' this is it chief".to_string(),
-        "'.THRUST [#]' THRUST your [#] card".to_string(),
-        "'.THRUSTEE' show the current THRUSTEE".to_string(),
-        "'.THRUSTERS' show your THRUSTERS".to_string(),
-        "'.points' to see current points".to_string(),
+        String::from("Great. Now you're in the phase where you are a THRUSTER. In this state, you can THRUST one of your THRUSTER options into the THRUSTEE. Make sure it's a good one!"),
+        generate_table(vec![
+            (".help", ".h", "this is it chief"),
+            (".points", ".p", "See who's got the points in the lobby."),
+            (".THRUST 0", ".t 0", "Thrust your first THRUSTER in baby."),
+        ])
     ]);
 }
 
@@ -262,12 +273,12 @@ pub fn choosing_commands(
 
 fn list_choosing_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-            "Valid commands:".to_string(),
-            "'.THRUST [#]' THRUST [#] card as THE NEXT THRUSTEE".to_string(),
-            "'.help' this is it chief".to_string(),
-            "'.THRUSTEE' show the current THRUSTEE".to_string(),
-            "'.THRUSTERS' show your THRUSTERS".to_string(),
-            "'.points' to see current points".to_string(),
+        String::from("Okay you're a THRUSTEE now. First thing you've gotta do is choose a great THRUSTEE that other THRUSTERS can THRUST into. Make sure it's a juicy one!"),
+        generate_table(vec![
+            (".help", ".h", "this is it chief"),
+            (".points", ".p", "See who's got the points in the lobby."),
+            (".THRUST 2", ".t 2", "Choose THRUSTEE at index 2 to use."),
+        ])
     ]);
 }
 
@@ -294,12 +305,12 @@ pub fn deciding_commands(
 
 fn list_deciding_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-            "Valid commands:".to_string(),
-            "'.decide [#]' pick [#] card as THE THRUSTEE".to_string(),
-            "'.help' this is it chief".to_string(),
-            "'.THRUSTEE' show the current THRUSTEE".to_string(),
-            "'.THRUSTERS' show your THRUSTERS".to_string(),
-            "'.points' to see current points".to_string(),
+        String::from("Yeah guy it's time for you to decide on the best THRUSTER. Pick the one that you like the best. Trust your head and your gut. You can do it. I believe in you."),
+        generate_table(vec![
+            (".help", ".h", "this is it chief"),
+            (".points", ".p", "See who's got the points in the lobby."),
+            (".THRUST 1", ".t 2", "You've made your decision. THRUSTER at index 1 is the best one."),
+        ])
     ]);
 }
 
@@ -328,8 +339,11 @@ pub fn waiting_commands(
 
 fn list_waiting_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-            "Valid commands:".to_string(),
-            "'.help' this is it chief".to_string(),
-            "'.points' to see current points".to_string(),
+        String::from("Aite my dude you've THRUSTED now it's time to chill and wait for the THRUSTEE to pick. Let's hope you win!"),
+        generate_table(vec![
+            (".help", ".h", "this is it chief"),
+            (".points", ".p", "See who's got the points in the lobby."),
+            (".THRUST", ".t", "This doesn't actually do anything. We're just here to let you know you can't THRUST."),
+        ])
     ]);
 }
