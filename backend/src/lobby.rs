@@ -102,11 +102,40 @@ impl Lobby {
         lobby
     }
 
+    fn new_endless(
+        player: &Rc<RefCell<Player>>,
+        max: usize
+    ) -> Lobby {
+        let mut lobby = Lobby {
+            pw: "".to_string(),
+            list: std::vec::Vec::with_capacity(max as usize),
+            max: max,
+            id: 0,
+            state: LobbyState::Waiting,
+            hand_size: 5,
+            max_points: 7,
+            host: player.clone(),
+            thrustee: 0,
+            thrustee_choices: Vec::new(),
+            max_thrustee_choices: 3,
+            deck: thrust::Deck::new(),
+            current_thrustee: String::new(),
+            current_thrusts: HashMap::new(),
+            index_to_token: HashMap::new(),
+            thrusted_players: Vec::new(),
+            use_house: true,
+        };
+        lobby.deck.sort();
+        lobby.deck.thrusters.shuffle(&mut thread_rng());
+        lobby.deck.thrustees.shuffle(&mut thread_rng());
+        lobby
+    }
+
     ///////////
     //private//
     ///////////
     fn is_host(&self, player: &Token) -> bool {
-        self.host.borrow().token == *player
+        (self.host.borrow().token == *player) && (self.host.borrow().name != "EndlessLobbyHostDoggo".to_string())
     }
 
     fn search_token(&self, token: &Token) -> usize {
@@ -133,6 +162,21 @@ impl Lobby {
     //////////////////
     //general stuff?//
     //////////////////
+
+    pub fn make_endless_lobby(
+        pl_rc: &Rc<RefCell<Player>>,
+        lobby_id: &mut i32,
+        lobbies: &mut HashMap<i32, Lobby>,
+    ) {
+        let max = 64;
+
+        let mut new_lobby = Lobby::new_endless(
+            pl_rc,
+            max,
+        );
+
+        lobbies.insert(lobby_id.clone(), new_lobby.clone());
+    }
 
     pub fn make_lobby(
         input: std::vec::Vec<&str>,

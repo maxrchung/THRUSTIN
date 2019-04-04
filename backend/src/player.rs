@@ -61,6 +61,19 @@ pub fn new(token: &ws::util::Token, communication: Rc<RefCell<networking::Networ
     }
 }
 
+pub fn new_endless_host(communication: Rc<RefCell<networking::Networking>>) -> Player {
+    Player {
+        token: Token(72742069),
+        name: "EndlessLobbyHostDoggo".to_string(),
+        state: PlayerState::Playing,
+        lobby: 0,
+        deck: thrust::Deck::new(),
+        personal_deck: thrust::Deck::new(),
+        points: 72742069,
+        comm: communication,
+    }
+}
+
 pub fn set_name(
     input: std::vec::Vec<&str>,
     play: Rc<RefCell<Player>>,
