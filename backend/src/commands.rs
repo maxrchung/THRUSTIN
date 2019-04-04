@@ -130,7 +130,7 @@ fn list_out_commands(pl: &player::Player) {
             (".make", ".m", "Make a new lobby"),
             (".name xx69SWAGGER911xx", ".n", "If you must, do this to change your name to xx69SWAGGER911xx"),
             (".THRUSTEE' \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", ".tee \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", "This will add new THRUSTEES to your THRUSTEE list. Remember to encapsulate each THRUSTEE with a quotation."),
-            (".THRUSTER' \"Some THRUSTER\" \"Some other THRUSTER\"", ".tee \"Some THRUSTER\" \"Some other THRUSTER\"", "This is for adding a THRUSTER to your THRUSTS."),
+            (".THRUSTER' \"Some THRUSTER\" \"Some other THRUSTER\"", ".ter \"Some THRUSTER\" \"Some other THRUSTER\"", "This is for adding a THRUSTER to your THRUSTS."),
             (".who", ".w", "See who else is swaggin' up in this whack with you"),
         ])
     ]);
@@ -204,7 +204,7 @@ fn list_in_commands(pl: &player::Player) {
             (".leave", ".l", "We're sorry to see you go..."),
             (".name xxXAzn1994", ".n", "Should we really let you change your name at this point? Seems a little bit excessive but oh well yeah you can change your name to xxXAzn1994."),
             (".THRUSTEE' \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", ".tee \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", "Copy pasted. This will add new THRUSTEES to your THRUSTEE list. Remember to encapsulate each THRUSTEE with a quotation."),
-            (".THRUSTER' \"Some THRUSTER\" \"Some other THRUSTER\"", ".tee \"Some THRUSTER\" \"Some other THRUSTER\"", "Copy pasted. This is for adding a THRUSTER to your THRUSTS."),
+            (".THRUSTER' \"Some THRUSTER\" \"Some other THRUSTER\"", ".ter \"Some THRUSTER\" \"Some other THRUSTER\"", "Copy pasted. This is for adding a THRUSTER to your THRUSTS."),
             (".who", ".w", "See who's whacking up this swag lobby with you"),
             (".chief xxXAzn1994", ".c", "(chief-only) Make xxXAzn1994 the chief of the lobby"),
             (".house", ".ho", "(chief-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
@@ -308,7 +308,7 @@ fn list_deciding_commands(pl: &player::Player) {
         generate_table(vec![
             (".help", ".h", "this is it chief"),
             (".points", ".p", "See who's got the points in the lobby."),
-            (".THRUST 1", ".t 2", "You've made your decision. THRUSTER at index 1 is the best one."),
+            (".THRUST 1", ".t 1", "You've made your decision. THRUSTER at index 1 is the best one."),
         ])
     ]);
 }
@@ -338,7 +338,7 @@ pub fn waiting_commands(
 
 fn list_waiting_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-        String::from("Aite my dude you've THRUSTED now it's time to chill and wait for the THRUSTEE to pick. Let's hope you win!"),
+        String::from("Aite my dude you needa THRUSTED chill and wait for the THRUSTEE to choose a good THRUSTEE to be THRUSTED with."),
         generate_table(vec![
             (".help", ".h", "this is it chief"),
             (".points", ".p", "See who's got the points in the lobby."),
