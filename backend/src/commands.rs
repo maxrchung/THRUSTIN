@@ -295,7 +295,7 @@ pub fn deciding_commands(
 fn list_deciding_commands(pl: &player::Player) {
     pl.send_multiple(vec![
             "Valid commands:".to_string(),
-            "'.decide [#]' pick [#] card as THE THRUSTEE".to_string(),
+            "'.thrust [#]' pick [#] card as THE THRUSTEE".to_string(),
             "'.help' this is it chief".to_string(),
             "'.THRUSTEE' show the current THRUSTEE".to_string(),
             "'.THRUSTERS' show your THRUSTERS".to_string(),
