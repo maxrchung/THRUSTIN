@@ -174,6 +174,7 @@ impl Lobby {
             pl_rc,
             max,
         );
+        new_lobby.start_endless();
 
         lobbies.insert(lobby_id.clone(), new_lobby.clone());
     }
@@ -398,19 +399,129 @@ impl Lobby {
         pl.send("Player not in lobby.");
     }
 
+    pub fn join_endless(
+        input: std::vec::Vec<&str>,
+        pl_rc: Rc<RefCell<Player>>,
+        lobby: &mut HashMap<i32, Lobby>,
+        lobby_id: &i32,
+    ) {
+        let mut pl = pl_rc.borrow_mut();
+        let mut messages = Vec::new();
+        if let Some(lob) = lobby.get_mut(&lobby_id) {
+            // Lobby full check
+            if lob.list.len() >= lob.max {
+                pl.send("bro this lobbBY is FULLLLL!!");
+                return;
+            }
+
+            messages.push(format!("Joined: {:#?}", &lobby_id));
+
+            // Set points to 0 (just in case?)
+            pl.points = 0;
+
+            // add players' personal deck (.thrustee/.thruster) to lobby deck
+            lob.deck
+                .thrustees
+                .append(&mut pl.personal_deck.thrustees.clone());
+            lob.deck
+                .thrusters
+                .append(&mut pl.personal_deck.thrusters.clone());
+
+            pl.state = {
+                // Distribute thrusters to player
+                for _ in 0..lob.hand_size {
+                    if let Some(card) = lob.deck.thrusters.pop() {
+                        pl.deck.thrusters.push(card.clone());
+                    } else {
+                        lob.restart_game();
+                        pl.send("Not enough THRUSTERS to distribute");
+                        return;
+                    }
+                }
+
+                let mut wait: bool = false;
+
+                // If lobby was empty before this guy joined, then they become thrustee, otherwise, basically do what normal join_lobby does (yea this is fucked fk me doggo)
+                if lob.list.len() == 0 {
+                    pl.state = PlayerState::Choosing;
+                    let mut messages =
+                        vec!["Welcome to the 『Endless Lobby』, big doggo. You lucky, family, you are THRUSTEE!!!!.. . Choose now...    .".to_string()];
+                    messages.extend(lob.print_thrustee_choices());
+                    pl.send_multiple(messages);
+                    pl.lobby = lob.id;
+                    lob.list.push(pl_rc.clone());
+                    return; //dude lmao
+                }
+                else {
+                    let thrustee = lob.list[lob.thrustee].borrow();
+
+                    match thrustee.state {
+                        PlayerState::Playing => {
+                            messages.push(
+                                format!("This is your THRUSTEE: {}", &lob.current_thrustee)
+                                    .to_string(),
+                            );
+                            messages.extend(get_thrusters(&pl.deck.thrusters));
+                        }
+
+                        PlayerState::Choosing => {
+                            wait = true;
+                            messages.push(
+                                "THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!"
+                                    .to_string(),
+                            );
+                        }
+
+                        PlayerState::Deciding => {
+                            messages.push(
+                                format!("This is your THRUSTEE: {}", &lob.current_thrustee)
+                                    .to_string(),
+                            );
+                            messages.extend(get_thrusters(&pl.deck.thrusters));
+                        }
+
+                        _ => (),
+                    }
+                }         
+
+                if wait {
+                    PlayerState::Waiting
+                } else {
+                    PlayerState::Playing
+                }
+            };
+            lob.send_message(&format!("{} has joined the lobby.", pl.name));
+            // adding the new player to lobby
+            pl.lobby = lob.id;
+            lob.list.push(pl_rc.clone());
+            pl.send_multiple(messages);
+        } else {
+            pl.send("Lobby does not exist.");
+        }
+    }
+
     pub fn join_lobby(
         input: std::vec::Vec<&str>,
         pl_rc: Rc<RefCell<Player>>,
         lobby: &mut HashMap<i32, Lobby>,
     ) {
-        let mut pl = pl_rc.borrow_mut();
         if input.len() < 2 {
-            pl.send("Lobby name required!");
+            {
+                let mut pl = pl_rc.borrow_mut();
+                pl.send("Lobby name required!");
+            } 
             return;
         }
 
         match input[1].to_string().parse::<i32>() {
             Ok(lobby_id) => {
+                // Handle joining endless lobby (lmao)
+                if lobby_id == 0 {
+                    Lobby::join_endless(input, pl_rc, lobby, &lobby_id);
+                    return;
+                }
+                let mut pl = pl_rc.borrow_mut();
+
                 let mut messages = Vec::new();
                 if let Some(lob) = lobby.get_mut(&lobby_id) {
                     // Lobby full check
@@ -467,7 +578,6 @@ impl Lobby {
                                 messages.extend(get_thrusters(&pl.deck.thrusters));
                             }
 
-                            // NOTE: Player is currently able to thrust into PREVIOUS thrustee gotta FIXER it later
                             PlayerState::Choosing => {
                                 wait = true;
                                 messages.push(
@@ -506,7 +616,10 @@ impl Lobby {
                 }
             }
 
-            _ => pl.send("nibba that is a invalid input my nibba"),
+            _ => {
+                    let mut pl = pl_rc.borrow_mut();
+                    pl.send("nibba that is a invalid input my nibba")
+                } //i love rust
         }
     }
 
@@ -553,6 +666,27 @@ impl Lobby {
     /////////////////
     //game commands//
     /////////////////
+    
+    pub fn start_endless(&mut self) {
+        self.state = LobbyState::Playing;
+
+        // Add in house cards to lobby deck if bool is true
+        if self.use_house {
+            let default_deck = thrust::Deck::default();
+            self.deck.thrusters.extend(default_deck.thrusters);
+            self.deck.thrustees.extend(default_deck.thrustees);
+        }
+
+        // Setup new thrustee choices
+        for _ in 0..self.max_thrustee_choices {
+            if let Some(card) = self.deck.thrustees.pop() {
+                self.thrustee_choices.push(card);
+            } else {
+                self.restart_game();
+                return;
+            }
+        }
+    }
 
     pub fn start_game(&mut self, pl_rc: Rc<RefCell<Player>>) {
         {
@@ -638,6 +772,35 @@ impl Lobby {
         self.deck.thrustees.shuffle(&mut thread_rng());
     }
 
+    pub fn clear_endless(&mut self) {
+        self.deck = thrust::Deck::default();
+
+        // readd all personal decks to endless lobby
+        for rc in &self.list {
+            let mut player = rc.borrow_mut();
+            self.deck
+                .thrustees
+                .append(&mut player.personal_deck.thrustees.clone());
+            self.deck
+                .thrusters
+                .append(&mut player.personal_deck.thrusters.clone());
+        }
+        self.deck.sort();
+        self.deck.thrusters.shuffle(&mut thread_rng());
+        self.deck.thrustees.shuffle(&mut thread_rng());
+
+        // Handles if lobby for restarts when no one is in there for some reason (not enough house cards during testing)
+        if self.list.len() != 0 {
+            let mut pl = self.list[self.thrustee].borrow_mut();
+            pl.state = PlayerState::Choosing;
+            let mut messages =
+                vec!["YOOOOOOO!! Endless lobby just ran out of cards. Don't worry, though! EndlessLobbyHostDoggo helped out and replenished the cards!".to_string(),
+                    "You are the THRUSTEE of Endless Lobby! Choose now....".to_string()];
+            messages.extend(self.print_thrustee_choices());
+            pl.send_multiple(messages);
+        }
+    }
+
     pub fn handle_winner(&mut self, winner_dex: usize) {
         self.clear_game();
         let winner_name = self.list[winner_dex].borrow_mut().name.clone();
@@ -645,8 +808,13 @@ impl Lobby {
     }
 
     pub fn restart_game(&mut self) {
-        self.clear_game();
-        self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.");
+        if self.host.borrow().name != "EndlessLobbyHostDoggo".to_string() {
+            self.clear_game();
+            self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.");
+        }
+        else {
+            self.clear_endless();
+        }
     }
 
     pub fn print_thrustee_choices(&self) -> Vec<String> {
