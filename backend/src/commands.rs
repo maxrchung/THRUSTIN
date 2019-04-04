@@ -17,6 +17,35 @@ fn get_command(input: &Vec<&str>) -> String {
     return com;
 }
 
+// 
+fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
+    let mut table_html = String::from("<table class=\"table w-auto\">");
+    table_html.push_str("<tr>");
+    table_html.push_str("<th>Command</th>");
+    table_html.push_str("<th>aLiAs</th>");
+    table_html.push_str("<th>Help Massage</th>");
+    table_html.push_str("</tr>");
+    for (command, alias, help) in commands {
+        table_html.push_str("<tr>");
+
+        table_html.push_str("<td>");
+        table_html.push_str(&command.to_string());
+        table_html.push_str("</td>");
+
+        table_html.push_str("<td>");
+        table_html.push_str(&alias.to_string());
+        table_html.push_str("</td>");
+
+        table_html.push_str("<td>");
+        table_html.push_str(&help.to_string());
+        table_html.push_str("</td>");
+
+        table_html.push_str("</tr>");
+    }
+    table_html.push_str("</table>");
+    return table_html;
+}
+
 ///////////////
 //choose name//
 ///////////////
@@ -40,9 +69,11 @@ pub fn choose_name_commands(
 
 fn list_choose_name_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-        "Valid commands:".to_string(),
-        "'.help' this is it chief".to_string(),
-        "'.name [name]' change your name to [name]".to_string(),
+        String::from("Alright so the first phase we've got here is this Choose Name phase. What you're gonna do here is set yourself up with a name that you'll go by. i think this is a great idea because now you have a name and people can call you by your name later when we implement chat. Names give people a sense of identity and belonging. Could you imagine having not a name? What if we reduced you just to some unique number ID, now I think that would be rude, do you not agree? I dont' really remember but I think you can change your name later too so don't worry its just like real life, how we change who we are, the way we speak and walk our gait when we're around other people."),
+        generate_table(vec![
+            (".help", ".h", "this is it chief"),
+            (".name Y0LoSWAG4206669", ".n Y0LoSWAG4206669", "great this will change your name to Y0LoSWAG4206669")
+        ])
     ]);
 }
 
@@ -59,28 +90,28 @@ pub fn out_of_lobby_commands(
     let is_thruster = true;
     let com = get_command(&input);
     match &*com {
-        ".help" => list_out_commands(&pl.borrow()),
+        ".help | .h" => list_out_commands(&pl.borrow()),
 
-        ".join" => lobby::Lobby::join_lobby(input, pl, lobbies),
+        ".join | .j" => lobby::Lobby::join_lobby(input, pl, lobbies),
 
-        ".list" => lobby::list_lobby(pl, lobbies),
+        ".list | .l" => lobby::list_lobby(pl, lobbies),
 
-        ".make" => lobby::Lobby::make_lobby(input, pl, lobby_id, lobbies),
+        ".make | .m" => lobby::Lobby::make_lobby(input, pl, lobby_id, lobbies),
 
-        ".name" => player::set_name(input, pl, players),
+        ".name | .n" => player::set_name(input, pl, players),
 
-        ".thrustee" => {
+        ".thrustee | .tee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
                 pl.borrow().send("Not valid thrustee. Please add blank space to allow THRUSTERS to THRUST into them.");
             }
         }
 
-        ".thruster" => {
+        ".thruster | .ter" => {
             lobby::add_item(&input, pl, lobbies, is_thruster);
         }
 
-        ".who" => lobby::list_all_players(pl, players),
+        ".who | .w" => lobby::list_all_players(pl, players),
 
         _ => {
             pl.borrow()
@@ -116,45 +147,45 @@ pub fn in_lobby_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" => list_in_commands(&pl.borrow()),
+        ".help | .he" => list_in_commands(&pl.borrow()),
 
-        ".name" => player::set_name(input, pl, players),
+        ".host | .hos" => lobby.switch_host(input, pl),
 
-        ".leave" => {
+        ".house | .hou" => lobby.toggle_house(pl),
+
+        ".info | .i" => lobby.info(pl),
+
+        ".kick | .k" => lobby.kick(input, pl),
+
+        ".leave | .l" => {
             if lobby.leave_lobby(pl) {
                 let id = lobby.id;
                 lobbies.remove(&id);
             }
         }
 
-        ".info" => lobby.info(pl),
+        ".name | .n" => player::set_name(input, pl, players),
 
-        ".who" => lobby.list_lobby_players(pl),
+        ".pass | .pa" => lobby.set_password(input, pl),
 
-        ".host" => lobby.switch_host(input, pl),
+        ".players | .pl" => lobby.player_max(input, pl),
 
-        ".kick" => lobby.kick(input, pl),
+        ".points | .po" => lobby.point_max(input, pl),
 
-        ".pass" => lobby.set_password(input, pl),
+        ".start | .s" => lobby.start_game(pl),
 
-        ".points" => lobby.point_max(input, pl),
-
-        ".players" => lobby.player_max(input, pl),
-
-        ".start" => lobby.start_game(pl),
-
-        ".house" => lobby.toggle_house(pl),
-
-        ".thrustee" => {
+        ".thrustee | .tee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
                 pl.borrow().send("Not valid THRUSTEE. Please add blank space to allow THRUSTERS to THRUST into them.");
             }
         }
 
-        ".thruster" => {
+        ".thruster | .ter" => {
             lobby::add_item(&input, pl, lobbies, is_thruster);
         }
+
+        ".who | .w" => lobby.list_lobby_players(pl),
 
         _ => pl
             .borrow()
@@ -163,8 +194,6 @@ pub fn in_lobby_commands(
 }
 
 fn list_in_commands(pl: &player::Player) {
-    //fn list_in_commands(token: Token, communication: &Networking) {
-    //communication.send_messages(
     pl.send_multiple(vec![
         "Valid commands:".to_string(),
         "'.help' this is it chief".to_string(),
@@ -188,11 +217,11 @@ pub fn playing_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" => list_playing_commands(&pl.borrow()),
+        ".help | .h" => list_playing_commands(&pl.borrow()),
 
-        ".thrust" => lobby.handle_thrust(input, pl),
+        ".points | .p" => lobby.display_points(pl),
 
-        ".points" => lobby.display_points(pl),
+        ".thrust | .t" => lobby.handle_thrust(input, pl),
 
         _ => pl.borrow().send("Bruh that's an invalid command."),
     }
@@ -220,28 +249,25 @@ pub fn choosing_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" => list_playing_commands(&pl.borrow()),
+        ".help | .h" => list_choosing_commands(&pl.borrow()),
 
-        ".thrust" => lobby.choose(input, pl),
+        ".points | .p" => lobby.display_points(pl),
 
-        ".points" => lobby.display_points(pl),
+        ".thrust | .t" => lobby.choose(input, pl),
 
         _ => pl.borrow().send("Bruh that's an invalid command."),
     }
 }
 
-fn list_choosing_commands(token: Token, communication: &Networking) {
-    communication.send_messages(
-        &token,
-        vec![
+fn list_choosing_commands(pl: &player::Player) {
+    pl.send_multiple(vec![
             "Valid commands:".to_string(),
             "'.THRUST [#]' THRUST [#] card as THE NEXT THRUSTEE".to_string(),
             "'.help' this is it chief".to_string(),
             "'.THRUSTEE' show the current THRUSTEE".to_string(),
             "'.THRUSTERS' show your THRUSTERS".to_string(),
             "'.points' to see current points".to_string(),
-        ],
-    );
+    ]);
 }
 
 ////////////
@@ -255,28 +281,25 @@ pub fn deciding_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" => list_playing_commands(&pl.borrow()),
+        ".help | .h" => list_deciding_commands(&pl.borrow()),
 
-        ".thrust" => lobby.decide(input, pl),
+        ".points | .p" => lobby.display_points(pl),
 
-        ".points" => lobby.display_points(pl),
+        ".thrust | .t" => lobby.decide(input, pl),
 
         _ => pl.borrow().send("Bruh that's an invalid command."),
     }
 }
 
-fn list_deciding_commands(token: Token, communication: &Networking) {
-    communication.send_messages(
-        &token,
-        vec![
+fn list_deciding_commands(pl: &player::Player) {
+    pl.send_multiple(vec![
             "Valid commands:".to_string(),
             "'.decide [#]' pick [#] card as THE THRUSTEE".to_string(),
             "'.help' this is it chief".to_string(),
             "'.THRUSTEE' show the current THRUSTEE".to_string(),
             "'.THRUSTERS' show your THRUSTERS".to_string(),
             "'.points' to see current points".to_string(),
-        ],
-    );
+    ]);
 }
 
 ///////////
@@ -290,25 +313,22 @@ pub fn waiting_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" => list_playing_commands(&pl.borrow()),
+        ".help | .h" => list_waiting_commands(&pl.borrow()),
 
-        ".thrust" => pl
+        ".points | .p" => lobby.display_points(pl),
+
+        ".thrust | .t" => pl
             .borrow()
             .send("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),
-
-        ".points" => lobby.display_points(pl),
 
         _ => pl.borrow().send("Bruh that's an invalid command."),
     }
 }
 
-fn list_waiting_commands(token: Token, communication: &Networking) {
-    communication.send_messages(
-        &token,
-        vec![
+fn list_waiting_commands(pl: &player::Player) {
+    pl.send_multiple(vec![
             "Valid commands:".to_string(),
             "'.help' this is it chief".to_string(),
             "'.points' to see current points".to_string(),
-        ],
-    );
+    ]);
 }

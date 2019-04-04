@@ -7,11 +7,16 @@ import SanitizedHTML from "react-sanitized-html";
 
 function Message(props) {
     return (
-        <div>
-            <p>
-                <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
-                <SanitizedHTML allowedTags={["br","u"]} html={props.content} />
-            </p>
+        <div className="mb-3">
+            <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
+            <SanitizedHTML
+             allowedTags={["br","u","table","tr","th","td","a"]} 
+             allowedAttributes={
+                { 
+                    "table": ["class"],
+                    "a": ["href"]
+                }}
+             html={props.content} />
             <hr/>
         </div>
     );
@@ -28,7 +33,7 @@ class Client extends React.Component {
         this.state = {
             messageCounter: 0,
             messages: [
-                <Message key={this.updateMessageCounter} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Enter '.help' for help (obviously)." />,
+                <Message key={this.updateMessageCounter} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously)." />,
             ]
         };
     }
