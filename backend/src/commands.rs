@@ -89,7 +89,6 @@ pub fn out_of_lobby_commands(
 ) {
     let is_thruster = true;
     let com = get_command(&input);
-    println!("{}", com);
     match &*com {
         ".help" | ".h" => list_out_commands(&pl.borrow()),
 
@@ -150,7 +149,7 @@ pub fn in_lobby_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".he" => list_in_commands(&pl.borrow()),
+        ".help" | ".h" => list_in_commands(&pl.borrow()),
 
         ".info" | ".i" => lobby.info(pl),
 
@@ -176,9 +175,9 @@ pub fn in_lobby_commands(
 
         ".who" | ".w" => lobby.list_lobby_players(pl),
 
-        ".host" | ".hos" => lobby.switch_host(input, pl),
+        ".chief" | ".c" => lobby.switch_host(input, pl),
 
-        ".house" | ".hou" => lobby.toggle_house(pl),
+        ".house" | ".ho" => lobby.toggle_house(pl),
 
         ".kick" | ".k" => lobby.kick(input, pl),
 
@@ -198,22 +197,22 @@ pub fn in_lobby_commands(
 
 fn list_in_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-        String::from("Hey cool so now you're in the lobby and now you've got some more commands. If you're a host, you've got access to some options to configure the lobby's game experience. Otherwise, normal non-hosters, yall can chill out and wait for the game to start."),
+        String::from("Hey cool so now you're in the lobby and now you've got some more commands. If you're the chief, you've got access to some special options to configure the lobby's game experience. Otherwise, normal non-chiefs, yall can chill out and wait for the game to start."),
         generate_table(vec![
-            (".help", ".he", "this is it chief"),
+            (".help", ".h", "this is it chief"),
             (".info", ".i", "I'm pretty sure this will give you some info about the lobby you're in."),
             (".leave", ".l", "We're sorry to see you go..."),
             (".name xxXAzn1994", ".n", "Should we really let you change your name at this point? Seems a little bit excessive but oh well yeah you can change your name to xxXAzn1994."),
             (".THRUSTEE' \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", ".tee \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", "Copy pasted. This will add new THRUSTEES to your THRUSTEE list. Remember to encapsulate each THRUSTEE with a quotation."),
             (".THRUSTER' \"Some THRUSTER\" \"Some other THRUSTER\"", ".tee \"Some THRUSTER\" \"Some other THRUSTER\"", "Copy pasted. This is for adding a THRUSTER to your THRUSTS."),
             (".who", ".w", "See who's whacking up this swag lobby with you"),
-            (".host xxXAzn1994", ".hos", "(host-only) Make xxXAzn1994 the chief of the lobby"),
-            (".house", ".hou", "(host-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
-            (".kick YOLOSWAGGER69", ".k YOLOSWAGGER69", "(host-only) Someone causing you trouble? Toxicity got you down? Well if you are a host you can kick YOLOSWAGGER69 out of your lobby using this command."),
-            (".pass passwordspelledbackwards123420", ".pa passwordspelledbackwards123420", "(host-only) Sometimes you want to protect your lobby's privacy by setting your lobby's password to passwordspelledbackwards123420"),
-            (".players 420", ".pl 420", "(host-only) Okay, how many players do you want to allow in your lobby? 420?"),
-            (".points 1", ".po 1", "(host-only) Okay, how many points do you want to go to? 1? Don't do 1... cause then the game will end really fast."),
-            (".start", ".s 1", "(host-only) Yup, naturally as the host you can start up the game."),
+            (".chief xxXAzn1994", ".c", "(chief-only) Make xxXAzn1994 the chief of the lobby"),
+            (".house", ".ho", "(chief-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
+            (".kick YOLOSWAGGER69", ".k YOLOSWAGGER69", "(chief-only) Someone causing you trouble? Toxicity got you down? Well if you are a chief you can kick YOLOSWAGGER69 out of your lobby using this command."),
+            (".pass passwordspelledbackwards123420", ".pa passwordspelledbackwards123420", "(chief-only) Sometimes you want to protect your lobby's privacy by setting your lobby's password to passwordspelledbackwards123420"),
+            (".players 420", ".pl 420", "(chief-only) Okay, how many players do you want to allow in your lobby? 420?"),
+            (".points 1", ".po 1", "(chief-only) Okay, how many points do you want to go to? 1? Don't do 1... cause then the game will end really fast."),
+            (".start", ".s", "(chief-only) Yup, naturally as the chief you can start up the game."),
         ])
     ]);
 }
