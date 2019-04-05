@@ -1,5 +1,6 @@
 html {
     height: 100%;
+    scrollbar-color: #B7410E black;
 }
 
 body {
@@ -28,4 +29,12 @@ body {
 
 hr {
     border-top: 1px solid rgba(183,65,14,.4);
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: #B7410E;
 }

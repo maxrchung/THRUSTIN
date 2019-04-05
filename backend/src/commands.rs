@@ -103,7 +103,7 @@ pub fn out_of_lobby_commands(
         ".thrustee" | ".tee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {
-                pl.borrow().send("Not valid thrustee. Please add blank space to allow THRUSTERS to THRUST into them.");
+                pl.borrow().send("Not valid thrustee. Please add blank spaces (with underscores) to allow THRUSTERS to THRUST into them.");
             }
         }
 
