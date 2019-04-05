@@ -7,7 +7,7 @@ import SanitizedHTML from "react-sanitized-html";
 
 function Message(props) {
     return (
-        <div className="mb-3">
+        <div className="mb-3 mr-3">
             <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
             <SanitizedHTML
              allowedTags={["br","u","table","tr","th","td","a"]} 
@@ -81,11 +81,15 @@ class Client extends React.Component {
         return (
             <Container fluid={true}>
                 <div id="messages">
-                    <hr/>
+                    <div className="mb-3 mr-3">
+                        <hr/>
+                    </div>
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>
-                <Form.Control type="text" placeholder="Enter command..." onKeyDown={this.handleKeyDown} />
+                <div className="mb-3 mr-3">
+                    <Form.Control type="text" placeholder="Enter command..." onKeyDown={this.handleKeyDown} />
+                </div>
             </Container>
         );
     }

@@ -19,11 +19,11 @@ fn get_command(input: &Vec<&str>) -> String {
 
 // 
 fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
-    let mut table_html = String::from("<table class=\"table w-auto\">");
+    let mut table_html = String::from("<table class=\"table table-sm table-responsive w-auto\">");
     table_html.push_str("<tr>");
-    table_html.push_str("<th>Command</th>");
-    table_html.push_str("<th>aLiAs</th>");
-    table_html.push_str("<th>Help Massage</th>");
+    table_html.push_str("<td>Command</td>");
+    table_html.push_str("<td>aLiAs</td>");
+    table_html.push_str("<td>Help Massage</td>");
     table_html.push_str("</tr>");
     for (command, alias, help) in commands {
         table_html.push_str("<tr>");
