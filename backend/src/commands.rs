@@ -338,7 +338,7 @@ pub fn waiting_commands(
 
 fn list_waiting_commands(pl: &player::Player) {
     pl.send_multiple(vec![
-        String::from("Aite my dude you needa THRUSTED chill and wait for the THRUSTEE to choose a good THRUSTEE to be THRUSTED with."),
+        String::from("Aite my dude you needa chill and wait for the THRUSTEE to choose a good THRUSTEE to be THRUSTED with."),
         generate_table(vec![
             (".help", ".h", "this is it chief"),
             (".points", ".p", "See who's got the points in the lobby."),

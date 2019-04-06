@@ -31,9 +31,9 @@ class Client extends React.Component {
         this.updateMessageCounter = this.updateMessageCounter.bind(this);
 
         this.state = {
-            messageCounter: 0,
+            messageCounter: 1,
             messages: [
-                <Message key={this.updateMessageCounter} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously)." />,
+                <Message key={0} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously)." />,
             ]
         };
     }
@@ -50,7 +50,7 @@ class Client extends React.Component {
 
     handleMessage(e) {
         this.setState({
-            messages: this.state.messages.concat(<Message key={this.updateMessageCounter} from="THRUSTY" content={e.data} />)
+            messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={e.data} />)
         });
 
         this.scrollToDummy();
@@ -68,7 +68,7 @@ class Client extends React.Component {
     updateMessageCounter() {
         const counter = this.state.messageCounter;
         this.setState({
-            messageCounter: messageCounter + 1
+            messageCounter: this.state.messageCounter + 1
         });
         return counter;
     }
