@@ -1,0 +1,124 @@
+$rust: #B7410E;
+$font-family-base: 'Cousine', monospace;
+$body-bg: black;
+$body-color: $rust;
+
+// bootstrap-material-design imports
+@import "../node_modules/bootstrap-material-design/scss/variables";
+@import "../node_modules/bootstrap-material-design/scss/mixins";
+
+// bootstrap imports
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+@import "../node_modules/bootstrap/scss/root";
+@import "../node_modules/bootstrap/scss/reboot";
+@import "../node_modules/bootstrap/scss/type";
+// @import "../node_modules/bootstrap/scss/images";
+// @import "../node_modules/bootstrap/scss/code";
+@import "../node_modules/bootstrap/scss/grid";
+@import "../node_modules/bootstrap/scss/tables";
+@import "../node_modules/bootstrap/scss/forms";
+// @import "../node_modules/bootstrap/scss/buttons";
+// @import "../node_modules/bootstrap/scss/transitions";
+// @import "../node_modules/bootstrap/scss/dropdown";
+// @import "../node_modules/bootstrap/scss/button-group";
+// @import "../node_modules/bootstrap/scss/input-group";
+// @import "../node_modules/bootstrap/scss/custom-forms";
+// @import "../node_modules/bootstrap/scss/nav";
+// @import "../node_modules/bootstrap/scss/navbar";
+// @import "../node_modules/bootstrap/scss/card";
+// @import "../node_modules/bootstrap/scss/breadcrumb";
+// @import "../node_modules/bootstrap/scss/pagination";
+// @import "../node_modules/bootstrap/scss/badge";
+// @import "../node_modules/bootstrap/scss/jumbotron";
+// @import "../node_modules/bootstrap/scss/alert";
+// @import "../node_modules/bootstrap/scss/progress";
+// @import "../node_modules/bootstrap/scss/media";
+// @import "../node_modules/bootstrap/scss/list-group";
+// @import "../node_modules/bootstrap/scss/close";
+// @import "../node_modules/bootstrap/scss/toasts";
+// @import "../node_modules/bootstrap/scss/modal";
+// @import "../node_modules/bootstrap/scss/tooltip";
+// @import "../node_modules/bootstrap/scss/popover";
+// @import "../node_modules/bootstrap/scss/carousel";
+// @import "../node_modules/bootstrap/scss/spinners";
+@import "../node_modules/bootstrap/scss/utilities";
+// @import "../node_modules/bootstrap/scss/print";
+
+// bootstrap-material-design imports
+// @import "../node_modules/bootstrap-material-design/scss/reboot";
+// @import "../node_modules/bootstrap-material-design/scss/layout";
+// @import "../node_modules/bootstrap-material-design/scss/buttons";
+// @import "../node_modules/bootstrap-material-design/scss/checkboxes";
+// @import "../node_modules/bootstrap-material-design/scss/custom-forms";
+// @import "../node_modules/bootstrap-material-design/scss/switches";
+// @import "../node_modules/bootstrap-material-design/scss/radios";
+@import "../node_modules/bootstrap-material-design/scss/forms";
+// @import "../node_modules/bootstrap-material-design/scss/input-group";
+// @import "../node_modules/bootstrap-material-design/scss/list-group";
+// @import "../node_modules/bootstrap-material-design/scss/tables";
+// @import "../node_modules/bootstrap-material-design/scss/nav";
+// @import "../node_modules/bootstrap-material-design/scss/navbar";
+// @import "../node_modules/bootstrap-material-design/scss/alerts";
+// @import "../node_modules/bootstrap-material-design/scss/progress";
+// @import "../node_modules/bootstrap-material-design/scss/pagination";
+// @import "../node_modules/bootstrap-material-design/scss/type";
+// @import "../node_modules/bootstrap-material-design/scss/tooltip";
+// @import "../node_modules/bootstrap-material-design/scss/popover";
+// @import "../node_modules/bootstrap-material-design/scss/cards";
+// @import "../node_modules/bootstrap-material-design/scss/modal";
+// @import "../node_modules/bootstrap-material-design/scss/dropdown";
+// @import "../node_modules/bootstrap-material-design/scss/drawer";
+// @import "../node_modules/bootstrap-material-design/scss/themes";
+// @import "../node_modules/bootstrap-material-design/scss/ripples";
+// @import "../node_modules/bootstrap-material-design/scss/extensions";
+
+// Additional custom styling
+html {
+    height: 100%;
+    // Firefox scroll bar
+    scrollbar-color: $rust black;
+}
+
+body {
+    height: 100%;
+}
+
+#root {
+    height: 100%;
+}
+
+.container-fluid {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-right: 0;
+}
+
+#messages {
+    max-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+hr {
+    border-top: 1px solid rgba($rust, .4);
+}
+
+// Webkit scroll bar
+::-webkit-scrollbar {
+	width: 1rem;
+}
+::-webkit-scrollbar-thumb {
+	background-color: $rust;
+}
+
+// Prevent resize animation of input
+.form-control {
+    background-size: 100% 100%, 100% 100%
+}
+// Change input bottom bar to be rust colored
+.form-control, .is-focused .form-control {
+    background-image: linear-gradient(to top, $rust 2px, rgba(0, 150, 136, 0) 2px), linear-gradient(to top, rgba(0, 0, 0, 0.26) 1px, rgba(0, 0, 0, 0) 1px);
+}
