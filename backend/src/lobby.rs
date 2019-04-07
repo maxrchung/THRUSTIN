@@ -66,7 +66,6 @@ impl Lobby {
         pw: String,
         max: usize,
         id: i32,
-        pers_deck: &mut thrust::Deck,
     ) -> Lobby {
         let mut lobby = Lobby {
             pw: pw,
@@ -88,17 +87,10 @@ impl Lobby {
             use_house: true,
         };
 
-        lobby
-            .deck
-            .thrustees
-            .append(&mut pers_deck.thrustees.clone()); //addin "personal decks" to lobby(default) deck. .
-        lobby
-            .deck
-            .thrusters
-            .append(&mut pers_deck.thrusters.clone());
-        lobby.deck.sort();
-        lobby.deck.thrusters.shuffle(&mut thread_rng());
-        lobby.deck.thrustees.shuffle(&mut thread_rng());
+        //addin "personal decks" to lobby(default) deck. .
+        Lobby::add_pers_deck_to_lob(&mut lobby, &mut player.borrow_mut());
+
+        Lobby::shuffle_deck(&mut lobby);
         lobby
     }
 
@@ -125,9 +117,7 @@ impl Lobby {
             thrusted_players: Vec::new(),
             use_house: true,
         };
-        lobby.deck.sort();
-        lobby.deck.thrusters.shuffle(&mut thread_rng());
-        lobby.deck.thrustees.shuffle(&mut thread_rng());
+        Lobby::shuffle_deck(&mut lobby);
         lobby
     }
 
@@ -161,7 +151,27 @@ impl Lobby {
 
     //////////////////
     //general stuff?//
-    //////////////////
+    ////////////////// 
+    
+    pub fn add_pers_deck_to_lob(
+        lob: &mut Lobby,
+        pl: &mut std::cell::RefMut<Player>,
+    ) {
+        lob.deck
+            .thrustees
+            .append(&mut pl.personal_deck.thrustees.clone());
+        lob.deck
+            .thrusters
+            .append(&mut pl.personal_deck.thrusters.clone());
+    }
+    
+    pub fn shuffle_deck(
+        lobby: &mut Lobby,
+    ) {
+        lobby.deck.sort();
+        lobby.deck.thrusters.shuffle(&mut thread_rng());
+        lobby.deck.thrustees.shuffle(&mut thread_rng());
+    }
 
     pub fn make_endless_lobby(
         pl_rc: &Rc<RefCell<Player>>,
@@ -196,7 +206,6 @@ impl Lobby {
             "".to_string(),
             max,
             *lobby_id,
-            &mut pl.personal_deck,
         );
         new_lobby.list.push(pl_rc.clone());
 
@@ -399,6 +408,84 @@ impl Lobby {
         pl.send("Player not in lobby.");
     }
 
+    pub fn handle_join_cases(
+        pl: &std::cell::RefMut<Player>,
+        lob: &Lobby,
+        wait: &mut bool,
+        messages: &mut Vec<String>,
+    ) {
+        let thrustee = lob.list[lob.thrustee].borrow();
+
+        match thrustee.state {
+            PlayerState::Playing => {
+                messages.push(
+                    format!("This is your THRUSTEE: {}", &lob.current_thrustee)
+                        .to_string(),
+                );
+                messages.extend(get_thrusters(&pl.deck.thrusters));
+            }
+
+            PlayerState::Choosing => {
+                *wait = true;
+                messages.push(
+                    "THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!"
+                        .to_string(),
+                );
+            }
+
+            PlayerState::Deciding => {
+                messages.push(
+                    format!("This is your THRUSTEE: {}", &lob.current_thrustee)
+                        .to_string(),
+                );
+                messages.extend(get_thrusters(&pl.deck.thrusters));
+            }
+
+            _ => (),
+        }
+    }
+
+    pub fn get_joining_pl_state(
+        lob: &mut Lobby,
+        pl: &mut std::cell::RefMut<Player>,
+        messages: &mut Vec<String>,
+        pl_rc: &Rc<RefCell<Player>>,
+    ) -> Option<PlayerState> {
+        // Distribute thrusters to player
+        for _ in 0..lob.hand_size {
+            if let Some(card) = lob.deck.thrusters.pop() {
+                pl.deck.thrusters.push(card.clone());
+            } else {
+                lob.restart_game();
+                pl.send("Not enough THRUSTERS to distribute");
+                return None;
+            }
+        }
+
+        let mut wait: bool = false;
+
+        // If lobby was empty before this guy joined, then they become thrustee, otherwise, basically do what normal join_lobby does (yea this is fucked fk me doggo)
+        if lob.list.len() == 0 {
+            pl.state = PlayerState::Choosing;
+            let mut messages =
+                vec!["Welcome to the 『Endless Lobby』, big doggo. You lucky, family, you are THRUSTEE!!!!.. . Choose now...    .".to_string()];
+            messages.extend(lob.print_thrustee_choices());
+            pl.send_multiple(messages);
+            pl.lobby = lob.id;
+            lob.list.push(pl_rc.clone());
+            return None; //dude lmao
+        }
+        else {
+            Lobby::handle_join_cases(&pl, &lob, &mut wait, messages);
+        }         
+
+        if wait {
+            return Some(PlayerState::Waiting);
+        } else {
+            return Some(PlayerState::Playing);
+        }
+    }
+
     pub fn join_endless(
         input: std::vec::Vec<&str>,
         pl_rc: Rc<RefCell<Player>>,
@@ -407,7 +494,7 @@ impl Lobby {
     ) {
         let mut pl = pl_rc.borrow_mut();
         let mut messages = Vec::new();
-        if let Some(lob) = lobby.get_mut(&lobby_id) {
+        if let Some(mut lob) = lobby.get_mut(&lobby_id) {
             // Lobby full check
             if lob.list.len() >= lob.max {
                 pl.send("bro this lobbBY is FULLLLL!!");
@@ -420,74 +507,14 @@ impl Lobby {
             pl.points = 0;
 
             // add players' personal deck (.thrustee/.thruster) to lobby deck
-            lob.deck
-                .thrustees
-                .append(&mut pl.personal_deck.thrustees.clone());
-            lob.deck
-                .thrusters
-                .append(&mut pl.personal_deck.thrusters.clone());
+            Lobby::add_pers_deck_to_lob(lob, &mut pl);
 
             pl.state = {
-                // Distribute thrusters to player
-                for _ in 0..lob.hand_size {
-                    if let Some(card) = lob.deck.thrusters.pop() {
-                        pl.deck.thrusters.push(card.clone());
-                    } else {
-                        lob.restart_game();
-                        pl.send("Not enough THRUSTERS to distribute");
-                        return;
-                    }
-                }
-
-                let mut wait: bool = false;
-
-                // If lobby was empty before this guy joined, then they become thrustee, otherwise, basically do what normal join_lobby does (yea this is fucked fk me doggo)
-                if lob.list.len() == 0 {
-                    pl.state = PlayerState::Choosing;
-                    let mut messages =
-                        vec!["Welcome to the 『Endless Lobby』, big doggo. You lucky, family, you are THRUSTEE!!!!.. . Choose now...    .".to_string()];
-                    messages.extend(lob.print_thrustee_choices());
-                    pl.send_multiple(messages);
-                    pl.lobby = lob.id;
-                    lob.list.push(pl_rc.clone());
-                    return; //dude lmao
+                if let Some(state) = Lobby::get_joining_pl_state(&mut lob, &mut pl, &mut messages, &pl_rc) {
+                    state
                 }
                 else {
-                    let thrustee = lob.list[lob.thrustee].borrow();
-
-                    match thrustee.state {
-                        PlayerState::Playing => {
-                            messages.push(
-                                format!("This is your THRUSTEE: {}", &lob.current_thrustee)
-                                    .to_string(),
-                            );
-                            messages.extend(get_thrusters(&pl.deck.thrusters));
-                        }
-
-                        PlayerState::Choosing => {
-                            wait = true;
-                            messages.push(
-                                "THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!"
-                                    .to_string(),
-                            );
-                        }
-
-                        PlayerState::Deciding => {
-                            messages.push(
-                                format!("This is your THRUSTEE: {}", &lob.current_thrustee)
-                                    .to_string(),
-                            );
-                            messages.extend(get_thrusters(&pl.deck.thrusters));
-                        }
-
-                        _ => (),
-                    }
-                }         
-
-                if wait {
-                    PlayerState::Waiting
-                } else {
-                    PlayerState::Playing
+                    return;
                 }
             };
             lob.send_message(&format!("{} has joined the lobby.", pl.name));
@@ -523,7 +550,7 @@ impl Lobby {
                 let mut pl = pl_rc.borrow_mut();
 
                 let mut messages = Vec::new();
-                if let Some(lob) = lobby.get_mut(&lobby_id) {
+                if let Some(mut lob) = lobby.get_mut(&lobby_id) {
                     // Lobby full check
                     if lob.list.len() >= lob.max {
                         pl.send("bro this lobbBY is FULLLLL!!");
@@ -547,60 +574,14 @@ impl Lobby {
                     pl.points = 0;
 
                     // add players' personal deck (.thrustee/.thruster) to lobby deck
-                    lob.deck
-                        .thrustees
-                        .append(&mut pl.personal_deck.thrustees.clone());
-                    lob.deck
-                        .thrusters
-                        .append(&mut pl.personal_deck.thrusters.clone());
+                    Lobby::add_pers_deck_to_lob(lob, &mut pl);
 
                     pl.state = if lob.state == LobbyState::Playing {
-                        // Distribute thrusters to player
-                        for _ in 0..lob.hand_size {
-                            if let Some(card) = lob.deck.thrusters.pop() {
-                                pl.deck.thrusters.push(card.clone());
-                            } else {
-                                lob.restart_game();
-                                pl.send("Not enough THRUSTERS to distribute");
-                                return;
-                            }
+                        if let Some(state) = Lobby::get_joining_pl_state(&mut lob, &mut pl, &mut messages, &pl_rc) {
+                            state
                         }
-
-                        let thrustee = lob.list[lob.thrustee].borrow();
-                        let mut wait: bool = false;
-                        // Handle cases where thrustee is currently choosing/deciding differently
-                        match thrustee.state {
-                            PlayerState::Playing => {
-                                messages.push(
-                                    format!("This is your THRUSTEE: {}", &lob.current_thrustee)
-                                        .to_string(),
-                                );
-                                messages.extend(get_thrusters(&pl.deck.thrusters));
-                            }
-
-                            PlayerState::Choosing => {
-                                wait = true;
-                                messages.push(
-                                    "THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!"
-                                        .to_string(),
-                                );
-                            }
-
-                            PlayerState::Deciding => {
-                                messages.push(
-                                    format!("This is your THRUSTEE: {}", &lob.current_thrustee)
-                                        .to_string(),
-                                );
-                                messages.extend(get_thrusters(&pl.deck.thrusters));
-                            }
-
-                            _ => (),
-                        }
-
-                        if wait {
-                            PlayerState::Waiting
-                        } else {
-                            PlayerState::Playing
+                        else {
+                            return;
                         }
                     } else {
                         PlayerState::InLobby
@@ -767,9 +748,7 @@ impl Lobby {
             player.deck = thrust::Deck::new();
             player.state = PlayerState::InLobby;
         }
-        self.deck.sort();
-        self.deck.thrusters.shuffle(&mut thread_rng());
-        self.deck.thrustees.shuffle(&mut thread_rng());
+        Lobby::shuffle_deck(self);
     }
 
     pub fn clear_endless(&mut self) {
@@ -785,9 +764,7 @@ impl Lobby {
                 .thrusters
                 .append(&mut player.personal_deck.thrusters.clone());
         }
-        self.deck.sort();
-        self.deck.thrusters.shuffle(&mut thread_rng());
-        self.deck.thrustees.shuffle(&mut thread_rng());
+        Lobby::shuffle_deck(self);
 
         // Handles if lobby for restarts when no one is in there for some reason (not enough house cards during testing)
         if self.list.len() != 0 {
@@ -1224,12 +1201,7 @@ pub fn add_item(
 
     if let Some(lob) = lobby.get_mut(&pl.lobby) {
         if lob.state == LobbyState::Waiting {
-            lob.deck
-                .thrustees
-                .append(&mut pl.personal_deck.thrustees.clone());
-            lob.deck
-                .thrusters
-                .append(&mut pl.personal_deck.thrusters.clone());
+            Lobby::add_pers_deck_to_lob(lob, &mut pl);
         }
     }
 
