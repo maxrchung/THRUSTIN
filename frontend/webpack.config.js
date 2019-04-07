@@ -3,6 +3,8 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin"); 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CompressionPlugin = require('compression-webpack-plugin');
+const TerserJSPlugin = require("terser-webpack-plugin");
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 
 module.exports = {
   entry: "./src/main.jsx",
@@ -23,7 +25,12 @@ module.exports = {
       }
     ]
   },
-  resolve: { extensions: ["*", ".js", ".jsx"] },
+  optimization: {
+    minimizer: [
+      new TerserJSPlugin({}),
+      new OptimizeCSSAssetsPlugin({})
+    ]
+  },
   output: {
     path: path.resolve(__dirname, "./build/"),
     filename: "[name].[contenthash].js"
@@ -37,5 +44,6 @@ module.exports = {
       template: "src/index.ejs"
     }),
     new CompressionPlugin()
-  ]
+  ],
+  resolve: { extensions: ["*", ".js", ".jsx"] }
 };
