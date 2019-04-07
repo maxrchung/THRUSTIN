@@ -912,15 +912,14 @@ impl Lobby {
                         }
                     }
 
-                    {
-                        // wew lad
+                    let (chosen_thruster_pts, chosen_thruster_name) = {
                         // Assign picked thruster a point
                         let tkn = self.search_token(self.index_to_token.get(&index).unwrap());
 
-                        let pts: u32 = {
+                        let (pts, name) = {
                             let mut chosen_thruster = self.list[tkn].borrow_mut();
                             chosen_thruster.points += 1;
-                            chosen_thruster.points.clone()
+                            (chosen_thruster.points.clone(), chosen_thruster.name.clone())
                         };
 
                         // Check if winner
@@ -928,7 +927,8 @@ impl Lobby {
                             self.handle_winner(tkn);
                             return;
                         }
-                    }
+                        (pts, name) 
+                    };
 
                     if restart {
                         self.restart_game();
@@ -947,6 +947,11 @@ impl Lobby {
 
                     for (i, pl) in self.list.iter().enumerate() {
                         let mut messages = common.clone();
+
+                        messages.push(
+                            format!("The winning THRUSTER, {} now has {} points! Watch out!<br/>",
+                            &chosen_thruster_name, &chosen_thruster_pts)
+                        );
 
                         // If THRUSTEE, then set him up to be choosing next shit
                         if i == self.thrustee {
