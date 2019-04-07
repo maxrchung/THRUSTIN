@@ -89,8 +89,6 @@ impl Lobby {
 
         //addin "personal decks" to lobby(default) deck. .
         Lobby::add_pers_deck_to_lob(&mut lobby, &mut player.borrow_mut());
-
-        Lobby::shuffle_deck(&mut lobby);
         lobby
     }
 
@@ -117,7 +115,6 @@ impl Lobby {
             thrusted_players: Vec::new(),
             use_house: true,
         };
-        Lobby::shuffle_deck(&mut lobby);
         lobby
     }
 
@@ -195,18 +192,19 @@ impl Lobby {
         lobby_id: &mut i32,
         lobbies: &mut HashMap<i32, Lobby>,
     ) {
-        let mut pl = pl_rc.borrow_mut();
         let max = 64;
-
-        pl.lobby = lobby_id.clone();
-        pl.state = PlayerState::InLobby;
-
         let mut new_lobby = Lobby::new(
             &pl_rc,
             "".to_string(),
             max,
             *lobby_id,
         );
+
+        let mut pl = pl_rc.borrow_mut();
+        
+        pl.lobby = lobby_id.clone();
+        pl.state = PlayerState::InLobby;
+        
         new_lobby.list.push(pl_rc.clone());
 
         lobbies.insert(lobby_id.clone(), new_lobby.clone());
@@ -658,6 +656,8 @@ impl Lobby {
             self.deck.thrustees.extend(default_deck.thrustees);
         }
 
+        Lobby::shuffle_deck(self);
+
         // Setup new thrustee choices
         for _ in 0..self.max_thrustee_choices {
             if let Some(card) = self.deck.thrustees.pop() {
@@ -687,6 +687,8 @@ impl Lobby {
             self.deck.thrusters.extend(default_deck.thrusters);
             self.deck.thrustees.extend(default_deck.thrustees);
         }
+
+        Lobby::shuffle_deck(self);
 
         // Setup new thrustee choices
         for _ in 0..self.max_thrustee_choices {
