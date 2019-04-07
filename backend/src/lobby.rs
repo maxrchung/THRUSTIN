@@ -1214,3 +1214,89 @@ pub fn add_item(
 
     true
 }
+
+
+pub fn add_thruster(
+    input: &std::vec::Vec<&str>,
+    pl_rc: Rc<RefCell<Player>>,
+    lobby: &mut HashMap<i32, Lobby>,
+) {
+    let mut pl = pl_rc.borrow_mut();
+
+    if input.len() < 2 {
+        pl.send("THRUSTER required!");
+        return;
+    }
+
+    let mut new_item = String::new();
+    for i in 1..input.len() {
+        new_item.push_str(input[i as usize]);
+        new_item.push_str(" ");
+    }
+    new_item.pop();
+
+    if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
+        || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
+    {
+        pl.send("Please surround the THRUSTER with quotes.");
+        return;
+    }
+
+    new_item.pop();
+    new_item.remove(0);
+
+    pl.personal_deck.add_thruster(&new_item);
+    pl.send(&format!("Added \"{}\" to THRUSTERS!", &new_item));
+ 
+    if let Some(lob) = lobby.get_mut(&pl.lobby) {
+        if lob.state == LobbyState::Waiting {
+            Lobby::add_pers_deck_to_lob(lob, &mut pl);
+        }
+    }
+
+}
+
+
+pub fn add_thrustee(
+    input: &std::vec::Vec<&str>,
+    pl_rc: Rc<RefCell<Player>>,
+    lobby: &mut HashMap<i32, Lobby>,
+) {
+    let mut pl = pl_rc.borrow_mut();
+
+    if input.len() < 2 {
+        pl.send("THRUSTEE required!");
+        return;
+    }
+
+    let mut new_item = String::new();
+    for i in 1..input.len() {
+        new_item.push_str(input[i as usize]);
+        new_item.push_str(" ");
+    }
+    new_item.pop();
+
+    if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
+        || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
+    {
+        pl.send("Please surround the THRUSTEE with quotes.");
+        return;
+    }
+    new_item.pop();
+    new_item.remove(0);
+
+    if !new_item.contains("_") {
+        pl'.send("Not valid thrustee. Please add blank spaces (with underscores) to allow THRUSTERS to THRUST into them.");
+        return;
+    }
+
+    pl.personal_deck.add_thrustee(&new_item);
+    pl.send(&format!("Added \"{}\" to THRUSTEES!", &new_item));
+
+    if let Some(lob) = lobby.get_mut(&pl.lobby) {
+        if lob.state == LobbyState::Waiting {
+            Lobby::add_pers_deck_to_lob(lob, &mut pl);
+        }
+    }
+
+}

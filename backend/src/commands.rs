@@ -87,7 +87,6 @@ pub fn out_of_lobby_commands(
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let is_thruster = true;
     let com = get_command(&input);
     match &*com {
         ".help" | ".h" => list_out_commands(&pl.borrow()),
@@ -100,16 +99,9 @@ pub fn out_of_lobby_commands(
 
         ".name" | ".n" => player::set_name(input, pl, players),
 
-        ".thrustee" | ".tee" => {
-            let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
-            if !valid {
-                pl.borrow().send("Not valid thrustee. Please add blank spaces (with underscores) to allow THRUSTERS to THRUST into them.");
-            }
-        }
+        ".thrustee" | ".tee" => lobby::add_thrustee(&input, pl, lobbies);
 
-        ".thruster" | ".ter" => {
-            lobby::add_item(&input, pl, lobbies, is_thruster);
-        }
+        ".thruster" | ".ter" => lobby::add_thruster(&input, pl, lobbies);
 
         ".who" | ".w" => lobby::list_all_players(pl, players),
 
@@ -145,7 +137,6 @@ pub fn in_lobby_commands(
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let is_thruster = true;
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
@@ -162,16 +153,10 @@ pub fn in_lobby_commands(
 
         ".name" | ".n" => player::set_name(input, pl, players),
 
-        ".thrustee" | ".tee" => {
-            let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
-            if !valid {
-                pl.borrow().send("Not valid THRUSTEE. Please add blank space to allow THRUSTERS to THRUST into them.");
-            }
-        }
 
-        ".thruster" | ".ter" => {
-            lobby::add_item(&input, pl, lobbies, is_thruster);
-        }
+        ".thrustee" | ".tee" => lobby::add_thrustee(&input, pl, lobbies);
+
+        ".thruster" | ".ter" => lobby::add_thruster(&input, pl, lobbies);
 
         ".who" | ".w" => lobby.list_lobby_players(pl),
 
