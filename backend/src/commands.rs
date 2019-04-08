@@ -100,6 +100,15 @@ pub fn out_of_lobby_commands(
 
         ".name" | ".n" => player::set_name(input, pl, players),
 
+        ".thrust" | ".t" => {
+            if let Some(create_thrustee) = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster) {
+
+            }
+            else {
+                // not valid so do nothing boi
+            }
+        }
+
         ".thrustee" | ".tee" => {
             let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
             if !valid {

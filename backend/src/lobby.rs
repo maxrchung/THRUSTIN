@@ -927,7 +927,7 @@ impl Lobby {
                             self.handle_winner(tkn);
                             return;
                         }
-                        (pts, name) 
+                        (pts, name)
                     };
 
                     if restart {
@@ -1165,17 +1165,32 @@ pub fn list_all_players(
     pl.send_multiple(messages);
 }
 
+pub fn get_command_type(
+    input: &std::vec::Vec<&str>,
+    pl_rc: Rc<RefCell<Player>>,
+    lobby: &mut HashMap<i32, Lobby>,
+    thruster: bool,
+) -> Option<bool> {
+    if input.len() < 2 {
+        return None;
+    }
+    else if thruster && !new_item.contains("_") {
+        return true;
+    }
+
+}
+
 pub fn add_item(
     input: &std::vec::Vec<&str>,
     pl_rc: Rc<RefCell<Player>>,
     lobby: &mut HashMap<i32, Lobby>,
     thruster: bool,
-) -> bool {
+) {
     let mut pl = pl_rc.borrow_mut();
 
     if input.len() < 2 {
-        pl.send("THRUSTER/THRUSTEE required!");
-        return true;
+        //pl.send("THRUSTER/THRUSTEE required!");
+        return None;
     }
 
     let mut new_item = String::new();
@@ -1188,15 +1203,13 @@ pub fn add_item(
     if new_item.chars().next().unwrap() != "\"".to_string().chars().last().unwrap()
         || new_item.chars().last().unwrap() != "\"".to_string().chars().last().unwrap()
     {
-        pl.send("Please surround the THRUSTER/THRUSTEE with quotes.");
-        return true;
+        //pl.send("Please surround the THRUSTER/THRUSTEE with quotes.");
+        return;
     }
     new_item.pop();
     new_item.remove(0);
 
-    if !thruster && !new_item.contains("_") {
-        return false;
-    }
+    
 
     if thruster {
         pl.personal_deck.add_thruster(&new_item);
