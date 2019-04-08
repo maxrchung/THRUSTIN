@@ -161,6 +161,14 @@ impl Lobby {
             .thrusters
             .append(&mut pl.personal_deck.thrusters.clone());
     }
+
+    pub fn remove_pers_deck_from_lob(
+        lob: &mut Lobby,
+        pl: &mut std::cell::RefMut<Player>,
+    ) {
+        lob.deck.thrustees.retain(|thrustee| (!pl.personal_deck.thrustees.contains(&thrustee)));
+        lob.deck.thrustees.retain(|thruster| (!pl.personal_deck.thrusters.contains(&thruster)));
+    }
     
     pub fn shuffle_deck(
         lobby: &mut Lobby,
@@ -1165,15 +1173,16 @@ pub fn list_all_players(
     pl.send_multiple(messages);
 }
 
-pub fn get_command_and_item(
+pub fn handle_thrusteer_commands(
     input: &std::vec::Vec<&str>,
     pl_rc: Rc<RefCell<Player>>,
     lobby: &mut HashMap<i32, Lobby>
-) -> (Option<bool>, Option<String>) {
+) {
     let mut pl = pl_rc.borrow_mut();
 
     if input.len() < 2 {
-        return (None, None);
+        display_deck(pl);
+        return;
     }
 
     let mut new_item = String::new();
@@ -1188,31 +1197,32 @@ pub fn get_command_and_item(
 
         if beginning != quotation || ending != quotation {
             pl.send("Please surround the THRUSTER with quotes.");
-            return (None, Some("This is not valid so therefore this will not work and also the thrust(ee/er)s will not be shown.".to_string()));
+            return;
         }
     }
     else {
-        return (None, None);
+        display_deck(pl);
+        return;
     }
 
     new_item.pop();
     new_item.remove(0);
 
     if new_item.contains("_") {
-        return (Some(true), Some(new_item.clone()));
+        add_thrustee(pl, lobby, new_item.clone());
+        return;
     }
     else {
-        return (Some(false), Some(new_item.clone()));
+        add_thruster(pl, lobby, new_item.clone());
+        return;
     }
 }
 
 pub fn add_thruster(
-    pl_rc: Rc<RefCell<Player>>,
+    mut pl: std::cell::RefMut<Player>,
     lobby: &mut HashMap<i32, Lobby>,
     new_item: String
 ) {
-    let mut pl = pl_rc.borrow_mut();
-
     pl.personal_deck.add_thruster(&new_item);
     pl.send(&format!("Added \"{}\" to THRUSTERS!", &new_item));
  
@@ -1221,16 +1231,13 @@ pub fn add_thruster(
             Lobby::add_pers_deck_to_lob(lob, &mut pl);
         }
     }
-
 }
 
 pub fn add_thrustee(
-    pl_rc: Rc<RefCell<Player>>,
+    mut pl: std::cell::RefMut<Player>,
     lobby: &mut HashMap<i32, Lobby>,
     new_item: String
 ) {
-    let mut pl = pl_rc.borrow_mut();
-
     pl.personal_deck.add_thrustee(&new_item);
     pl.send(&format!("Added \"{}\" to THRUSTEES!", &new_item));
 
@@ -1239,13 +1246,11 @@ pub fn add_thrustee(
             Lobby::add_pers_deck_to_lob(lob, &mut pl);
         }
     }
-
 }
 
 pub fn display_deck(
-    pl_rc: Rc<RefCell<Player>>
+    pl: std::cell::RefMut<Player>,
 ) {
-    let mut pl = pl_rc.borrow_mut();
     let mut messages = Vec::new();
 
     messages.push("Thrusters:".to_string());
@@ -1261,4 +1266,21 @@ pub fn display_deck(
     }
     
     pl.send_multiple(messages);
+}
+
+pub fn clear_pers_deck(
+    pl_rc: Rc<RefCell<Player>>,
+    lobby: &mut HashMap<i32, Lobby>
+) {
+    let mut pl = pl_rc.borrow_mut();
+
+    if let Some(lob) = lobby.get_mut(&pl.lobby) {
+        if lob.state == LobbyState::Waiting {
+            Lobby::remove_pers_deck_from_lob(lob, &mut pl);
+        }
+    }
+
+    pl.personal_deck = thrust::Deck::new();
+
+    pl.send("Personal deck has been cleared! If this was an accident, Good Luck!");
 }

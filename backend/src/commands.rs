@@ -99,21 +99,9 @@ pub fn out_of_lobby_commands(
 
         ".name" | ".n" => player::set_name(input, pl, players),
 
-        ".thrust" | ".t" => {
-            let result = lobby::get_command_and_item(&input, pl.clone(), lobbies);
+        ".thrust" | ".t" => lobby::handle_thrusteer_commands(&input, pl, lobbies),
 
-            if let (Some(to_add_thrustee), Some(new_item)) = &result {
-                if *to_add_thrustee {
-                    lobby::add_thrustee(pl, lobbies, new_item.clone());
-                }
-                else {
-                    lobby::add_thruster(pl, lobbies, new_item.clone());
-                }
-            }
-            else if let (None, None) = &result {
-                lobby::display_deck(pl.clone());
-            }
-        }
+        ".unthrust" => lobby::clear_pers_deck(pl, lobbies),
 
         ".who" | ".w" => lobby::list_all_players(pl, players),
 
@@ -165,21 +153,9 @@ pub fn in_lobby_commands(
 
         ".name" | ".n" => player::set_name(input, pl, players),
 
-        ".thrust" | ".t" => {
-            let result = lobby::get_command_and_item(&input, pl.clone(), lobbies);
+        ".thrust" | ".t" => lobby::handle_thrusteer_commands(&input, pl.clone(), lobbies),
 
-            if let (Some(to_add_thrustee), Some(new_item)) = &result {
-                if *to_add_thrustee {
-                    lobby::add_thrustee(pl, lobbies, new_item.clone());
-                }
-                else {
-                    lobby::add_thruster(pl, lobbies, new_item.clone());
-                }
-            }
-            else if let (None, None) = &result {
-                lobby::display_deck(pl.clone());
-            }
-        }
+        ".unthrust" => lobby::clear_pers_deck(pl, lobbies),
 
         ".who" | ".w" => lobby.list_lobby_players(pl),
 
