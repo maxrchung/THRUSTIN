@@ -87,7 +87,6 @@ pub fn out_of_lobby_commands(
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let is_thruster = true;
     let com = get_command(&input);
     match &*com {
         ".help" | ".h" => list_out_commands(&pl.borrow()),
@@ -101,23 +100,19 @@ pub fn out_of_lobby_commands(
         ".name" | ".n" => player::set_name(input, pl, players),
 
         ".thrust" | ".t" => {
-            if let Some(create_thrustee) = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster) {
+            let result = lobby::get_command_and_item(&input, pl.clone(), lobbies);
 
+            if let (Some(to_add_thrustee), Some(new_item)) = &result {
+                if *to_add_thrustee {
+                    lobby::add_thrustee(pl, lobbies, new_item.clone());
+                }
+                else {
+                    lobby::add_thruster(pl, lobbies, new_item.clone());
+                }
             }
-            else {
-                // not valid so do nothing boi
+            else if let (None, None) = &result {
+                lobby::display_deck(pl.clone());
             }
-        }
-
-        ".thrustee" | ".tee" => {
-            let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
-            if !valid {
-                pl.borrow().send("Not valid thrustee. Please add blank spaces (with underscores) to allow THRUSTERS to THRUST into them.");
-            }
-        }
-
-        ".thruster" | ".ter" => {
-            lobby::add_item(&input, pl, lobbies, is_thruster);
         }
 
         ".who" | ".w" => lobby::list_all_players(pl, players),
@@ -154,7 +149,6 @@ pub fn in_lobby_commands(
     players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
-    let is_thruster = true;
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
@@ -171,15 +165,20 @@ pub fn in_lobby_commands(
 
         ".name" | ".n" => player::set_name(input, pl, players),
 
-        ".thrustee" | ".tee" => {
-            let valid = lobby::add_item(&input, pl.clone(), lobbies, !is_thruster);
-            if !valid {
-                pl.borrow().send("Not valid THRUSTEE. Please add blank space to allow THRUSTERS to THRUST into them.");
-            }
-        }
+        ".thrust" | ".t" => {
+            let result = lobby::get_command_and_item(&input, pl.clone(), lobbies);
 
-        ".thruster" | ".ter" => {
-            lobby::add_item(&input, pl, lobbies, is_thruster);
+            if let (Some(to_add_thrustee), Some(new_item)) = &result {
+                if *to_add_thrustee {
+                    lobby::add_thrustee(pl, lobbies, new_item.clone());
+                }
+                else {
+                    lobby::add_thruster(pl, lobbies, new_item.clone());
+                }
+            }
+            else if let (None, None) = &result {
+                lobby::display_deck(pl.clone());
+            }
         }
 
         ".who" | ".w" => lobby.list_lobby_players(pl),
