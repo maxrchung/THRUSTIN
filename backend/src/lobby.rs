@@ -1186,10 +1186,11 @@ pub fn handle_thrusteer_commands(
     }
 
     let mut new_item = String::new();
-    for i in 1..input.len() {
-        new_item.push_str(input[i as usize]);
+    for s in input.iter() {
+        new_item.push_str(s);
         new_item.push_str(" ");
     }
+
     new_item.pop();
 
     if let (Some(beginning), Some(ending)) = (new_item.chars().next(), new_item.chars().next()) {
