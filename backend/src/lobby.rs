@@ -96,7 +96,7 @@ impl Lobby {
         player: &Rc<RefCell<Player>>,
         max: usize
     ) -> Lobby {
-        let mut lobby = Lobby {
+        let lobby = Lobby {
             pw: "".to_string(),
             list: std::vec::Vec::with_capacity(max as usize),
             max: max,
@@ -539,10 +539,8 @@ impl Lobby {
         lobby: &mut HashMap<i32, Lobby>,
     ) {
         if input.len() < 2 {
-            {
-                let mut pl = pl_rc.borrow_mut();
-                pl.send("Lobby name required!");
-            } 
+            let pl = pl_rc.borrow();
+            pl.send("Lobby name required!");
             return;
         }
 
@@ -604,7 +602,7 @@ impl Lobby {
             }
 
             _ => {
-                    let mut pl = pl_rc.borrow_mut();
+                    let pl = pl_rc.borrow();
                     pl.send("nibba that is a invalid input my nibba")
                 } //i love rust
         }
@@ -990,7 +988,7 @@ impl Lobby {
 
     pub fn handle_thrust(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         {
-            let mut pl = pl_rc.borrow();
+            let pl = pl_rc.borrow();
             // Check number of inputs
             if input.len() < 2 {
                 pl.send(&"Index required!");
@@ -1178,7 +1176,7 @@ pub fn handle_thrusteer_commands(
     pl_rc: Rc<RefCell<Player>>,
     lobby: &mut HashMap<i32, Lobby>
 ) {
-    let mut pl = pl_rc.borrow_mut();
+    let pl = pl_rc.borrow_mut();
 
     if input.len() < 2 {
         display_deck(pl);
@@ -1257,13 +1255,13 @@ pub fn display_deck(
     messages.push("Thrusters:".to_string());
 
     for (i, thruster) in pl.personal_deck.thrusters.iter().enumerate() {
-        messages.push((format!("{}. {}", i + 1, &thruster).clone()));
+        messages.push(format!("{}. {}", i + 1, &thruster).clone());
     }
 
     messages.push("</br>Thrustees:".to_string());
 
     for (i, thrustee) in pl.personal_deck.thrustees.iter().enumerate() {
-        messages.push((format!("{}. {}", i + 1, &thrustee).clone()));
+        messages.push(format!("{}. {}", i + 1, &thrustee).clone());
     }
     
     pl.send_multiple(messages);
