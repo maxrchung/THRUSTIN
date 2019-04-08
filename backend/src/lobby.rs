@@ -1186,7 +1186,7 @@ pub fn handle_thrusteer_commands(
     }
 
     let mut new_item = String::new();
-    for s in input.iter() {
+    for s in input.iter().skip(1) {
         new_item.push_str(s);
         new_item.push_str(" ");
     }
