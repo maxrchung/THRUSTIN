@@ -10,11 +10,12 @@ function Message(props) {
         <div className="mb-3 mr-3">
             <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
             <SanitizedHTML
-             allowedTags={["br","u","table","tr","th","td","a"]} 
+             allowedTags={["br","u","table","tr","th","td","a","img"]} 
              allowedAttributes={
                 { 
                     "table": ["class"],
-                    "a": ["href"]
+                    "a": ["href"],
+                    "img": ["src"]
                 }}
              html={props.content} />
             <hr/>
@@ -33,7 +34,7 @@ class Client extends React.Component {
         this.state = {
             messageCounter: 1,
             messages: [
-                <Message key={0} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously)." />,
+                <Message key={0} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously). If you wanta keep up with our development check us out on <a href=&quot;https://github.com/maxrchung/THRUSTIN/&quot;>GitHub</a> and Twitter <a href=&quot;https://twitter.com/THRUSTIN_rs?iloveducks&quot;>https://twitter.com/THRUSTIN_rs?iloveducks</a>. Yep, and here's our logo: <img src=&quot;favicon-310.png&quot;/>"/>,
             ]
         };
     }
