@@ -1279,5 +1279,5 @@ pub fn clear_pers_deck(
 
     pl.personal_deck = thrust::Deck::new();
 
-    pl.send("Personal deck has been cleared! If this was an accident, Good Luck!");
+    pl.send("Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
 }
