@@ -100,7 +100,7 @@ pub fn out_of_lobby_commands(
 
         ".thrust" | ".t" => lobby::handle_thrusteer_commands(&input, pl, lobbies),
 
-        ".unthrust" => lobby::clear_pers_deck(pl, lobbies),
+        ".unthrust" | ".u" => lobby::clear_pers_deck(pl, lobbies),
 
         ".who" | ".w" => lobby::list_all_players(pl, players),
 
@@ -120,8 +120,9 @@ fn list_out_commands(pl: &player::Player) {
             (".list", ".l", "Lists info for lobbies that are available"),
             (".make", ".m", "Make a new lobby"),
             (".name xx69SWAGGER911xx", ".n", "If you must, do this to change your name to xx69SWAGGER911xx"),
-            (".THRUSTEE' \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", ".tee \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", "This will add new THRUSTEES to your THRUSTEE list. Remember to encapsulate each THRUSTEE with a quotation."),
-            (".THRUSTER' \"Some THRUSTER\" \"Some other THRUSTER\"", ".ter \"Some THRUSTER\" \"Some other THRUSTER\"", "This is for adding a THRUSTER to your THRUSTS."),
+            (".THRUST", ".t", "This will list out your added THRUSTEES and THRUSTERS. (THRUSTERS are THRUSTED into the THRUSTEES's underscores.) Lobbies will combine and use everyone's awesome THRUSTS."),
+            (".THRUST \"Some _____ THRUSTEE\" \"Some THRUSTER\"", ".t \"Some _____ THRUSTEE\" \"Some THRUSTER\"", "Add THRUSTS to your wonderful collection. THRUSTS with an underscore will be put into your THRUSTEES otherwise yeah you guessed it they're put into THRUSTER. Also, remember to encapsulate each THRUST with a quotation."),
+            (".UNTHRUST", ".u", "Destroy all your THRUSTS... [*** !!!CAUTION THIS IS IRREVERSIBLE!!! ***]"),
             (".who", ".w", "See who else is swaggin' up in this whack with you"),
         ])
     ]);
@@ -154,7 +155,7 @@ pub fn in_lobby_commands(
 
         ".thrust" | ".t" => lobby::handle_thrusteer_commands(&input, pl.clone(), lobbies),
 
-        ".unthrust" => lobby::clear_pers_deck(pl, lobbies),
+        ".unthrust" | ".u" => lobby::clear_pers_deck(pl, lobbies),
 
         ".who" | ".w" => lobby.list_lobby_players(pl),
 
@@ -186,8 +187,9 @@ fn list_in_commands(pl: &player::Player) {
             (".info", ".i", "I'm pretty sure this will give you some info about the lobby you're in."),
             (".leave", ".l", "We're sorry to see you go..."),
             (".name xxXAzn1994", ".n", "Should we really let you change your name at this point? Seems a little bit excessive but oh well yeah you can change your name to xxXAzn1994."),
-            (".THRUSTEE' \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", ".tee \"Some _____ THRUSTEE\" \"Some _____ other _____ THRUSTEE\"", "Copy pasted. This will add new THRUSTEES to your THRUSTEE list. Remember to encapsulate each THRUSTEE with a quotation."),
-            (".THRUSTER' \"Some THRUSTER\" \"Some other THRUSTER\"", ".ter \"Some THRUSTER\" \"Some other THRUSTER\"", "Copy pasted. This is for adding a THRUSTER to your THRUSTS."),
+            (".THRUST", ".t", "This will list out your added THRUSTEES and THRUSTERS. (THRUSTERS are THRUSTED into the THRUSTEES's underscores.) Lobbies will combine and use everyone's awesome THRUSTS."),
+            (".THRUST \"Some _____ THRUSTEE\" \"Some THRUSTER\"", ".t \"Some _____ THRUSTEE\" \"Some THRUSTER\"", "Add THRUSTS to your wonderful collection. THRUSTS with an underscore will be put into your THRUSTEES otherwise yeah you guessed it they're put into THRUSTER. Also, remember to encapsulate each THRUST with a quotation."),
+            (".UNTHRUST", ".u", "Destroy all your THRUSTS... [*** !!!CAUTION THIS IS IRREVERSIBLE!!! ***]"),
             (".who", ".w", "See who's whacking up this swag lobby with you"),
             (".chief xxXAzn1994", ".c", "(chief-only) Make xxXAzn1994 the chief of the lobby"),
             (".house", ".ho", "(chief-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
@@ -227,7 +229,7 @@ fn list_playing_commands(pl: &player::Player) {
         generate_table(vec![
             (".help", ".h", "this is it chief"),
             (".points", ".p", "See who's got the points in the lobby."),
-            (".THRUST 0", ".t 0", "Thrust your first THRUSTER in baby."),
+            (".THRUST 0", ".t 0", "THRUST your first THRUSTER in baby."),
         ])
     ]);
 }

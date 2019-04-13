@@ -1195,7 +1195,7 @@ pub fn handle_thrusteer_commands(
         let quotation = "\"".to_string().chars().last().unwrap();
 
         if beginning != quotation || ending != quotation {
-            pl.send("Please surround the THRUSTER with quotes.");
+            pl.send("Please surround the THRUST with quotes.");
             return;
         }
     }
@@ -1252,18 +1252,16 @@ pub fn display_deck(
 ) {
     let mut messages = Vec::new();
 
-    messages.push("Thrusters:".to_string());
+    messages.push("Your' THRUSTEES:".to_string());
+    for (i, thrustee) in pl.personal_deck.thrustees.iter().enumerate() {
+        messages.push(format!("{}. {}", i + 1, &thrustee).clone());
+    }
 
+    messages.push("</br>Your'e THRUSTERS:".to_string());
     for (i, thruster) in pl.personal_deck.thrusters.iter().enumerate() {
         messages.push(format!("{}. {}", i + 1, &thruster).clone());
     }
 
-    messages.push("</br>Thrustees:".to_string());
-
-    for (i, thrustee) in pl.personal_deck.thrustees.iter().enumerate() {
-        messages.push(format!("{}. {}", i + 1, &thrustee).clone());
-    }
-    
     pl.send_multiple(messages);
 }
 
