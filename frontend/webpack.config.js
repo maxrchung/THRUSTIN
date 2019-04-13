@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CompressionPlugin = require('compression-webpack-plugin');
 const TerserJSPlugin = require("terser-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: "./src/main.jsx",
@@ -43,7 +44,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "src/index.ejs"
     }),
-    new CompressionPlugin()
+    new CompressionPlugin(),
+    new CopyPlugin([
+      { from: "src/favicon" },
+    ]),
   ],
   resolve: { extensions: ["*", ".js", ".jsx"] }
 };
