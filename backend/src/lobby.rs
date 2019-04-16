@@ -1252,12 +1252,12 @@ pub fn display_deck(
 ) {
     let mut messages = Vec::new();
 
-    messages.push("Your' THRUSTEES:".to_string());
+    messages.push("You're THRUSTEES:".to_string());
     for (i, thrustee) in pl.personal_deck.thrustees.iter().enumerate() {
         messages.push(format!("{}. {}", i + 1, &thrustee).clone());
     }
 
-    messages.push("</br>Your'e THRUSTERS:".to_string());
+    messages.push("</br>You're THRUSTERS:".to_string());
     for (i, thruster) in pl.personal_deck.thrusters.iter().enumerate() {
         messages.push(format!("{}. {}", i + 1, &thruster).clone());
     }

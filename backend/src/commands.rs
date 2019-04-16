@@ -119,9 +119,9 @@ fn list_out_commands(pl: &player::Player) {
             (".join 1", ".j 1", "Join the lobby with ID 1."),
             (".list", ".l", "Lists info for lobbies that are available"),
             (".make", ".m", "Make a new lobby"),
-            (".name xx69SWAGGER911xx", ".n", "If you must, do this to change your name to xx69SWAGGER911xx"),
+            (".name xx69SWAGGER911xx", ".n xx69SWAGGER911xx", "If you must, do this to change your name to xx69SWAGGER911xx"),
             (".THRUST", ".t", "This will list out your added THRUSTEES and THRUSTERS. (THRUSTERS are THRUSTED into the THRUSTEES's underscores.) Lobbies will combine and use everyone's awesome THRUSTS."),
-            (".THRUST \"Some _____ THRUSTEE\" \"Some THRUSTER\"", ".t \"Some _____ THRUSTEE\" \"Some THRUSTER\"", "Add THRUSTS to your wonderful collection. THRUSTS with an underscore will be put into your THRUSTEES otherwise yeah you guessed it they're put into THRUSTER. Also, remember to encapsulate each THRUST with a quotation."),
+            (".THRUST \"Some _____ THRUSTEE\" \"Some THRUSTER\"", ".t \"Some _____ THRUSTEE\" \"Some THRUSTER\"", "Add THRUSTS to your wonderful collection. THRUSTS with an underscore will be put into your THRUSTEES otherwise yeah you guessed it they're put into THRUSTERS. Also, remember to encapsulate each THRUST with a quotation."),
             (".UNTHRUST", ".u", "Destroy all your THRUSTS... [*** !!!CAUTION THIS IS IRREVERSIBLE!!! ***]"),
             (".who", ".w", "See who else is swaggin' up in this whack with you"),
         ])
