@@ -29,6 +29,7 @@ class Client extends React.Component {
 
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
+        this.scrollToDummy = this.scrollToDummy.bind(this);
         this.updateMessageCounter = this.updateMessageCounter.bind(this);
 
         this.state = {
@@ -49,14 +50,6 @@ class Client extends React.Component {
         this.connection.onmessage = this.handleMessage;
     }
 
-    handleMessage(e) {
-        this.setState({
-            messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={e.data} />)
-        });
-
-        this.scrollToDummy();
-    }
-
     handleKeyDown(e) {
         if (e.key == "Enter") {
             const command = e.target.value;
@@ -66,16 +59,25 @@ class Client extends React.Component {
         }
     }
 
+
+    handleMessage(e) {
+        this.setState({
+            messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={e.data} />)
+        });
+
+        this.scrollToDummy();
+    }
+
+    scrollToDummy() {
+        this.dummy.scrollIntoView();
+    }
+
     updateMessageCounter() {
         const counter = this.state.messageCounter;
         this.setState({
             messageCounter: this.state.messageCounter + 1
         });
         return counter;
-    }
-
-    scrollToDummy() {
-        this.dummy.scrollIntoView();
     }
 
     render() {
