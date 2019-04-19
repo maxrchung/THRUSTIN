@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::vec::Vec;
 use std::{io, thread};
-use ws::{listen, util::Token, CloseCode, Handler, Handshake, Message, Result, Sender};
+use ws::{listen, CloseCode, Handler, Handshake, Message, Result, Sender};
 
 // Returns main site file
 #[get("/")]
@@ -22,22 +22,23 @@ fn file(file: PathBuf) -> Option<NamedFile> {
 // Specifies handler for processing an incoming websocket connection
 struct Connection {
     out: Sender,
-    commands: Arc<Mutex<VecDeque<(Token, String)>>>,
-    connections: Arc<Mutex<HashMap<Token, Sender>>>,
+    commands: Arc<Mutex<VecDeque<(u32, String)>>>,
+    connections: Arc<Mutex<HashMap<u32, Sender>>>,
+    uuid: u32
 }
 
 impl Handler for Connection {
     // Adds new connection to global connections
     fn on_open(&mut self, _: Handshake) -> Result<()> {
         let mut connections_lock = self.connections.lock().unwrap();
-        connections_lock.insert(self.out.token(), self.out.clone());
+        connections_lock.insert(self.uuid, self.out.clone());        
         Ok(())
     }
 
     // Adds message to queue for processing
     fn on_message(&mut self, msg: Message) -> Result<()> {
         let mut commands_lock = self.commands.lock().unwrap();
-        commands_lock.push_back((self.out.token(), msg.to_string()));
+        commands_lock.push_back((self.uuid, msg.to_string()));
         Ok(())
     }
 
@@ -54,8 +55,9 @@ impl Handler for Connection {
 // Main Networking component that public can use
 #[derive(Debug)]
 pub struct Networking {
-    commands: Arc<Mutex<VecDeque<(Token, String)>>>,
-    connections: Arc<Mutex<HashMap<Token, Sender>>>,
+    commands: Arc<Mutex<VecDeque<(u32, String)>>>,
+    connections: Arc<Mutex<HashMap<u32, Sender>>>,
+    uuid: Arc<Mutex<u32>>
 }
 
 impl Networking {
@@ -64,6 +66,8 @@ impl Networking {
         let mut communication = Networking {
             commands: Arc::new(Mutex::new(VecDeque::new())),
             connections: Arc::new(Mutex::new(HashMap::new())),
+            // Start at 1 so endless can be 0
+            uuid: Arc::new(Mutex::new(1))
         };
         communication.spawn();
         communication
@@ -83,18 +87,27 @@ impl Networking {
         // Websockets
         let commands_clone = Arc::clone(&self.commands);
         let connections_clone = Arc::clone(&self.connections);
+        let uuid_clone = Arc::clone(&self.uuid);
         thread::spawn(move || {
-            listen("0.0.0.0:3012", |out| Connection {
+            listen("0.0.0.0:3012", |out| 
+            Connection {
                 out: out,
                 commands: commands_clone.clone(),
                 connections: connections_clone.clone(),
+                uuid: {
+                    let mut uuid_lock = uuid_clone.lock().unwrap();
+                    let uuid = uuid_lock.clone();
+                    // Increment uuid
+                    *uuid_lock += 1;
+                    uuid
+                }
             })
             .unwrap()
         });
     }
 
     // Block and read from queue
-    pub fn read_message(&mut self) -> (Token, String) {
+    pub fn read_message(&mut self) -> (u32, String) {
         /*
                 match self.commands.lock() {
                     Ok(mut lock) => {
@@ -117,13 +130,13 @@ impl Networking {
     }
 
     // Send message to client with the corresponding token
-    pub fn send_message(&self, token: &Token, message: &str) {
+    pub fn send_message(&self, token: &u32, message: &str) {
         let connections_lock = self.connections.lock().unwrap();
         let sender = connections_lock.get(&token).unwrap();
         sender.send(message).unwrap();
     }
 
-    pub fn send_messages(&self, token: &Token, messages: Vec<String>) {
+    pub fn send_messages(&self, token: &u32, messages: Vec<String>) {
         let connections_lock = self.connections.lock().unwrap();
         let sender = connections_lock.get(&token).unwrap();
         let message = messages.join("<br/>");

@@ -1,6 +1,5 @@
 use crate::lobby;
 use crate::player;
-use ws::util::Token;
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -51,7 +50,7 @@ fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
 pub fn choose_name_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
-    players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
+    players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
 ) {
     let com = get_command(&input);
     match &*com {
@@ -82,7 +81,7 @@ fn list_choose_name_commands(pl: &player::Player) {
 pub fn out_of_lobby_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
-    players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
+    players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
@@ -134,7 +133,7 @@ fn list_out_commands(pl: &player::Player) {
 pub fn in_lobby_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
-    players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
+    players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
 ) {
     let com = get_command(&input);

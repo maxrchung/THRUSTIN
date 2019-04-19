@@ -17,22 +17,22 @@ use crate::player::{Player, PlayerState};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use ws::util::Token;
 
 const MAX_INPUT: usize = 6669;
 fn main() {
     let communication = Rc::new(RefCell::new(Networking::init()));
     let mut lobby_id = 1;
     let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
-    let mut players: HashMap<Token, Rc<RefCell<Player>>> = HashMap::new();
+    let mut players: HashMap<u32, Rc<RefCell<Player>>> = HashMap::new();
 
     let read = communication.clone();
 
+    let endless_uuid = 0;
     // Add endless lobby host dummy boi
-    players.insert(Token(72742069), Rc::new(RefCell::new(player::new_endless_host(communication.clone()))));
+    players.insert(endless_uuid, Rc::new(RefCell::new(player::new_endless_host(communication.clone()))));
 
     // Create Endless Lobby
-    lobby::Lobby::make_endless_lobby(&players.get(&Token(72742069)).unwrap().clone(), &mut 0, &mut lobbies);
+    lobby::Lobby::make_endless_lobby(&players.get(&endless_uuid).unwrap().clone(), &mut 0, &mut lobbies);
 
     loop {
         let (token, message) = read.borrow_mut().read_message();
@@ -41,7 +41,7 @@ fn main() {
         if let None = players.get(&token) {
             players.insert(
                 token.clone(),
-                Rc::new(RefCell::new(player::new(&token, communication.clone()))),
+                Rc::new(RefCell::new(player::new(token, communication.clone()))),
             );
         }
 
@@ -50,11 +50,11 @@ fn main() {
 }
 
 fn handle_input(
-    token: Token,
+    token: u32,
     input: String,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, lobby::Lobby>,
-    players: &mut HashMap<Token, Rc<RefCell<player::Player>>>,
+    players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
 ) {
     if input.len() > MAX_INPUT {
         let player = players.get(&token).unwrap().borrow();

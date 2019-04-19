@@ -1,7 +1,6 @@
 use crate::networking;
 use crate::thrust;
 use std::collections::HashMap;
-use ws::util::Token;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -19,7 +18,7 @@ pub enum PlayerState {
 
 #[derive(Clone, Debug)]
 pub struct Player {
-    pub token: ws::util::Token,
+    pub token: u32,
 
     //name of player
     pub name: std::string::String,
@@ -48,10 +47,10 @@ impl Player {
     }
 }
 
-pub fn new(token: &ws::util::Token, communication: Rc<RefCell<networking::Networking>>) -> Player {
+pub fn new(token: u32, communication: Rc<RefCell<networking::Networking>>) -> Player {
     Player {
-        token: token.clone(),
-        name: token.0.to_string(),
+        token: token,
+        name: token.to_string(),
         state: PlayerState::ChooseName,
         lobby: -1,
         deck: thrust::Deck::new(),
@@ -63,7 +62,7 @@ pub fn new(token: &ws::util::Token, communication: Rc<RefCell<networking::Networ
 
 pub fn new_endless_host(communication: Rc<RefCell<networking::Networking>>) -> Player {
     Player {
-        token: Token(72742069),
+        token: 0,
         name: "EndlessLobbyHostDoggo".to_string(),
         state: PlayerState::Playing,
         lobby: 0,
@@ -77,7 +76,7 @@ pub fn new_endless_host(communication: Rc<RefCell<networking::Networking>>) -> P
 pub fn set_name(
     input: std::vec::Vec<&str>,
     play: Rc<RefCell<Player>>,
-    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
     {
         let player = play.borrow();

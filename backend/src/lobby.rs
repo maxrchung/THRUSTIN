@@ -5,7 +5,6 @@ use rand::thread_rng;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use ws::util::Token;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum LobbyState {
@@ -47,11 +46,11 @@ pub struct Lobby {
     //current thrustee (card)
     pub current_thrustee: String,
 
-    pub current_thrusts: HashMap<Token, String>,
+    pub current_thrusts: HashMap<u32, String>,
     //maps thrust index to token (end me)
-    pub index_to_token: HashMap<i32, Token>,
+    pub index_to_token: HashMap<i32, u32>,
 
-    pub thrusted_players: Vec<Token>,
+    pub thrusted_players: Vec<u32>,
 
     pub thrustee_choices: Vec<String>,
 
@@ -121,14 +120,14 @@ impl Lobby {
     ///////////
     //private//
     ///////////
-    fn is_host(&self, player: &Token) -> bool {
-        (self.host.borrow().token == *player) && (self.host.borrow().name != "EndlessLobbyHostDoggo".to_string())
+    fn is_host(&self, player: u32) -> bool {
+        (self.host.borrow().token == player) && (self.host.borrow().name != "EndlessLobbyHostDoggo".to_string())
     }
 
-    fn search_token(&self, token: &Token) -> usize {
+    fn search_token(&self, token: u32) -> usize {
         for (i, pl) in self.list.iter().enumerate() {
             let tok = pl.borrow().token;
-            if tok == *token {
+            if tok == token {
                 return i;
             }
         }
@@ -223,7 +222,7 @@ impl Lobby {
 
     pub fn set_password(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
-        if !self.is_host(&pl.token) {
+        if !self.is_host(pl.token) {
             pl.send("only host sets password!!!");
             return;
         }
@@ -250,7 +249,7 @@ impl Lobby {
                 person = " (You)";
             }
 
-            let message = if self.is_host(&pl_i.token) {
+            let message = if self.is_host(pl_i.token) {
                 format!("{}: chief{}", name, person).to_string()
             } else {
                 format!("{}{}", name, person).to_string()
@@ -274,7 +273,7 @@ impl Lobby {
         info.push(format!("Players: {} / {}", self.list.len(), self.max));
         info.push(format!("Max points: {}", self.max_points));
 
-        if self.is_host(&pl.token) {
+        if self.is_host(pl.token) {
             info.push(format!("Pw: {}", self.pw));
         }
 
@@ -283,7 +282,7 @@ impl Lobby {
 
     pub fn point_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
-        if !self.is_host(&pl.token) {
+        if !self.is_host(pl.token) {
             pl.send("only host sets points!");
             return;
         }
@@ -309,7 +308,7 @@ impl Lobby {
 
     pub fn player_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
-        if !self.is_host(&pl.token) {
+        if !self.is_host(pl.token) {
             pl.send("only host sets MAXP LAYER!");
             return;
         }
@@ -340,7 +339,7 @@ impl Lobby {
 
     pub fn switch_host(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
-        if !self.is_host(&pl.token) {
+        if !self.is_host(pl.token) {
             pl.send("Only host can change the host!");
             return;
         }
@@ -371,7 +370,7 @@ impl Lobby {
 
     pub fn kick(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
-        if !self.is_host(&pl.token) {
+        if !self.is_host(pl.token) {
             pl.send("Only host can kick em!");
             return;
         }
@@ -612,7 +611,7 @@ impl Lobby {
         let (lob_id, name) = {
             let pl = pl_rc.borrow();
 
-            let pl_ind = self.search_token(&pl.token);
+            let pl_ind = self.search_token(pl.token);
 
             self.list.remove(pl_ind);
 
@@ -679,7 +678,7 @@ impl Lobby {
         {
             let pl = pl_rc.borrow();
 
-            if !self.is_host(&pl.token) {
+            if !self.is_host(pl.token) {
                 pl.send(&format!("Only host can start game!"));
                 return;
             }
@@ -920,7 +919,7 @@ impl Lobby {
 
                     let (chosen_thruster_pts, chosen_thruster_name) = {
                         // Assign picked thruster a point
-                        let tkn = self.search_token(self.index_to_token.get(&index).unwrap());
+                        let tkn = self.search_token(*self.index_to_token.get(&index).unwrap());
 
                         let (pts, name) = {
                             let mut chosen_thruster = self.list[tkn].borrow_mut();
@@ -1148,7 +1147,7 @@ pub fn list_lobby(pl_rc: Rc<RefCell<Player>>, lobbies: &mut HashMap<i32, Lobby>)
 
 pub fn list_all_players(
     pl_rc: Rc<RefCell<Player>>,
-    players: &mut HashMap<Token, Rc<RefCell<Player>>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
     let pl = pl_rc.borrow();
     let mut messages = Vec::new();
