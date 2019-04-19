@@ -251,7 +251,7 @@ impl Lobby {
             }
 
             let message = if self.is_host(&pl_i.token) {
-                format!("{}: host{}", name, person).to_string()
+                format!("{}: chief{}", name, person).to_string()
             } else {
                 format!("{}{}", name, person).to_string()
             };
