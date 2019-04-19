@@ -24,14 +24,14 @@ struct Connection {
     out: Sender,
     commands: Arc<Mutex<VecDeque<(u32, String)>>>,
     connections: Arc<Mutex<HashMap<u32, Sender>>>,
-    uuid: u32
+    uuid: u32,
 }
 
 impl Handler for Connection {
     // Adds new connection to global connections
     fn on_open(&mut self, _: Handshake) -> Result<()> {
         let mut connections_lock = self.connections.lock().unwrap();
-        connections_lock.insert(self.uuid, self.out.clone());        
+        connections_lock.insert(self.uuid, self.out.clone());
         Ok(())
     }
 
@@ -57,7 +57,7 @@ impl Handler for Connection {
 pub struct Networking {
     commands: Arc<Mutex<VecDeque<(u32, String)>>>,
     connections: Arc<Mutex<HashMap<u32, Sender>>>,
-    uuid: Arc<Mutex<u32>>
+    uuid: Arc<Mutex<u32>>,
 }
 
 impl Networking {
@@ -67,7 +67,7 @@ impl Networking {
             commands: Arc::new(Mutex::new(VecDeque::new())),
             connections: Arc::new(Mutex::new(HashMap::new())),
             // Start at 1 so endless can be 0
-            uuid: Arc::new(Mutex::new(1))
+            uuid: Arc::new(Mutex::new(1)),
         };
         communication.spawn();
         communication
@@ -89,8 +89,7 @@ impl Networking {
         let connections_clone = Arc::clone(&self.connections);
         let uuid_clone = Arc::clone(&self.uuid);
         thread::spawn(move || {
-            listen("0.0.0.0:3012", |out| 
-            Connection {
+            listen("0.0.0.0:3012", |out| Connection {
                 out: out,
                 commands: commands_clone.clone(),
                 connections: connections_clone.clone(),
@@ -100,7 +99,7 @@ impl Networking {
                     // Increment uuid
                     *uuid_lock += 1;
                     uuid
-                }
+                },
             })
             .unwrap()
         });

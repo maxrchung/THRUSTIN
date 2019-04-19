@@ -210,7 +210,7 @@ impl Default for Deck {
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
-            thrusters: thrusters.iter().map(ToString::to_string).collect()
+            thrusters: thrusters.iter().map(ToString::to_string).collect(),
         }
     }
 }

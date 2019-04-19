@@ -15,7 +15,7 @@ fn get_command(input: &Vec<&str>) -> String {
     return com;
 }
 
-// 
+//
 fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
     let mut table_html = String::from("<table class=\"table table-sm table-responsive w-auto\">");
     table_html.push_str("<tr>");

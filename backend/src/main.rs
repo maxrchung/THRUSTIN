@@ -29,10 +29,19 @@ fn main() {
 
     let endless_uuid = 0;
     // Add endless lobby host dummy boi
-    players.insert(endless_uuid, Rc::new(RefCell::new(player::new_endless_host(communication.clone()))));
+    players.insert(
+        endless_uuid,
+        Rc::new(RefCell::new(player::new_endless_host(
+            communication.clone(),
+        ))),
+    );
 
     // Create Endless Lobby
-    lobby::Lobby::make_endless_lobby(&players.get(&endless_uuid).unwrap().clone(), &mut 0, &mut lobbies);
+    lobby::Lobby::make_endless_lobby(
+        &players.get(&endless_uuid).unwrap().clone(),
+        &mut 0,
+        &mut lobbies,
+    );
 
     loop {
         let (token, message) = read.borrow_mut().read_message();
