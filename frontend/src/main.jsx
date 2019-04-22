@@ -27,9 +27,11 @@ class Client extends React.Component {
     constructor(props) {
         super(props);
 
+        this.handleClose = this.handleClose.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
         this.scrollToDummy = this.scrollToDummy.bind(this);
+        this.setMessage = this.setMessage.bind(this);
         this.updateMessageCounter = this.updateMessageCounter.bind(this);
 
         this.state = {
@@ -48,6 +50,11 @@ class Client extends React.Component {
             this.connection = new WebSocket("ws://localhost:3012")
         }
         this.connection.onmessage = this.handleMessage;
+        this.connection.onclose = this.handleClose;
+    }
+
+    handleClose() {
+        this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
     }
 
     handleKeyDown(e) {
@@ -59,10 +66,13 @@ class Client extends React.Component {
         }
     }
 
-
     handleMessage(e) {
+        this.setMessage(e.data);
+    }
+
+    setMessage(message) {
         this.setState({
-            messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={e.data} />)
+            messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={message} />)
         });
 
         this.scrollToDummy();
