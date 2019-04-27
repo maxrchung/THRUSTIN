@@ -50,7 +50,7 @@ class Client extends React.Component {
         else {
             this.connection = new WebSocket("ws://localhost:3012")
         }
-        this.connection.onmessage = this.handleMessage;
+        this.connection.onmessage = this.handleMessage; 
         this.connection.onclose = this.handleClose;
         this.connection.onerror = this.handleError;
     }
@@ -67,6 +67,9 @@ class Client extends React.Component {
         if (e.key == "Enter") {
             const command = e.target.value;
             this.connection.send(command);
+            this.setState({
+                messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
+            });
             e.target.value = "";
             this.scrollToDummy();
         }

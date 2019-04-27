@@ -117,15 +117,15 @@ impl Lobby {
             && (self.host.borrow().name != "EndlessLobbyHostDoggo".to_string())
     }
 
-    fn search_token(&self, token: u32) -> usize {
+    fn search_token(&self, token: u32) -> Option<usize> {
         for (i, pl) in self.list.iter().enumerate() {
             let tok = pl.borrow().token;
             if tok == token {
-                return i;
+                return Some(i);
             }
         }
 
-        self.list.len()
+        None
     }
 
     fn send_message(&self, message: &str) {
@@ -595,7 +595,7 @@ impl Lobby {
                 self.list.clear();
             }
             else {
-                let pl_ind = self.search_token(pl.token);
+                let pl_ind = self.search_token(pl.token).unwrap();
                 let next_ind = (pl_ind + 1) % self.list.len();
 
                 // Set up messages
@@ -936,20 +936,23 @@ impl Lobby {
 
                     let (chosen_thruster_pts, chosen_thruster_name) = {
                         // Assign picked thruster a point
-                        let tkn = self.search_token(*self.index_to_token.get(&index).unwrap());
+                        match self.search_token(*self.index_to_token.get(&index).unwrap()) {
+                            Some(tkn) => {
+                                let (pts, name) = {
+                                    let mut chosen_thruster = self.list[tkn].borrow_mut();
+                                    chosen_thruster.points += 1;
+                                    (chosen_thruster.points.clone(), chosen_thruster.name.clone())
+                                };
 
-                        let (pts, name) = {
-                            let mut chosen_thruster = self.list[tkn].borrow_mut();
-                            chosen_thruster.points += 1;
-                            (chosen_thruster.points.clone(), chosen_thruster.name.clone())
-                        };
-
-                        // Check if winner
-                        if pts >= self.max_points {
-                            self.handle_winner(tkn);
-                            return;
+                                // Check if winner
+                                if pts >= self.max_points {
+                                    self.handle_winner(tkn);
+                                    return;
+                                }
+                                (pts, name)
+                            }
+                            None => (0, String::from("THE GUY WHO LEFT (look imma be real it's easier right now for me to jam some placeholder text here than properly handle THRUSTERS who leave the game after THRUSTING yeah aite we're just gonna clear his points)"))
                         }
-                        (pts, name)
                     };
 
                     if restart {
@@ -971,7 +974,7 @@ impl Lobby {
                         let mut messages = common.clone();
 
                         messages.push(format!(
-                            "The winning THRUSTER, {} now has {} points! Watch out!<br/>",
+                            "The winning THRUSTER, {} now has {} point(s)! Watch out!<br/>",
                             &chosen_thruster_name, &chosen_thruster_pts
                         ));
 
