@@ -42,7 +42,7 @@ impl Player {
         self.comm.borrow().send_message(&self.token, message);
     }
 
-    pub fn send_multiple(&self, messages: Vec<String>) {
+    pub fn send_multiple(&self, messages: &Vec<String>) {
         self.comm.borrow().send_messages(&self.token, messages);
     }
 }

@@ -135,7 +135,7 @@ impl Networking {
         sender.send(message).unwrap();
     }
 
-    pub fn send_messages(&self, token: &u32, messages: Vec<String>) {
+    pub fn send_messages(&self, token: &u32, messages: &Vec<String>) {
         let connections_lock = self.connections.lock().unwrap();
         let sender = connections_lock.get(&token).unwrap();
         let message = messages.join("<br/>");
