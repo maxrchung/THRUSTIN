@@ -130,13 +130,13 @@ impl Lobby {
 
     fn send_message(&self, message: &str) {
         for pl in &self.list {
-            pl.borrow().send(&message);
+            pl.borrow().send_message(&message);
         }
     }
 
     fn send_messages(&self, messages: &Vec<String>) {
         for pl in &self.list {
-            pl.borrow().send_multiple(&messages);
+            pl.borrow().send_messages(&messages);
         }
     }
 
@@ -202,7 +202,7 @@ impl Lobby {
         new_lobby.list.push(pl_rc.clone());
 
         lobbies.insert(lobby_id.clone(), new_lobby.clone());
-        pl.send(&format!("Created lobby: {}", lobby_id));
+        pl.send_message(&format!("Created lobby: {}", lobby_id));
 
         *lobby_id = *lobby_id + 1;
     }
@@ -210,12 +210,12 @@ impl Lobby {
     pub fn set_password(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send("only host sets password!!!");
+            pl.send_message("only host sets password!!!");
             return;
         }
 
         if input.len() < 2 {
-            pl.send("?? what's the pass boss??");
+            pl.send_message("?? what's the pass boss??");
             return;
         }
 
@@ -249,7 +249,7 @@ impl Lobby {
             messages.push(String::from("There's no players lmfao"));
         }
 
-        pl.send_multiple(&messages);
+        pl.send_messages(&messages);
     }
 
     pub fn info(&self, pl_rc: Rc<RefCell<Player>>) {
@@ -264,81 +264,81 @@ impl Lobby {
             info.push(format!("Pw: {}", self.pw));
         }
 
-        pl.send_multiple(&info);
+        pl.send_messages(&info);
     }
 
     pub fn point_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send("only host sets points!");
+            pl.send_message("only host sets points!");
             return;
         }
 
         if input.len() < 2 {
-            pl.send("ya gotta set the new limit");
+            pl.send_message("ya gotta set the new limit");
             return;
         }
 
         match input[1].to_string().parse::<u32>() {
             Ok(max) => {
                 if max == 0 {
-                    pl.send("bro dont make it 0 wtf man");
+                    pl.send_message("bro dont make it 0 wtf man");
                     return;
                 }
                 self.max_points = max;
-                pl.send(&format!("max points set to {}", self.max_points));
+                pl.send_message(&format!("max points set to {}", self.max_points));
             }
 
-            _ => pl.send(&"only numbers dude!!!"),
+            _ => pl.send_message(&"only numbers dude!!!"),
         }
     }
 
     pub fn player_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send("only host sets MAXP LAYER!");
+            pl.send_message("only host sets MAXP LAYER!");
             return;
         }
 
         if input.len() < 2 {
-            pl.send("ya gotta set the new limit");
+            pl.send_message("ya gotta set the new limit");
             return;
         }
 
         match input[1].to_string().parse::<usize>() {
             Ok(max) => {
                 if max > 64 {
-                    pl.send(&format!("woah thats 2many people chill! haha"));
+                    pl.send_message(&format!("woah thats 2many people chill! haha"));
                     return;
                 }
 
                 if max < self.list.len() {
-                    pl.send(&format!("too many players in here right now man!"));
+                    pl.send_message(&format!("too many players in here right now man!"));
                     return;
                 }
                 self.max = max;
-                pl.send(&format!("max players set to {}", self.max));
+                pl.send_message(&format!("max players set to {}", self.max));
             }
 
-            _ => pl.send(&"only numbers dude!!!"),
+            _ => pl.send_message(&"only numbers dude!!!"),
         }
     }
 
     pub fn switch_host(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send("Only host can change the host!");
+            pl.send_message("Only host can change the host!");
             return;
         }
 
         if input.len() < 2 {
-            pl.send("Who's the new host tho");
+            pl.send_message("Who's the new host tho");
             return;
         }
 
         let new_host = input[1];
         if self.host.borrow().name == new_host {
-            pl.send("You're already host!!");
+            pl.send_message("You're already host!!");
             return;
         }
 
@@ -346,30 +346,30 @@ impl Lobby {
             let players = players_.borrow();
             if players.name == new_host {
                 self.host = players_.clone();
-                players.send("You are now host!");
-                pl.send(&format!("{} is now host!", players.name));
+                players.send_message("You are now host!");
+                pl.send_message(&format!("{} is now host!", players.name));
                 return;
             }
         }
 
-        pl.send("Player not in lobby.");
+        pl.send_message("Player not in lobby.");
     }
 
     pub fn kick(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send("Only host can kick em!");
+            pl.send_message("Only host can kick em!");
             return;
         }
 
         if input.len() < 2 {
-            pl.send("who we kickkin");
+            pl.send_message("who we kickkin");
             return;
         }
 
         let kick = input[1];
         if self.host.borrow().name == kick {
-            pl.send("u cant kick ursel!!");
+            pl.send_message("u cant kick ursel!!");
             return;
         }
 
@@ -388,8 +388,8 @@ impl Lobby {
                 let mut player = self.list[kick_ind as usize].borrow_mut();
                 player.state = PlayerState::OutOfLobby;
                 player.lobby = -1;
-                player.send("ur r kicked!!");
-                pl.send(&format!("u rly kicedk {} out!", player.name));
+                player.send_message("ur r kicked!!");
+                pl.send_message(&format!("u rly kicedk {} out!", player.name));
             }
 
             self.list.remove(kick_ind as usize);
@@ -397,7 +397,7 @@ impl Lobby {
             return;
         }
 
-        pl.send("Player not in lobby.");
+        pl.send_message("Player not in lobby.");
     }
 
     pub fn handle_join_cases(
@@ -440,7 +440,7 @@ impl Lobby {
                 pl.deck.thrusters.push(card.clone());
             } else {
                 lob.restart_game();
-                pl.send("Not enough THRUSTERS to distribute");
+                pl.send_message("Not enough THRUSTERS to distribute");
                 return None;
             }
         }
@@ -453,7 +453,7 @@ impl Lobby {
             let mut messages =
                 vec!["Welcome to the 『Endless Lobby』, big doggo. You lucky, family, you are THRUSTEE!!!!.. . Choose now...    .".to_string()];
             messages.extend(lob.print_thrustee_choices());
-            pl.send_multiple(&messages);
+            pl.send_messages(&messages);
             pl.lobby = lob.id;
             lob.list.push(pl_rc.clone());
             return None; //dude lmao
@@ -479,7 +479,7 @@ impl Lobby {
         if let Some(mut lob) = lobby.get_mut(&lobby_id) {
             // Lobby full check
             if lob.list.len() >= lob.max {
-                pl.send("bro this lobbBY is FULLLLL!!");
+                pl.send_message("bro this lobbBY is FULLLLL!!");
                 return;
             }
 
@@ -504,9 +504,9 @@ impl Lobby {
             // adding the new player to lobby
             pl.lobby = lob.id;
             lob.list.push(pl_rc.clone());
-            pl.send_multiple(&messages);
+            pl.send_messages(&messages);
         } else {
-            pl.send("Lobby does not exist.");
+            pl.send_message("Lobby does not exist.");
         }
     }
 
@@ -517,7 +517,7 @@ impl Lobby {
     ) {
         if input.len() < 2 {
             let pl = pl_rc.borrow();
-            pl.send("Lobby name required!");
+            pl.send_message("Lobby name required!");
             return;
         }
 
@@ -534,17 +534,17 @@ impl Lobby {
                 if let Some(mut lob) = lobby.get_mut(&lobby_id) {
                     // Lobby full check
                     if lob.list.len() >= lob.max {
-                        pl.send("bro this lobbBY is FULLLLL!!");
+                        pl.send_message("bro this lobbBY is FULLLLL!!");
                         return;
                     }
 
                     //Lobby Password Check
                     if lob.pw != "" {
                         if input.len() < 3 {
-                            pl.send("Ya need a password BR)");
+                            pl.send_message("Ya need a password BR)");
                             return;
                         } else if lob.pw != input[2] {
-                            pl.send("loll wrong pw haha");
+                            pl.send_message("loll wrong pw haha");
                             return;
                         }
                     }
@@ -573,15 +573,15 @@ impl Lobby {
                     // adding the new player to lobby
                     pl.lobby = lob.id;
                     lob.list.push(pl_rc.clone());
-                    pl.send_multiple(&messages);
+                    pl.send_messages(&messages);
                 } else {
-                    pl.send("Lobby does not exist.");
+                    pl.send_message("Lobby does not exist.");
                 }
             }
 
             _ => {
                 let pl = pl_rc.borrow();
-                pl.send("nibba that is a invalid input my nibba")
+                pl.send_message("nibba that is a invalid input my nibba")
             } //i love rust
         }
     }
@@ -638,10 +638,10 @@ impl Lobby {
                         host_messages.last_mut().unwrap().push_str("<br/>");
                         // Notify chief of choices
                         host_messages.extend(self.print_thrustee_choices());
-                        pl.send_multiple(&host_messages);
+                        pl.send_messages(&host_messages);
                     }
                     else {
-                        pl.send_multiple(&messages);
+                        pl.send_messages(&messages);
                     }
                 }
             }
@@ -651,16 +651,16 @@ impl Lobby {
         let mut pl_mut = pl_rc.borrow_mut();
         pl_mut.lobby = -1;
         pl_mut.state = PlayerState::OutOfLobby;
-        pl_mut.send("You left the lobby okay!");
+        pl_mut.send_message("You left the lobby okay!");
     }
 
     pub fn toggle_house(&mut self, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         self.use_house = !self.use_house;
         if self.use_house {
-            pl.send(&"Now using house cards!");
+            pl.send_message(&"Now using house cards!");
         } else {
-            pl.send(&"No longer using house cards!...");
+            pl.send_message(&"No longer using house cards!...");
         }
     }
 
@@ -696,7 +696,7 @@ impl Lobby {
             let pl = pl_rc.borrow();
 
             if !self.is_host(pl.token) {
-                pl.send(&format!("Only host can start game!"));
+                pl.send_message(&format!("Only host can start game!"));
                 return;
             }
         }
@@ -732,7 +732,7 @@ impl Lobby {
                 } else {
                     self.host
                         .borrow()
-                        .send(&"Chief, there ain't enough cards to start");
+                        .send_message(&"Chief, there ain't enough cards to start");
                     return;
                 }
             }
@@ -742,9 +742,9 @@ impl Lobby {
                 let mut messages =
                     vec!["You are the THRUSTEE. Choose NOW..........<br/>".to_string()];
                 messages.extend(self.print_thrustee_choices());
-                pl.send_multiple(&messages);
+                pl.send_messages(&messages);
             } else {
-                pl.send("You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!");
+                pl.send_message("You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!");
             }
         }
     }
@@ -798,7 +798,7 @@ impl Lobby {
                 vec!["YOOOOOOO!! Endless lobby just ran out of cards. Don't worry, though! EndlessLobbyHostDoggo helped out and replenished the cards!".to_string(),
                     "You are the THRUSTEE of Endless Lobby! Choose now....".to_string()];
             messages.extend(self.print_thrustee_choices());
-            pl.send_multiple(&messages);
+            pl.send_messages(&messages);
         }
     }
 
@@ -830,7 +830,7 @@ impl Lobby {
             let pl = pl_rc.borrow();
 
             if input.len() < 2 {
-                pl.send("ya need to pick a NUMERIC, Boy");
+                pl.send_message("ya need to pick a NUMERIC, Boy");
                 return;
             }
         }
@@ -872,18 +872,18 @@ impl Lobby {
                             messages.push(
                                 "get Ready to decide best THRUSTER for THRUSTING!".to_string(),
                             );
-                            p.send_multiple(&messages);
+                            p.send_messages(&messages);
                         } else {
                             messages.extend(get_thrusters(&p.deck.thrusters));
-                            p.send_multiple(&messages);
+                            p.send_messages(&messages);
                         }
                     }
                 } else {
-                    pl_rc.borrow().send("That shit's out of bound bro");
+                    pl_rc.borrow().send_message("That shit's out of bound bro");
                 }
             }
             _ => {
-                pl_rc.borrow().send(
+                pl_rc.borrow().send_message(
                     "That is an invalid parameter my chieftain, use an index instead dawggo.",
                 );
             }
@@ -894,7 +894,7 @@ impl Lobby {
         {
             let pl = pl_rc.borrow();
             if input.len() < 2 {
-                pl.send("ya need to pick a numbert boi");
+                pl.send_message("ya need to pick a numbert boi");
                 return;
             }
         }
@@ -990,16 +990,16 @@ impl Lobby {
                         } else {
                             messages.push("get rdy to THRUST.....".to_string());
                         }
-                        pl.borrow().send_multiple(&messages);
+                        pl.borrow().send_messages(&messages);
                     }
                 } else {
-                    pl_rc.borrow().send("That shit's out of bound bro");
+                    pl_rc.borrow().send_message("That shit's out of bound bro");
                 }
             }
             _ => {
                 pl_rc
                     .borrow()
-                    .send("That is an invalid parameter, use an index instead");
+                    .send_message("That is an invalid parameter, use an index instead");
             }
         };
     }
@@ -1009,7 +1009,7 @@ impl Lobby {
             let pl = pl_rc.borrow();
             // Check number of inputs
             if input.len() < 2 {
-                pl.send(&"Index required!");
+                pl.send_message(&"Index required!");
                 return;
             }
         }
@@ -1026,7 +1026,7 @@ impl Lobby {
                     let num_thrusters = input.len() as i32 - 1;
                     let num_underscore = thrust::Deck::count_underscore(&self.current_thrustee);
                     if num_thrusters != num_underscore {
-                        pl.send("bro that ain't the right number of THRUSTERS");
+                        pl.send_message("bro that ain't the right number of THRUSTERS");
                         return;
                     }
                     let mut indexes: Vec<i32> = Vec::new();
@@ -1035,12 +1035,12 @@ impl Lobby {
                         let dex = input[i].parse::<i32>().unwrap();
                         if indexes.contains(&dex) {
                             // Check if dupes
-                            pl.send("y'ain't allowed to thrust duplicate THRUSTERS broski");
+                            pl.send_message("y'ain't allowed to thrust duplicate THRUSTERS broski");
                             return;
                         }
                         indexes.push(dex);
                         if dex >= pl.deck.thrusters.len() as i32 || index < 0 {
-                            pl.send("That shit's out of bound bro");
+                            pl.send_message("That shit's out of bound bro");
                             return;
                         }
                     }
@@ -1048,7 +1048,7 @@ impl Lobby {
                     // Check if thrusted
                     for player_token in &self.thrusted_players {
                         if pl.token == *player_token {
-                            pl.send("You have already THRUSTED, you cannot THRUST again.");
+                            pl.send_message("You have already THRUSTED, you cannot THRUST again.");
                             return;
                         }
                     }
@@ -1109,7 +1109,7 @@ impl Lobby {
             _ => {
                 pl_rc
                     .borrow()
-                    .send("That is an invalid parameter, use an index instead");
+                    .send_message("That is an invalid parameter, use an index instead");
             }
         };
     }
@@ -1124,7 +1124,7 @@ impl Lobby {
             messages.push(format!("{}: {}", player.name, player.points));
         }
 
-        pl.send_multiple(&messages);
+        pl.send_messages(&messages);
     }
 }
 
@@ -1161,7 +1161,7 @@ pub fn list_lobby(pl_rc: Rc<RefCell<Player>>, lobbies: &mut HashMap<i32, Lobby>)
         messages.push("No lobbies bro...".to_string());
     }
 
-    pl.send_multiple(&messages);
+    pl.send_messages(&messages);
 }
 
 pub fn list_all_players(
@@ -1186,7 +1186,7 @@ pub fn list_all_players(
 
         messages.push(message);
     }
-    pl.send_multiple(&messages);
+    pl.send_messages(&messages);
 }
 
 pub fn handle_thrusteer_commands(
@@ -1213,7 +1213,7 @@ pub fn handle_thrusteer_commands(
         let quotation = "\"".to_string().chars().last().unwrap();
 
         if beginning != quotation || ending != quotation {
-            pl.send("Please surround the THRUST with quotes.");
+            pl.send_message("Please surround the THRUST with quotes.");
             return;
         }
     } else {
@@ -1239,7 +1239,7 @@ pub fn add_thruster(
     new_item: String,
 ) {
     pl.personal_deck.add_thruster(&new_item);
-    pl.send(&format!("Added \"{}\" to THRUSTERS!", &new_item));
+    pl.send_message(&format!("Added \"{}\" to THRUSTERS!", &new_item));
 
     if let Some(lob) = lobby.get_mut(&pl.lobby) {
         if lob.state == LobbyState::Waiting {
@@ -1254,7 +1254,7 @@ pub fn add_thrustee(
     new_item: String,
 ) {
     pl.personal_deck.add_thrustee(&new_item);
-    pl.send(&format!("Added \"{}\" to THRUSTEES!", &new_item));
+    pl.send_message(&format!("Added \"{}\" to THRUSTEES!", &new_item));
 
     if let Some(lob) = lobby.get_mut(&pl.lobby) {
         if lob.state == LobbyState::Waiting {
@@ -1276,7 +1276,7 @@ pub fn display_deck(pl: std::cell::RefMut<Player>) {
         messages.push(format!("{}. {}", i + 1, &thruster).clone());
     }
 
-    pl.send_multiple(&messages);
+    pl.send_messages(&messages);
 }
 
 pub fn clear_pers_deck(pl_rc: Rc<RefCell<Player>>, lobby: &mut HashMap<i32, Lobby>) {
@@ -1290,5 +1290,5 @@ pub fn clear_pers_deck(pl_rc: Rc<RefCell<Player>>, lobby: &mut HashMap<i32, Lobb
 
     pl.personal_deck = thrust::Deck::new();
 
-    pl.send("Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
+    pl.send_message("Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
 }

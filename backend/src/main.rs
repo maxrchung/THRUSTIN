@@ -67,7 +67,7 @@ fn handle_input(
 ) {
     if input.len() > MAX_INPUT {
         let player = players.get(&token).unwrap().borrow();
-        player.send("ok bro you are typing way too much lmao");
+        player.send_message("ok bro you are typing way too much lmao");
         return;
     }
 

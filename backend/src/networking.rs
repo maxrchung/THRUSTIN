@@ -107,18 +107,6 @@ impl Networking {
 
     // Block and read from queue
     pub fn read_message(&mut self) -> (u32, String) {
-        /*
-                match self.commands.lock() {
-                    Ok(mut lock) => {
-                        while None == lock.pop_front(){}
-
-                        return lock.pop_front().unwrap();
-                    },
-                    Err(uh_oh) => {
-
-                    }
-                };
-        */
         let mut length = 0;
         while length == 0 {
             let commands_lock = self.commands.lock().unwrap();

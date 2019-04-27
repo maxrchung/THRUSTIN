@@ -38,11 +38,11 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn send(&self, message: &str) {
+    pub fn send_message(&self, message: &str) {
         self.comm.borrow().send_message(&self.token, message);
     }
 
-    pub fn send_multiple(&self, messages: &Vec<String>) {
+    pub fn send_messages(&self, messages: &Vec<String>) {
         self.comm.borrow().send_messages(&self.token, messages);
     }
 }
@@ -81,7 +81,7 @@ pub fn set_name(
     {
         let player = play.borrow();
         if input.len() < 2 {
-            player.send("You need a name!");
+            player.send_message("You need a name!");
             return;
         }
     }
@@ -92,7 +92,7 @@ pub fn set_name(
             let name = &pl.borrow().name;
             if &p_name == name {
                 play.borrow()
-                    .send("yo that name exists ya gotta pick something else aight?");
+                    .send_message("yo that name exists ya gotta pick something else aight?");
                 return;
             }
         }
@@ -101,11 +101,11 @@ pub fn set_name(
     {
         let mut pl = play.borrow_mut();
         pl.name = p_name.clone();
-        pl.send(&format!("Name set to: {}", &pl.name));
+        pl.send_message(&format!("Name set to: {}", &pl.name));
 
         if pl.state == PlayerState::ChooseName {
             pl.state = PlayerState::OutOfLobby;
-            pl.send(&format!(
+            pl.send_message(&format!(
                 "ok {}, now ur redy 2 THRUST, try '.help' for sum more information",
                 &pl.name
             ));
