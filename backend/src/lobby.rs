@@ -114,7 +114,7 @@ impl Lobby {
     ///////////
     fn is_host(&self, player: u32) -> bool {
         (self.host.borrow().token == player)
-            && (self.host.borrow().name != "EndlessLobbyHostDoggo".to_string())
+            && (self.host.borrow().name != "EndlessLobbyChiefDoggo".to_string())
     }
 
     fn search_token(&self, token: u32) -> Option<usize> {
@@ -210,7 +210,7 @@ impl Lobby {
     pub fn set_password(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send_message("only host sets password!!!");
+            pl.send_message("only chief sets password!!!");
             return;
         }
 
@@ -270,7 +270,7 @@ impl Lobby {
     pub fn point_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send_message("only host sets points!");
+            pl.send_message("only chief sets points!");
             return;
         }
 
@@ -296,7 +296,7 @@ impl Lobby {
     pub fn player_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send_message("only host sets MAXP LAYER!");
+            pl.send_message("only chief sets MAXP LAYER!");
             return;
         }
 
@@ -327,18 +327,18 @@ impl Lobby {
     pub fn switch_host(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send_message("Only host can change the host!");
+            pl.send_message("Only chief can change the chief!");
             return;
         }
 
         if input.len() < 2 {
-            pl.send_message("Who's the new host tho");
+            pl.send_message("Who's the new chief tho");
             return;
         }
 
         let new_host = input[1];
         if self.host.borrow().name == new_host {
-            pl.send_message("You're already host!!");
+            pl.send_message("You're already chief!!");
             return;
         }
 
@@ -346,8 +346,8 @@ impl Lobby {
             let players = players_.borrow();
             if players.name == new_host {
                 self.host = players_.clone();
-                players.send_message("You are now host!");
-                pl.send_message(&format!("{} is now host!", players.name));
+                players.send_message("You are now chief!");
+                pl.send_message(&format!("{} is now chief!", players.name));
                 return;
             }
         }
@@ -358,12 +358,12 @@ impl Lobby {
     pub fn kick(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
-            pl.send_message("Only host can kick em!");
+            pl.send_message("Only chief can kick em!");
             return;
         }
 
         if input.len() < 2 {
-            pl.send_message("who we kickkin");
+            pl.send_message("who we kickkin? TELL ME!");
             return;
         }
 
@@ -378,22 +378,12 @@ impl Lobby {
             let players = players.borrow();
             if players.name == kick {
                 kick_ind = i as i32;
-
                 break;
             }
         }
 
         if kick_ind >= 0 {
-            {
-                let mut player = self.list[kick_ind as usize].borrow_mut();
-                player.state = PlayerState::OutOfLobby;
-                player.lobby = -1;
-                player.send_message("ur r kicked!!");
-                pl.send_message(&format!("u rly kicedk {} out!", player.name));
-            }
-
-            self.list.remove(kick_ind as usize);
-
+            self.leave_lobby(self.list[kick_ind as usize].clone());
             return;
         }
 
@@ -795,7 +785,7 @@ impl Lobby {
             let mut pl = self.list[self.thrustee].borrow_mut();
             pl.state = PlayerState::Choosing;
             let mut messages =
-                vec!["YOOOOOOO!! Endless lobby just ran out of cards. Don't worry, though! EndlessLobbyHostDoggo helped out and replenished the cards!".to_string(),
+                vec!["YOOOOOOO!! Endless lobby just ran out of cards. Don't worry, though! EndlessLobbyChiefDoggo helped out and replenished the cards!".to_string(),
                     "You are the THRUSTEE of Endless Lobby! Choose now....".to_string()];
             messages.extend(self.print_thrustee_choices());
             pl.send_messages(&messages);
@@ -809,7 +799,7 @@ impl Lobby {
     }
 
     pub fn restart_game(&mut self) {
-        if self.host.borrow().name != "EndlessLobbyHostDoggo".to_string() {
+        if self.host.borrow().name != "EndlessLobbyChiefDoggo".to_string() {
             self.clear_game();
             self.send_message(&"Chief called and he said we're outta cards. Game has restarted and put into waiting state.");
         } else {

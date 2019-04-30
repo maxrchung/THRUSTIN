@@ -228,6 +228,8 @@ pub fn playing_commands(
 
         ".thrust" | ".t" => lobby.handle_thrust(input, pl),
 
+        ".kick" | ".k" => lobby.kick(input, pl),
+
         _ => pl.borrow().send_message("Bruh that's an invalid command."),
     }
 }
@@ -240,6 +242,7 @@ fn list_playing_commands(pl: &player::Player) {
             (".leave", ".l", "Goodbye..."),
             (".points", ".p", "See who's got the points in the lobby."),
             (".THRUST 0", ".t 0", "THRUST your first THRUSTER in baby."),
+            (".kick GUY_MAN_01", ".k GUY_MAN_01", "(chief-only) Kick GUY_MAN_01 from your lobby..."),
         ])
     ]);
 }
@@ -263,6 +266,8 @@ pub fn choosing_commands(
 
         ".thrust" | ".t" => lobby.choose(input, pl),
 
+        ".kick" | ".k" => lobby.kick(input, pl),
+
         _ => pl.borrow().send_message("Brother that is an invalid command."),
     }
 }
@@ -275,6 +280,7 @@ fn list_choosing_commands(pl: &player::Player) {
             (".leave", ".l", "This shall be farewell, for now..."),
             (".points", ".p", "See who's got the points in the lobby."),
             (".THRUST 2", ".t 2", "Choose THRUSTEE at index 2 to use."),
+            (".kick BOY_MAN_01", ".k BOY_MAN_01", "(chief-only) Destroy BOY_MAN_01 from your lobby..."),
         ])
     ]);
 }
@@ -298,6 +304,8 @@ pub fn deciding_commands(
 
         ".thrust" | ".t" => lobby.decide(input, pl),
 
+        ".kick" | ".k" => lobby.kick(input, pl),
+
         _ => pl.borrow().send_message("Bro! That's an invalid command."),
     }
 }
@@ -310,6 +318,7 @@ fn list_deciding_commands(pl: &player::Player) {
             (".leave", ".l", "Farewell friend..."),
             (".points", ".p", "See who's got the points in the lobby."),
             (".THRUST 1", ".t 1", "You've made your decision. THRUSTER at index 1 is the best one."),
+            (".kick MAN_BOY_01", ".k MAN_BOY_01", "(chief-only) Discard MAN_BOY_01 from your lobby..."),
         ])
     ]);
 }
