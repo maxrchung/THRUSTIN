@@ -239,6 +239,7 @@ fn list_playing_commands(pl: &player::Player) {
         String::from("Great. Now you're in the phase where you are a THRUSTER. In this state, you can THRUST one of your THRUSTER options into the THRUSTEE. Make sure it's a good one!"),
         generate_table(vec![
             (".help", ".h", "this is it chief"),
+            (".info", ".i", "Look at your lobby's settings for some info(rmation)."),
             (".leave", ".l", "Goodbye..."),
             (".points", ".p", "See who's got the points in the lobby."),
             (".THRUST 0", ".t 0", "THRUST your first THRUSTER in baby."),
@@ -260,6 +261,8 @@ pub fn choosing_commands(
     match &*com {
         ".help" | ".h" => list_choosing_commands(&pl.borrow()),
 
+        ".info" | ".i" => lobby.info(pl),
+
         ".leave" | ".l" => leave_lobby(pl, lobbies),
 
         ".points" | ".p" => lobby.display_points(pl),
@@ -277,6 +280,7 @@ fn list_choosing_commands(pl: &player::Player) {
         String::from("Okay you're a THRUSTEE now. First thing you've gotta do is choose a great THRUSTEE that other THRUSTERS can THRUST into. Make sure it's a juicy one!"),
         generate_table(vec![
             (".help", ".h", "this is it chief"),
+            (".info", ".i", "Observe the information data relevant to your lobby's configurations"),
             (".leave", ".l", "This shall be farewell, for now..."),
             (".points", ".p", "See who's got the points in the lobby."),
             (".THRUST 2", ".t 2", "Choose THRUSTEE at index 2 to use."),
@@ -298,6 +302,8 @@ pub fn deciding_commands(
     match &*com {
         ".help" | ".h" => list_deciding_commands(&pl.borrow()),
 
+        ".info" | ".i" => lobby.info(pl),
+
         ".leave" | ".l" => leave_lobby(pl, lobbies),
 
         ".points" | ".p" => lobby.display_points(pl),
@@ -315,6 +321,7 @@ fn list_deciding_commands(pl: &player::Player) {
         String::from("Yeah guy it's time for you to decide on the best THRUSTER. Pick the one that you like the best. Trust your head and your gut. You can do it. I believe in you."),
         generate_table(vec![
             (".help", ".h", "this is it chief"),
+            (".info", ".i", "Browse the inherent settings that have been configured in the presence of this lobby's settings existence."),
             (".leave", ".l", "Farewell friend..."),
             (".points", ".p", "See who's got the points in the lobby."),
             (".THRUST 1", ".t 1", "You've made your decision. THRUSTER at index 1 is the best one."),
@@ -336,6 +343,8 @@ pub fn waiting_commands(
     match &*com {
         ".help" | ".h" => list_waiting_commands(&pl.borrow()),
 
+        ".info" | ".i" => lobby.info(pl),
+
         ".points" | ".p" => lobby.display_points(pl),
 
         ".leave" | ".l" => leave_lobby(pl, lobbies),
@@ -343,6 +352,8 @@ pub fn waiting_commands(
         ".thrust" | ".t" => pl
             .borrow()
             .send_message("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),
+
+        ".kick" | ".k" => lobby.kick(input, pl),
 
         _ => pl.borrow().send_message("Bruh... that's an invalid command."),
     }
@@ -353,9 +364,11 @@ fn list_waiting_commands(pl: &player::Player) {
         String::from("Aite my dude you needa chill and wait for the THRUSTEE to choose a good THRUSTEE to be THRUSTED with."),
         generate_table(vec![
             (".help", ".h", "this is it chief"),
+            (".info", ".i", "Wondering... what is the relevancy of the configurations to do with this lobby's present status of being set."),
             (".leave", ".l", "The distance between us shall increase... metaphorically..."),
             (".points", ".p", "See who's got the points in the lobby."),
             (".THRUST", ".t", "This doesn't actually do anything. We're just here to let you know you can't THRUST."),
+            (".kick SAMPLE_USER_000666", ".k SAMPLE_USER_000666", "(chief-only) Eliminate SAMPLE_USER_000666 from your lobby..."),
         ])
     ]);
 }
