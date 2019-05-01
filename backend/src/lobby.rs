@@ -912,8 +912,8 @@ impl Lobby {
                         let mut messages = common.clone();
 
                         messages.push(format!(
-                            "The winning THRUSTER, {} now has {} point(s)! Watch out!<br/>",
-                            &chosen_thruster_name, &chosen_thruster_pts
+                            "The winning THRUSTER, {} now has {}/{} point(s)! Watch out!<br/>",
+                            &chosen_thruster_name, &chosen_thruster_pts, self.max_points
                         ));
 
                         // If THRUSTEE, then set him up to be choosing next shit
