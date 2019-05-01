@@ -154,7 +154,19 @@ impl Default for Deck {
             "dying lol (epic yeet!)",
             "ass flesh",
             "water the plants",
-            "the feel when you're drinking boba but suck the straw too hard and choke on boba"
+            "the feel when you're drinking boba but suck the straw too hard and choke on boba",
+            "vanilla ice cream, literally the most vanilla, plain, boring thing in the world",
+            "NTR",
+            "yeah I like getting cucked",
+            "taking 5 dicks up the ass",
+            "taking 5 dicks up the butt",
+            "hindsight is 2020",
+            "holy shit it’s 2019 i’m gay as fk",
+            "the THRUSTIN dustin is a home-made double ended butthole with a moustache attached to it so two gay dudes can bone it while gazing deeply into each others eyes and cum on each others dick head",
+            "THRUSTIN",
+            "shut up",
+            "camellia",
+            "in a hot minute",
         ];
 
         let thrustees = vec![
@@ -206,7 +218,21 @@ impl Default for Deck {
             "Hi, I'm a doctor with a PhD, and I'd like to tell you about the _____ epidemic.",
             "Children are _____ in the world, why are you wasting your time _____?",
             "Dead _____ give(s) me the weirdest boner?",
-            "When I die, make sure to _____"
+            "When I die, make sure to _____",
+            "I like _____, but I love _____.",
+            "When I _____, I tend to _____.",
+            "If _____ happens, you know shit’s about to _____.",
+            "Monstrata will rank Dualive in 2020. _____.",
+            "_____.",
+            "_____ _____.",
+            "_____? Yeah that’ll do it, chief.",
+            "Chief called, he said that _____.",
+            "Hello ^^! Please describe me in one THRUST 😊: _____.",
+            "Just _____ 4Head.",
+            "Something I would never say, like, ever: _____.",
+            "Hey man, sorry I missed your message, I was cooking up some  _____.",
+            "I’ll tell you about _____ in 10 years.",
+            "Yeah, I’ll be writing about _____ in my diary for the next 6 months.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),

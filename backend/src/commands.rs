@@ -174,8 +174,6 @@ pub fn in_lobby_commands(
 
         ".password" | ".pa" => lobby.set_password(input, pl),
 
-        ".players" | ".pl" => lobby.player_max(input, pl),
-
         ".points" | ".po" => lobby.point_max(input, pl),
 
         ".start" | ".s" => lobby.start_game(pl),
