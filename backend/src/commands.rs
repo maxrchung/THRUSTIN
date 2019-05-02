@@ -174,6 +174,8 @@ pub fn in_lobby_commands(
 
         ".password" | ".pa" => lobby.set_password(input, pl),
 
+        ".players" | ".pl" => lobby.player_max(input, pl),
+
         ".points" | ".po" => lobby.point_max(input, pl),
 
         ".start" | ".s" => lobby.start_game(pl),
@@ -200,6 +202,7 @@ fn list_in_commands(pl: &player::Player) {
             (".house", ".ho", "(chief-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
             (".kick YOLOSWAGGER69", ".k YOLOSWAGGER69", "(chief-only) Someone causing you trouble? Toxicity got you down? Well if you are a chief you can kick YOLOSWAGGER69 out of your lobby using this command."),
             (".password passwordspelledbackwards123420", ".pa passwordspelledbackwards123420", "(chief-only) Sometimes you want to protect your lobby's privacy by setting your lobby's password to passwordspelledbackwards123420"),
+            (".players 420", ".pl 420", "(chief-only) Okay, how many players do you want to allow in your lobby? 420?"),
             (".points 1", ".po 1", "(chief-only) Okay, how many points do you want to go to? 1? Don't do 1... cause then the game will end really fast."),
             (".start", ".s", "(chief-only) Yup, naturally as the chief you can start up the game."),
         ])
@@ -222,6 +225,8 @@ pub fn playing_commands(
         ".info" | ".i" => lobby.info(pl),
 
         ".leave" | ".l" => leave_lobby(pl, lobbies),
+
+        ".points" | ".p" => lobby.display_points(pl),
 
         ".thrust" | ".t" => lobby.handle_thrust(input, pl),
 

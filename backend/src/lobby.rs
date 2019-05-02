@@ -20,6 +20,9 @@ pub struct Lobby {
     //list of players
     pub list: std::vec::Vec<Rc<RefCell<Player>>>,
 
+    //max number of players
+    pub max: usize,
+
     //max hand size
     pub hand_size: u32,
 
@@ -57,10 +60,11 @@ pub struct Lobby {
 }
 
 impl Lobby {
-    fn new(player: &Rc<RefCell<Player>>, pw: String, id: i32) -> Lobby {
+    fn new(player: &Rc<RefCell<Player>>, pw: String, max: usize, id: i32) -> Lobby {
         let mut lobby = Lobby {
             pw: pw,
-            list: Vec::new(),
+            list: std::vec::Vec::with_capacity(max as usize),
+            max: max,
             id: id,
             state: LobbyState::Waiting,
             hand_size: 5,
@@ -86,6 +90,7 @@ impl Lobby {
         let lobby = Lobby {
             pw: "".to_string(),
             list: Vec::new(),
+            max: 0,
             id: 0,
             state: LobbyState::Waiting,
             hand_size: 5,
@@ -184,7 +189,7 @@ impl Lobby {
         lobby_id: &mut i32,
         lobbies: &mut HashMap<i32, Lobby>,
     ) {
-        let mut new_lobby = Lobby::new(&pl_rc, "".to_string(), *lobby_id);
+        let mut new_lobby = Lobby::new(&pl_rc, "".to_string(), 10, *lobby_id);
 
         let mut pl = pl_rc.borrow_mut();
 
@@ -249,6 +254,7 @@ impl Lobby {
         let mut info = Vec::new();
         info.push(format!("\\\\Lobby info//"));
         info.push(format!("Name: {}", self.id));
+        info.push(format!("Players: {} / {}", self.list.len(), self.max));
         info.push(format!("Max points: {}", self.max_points));
 
         if self.is_host(pl.token) {
@@ -278,6 +284,37 @@ impl Lobby {
                 }
                 self.max_points = max;
                 pl.send_message(&format!("max points set to {}", self.max_points));
+            }
+
+            _ => pl.send_message(&"only numbers dude!!!"),
+        }
+    }
+
+    pub fn player_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+        let pl = pl_rc.borrow();
+        if !self.is_host(pl.token) {
+            pl.send_message("only chief sets MAXP LAYER!");
+            return;
+        }
+
+        if input.len() < 2 {
+            pl.send_message("ya gotta set the new limit");
+            return;
+        }
+
+        match input[1].to_string().parse::<usize>() {
+            Ok(max) => {
+                if max > 64 {
+                    pl.send_message(&format!("woah thats 2many people chill! haha"));
+                    return;
+                }
+
+                if max < self.list.len() {
+                    pl.send_message(&format!("too many players in here right now man!"));
+                    return;
+                }
+                self.max = max;
+                pl.send_message(&format!("max players set to {}", self.max));
             }
 
             _ => pl.send_message(&"only numbers dude!!!"),
@@ -476,6 +513,12 @@ impl Lobby {
 
                 let mut messages = Vec::new();
                 if let Some(mut lob) = lobby.get_mut(&lobby_id) {
+                    // Lobby full check
+                    if lob.list.len() >= lob.max {
+                        pl.send_message("bro this lobbBY is FULLLLL!!");
+                        return;
+                    }
+
                     //Lobby Password Check
                     if lob.pw != "" {
                         if input.len() < 3 {
@@ -1085,9 +1128,10 @@ pub fn list_lobby(pl_rc: Rc<RefCell<Player>>, lobbies: &mut HashMap<i32, Lobby>)
         };
         messages.push(
             format!(
-                "id: {} | {} players | {}",
+                "id: {} | {}/{} players | {}",
                 lob.id,
                 lob.list.len(),
+                lob.max,
                 state
             )
             .to_string(),
