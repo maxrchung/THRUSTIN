@@ -1,4 +1,5 @@
 use crate::lobby;
+use crate::lobby::{Lobby};
 use crate::player;
 
 use std::cell::RefCell;
@@ -44,9 +45,10 @@ fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
     return table_html;
 }
 
+// This is handled outside of lobby file because this can affect multiple lobbies
 fn leave_lobby(
     pl: Rc<RefCell<player::Player>>,
-    lobbies: &mut HashMap<i32, lobby::Lobby>
+    lobbies: &mut HashMap<i32, Lobby>
 ) {
     let lobby = lobbies.get_mut(&pl.borrow().lobby).unwrap();
     lobby.leave_lobby(pl);
@@ -96,17 +98,17 @@ pub fn out_of_lobby_commands(
     pl: Rc<RefCell<player::Player>>,
     players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
     lobby_id: &mut i32,
-    lobbies: &mut HashMap<i32, lobby::Lobby>,
+    lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
     match &*com {
         ".help" | ".h" => list_out_commands(&pl.borrow()),
 
-        ".join" | ".j" => lobby::Lobby::join_lobby(input, pl, lobbies),
+        ".join" | ".j" => Lobby::join_lobby(input, pl, lobbies),
 
         ".list" | ".l" => lobby::list_lobby(pl, lobbies),
 
-        ".make" | ".m" => lobby::Lobby::make_lobby(input, pl, lobby_id, lobbies),
+        ".make" | ".m" => Lobby::make_lobby(pl, lobby_id, lobbies),
 
         ".name" | ".n" => player::set_name(input, pl, players),
 
@@ -147,7 +149,7 @@ pub fn in_lobby_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
     players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
-    lobbies: &mut HashMap<i32, lobby::Lobby>,
+    lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
@@ -215,7 +217,7 @@ fn list_in_commands(pl: &player::Player) {
 pub fn playing_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
-    lobbies: &mut HashMap<i32, lobby::Lobby>,
+    lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
@@ -256,7 +258,7 @@ fn list_playing_commands(pl: &player::Player) {
 pub fn choosing_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
-    lobbies: &mut HashMap<i32, lobby::Lobby>,
+    lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
@@ -297,7 +299,7 @@ fn list_choosing_commands(pl: &player::Player) {
 pub fn deciding_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
-    lobbies: &mut HashMap<i32, lobby::Lobby>,
+    lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
@@ -338,7 +340,7 @@ fn list_deciding_commands(pl: &player::Player) {
 pub fn waiting_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<player::Player>>,
-    lobbies: &mut HashMap<i32, lobby::Lobby>,
+    lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };

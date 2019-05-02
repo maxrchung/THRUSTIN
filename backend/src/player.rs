@@ -1,4 +1,4 @@
-use crate::networking;
+use crate::networking::Networking;
 use crate::thrust;
 use std::collections::HashMap;
 
@@ -34,7 +34,7 @@ pub struct Player {
 
     pub points: u32,
 
-    comm: Rc<RefCell<networking::Networking>>,
+    comm: Rc<RefCell<Networking>>,
 }
 
 impl Player {
@@ -47,7 +47,7 @@ impl Player {
     }
 }
 
-pub fn new(token: u32, communication: Rc<RefCell<networking::Networking>>) -> Player {
+pub fn new(token: u32, communication: Rc<RefCell<Networking>>) -> Player {
     Player {
         token: token,
         name: token.to_string(),
@@ -60,7 +60,7 @@ pub fn new(token: u32, communication: Rc<RefCell<networking::Networking>>) -> Pl
     }
 }
 
-pub fn new_endless_host(communication: Rc<RefCell<networking::Networking>>) -> Player {
+pub fn new_endless_host(communication: Rc<RefCell<Networking>>) -> Player {
     Player {
         token: 0,
         name: "EndlessLobbyHostDoggo".to_string(),

@@ -134,12 +134,6 @@ impl Lobby {
         }
     }
 
-    fn send_messages(&self, messages: &Vec<String>) {
-        for pl in &self.list {
-            pl.borrow().send_messages(&messages);
-        }
-    }
-
     //////////
     //public//
     //////////
@@ -184,7 +178,6 @@ impl Lobby {
     }
 
     pub fn make_lobby(
-        input: std::vec::Vec<&str>,
         pl_rc: Rc<RefCell<Player>>,
         lobby_id: &mut i32,
         lobbies: &mut HashMap<i32, Lobby>,
@@ -456,7 +449,6 @@ impl Lobby {
     }
 
     pub fn join_endless(
-        input: std::vec::Vec<&str>,
         pl_rc: Rc<RefCell<Player>>,
         lobby: &mut HashMap<i32, Lobby>,
         lobby_id: &i32,
@@ -506,7 +498,7 @@ impl Lobby {
             Ok(lobby_id) => {
                 // Handle joining endless lobby (lmao)
                 if lobby_id == 0 {
-                    Lobby::join_endless(input, pl_rc, lobby, &lobby_id);
+                    Lobby::join_endless(pl_rc, lobby, &lobby_id);
                     return;
                 }
                 let mut pl = pl_rc.borrow_mut();
@@ -998,9 +990,9 @@ impl Lobby {
         match input[1].parse::<i32>() {
             Ok(index) => {
                 // For handling mut borrow
-                let mut restart = false;
-                let mut resulting_thrust = String::new();
+                let (restart, resulting_thrust) =
                 {
+                    let mut restart = false;
                     let mut pl = pl_rc.borrow_mut();
 
                     // Check correct # of thrusters
@@ -1034,7 +1026,7 @@ impl Lobby {
                         }
                     }
 
-                    resulting_thrust = self.current_thrustee.clone();
+                    let mut resulting_thrust = self.current_thrustee.clone();
                     let mut to_remove: std::vec::Vec<String> = Vec::new();
                     // Handle mutliple underscores
                     for i in 1..input.len() {
@@ -1044,7 +1036,6 @@ impl Lobby {
                         // Surround with <u> to underline text
                         let formatted_thruster = format!("<u>{}</u>", picked_thruster);
                         resulting_thrust = thrust::Deck::thrust(
-                            input[i].parse::<i32>().unwrap(),
                             &formatted_thruster,
                             &resulting_thrust,
                         );
@@ -1073,7 +1064,8 @@ impl Lobby {
                     } else {
                         restart = true;
                     }
-                }
+                    (restart, resulting_thrust)
+                };
 
                 if restart {
                     self.restart_game();

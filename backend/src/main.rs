@@ -37,7 +37,7 @@ fn main() {
     );
 
     // Create Endless Lobby
-    lobby::Lobby::make_endless_lobby(
+    Lobby::make_endless_lobby(
         &players.get(&endless_uuid).unwrap().clone(),
         &mut 0,
         &mut lobbies,
@@ -62,7 +62,7 @@ fn handle_input(
     token: u32,
     input: String,
     lobby_id: &mut i32,
-    lobbies: &mut HashMap<i32, lobby::Lobby>,
+    lobbies: &mut HashMap<i32, Lobby>,
     players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
 ) {
     if input.len() > MAX_INPUT {

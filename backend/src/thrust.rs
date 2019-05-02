@@ -272,35 +272,7 @@ impl Deck {
         self.sort_thrustees();
     }
 
-    fn view_thrusters(&self) {
-        if std::vec::Vec::is_empty(&self.thrusters) {
-            write_to_socket(&"No THRUSTERS in deck!".to_string());
-        } else {
-            for thruster in &self.thrusters {
-                write_to_socket(&(*thruster).to_string());
-            }
-        }
-    }
-
-    fn view_thrustees(&self) {
-        if std::vec::Vec::is_empty(&self.thrustees) {
-            write_to_socket(&"No THRUSTEES in deck!".to_string());
-        } else {
-            for thrustee in &self.thrustees {
-                write_to_socket(&(*thrustee).to_string());
-            }
-        }
-    }
-
-    fn remove_from_thrusters(&mut self) -> String {
-        self.thrusters.pop().unwrap()
-    }
-
-    fn remove_from_thrustees(&mut self) -> String {
-        self.thrustees.pop().unwrap()
-    }
-
-    pub fn thrust(index: i32, thruster: &String, thrustee: &String) -> String {
+    pub fn thrust(thruster: &String, thrustee: &String) -> String {
         lazy_static! {
             static ref RE: Regex = Regex::new("[_]+").unwrap();
         }
@@ -318,14 +290,4 @@ impl Deck {
         }
         return count;
     }
-}
-
-fn write_to_socket(message: &String) {
-    println!("{}", message);
-}
-
-fn read_from_socket() -> String {
-    let mut input = String::new();
-    std::io::stdin().read_line(&mut input);
-    input.trim().to_string()
 }
