@@ -1,8 +1,8 @@
 use crate::player::{Player, PlayerState};
-use crate::thrust;
+use crate::thrust::Deck;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
-use std::cell::RefCell;
+use std::cell::{RefCell,RefMut};
 use std::collections::HashMap;
 use std::rc::Rc;
 
@@ -18,7 +18,7 @@ pub struct Lobby {
     pw: String,
 
     //list of players
-    pub list: std::vec::Vec<Rc<RefCell<Player>>>,
+    pub list: Vec<Rc<RefCell<Player>>>,
 
     //max number of players
     pub max: usize,
@@ -42,7 +42,7 @@ pub struct Lobby {
     //current thrustee (player)
     pub thrustee: usize,
 
-    pub deck: thrust::Deck,
+    pub deck: Deck,
     //current thrustee (card)
     pub current_thrustee: String,
 
@@ -63,7 +63,7 @@ impl Lobby {
     fn new(player: &Rc<RefCell<Player>>, pw: String, max: usize, id: i32) -> Lobby {
         let mut lobby = Lobby {
             pw: pw,
-            list: std::vec::Vec::with_capacity(max as usize),
+            list: Vec::with_capacity(max as usize),
             max: max,
             id: id,
             state: LobbyState::Waiting,
@@ -73,7 +73,7 @@ impl Lobby {
             thrustee: 0,
             thrustee_choices: Vec::new(),
             max_thrustee_choices: 3,
-            deck: thrust::Deck::new(),
+            deck: Deck::new(),
             current_thrustee: String::new(),
             current_thrusts: HashMap::new(),
             index_to_token: HashMap::new(),
@@ -99,7 +99,7 @@ impl Lobby {
             thrustee: 0,
             thrustee_choices: Vec::new(),
             max_thrustee_choices: 3,
-            deck: thrust::Deck::new(),
+            deck: Deck::new(),
             current_thrustee: String::new(),
             current_thrusts: HashMap::new(),
             index_to_token: HashMap::new(),
@@ -142,7 +142,7 @@ impl Lobby {
     //general stuff?//
     //////////////////
 
-    pub fn add_pers_deck_to_lob(lob: &mut Lobby, pl: &mut std::cell::RefMut<Player>) {
+    pub fn add_pers_deck_to_lob(lob: &mut Lobby, pl: &mut RefMut<Player>) {
         lob.deck
             .thrustees
             .append(&mut pl.personal_deck.thrustees.clone());
@@ -151,7 +151,7 @@ impl Lobby {
             .append(&mut pl.personal_deck.thrusters.clone());
     }
 
-    pub fn remove_pers_deck_from_lob(lob: &mut Lobby, pl: &mut std::cell::RefMut<Player>) {
+    pub fn remove_pers_deck_from_lob(lob: &mut Lobby, pl: &mut RefMut<Player>) {
         lob.deck
             .thrustees
             .retain(|thrustee| (!pl.personal_deck.thrustees.contains(&thrustee)));
@@ -197,7 +197,7 @@ impl Lobby {
         *lobby_id = *lobby_id + 1;
     }
 
-    pub fn set_password(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+    pub fn set_password(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
             pl.send_message("only chief sets password!!!");
@@ -257,7 +257,7 @@ impl Lobby {
         pl.send_messages(&info);
     }
 
-    pub fn point_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+    pub fn point_max(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
             pl.send_message("only chief sets points!");
@@ -283,7 +283,7 @@ impl Lobby {
         }
     }
 
-    pub fn player_max(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+    pub fn player_max(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
             pl.send_message("only chief sets MAXP LAYER!");
@@ -314,7 +314,7 @@ impl Lobby {
         }
     }
 
-    pub fn switch_host(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+    pub fn switch_host(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
             pl.send_message("Only chief can change the chief!");
@@ -345,7 +345,7 @@ impl Lobby {
         pl.send_message("Player not in lobby.");
     }
 
-    pub fn kick(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+    pub fn kick(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
             pl.send_message("Only chief can kick em!");
@@ -381,7 +381,7 @@ impl Lobby {
     }
 
     pub fn handle_join_cases(
-        pl: &std::cell::RefMut<Player>,
+        pl: &RefMut<Player>,
         lob: &Lobby,
         wait: &mut bool,
         messages: &mut Vec<String>,
@@ -408,7 +408,7 @@ impl Lobby {
 
     pub fn get_joining_pl_state(
         lob: &mut Lobby,
-        pl: &mut std::cell::RefMut<Player>,
+        pl: &mut RefMut<Player>,
         messages: &mut Vec<String>,
         pl_rc: &Rc<RefCell<Player>>,
     ) -> Option<PlayerState> {
@@ -484,7 +484,7 @@ impl Lobby {
     }
 
     pub fn join_lobby(
-        input: std::vec::Vec<&str>,
+        input: Vec<&str>,
         pl_rc: Rc<RefCell<Player>>,
         lobby: &mut HashMap<i32, Lobby>,
     ) {
@@ -646,7 +646,7 @@ impl Lobby {
 
         // Add in house cards to lobby deck if bool is true
         if self.use_house {
-            let default_deck = thrust::Deck::default();
+            let default_deck = Deck::default();
             self.deck.thrusters.extend(default_deck.thrusters);
             self.deck.thrustees.extend(default_deck.thrustees);
         }
@@ -678,7 +678,7 @@ impl Lobby {
 
         // Add in house cards to lobby deck if bool is true
         if self.use_house {
-            let default_deck = thrust::Deck::default();
+            let default_deck = Deck::default();
             self.deck.thrusters.extend(default_deck.thrusters);
             self.deck.thrustees.extend(default_deck.thrustees);
         }
@@ -724,7 +724,7 @@ impl Lobby {
 
     pub fn clear_game(&mut self) {
         self.state = LobbyState::Waiting;
-        self.deck = thrust::Deck::default();
+        self.deck = Deck::default();
         self.current_thrustee = String::new();
         self.current_thrusts = HashMap::new();
         self.index_to_token = HashMap::new();
@@ -742,14 +742,14 @@ impl Lobby {
             self.deck
                 .thrusters
                 .append(&mut player.personal_deck.thrusters.clone());
-            player.deck = thrust::Deck::new();
+            player.deck = Deck::new();
             player.state = PlayerState::InLobby;
         }
         Lobby::shuffle_deck(self);
     }
 
     pub fn clear_endless(&mut self) {
-        self.deck = thrust::Deck::default();
+        self.deck = Deck::default();
 
         // readd all personal decks to endless lobby
         for rc in &self.list {
@@ -798,7 +798,7 @@ impl Lobby {
         messages
     }
 
-    pub fn choose(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+    pub fn choose(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         {
             let pl = pl_rc.borrow();
 
@@ -863,7 +863,7 @@ impl Lobby {
         };
     }
 
-    pub fn decide(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+    pub fn decide(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         {
             let pl = pl_rc.borrow();
             if input.len() < 2 {
@@ -977,7 +977,7 @@ impl Lobby {
         };
     }
 
-    pub fn handle_thrust(&mut self, input: std::vec::Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+    pub fn handle_thrust(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         {
             let pl = pl_rc.borrow();
             // Check number of inputs
@@ -997,7 +997,7 @@ impl Lobby {
 
                     // Check correct # of thrusters
                     let num_thrusters = input.len() as i32 - 1;
-                    let num_underscore = thrust::Deck::count_underscore(&self.current_thrustee);
+                    let num_underscore = Deck::count_underscore(&self.current_thrustee);
                     if num_thrusters != num_underscore {
                         pl.send_message("bro that ain't the right number of THRUSTERS");
                         return;
@@ -1027,7 +1027,7 @@ impl Lobby {
                     }
 
                     let mut resulting_thrust = self.current_thrustee.clone();
-                    let mut to_remove: std::vec::Vec<String> = Vec::new();
+                    let mut to_remove: Vec<String> = Vec::new();
                     // Handle mutliple underscores
                     for i in 1..input.len() {
                         let picked_thruster =
@@ -1035,14 +1035,14 @@ impl Lobby {
                         to_remove.push(picked_thruster.clone());
                         // Surround with <u> to underline text
                         let formatted_thruster = format!("<u>{}</u>", picked_thruster);
-                        resulting_thrust = thrust::Deck::thrust(
+                        resulting_thrust = Deck::thrust(
                             &formatted_thruster,
                             &resulting_thrust,
                         );
                     }
 
                     // Remove thrusted thrusters
-                    let mut updated_thrusters: std::vec::Vec<String> = Vec::new();
+                    let mut updated_thrusters: Vec<String> = Vec::new();
                     for thruster in &pl.deck.thrusters {
                         if !to_remove.contains(thruster) {
                             updated_thrusters.push(thruster.clone())
@@ -1163,7 +1163,7 @@ pub fn list_all_players(
 }
 
 pub fn handle_thrusteer_commands(
-    input: &std::vec::Vec<&str>,
+    input: &Vec<&str>,
     pl_rc: Rc<RefCell<Player>>,
     lobby: &mut HashMap<i32, Lobby>,
 ) {
@@ -1207,7 +1207,7 @@ pub fn handle_thrusteer_commands(
 }
 
 pub fn add_thruster(
-    mut pl: std::cell::RefMut<Player>,
+    mut pl: RefMut<Player>,
     lobby: &mut HashMap<i32, Lobby>,
     new_item: String,
 ) {
@@ -1222,7 +1222,7 @@ pub fn add_thruster(
 }
 
 pub fn add_thrustee(
-    mut pl: std::cell::RefMut<Player>,
+    mut pl: RefMut<Player>,
     lobby: &mut HashMap<i32, Lobby>,
     new_item: String,
 ) {
@@ -1236,7 +1236,7 @@ pub fn add_thrustee(
     }
 }
 
-pub fn display_deck(pl: std::cell::RefMut<Player>) {
+pub fn display_deck(pl: RefMut<Player>) {
     let mut messages = Vec::new();
 
     messages.push("You're THRUSTEES:".to_string());
@@ -1261,7 +1261,7 @@ pub fn clear_pers_deck(pl_rc: Rc<RefCell<Player>>, lobby: &mut HashMap<i32, Lobb
         }
     }
 
-    pl.personal_deck = thrust::Deck::new();
+    pl.personal_deck = Deck::new();
 
     pl.send_message("Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
 }

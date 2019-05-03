@@ -1,6 +1,7 @@
 use crate::lobby;
 use crate::lobby::{Lobby};
 use crate::player;
+use crate::player::Player;
 
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -47,7 +48,7 @@ fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
 
 // This is handled outside of lobby file because this can affect multiple lobbies
 fn leave_lobby(
-    pl: Rc<RefCell<player::Player>>,
+    pl: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>
 ) {
     let lobby = lobbies.get_mut(&pl.borrow().lobby).unwrap();
@@ -64,8 +65,8 @@ fn leave_lobby(
 ///////////////
 pub fn choose_name_commands(
     input: Vec<&str>,
-    pl: Rc<RefCell<player::Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
+    pl: Rc<RefCell<Player>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
     let com = get_command(&input);
     match &*com {
@@ -80,7 +81,7 @@ pub fn choose_name_commands(
     }
 }
 
-fn list_choose_name_commands(pl: &player::Player) {
+fn list_choose_name_commands(pl: &Player) {
     pl.send_messages(&vec![
         String::from("Alright so the first phase we've got here is this Choose Name phase. What you're gonna do here is set yourself up with a name that you'll go by. i think this is a great idea because now you have a name and people can call you by your name later when we implement chat. Names give people a sense of identity and belonging. Could you imagine having not a name? What if we reduced you just to some unique number ID, now I think that would be rude, do you not agree? I dont' really remember but I think you can change your name later too so don't worry its just like real life, how we change who we are, the way we speak and walk our gait when we're around other people."),
         generate_table(vec![
@@ -95,8 +96,8 @@ fn list_choose_name_commands(pl: &player::Player) {
 ////////////////
 pub fn out_of_lobby_commands(
     input: Vec<&str>,
-    pl: Rc<RefCell<player::Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
+    pl: Rc<RefCell<Player>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
@@ -125,7 +126,7 @@ pub fn out_of_lobby_commands(
     }
 }
 
-fn list_out_commands(pl: &player::Player) {
+fn list_out_commands(pl: &Player) {
     pl.send_messages(&vec![
         String::from("Alright so now you're in like a waiting zone outside of all the lobbies. Here you can browse lobbies, organize your THRUSTS, and (eventually by milestone 5.3) chat with other people in like general chat. Have fun playing THRUSTIN, brought to you by WAXCHUG&daGWADS."),
         generate_table(vec![
@@ -147,8 +148,8 @@ fn list_out_commands(pl: &player::Player) {
 ////////////
 pub fn in_lobby_commands(
     input: Vec<&str>,
-    pl: Rc<RefCell<player::Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
+    pl: Rc<RefCell<Player>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
@@ -188,7 +189,7 @@ pub fn in_lobby_commands(
     }
 }
 
-fn list_in_commands(pl: &player::Player) {
+fn list_in_commands(pl: &Player) {
     pl.send_messages(&vec![
         String::from("Hey cool so now you're in the lobby and now you've got some more commands. If you're the chief, you've got access to some special options to configure the lobby's game experience. Otherwise, normal non-chiefs, yall can chill out and wait for the game to start."),
         generate_table(vec![
@@ -216,7 +217,7 @@ fn list_in_commands(pl: &player::Player) {
 ////////////////////
 pub fn playing_commands(
     input: Vec<&str>,
-    pl: Rc<RefCell<player::Player>>,
+    pl: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
@@ -238,7 +239,7 @@ pub fn playing_commands(
     }
 }
 
-fn list_playing_commands(pl: &player::Player) {
+fn list_playing_commands(pl: &Player) {
     pl.send_messages(&vec![
         String::from("Great. Now you're in the phase where you are a THRUSTER. In this state, you can THRUST one of your THRUSTER options into the THRUSTEE. Make sure it's a good one!"),
         generate_table(vec![
@@ -257,7 +258,7 @@ fn list_playing_commands(pl: &player::Player) {
 ////////////
 pub fn choosing_commands(
     input: Vec<&str>,
-    pl: Rc<RefCell<player::Player>>,
+    pl: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
@@ -279,7 +280,7 @@ pub fn choosing_commands(
     }
 }
 
-fn list_choosing_commands(pl: &player::Player) {
+fn list_choosing_commands(pl: &Player) {
     pl.send_messages(&vec![
         String::from("Okay you're a THRUSTEE now. First thing you've gotta do is choose a great THRUSTEE that other THRUSTERS can THRUST into. Make sure it's a juicy one!"),
         generate_table(vec![
@@ -298,7 +299,7 @@ fn list_choosing_commands(pl: &player::Player) {
 ////////////
 pub fn deciding_commands(
     input: Vec<&str>,
-    pl: Rc<RefCell<player::Player>>,
+    pl: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
@@ -320,7 +321,7 @@ pub fn deciding_commands(
     }
 }
 
-fn list_deciding_commands(pl: &player::Player) {
+fn list_deciding_commands(pl: &Player) {
     pl.send_messages(&vec![
         String::from("Yeah guy it's time for you to decide on the best THRUSTER. Pick the one that you like the best. Trust your head and your gut. You can do it. I believe in you."),
         generate_table(vec![
@@ -339,7 +340,7 @@ fn list_deciding_commands(pl: &player::Player) {
 ///////////
 pub fn waiting_commands(
     input: Vec<&str>,
-    pl: Rc<RefCell<player::Player>>,
+    pl: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
@@ -363,7 +364,7 @@ pub fn waiting_commands(
     }
 }
 
-fn list_waiting_commands(pl: &player::Player) {
+fn list_waiting_commands(pl: &Player) {
     pl.send_messages(&vec![
         String::from("Aite my dude you needa chill and wait for the THRUSTEE to choose a good THRUSTEE to be THRUSTED with."),
         generate_table(vec![

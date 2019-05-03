@@ -1,5 +1,5 @@
 use crate::networking::Networking;
-use crate::thrust;
+use crate::thrust::Deck;
 use std::collections::HashMap;
 
 use std::cell::RefCell;
@@ -21,16 +21,16 @@ pub struct Player {
     pub token: u32,
 
     //name of player
-    pub name: std::string::String,
+    pub name: String,
 
     //player state
     pub state: PlayerState,
 
     pub lobby: i32,
 
-    pub deck: thrust::Deck,
+    pub deck: Deck,
 
-    pub personal_deck: thrust::Deck,
+    pub personal_deck: Deck,
 
     pub points: u32,
 
@@ -53,8 +53,8 @@ pub fn new(token: u32, communication: Rc<RefCell<Networking>>) -> Player {
         name: token.to_string(),
         state: PlayerState::ChooseName,
         lobby: -1,
-        deck: thrust::Deck::new(),
-        personal_deck: thrust::Deck::new(),
+        deck: Deck::new(),
+        personal_deck: Deck::new(),
         points: 0,
         comm: communication,
     }
@@ -66,8 +66,8 @@ pub fn new_endless_host(communication: Rc<RefCell<Networking>>) -> Player {
         name: "EndlessLobbyHostDoggo".to_string(),
         state: PlayerState::Playing,
         lobby: 0,
-        deck: thrust::Deck::new(),
-        personal_deck: thrust::Deck::new(),
+        deck: Deck::new(),
+        personal_deck: Deck::new(),
         points: 72742069,
         comm: communication,
     }

@@ -63,7 +63,7 @@ fn handle_input(
     input: String,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, Lobby>,
-    players: &mut HashMap<u32, Rc<RefCell<player::Player>>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
     if input.len() > MAX_INPUT {
         let player = players.get(&token).unwrap().borrow();
@@ -71,7 +71,7 @@ fn handle_input(
         return;
     }
 
-    let split: std::vec::Vec<&str> = input.split(' ').collect();
+    let split: Vec<&str> = input.split(' ').collect();
     let state = {
         let player = players.get(&token).unwrap().borrow();
         player.state.clone()
