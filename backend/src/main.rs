@@ -31,7 +31,7 @@ fn main() {
     // Add endless lobby host dummy boi
     players.insert(
         endless_uuid,
-        Rc::new(RefCell::new(player::new_endless_host(
+        Rc::new(RefCell::new(Player::new_endless_host(
             communication.clone(),
         ))),
     );
@@ -50,7 +50,7 @@ fn main() {
         if let None = players.get(&token) {
             players.insert(
                 token.clone(),
-                Rc::new(RefCell::new(player::new(token, communication.clone()))),
+                Rc::new(RefCell::new(Player::new(token, communication.clone()))),
             );
         }
 

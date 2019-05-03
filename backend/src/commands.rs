@@ -1,6 +1,4 @@
-use crate::lobby;
-use crate::lobby::{Lobby};
-use crate::player;
+use crate::lobby::Lobby;
 use crate::player::Player;
 
 use std::cell::RefCell;
@@ -46,20 +44,6 @@ fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
     return table_html;
 }
 
-// This is handled outside of lobby file because this can affect multiple lobbies
-fn leave_lobby(
-    pl: Rc<RefCell<Player>>,
-    lobbies: &mut HashMap<i32, Lobby>
-) {
-    let lobby = lobbies.get_mut(&pl.borrow().lobby).unwrap();
-    lobby.leave_lobby(pl);
-    // Don't delete lobby if it is endless
-    if lobby.list.len() == 0 && lobby.id != 0  {
-        let id = lobby.id;
-        lobbies.remove(&id);
-    }
-}
-
 ///////////////
 //choose name//
 ///////////////
@@ -70,7 +54,7 @@ pub fn choose_name_commands(
 ) {
     let com = get_command(&input);
     match &*com {
-        ".name" | ".n" => player::set_name(input, pl, players),
+        ".name" | ".n" => Player::set_name(input, pl, players),
 
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
 
@@ -107,17 +91,17 @@ pub fn out_of_lobby_commands(
 
         ".join" | ".j" => Lobby::join_lobby(input, pl, lobbies),
 
-        ".list" | ".l" => lobby::list_lobby(pl, lobbies),
+        ".list" | ".l" => Lobby::list_lobby(pl, lobbies),
 
         ".make" | ".m" => Lobby::make_lobby(pl, lobby_id, lobbies),
 
-        ".name" | ".n" => player::set_name(input, pl, players),
+        ".name" | ".n" => Player::set_name(input, pl, players),
 
-        ".thrust" | ".t" => lobby::handle_thrusteer_commands(&input, pl, lobbies),
+        ".thrust" | ".t" => Lobby::handle_thrusteer_commands(&input, pl, lobbies),
 
-        ".unthrust" | ".u" => lobby::clear_pers_deck(pl, lobbies),
+        ".unthrust" | ".u" => Lobby::clear_pers_deck(pl, lobbies),
 
-        ".who" | ".w" => lobby::list_all_players(pl, players),
+        ".who" | ".w" => Lobby::list_all_players(pl, players),
 
         _ => {
             pl.borrow()
@@ -159,13 +143,13 @@ pub fn in_lobby_commands(
 
         ".info" | ".i" => lobby.info(pl),
 
-        ".leave" | ".l" => leave_lobby(pl, lobbies),
+        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
 
-        ".name" | ".n" => player::set_name(input, pl, players),
+        ".name" | ".n" => Player::set_name(input, pl, players),
 
-        ".thrust" | ".t" => lobby::handle_thrusteer_commands(&input, pl.clone(), lobbies),
+        ".thrust" | ".t" => Lobby::handle_thrusteer_commands(&input, pl.clone(), lobbies),
 
-        ".unthrust" | ".u" => lobby::clear_pers_deck(pl, lobbies),
+        ".unthrust" | ".u" => Lobby::clear_pers_deck(pl, lobbies),
 
         ".who" | ".w" => lobby.list_lobby_players(pl),
 
@@ -227,7 +211,7 @@ pub fn playing_commands(
 
         ".info" | ".i" => lobby.info(pl),
 
-        ".leave" | ".l" => leave_lobby(pl, lobbies),
+        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
 
         ".points" | ".p" => lobby.display_points(pl),
 
@@ -268,7 +252,7 @@ pub fn choosing_commands(
 
         ".info" | ".i" => lobby.info(pl),
 
-        ".leave" | ".l" => leave_lobby(pl, lobbies),
+        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
 
         ".points" | ".p" => lobby.display_points(pl),
 
@@ -309,7 +293,7 @@ pub fn deciding_commands(
 
         ".info" | ".i" => lobby.info(pl),
 
-        ".leave" | ".l" => leave_lobby(pl, lobbies),
+        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
 
         ".points" | ".p" => lobby.display_points(pl),
 
@@ -352,7 +336,7 @@ pub fn waiting_commands(
 
         ".points" | ".p" => lobby.display_points(pl),
 
-        ".leave" | ".l" => leave_lobby(pl, lobbies),
+        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
 
         ".thrust" | ".t" => pl
             .borrow()

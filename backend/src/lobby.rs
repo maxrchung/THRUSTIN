@@ -399,7 +399,7 @@ impl Lobby {
             PlayerState::Deciding => {
                 messages
                     .push(format!("This is your THRUSTEE: {}<br/>", &lob.current_thrustee).to_string());
-                messages.extend(get_thrusters(&pl.deck.thrusters));
+                messages.extend(Lobby::get_thrusters(&pl.deck.thrusters));
             }
 
             _ => (),
@@ -559,7 +559,23 @@ impl Lobby {
         }
     }
 
-    pub fn leave_lobby(&mut self, pl_rc: Rc<RefCell<Player>>) {
+    // This feeds into leave_lobby()
+    // This function is separate from leave_lobby() because this also manages removing the lobby if it is empty
+    pub fn leave_from_lobby(
+        pl: Rc<RefCell<Player>>,
+        lobbies: &mut HashMap<i32, Lobby>
+    ) {
+        let lobby = lobbies.get_mut(&pl.borrow().lobby).unwrap();
+        lobby.leave_lobby(pl);
+        // Don't delete lobby if it is endless
+        if lobby.list.len() == 0 && lobby.id != 0  {
+            let id = lobby.id;
+            lobbies.remove(&id);
+        }
+    }
+
+    fn leave_lobby(&mut self, pl_rc: Rc<RefCell<Player>>) {
+        // borrow shenanigans
         {
             let pl = pl_rc.borrow();
             
@@ -847,7 +863,7 @@ impl Lobby {
                             );
                             p.send_messages(&messages);
                         } else {
-                            messages.extend(get_thrusters(&p.deck.thrusters));
+                            messages.extend(Lobby::get_thrusters(&p.deck.thrusters));
                             p.send_messages(&messages);
                         }
                     }
@@ -1099,169 +1115,169 @@ impl Lobby {
 
         pl.send_messages(&messages);
     }
-}
 
-pub fn get_thrusters(thrusters: &Vec<String>) -> Vec<String> {
-    let mut messages = vec!["Here are your THRUSTERS:".to_string()];
-    for (index, thruster) in thrusters.iter().enumerate() {
-        messages.push(format!("{}. {}", &index, &thruster).to_string());
-    }
-    messages
-}
-
-pub fn list_lobby(pl_rc: Rc<RefCell<Player>>, lobbies: &mut HashMap<i32, Lobby>) {
-    let pl = pl_rc.borrow();
-    let mut messages = Vec::new();
-
-    for lob in lobbies.values() {
-        let state = match &lob.state {
-            LobbyState::Playing => "Playing",
-            LobbyState::Waiting => "Waiting",
-        };
-        messages.push(
-            format!(
-                "id: {} | {}/{} players | {}",
-                lob.id,
-                lob.list.len(),
-                lob.max,
-                state
-            )
-            .to_string(),
-        );
+    pub fn get_thrusters(thrusters: &Vec<String>) -> Vec<String> {
+        let mut messages = vec!["Here are your THRUSTERS:".to_string()];
+        for (index, thruster) in thrusters.iter().enumerate() {
+            messages.push(format!("{}. {}", &index, &thruster).to_string());
+        }
+        messages
     }
 
-    if messages.is_empty() {
-        messages.push("No lobbies bro...".to_string());
-    }
+    pub fn list_lobby(pl_rc: Rc<RefCell<Player>>, lobbies: &mut HashMap<i32, Lobby>) {
+        let pl = pl_rc.borrow();
+        let mut messages = Vec::new();
 
-    pl.send_messages(&messages);
-}
-
-pub fn list_all_players(
-    pl_rc: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
-) {
-    let pl = pl_rc.borrow();
-    let mut messages = Vec::new();
-
-    for player in players.values() {
-        let pl_i = player.borrow();
-        let mut person = "";
-        if pl_i.token == pl.token {
-            person = " (You)";
+        for lob in lobbies.values() {
+            let state = match &lob.state {
+                LobbyState::Playing => "Playing",
+                LobbyState::Waiting => "Waiting",
+            };
+            messages.push(
+                format!(
+                    "id: {} | {}/{} players | {}",
+                    lob.id,
+                    lob.list.len(),
+                    lob.max,
+                    state
+                )
+                .to_string(),
+            );
         }
 
-        let message = if pl_i.state == PlayerState::InLobby || pl_i.state == PlayerState::Playing {
-            format!("{} in {}{}", pl_i.name, pl_i.lobby, person).to_string()
-        } else {
-            format!("{}{}", pl_i.name, person).to_string()
-        };
+        if messages.is_empty() {
+            messages.push("No lobbies bro...".to_string());
+        }
 
-        messages.push(message);
-    }
-    pl.send_messages(&messages);
-}
-
-pub fn handle_thrusteer_commands(
-    input: &Vec<&str>,
-    pl_rc: Rc<RefCell<Player>>,
-    lobby: &mut HashMap<i32, Lobby>,
-) {
-    let pl = pl_rc.borrow_mut();
-
-    if input.len() < 2 {
-        display_deck(pl);
-        return;
+        pl.send_messages(&messages);
     }
 
-    let mut new_item = String::new();
-    for s in input.iter().skip(1) {
-        new_item.push_str(s);
-        new_item.push_str(" ");
+    pub fn list_all_players(
+        pl_rc: Rc<RefCell<Player>>,
+        players: &mut HashMap<u32, Rc<RefCell<Player>>>,
+    ) {
+        let pl = pl_rc.borrow();
+        let mut messages = Vec::new();
+
+        for player in players.values() {
+            let pl_i = player.borrow();
+            let mut person = "";
+            if pl_i.token == pl.token {
+                person = " (You)";
+            }
+
+            let message = if pl_i.state == PlayerState::InLobby || pl_i.state == PlayerState::Playing {
+                format!("{} in {}{}", pl_i.name, pl_i.lobby, person).to_string()
+            } else {
+                format!("{}{}", pl_i.name, person).to_string()
+            };
+
+            messages.push(message);
+        }
+        pl.send_messages(&messages);
     }
 
-    new_item.pop();
+    pub fn handle_thrusteer_commands(
+        input: &Vec<&str>,
+        pl_rc: Rc<RefCell<Player>>,
+        lobby: &mut HashMap<i32, Lobby>,
+    ) {
+        let pl = pl_rc.borrow_mut();
 
-    if let (Some(beginning), Some(ending)) = (new_item.chars().next(), new_item.chars().next()) {
-        let quotation = "\"".to_string().chars().last().unwrap();
-
-        if beginning != quotation || ending != quotation {
-            pl.send_message("Please surround the THRUST with quotes.");
+        if input.len() < 2 {
+            Lobby::display_deck(pl);
             return;
         }
-    } else {
-        display_deck(pl);
-        return;
-    }
 
-    new_item.pop();
-    new_item.remove(0);
-
-    if new_item.contains("_") {
-        add_thrustee(pl, lobby, new_item.clone());
-        return;
-    } else {
-        add_thruster(pl, lobby, new_item.clone());
-        return;
-    }
-}
-
-pub fn add_thruster(
-    mut pl: RefMut<Player>,
-    lobby: &mut HashMap<i32, Lobby>,
-    new_item: String,
-) {
-    pl.personal_deck.add_thruster(&new_item);
-    pl.send_message(&format!("Added \"{}\" to THRUSTERS!", &new_item));
-
-    if let Some(lob) = lobby.get_mut(&pl.lobby) {
-        if lob.state == LobbyState::Waiting {
-            Lobby::add_pers_deck_to_lob(lob, &mut pl);
+        let mut new_item = String::new();
+        for s in input.iter().skip(1) {
+            new_item.push_str(s);
+            new_item.push_str(" ");
         }
-    }
-}
 
-pub fn add_thrustee(
-    mut pl: RefMut<Player>,
-    lobby: &mut HashMap<i32, Lobby>,
-    new_item: String,
-) {
-    pl.personal_deck.add_thrustee(&new_item);
-    pl.send_message(&format!("Added \"{}\" to THRUSTEES!", &new_item));
+        new_item.pop();
 
-    if let Some(lob) = lobby.get_mut(&pl.lobby) {
-        if lob.state == LobbyState::Waiting {
-            Lobby::add_pers_deck_to_lob(lob, &mut pl);
+        if let (Some(beginning), Some(ending)) = (new_item.chars().next(), new_item.chars().next()) {
+            let quotation = "\"".to_string().chars().last().unwrap();
+
+            if beginning != quotation || ending != quotation {
+                pl.send_message("Please surround the THRUST with quotes.");
+                return;
+            }
+        } else {
+            Lobby::display_deck(pl);
+            return;
         }
-    }
-}
 
-pub fn display_deck(pl: RefMut<Player>) {
-    let mut messages = Vec::new();
+        new_item.pop();
+        new_item.remove(0);
 
-    messages.push("You're THRUSTEES:".to_string());
-    for (i, thrustee) in pl.personal_deck.thrustees.iter().enumerate() {
-        messages.push(format!("{}. {}", i + 1, &thrustee).clone());
-    }
-
-    messages.push("</br>You're THRUSTERS:".to_string());
-    for (i, thruster) in pl.personal_deck.thrusters.iter().enumerate() {
-        messages.push(format!("{}. {}", i + 1, &thruster).clone());
-    }
-
-    pl.send_messages(&messages);
-}
-
-pub fn clear_pers_deck(pl_rc: Rc<RefCell<Player>>, lobby: &mut HashMap<i32, Lobby>) {
-    let mut pl = pl_rc.borrow_mut();
-
-    if let Some(lob) = lobby.get_mut(&pl.lobby) {
-        if lob.state == LobbyState::Waiting {
-            Lobby::remove_pers_deck_from_lob(lob, &mut pl);
+        if new_item.contains("_") {
+            Lobby::add_thrustee(pl, lobby, new_item.clone());
+            return;
+        } else {
+            Lobby::add_thruster(pl, lobby, new_item.clone());
+            return;
         }
     }
 
-    pl.personal_deck = Deck::new();
+    pub fn add_thruster(
+        mut pl: RefMut<Player>,
+        lobby: &mut HashMap<i32, Lobby>,
+        new_item: String,
+    ) {
+        pl.personal_deck.add_thruster(&new_item);
+        pl.send_message(&format!("Added \"{}\" to THRUSTERS!", &new_item));
 
-    pl.send_message("Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
+        if let Some(lob) = lobby.get_mut(&pl.lobby) {
+            if lob.state == LobbyState::Waiting {
+                Lobby::add_pers_deck_to_lob(lob, &mut pl);
+            }
+        }
+    }
+
+    pub fn add_thrustee(
+        mut pl: RefMut<Player>,
+        lobby: &mut HashMap<i32, Lobby>,
+        new_item: String,
+    ) {
+        pl.personal_deck.add_thrustee(&new_item);
+        pl.send_message(&format!("Added \"{}\" to THRUSTEES!", &new_item));
+
+        if let Some(lob) = lobby.get_mut(&pl.lobby) {
+            if lob.state == LobbyState::Waiting {
+                Lobby::add_pers_deck_to_lob(lob, &mut pl);
+            }
+        }
+    }
+
+    pub fn display_deck(pl: RefMut<Player>) {
+        let mut messages = Vec::new();
+
+        messages.push("You're THRUSTEES:".to_string());
+        for (i, thrustee) in pl.personal_deck.thrustees.iter().enumerate() {
+            messages.push(format!("{}. {}", i + 1, &thrustee).clone());
+        }
+
+        messages.push("</br>You're THRUSTERS:".to_string());
+        for (i, thruster) in pl.personal_deck.thrusters.iter().enumerate() {
+            messages.push(format!("{}. {}", i + 1, &thruster).clone());
+        }
+
+        pl.send_messages(&messages);
+    }
+
+    pub fn clear_pers_deck(pl_rc: Rc<RefCell<Player>>, lobby: &mut HashMap<i32, Lobby>) {
+        let mut pl = pl_rc.borrow_mut();
+
+        if let Some(lob) = lobby.get_mut(&pl.lobby) {
+            if lob.state == LobbyState::Waiting {
+                Lobby::remove_pers_deck_from_lob(lob, &mut pl);
+            }
+        }
+
+        pl.personal_deck = Deck::new();
+
+        pl.send_message("Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
+    }
 }
