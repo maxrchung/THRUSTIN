@@ -24,10 +24,10 @@ pub struct Lobby {
     pub max: usize,
 
     //max hand size
-    pub hand_size: u32,
+    pub hand_size: u8,
 
     //points
-    pub max_points: u32,
+    pub max_points: u8,
 
     //lobby id
     pub id: i32,
@@ -54,7 +54,7 @@ pub struct Lobby {
 
     pub thrustee_choices: Vec<String>,
 
-    pub max_thrustee_choices: i32,
+    pub max_thrustee_choices: u8,
 
     pub use_house: bool,
 }
@@ -269,7 +269,7 @@ impl Lobby {
             return;
         }
 
-        match input[1].to_string().parse::<u32>() {
+        match input[1].to_string().parse::<u8>() {
             Ok(max) => {
                 if max == 0 {
                     pl.send_message("bro dont make it 0 wtf man");
@@ -279,7 +279,7 @@ impl Lobby {
                 pl.send_message(&format!("max points set to {}", self.max_points));
             }
 
-            _ => pl.send_message(&"only numbers dude!!!"),
+            _ => pl.send_message(&"You have provided an invalid parameter."),
         }
     }
 
@@ -311,6 +311,59 @@ impl Lobby {
             }
 
             _ => pl.send_message(&"only numbers dude!!!"),
+        }
+    }
+
+    pub fn max_thrustee(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+        let pl = pl_rc.borrow();
+        if !self.is_host(pl.token) {
+            pl.send_message("The chief of the lobby is the only one who may set the THRUSTEE count.");
+            return;
+        }
+
+        if input.len() < 2 {
+            pl.send_message("A value must be provided to determine what the THRUSTEE count is to be.");
+            return;
+        }
+
+        match input[1].to_string().parse::<u8>() {
+            Ok(max) => {
+                if max < 2 {
+                    pl.send_message(&format!("Brother, you must specify 2 or more for THRUSTEE count. This is so that we can guarantee some sort of picking decision for the THRUSTEE to partake in when selecting a desired THRUSTEE to use. Thank you for your understanding."));
+                    return;
+                }
+                self.max_thrustee_choices = max;
+                pl.send_message(&format!("max THRUSTEE set to {}", self.max));
+            }
+
+            _ => pl.send_message(&"Thou hast entered a value that we have deemed as unparsable for the requested THRUSTEE command that thou hast witch hath entered hitherto."),
+        }
+    }
+
+    pub fn max_thruster(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+        let pl = pl_rc.borrow();
+        if !self.is_host(pl.token) {
+            pl.send_message("ONLY CHIEF CAN SET MAX THRUSTERS!!!");
+            return;
+        }
+
+        if input.len() < 2 {
+            pl.send_message("You need to give me a value man");
+            return;
+        }
+
+        match input[1].to_string().parse::<u8>() {
+            Ok(max) => {
+                if max < 2 {
+                    pl.send_message(&format!("bro u need at least two THRUSTERS, try again?"));
+                    return;
+                }
+
+                self.hand_size = max;
+                pl.send_message(&format!("max THRUSTERS set to {}", self.max));
+            }
+
+            _ => pl.send_message(&"only positive numbers dude, please!!! (and not too big neither)"),
         }
     }
 
@@ -824,9 +877,9 @@ impl Lobby {
             }
         }
 
-        match input[1].parse::<i32>() {
+        match input[1].parse::<u8>() {
             Ok(index) => {
-                if index < self.max_thrustee_choices && index >= 0 {
+                if index < self.max_thrustee_choices {
                     // Scope refcell borrow
                     let mut name;
                     {
@@ -1106,7 +1159,7 @@ impl Lobby {
     pub fn display_points(&self, pl: Rc<RefCell<Player>>) {
         let pl = pl.borrow();
         let mut messages = Vec::new();
-        messages.push(format!("Max: {}", self.max_points));
+        messages.push(format!("This is the Max points to strive for to win: {}", self.max_points));
 
         for rc in &self.list {
             let player = rc.borrow();

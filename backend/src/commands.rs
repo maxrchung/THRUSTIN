@@ -167,6 +167,10 @@ pub fn in_lobby_commands(
 
         ".start" | ".s" => lobby.start_game(pl),
 
+        ".thrustee" | ".tee" => lobby.max_thrustee(input, pl),
+
+        ".thruster" | ".ter" => lobby.max_thruster(input, pl),
+
         _ => pl
             .borrow()
             .send_message("Broski that shall be an invalid command. enter .help"),
@@ -192,6 +196,8 @@ fn list_in_commands(pl: &Player) {
             (".players 420", ".pl 420", "(chief-only) Okay, how many players do you want to allow in your lobby? 420?"),
             (".points 1", ".po 1", "(chief-only) Okay, how many points do you want to go to? 1? Don't do 1... cause then the game will end really fast."),
             (".start", ".s", "(chief-only) Yup, naturally as the chief you can start up the game."),
+            (".THRUSTEE", ".tee", "(chief-only) Hey there, this command will allow you to configure how many choices a THRUSTEE may choose from."),
+            (".THRUSTER", ".ter", "(chief-only) This little command here will allow you to configure how many THRUSTERS one may hold onto at one time."),
         ])
     ]);
 }

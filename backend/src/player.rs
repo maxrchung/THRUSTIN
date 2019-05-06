@@ -32,7 +32,7 @@ pub struct Player {
 
     pub personal_deck: Deck,
 
-    pub points: u32,
+    pub points: u8,
 
     comm: Rc<RefCell<Networking>>,
 }
@@ -67,7 +67,7 @@ impl Player {
             lobby: 0,
             deck: Deck::new(),
             personal_deck: Deck::new(),
-            points: 72742069,
+            points: 0,
             comm: communication,
         }
     }
