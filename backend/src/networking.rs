@@ -120,13 +120,13 @@ impl Networking {
     pub fn send_message(&self, token: &u32, message: &str) {
         let connections_lock = self.connections.lock().unwrap();
         let sender = connections_lock.get(&token).unwrap();
+        // Log server response for troubleshooting and FBI-ing
+        println!("    {}: {}", &token, &message);
         sender.send(message).unwrap();
     }
 
     pub fn send_messages(&self, token: &u32, messages: &Vec<String>) {
-        let connections_lock = self.connections.lock().unwrap();
-        let sender = connections_lock.get(&token).unwrap();
         let message = messages.join("<br/>");
-        sender.send(message).unwrap();
+        self.send_message(token, &message);
     }
 }

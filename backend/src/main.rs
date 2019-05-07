@@ -45,6 +45,8 @@ fn main() {
 
     loop {
         let (token, message) = read.borrow_mut().read_message();
+        // Logging for troubleshooting and FBI-ing user commands
+        println!("{}: {}", &token, &message);
 
         // Add to players list if not already
         if let None = players.get(&token) {

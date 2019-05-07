@@ -480,7 +480,7 @@ impl Lobby {
 
         let mut wait: bool = false;
 
-        // If lobby was empty before this guy joined, then they become thrustee, otherwise, basically do what normal join_lobby does (yea this is fucked fk me doggo)
+        // If lobby was empty before this guy joined, then they become THRUSTEE, otherwise, basically do what normal join_lobby does (yea this is fucked fk me doggo)
         if lob.list.len() == 0 {
             pl.state = PlayerState::Choosing;
             let mut messages =
@@ -554,8 +554,8 @@ impl Lobby {
                     Lobby::join_endless(pl_rc, lobby, &lobby_id);
                     return;
                 }
-                let mut pl = pl_rc.borrow_mut();
 
+                let mut pl = pl_rc.borrow_mut();
                 let mut messages = Vec::new();
                 if let Some(mut lob) = lobby.get_mut(&lobby_id) {
                     // Lobby full check
@@ -639,6 +639,13 @@ impl Lobby {
             else {
                 let pl_ind = self.search_token(pl.token).unwrap();
                 let next_ind = (pl_ind + 1) % self.list.len();
+                // This needs to be calculated as if pl has been removed
+                let next_thrustee = if pl_ind == self.list.len() - 1 {
+                    0
+                }
+                else {
+                    pl_ind
+                };
 
                 // Set up messages
                 let mut messages = vec![String::from(format!("{} left the lobby..", pl.name))];
@@ -652,7 +659,7 @@ impl Lobby {
                 let mut new_host = false;
                 // Handle if player is Choosing
                 if pl.state == PlayerState::Choosing {
-                    self.thrustee = next_ind;
+                    self.thrustee = next_thrustee;
                     // Next player chooses and replenish cards
                     let mut next = self.list[next_ind].borrow_mut();
                     next.state = PlayerState::Choosing;
@@ -661,7 +668,7 @@ impl Lobby {
                 }
                 // Handle if player is Deciding
                 else if pl.state == PlayerState::Deciding {
-                    self.thrustee = next_ind;
+                    self.thrustee = next_thrustee;
                     // Next player decides
                     let mut next = self.list[next_ind].borrow_mut();
                     next.state = PlayerState::Deciding;
