@@ -44,10 +44,13 @@ impl Handler for Connection {
 
     // Notifies of disconnected client
     fn on_close(&mut self, code: CloseCode, reason: &str) {
+        let mut connections_lock = self.connections.lock().unwrap();
+        connections_lock.remove(&self.uuid).unwrap();
+        let mut commands_lock = self.commands.lock().unwrap();
         match code {
-            CloseCode::Normal => println!("The client is done with the connection."),
-            CloseCode::Away => println!("The client is leaving the site."),
-            _ => println!("The client encountered an error: {}", reason),
+            CloseCode::Normal => commands_lock.push_back((self.uuid, format!(".disconnect CloseCode::Normal {}", reason))),
+            CloseCode::Away => commands_lock.push_back((self.uuid, format!(".disconnect CloseCode::Away {}", reason))),
+            _ => commands_lock.push_back((self.uuid, format!(".disconnect Error {}", reason)))
         }
     }
 }
