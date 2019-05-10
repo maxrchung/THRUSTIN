@@ -15,7 +15,7 @@ fn get_command(input: &Vec<&str>) -> String {
     return com;
 }
 
-//
+// Helper for making help tables
 fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
     let mut table_html = String::from("<table class=\"table table-sm table-responsive w-auto\">");
     table_html.push_str("<tr>");
@@ -44,6 +44,15 @@ fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
     return table_html;
 }
 
+fn disconnect(token: u32, players: &mut HashMap<u32, Rc<RefCell<Player>>>) {
+    players.remove(&token).expect("what the heck how did you disconnect someone who didn't exist bro BIG ASS BUG!!");
+}
+
+fn disconnect_from_lobby(pl: Rc<RefCell<Player>>, players: &mut HashMap<u32, Rc<RefCell<Player>>>, lobbies: &mut HashMap<i32, Lobby>) {
+    disconnect(pl.borrow().token, players);
+    Lobby::leave_from_lobby(pl, lobbies);
+}
+
 ///////////////
 //choose name//
 ///////////////
@@ -57,6 +66,8 @@ pub fn choose_name_commands(
         ".name" | ".n" => Player::set_name(input, pl, players),
 
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
+
+        ".disconnect" => disconnect(pl.borrow().token, players),
 
         _ => {
             pl.borrow()
@@ -102,6 +113,8 @@ pub fn out_of_lobby_commands(
         ".unthrust" | ".u" => Lobby::clear_pers_deck(pl, lobbies),
 
         ".who" | ".w" => Lobby::list_all_players(pl, players),
+
+        ".disconnect" => disconnect(pl.borrow().token, players),
 
         _ => {
             pl.borrow()
@@ -171,6 +184,8 @@ pub fn in_lobby_commands(
 
         ".thruster" | ".ter" => lobby.max_thruster(input, pl),
 
+        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
+
         _ => pl
             .borrow()
             .send_message("Broski that shall be an invalid command. enter .help"),
@@ -208,6 +223,7 @@ fn list_in_commands(pl: &Player) {
 pub fn playing_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<Player>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
@@ -224,6 +240,8 @@ pub fn playing_commands(
         ".thrust" | ".t" => lobby.handle_thrust(input, pl),
 
         ".kick" | ".k" => lobby.kick(input, pl),
+
+        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
         _ => pl.borrow().send_message("Bruh that's an invalid command."),
     }
@@ -249,6 +267,7 @@ fn list_playing_commands(pl: &Player) {
 pub fn choosing_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<Player>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
@@ -265,6 +284,8 @@ pub fn choosing_commands(
         ".thrust" | ".t" => lobby.choose(input, pl),
 
         ".kick" | ".k" => lobby.kick(input, pl),
+
+        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
         _ => pl.borrow().send_message("Brother that is an invalid command."),
     }
@@ -290,6 +311,7 @@ fn list_choosing_commands(pl: &Player) {
 pub fn deciding_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<Player>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
@@ -306,6 +328,8 @@ pub fn deciding_commands(
         ".thrust" | ".t" => lobby.decide(input, pl),
 
         ".kick" | ".k" => lobby.kick(input, pl),
+
+        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
         _ => pl.borrow().send_message("Bro! That's an invalid command."),
     }
@@ -331,6 +355,7 @@ fn list_deciding_commands(pl: &Player) {
 pub fn waiting_commands(
     input: Vec<&str>,
     pl: Rc<RefCell<Player>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&input);
@@ -349,6 +374,8 @@ pub fn waiting_commands(
             .send_message("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),
 
         ".kick" | ".k" => lobby.kick(input, pl),
+
+        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
         _ => pl.borrow().send_message("Bruh... that's an invalid command."),
     }

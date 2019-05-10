@@ -101,19 +101,19 @@ fn handle_input(
         }
 
         PlayerState::Playing => {
-            commands::playing_commands(split, pl, lobbies);
+            commands::playing_commands(split, pl, players, lobbies);
         }
 
         PlayerState::Choosing => {
-            commands::choosing_commands(split, pl, lobbies);
+            commands::choosing_commands(split, pl, players, lobbies);
         }
 
         PlayerState::Deciding => {
-            commands::deciding_commands(split, pl, lobbies);
+            commands::deciding_commands(split, pl, players, lobbies);
         }
 
         PlayerState::Waiting => {
-            commands::waiting_commands(split, pl, lobbies);
+            commands::waiting_commands(split, pl, players, lobbies);
         }
     }
 }
