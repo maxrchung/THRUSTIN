@@ -56,24 +56,30 @@ fn main() {
             );
         }
 
-        handle_input(token, message, &mut lobby_id, &mut lobbies, &mut players);
+        if message.len() > MAX_INPUT {
+            let player = players.get(&token).unwrap().borrow();
+            player.send_message("ok bro you are typing way too much lmao");
+            return;
+        }
+
+        let split: Vec<&str> = message.split(' ').collect();
+
+        // Disconnect player
+        if message.len() > 0 && split[0] == ".disconnect" {
+            players.remove(&token).expect("what the heck how did you disconnect someone who didn't exist bro BIG ASS BUG!!");
+        }
+
+        handle_input(token, split, &mut lobby_id, &mut lobbies, &mut players);
     }
 }
 
 fn handle_input(
     token: u32,
-    input: String,
+    split: Vec<&str>,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, Lobby>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
-    if input.len() > MAX_INPUT {
-        let player = players.get(&token).unwrap().borrow();
-        player.send_message("ok bro you are typing way too much lmao");
-        return;
-    }
-
-    let split: Vec<&str> = input.split(' ').collect();
     let state = {
         let player = players.get(&token).unwrap().borrow();
         player.state.clone()
