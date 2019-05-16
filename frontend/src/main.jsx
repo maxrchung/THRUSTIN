@@ -28,7 +28,6 @@ class Client extends React.Component {
         super(props);
 
         this.handleClose = this.handleClose.bind(this);
-        this.handleError = this.handleError.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
         this.scrollToDummy = this.scrollToDummy.bind(this);
@@ -52,15 +51,10 @@ class Client extends React.Component {
         }
         this.connection.onmessage = this.handleMessage; 
         this.connection.onclose = this.handleClose;
-        this.connection.onerror = this.handleError;
     }
 
     handleClose() {
         this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
-    }
-
-    handleError() {
-        this.setMessage("Um... there was an error with the WebSocket connection to the server. I don't know what's happened, maybe you need to refresh or maybe it's just a temporary problem on our side. Sorry, not sure.");
     }
 
     handleKeyDown(e) {
