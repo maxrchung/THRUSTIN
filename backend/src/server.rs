@@ -55,11 +55,6 @@ impl Server {
 
             let split: Vec<&str> = message.split(' ').collect();
 
-            // Disconnect player
-            if message.len() > 0 && split[0] == ".disconnect" {
-                players.remove(&token).expect("what the heck how did you disconnect someone who didn't exist bro BIG ASS BUG!!");
-            }
-
             Server::handle_input(token, split, &mut lobby_id, &mut lobbies, &mut players);
         }
     }
