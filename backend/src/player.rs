@@ -1,4 +1,4 @@
-use crate::networking::Networking;
+use crate::communication::WebSocketCommunication;
 use crate::thrust::Deck;
 use std::collections::HashMap;
 
@@ -34,7 +34,7 @@ pub struct Player {
 
     pub points: u8,
 
-    comm: Rc<RefCell<Networking>>,
+    comm: Rc<RefCell<WebSocketCommunication>>,
 }
 
 impl Player {
@@ -46,7 +46,7 @@ impl Player {
         self.comm.borrow().send_messages(&self.token, messages);
     }
 
-    pub fn new(token: u32, communication: Rc<RefCell<Networking>>) -> Player {
+    pub fn new(token: u32, communication: Rc<RefCell<WebSocketCommunication>>) -> Player {
         Player {
             token: token,
             name: token.to_string(),
@@ -59,7 +59,7 @@ impl Player {
         }
     }
 
-    pub fn new_endless_host(communication: Rc<RefCell<Networking>>) -> Player {
+    pub fn new_endless_host(communication: Rc<RefCell<WebSocketCommunication>>) -> Player {
         Player {
             token: 0,
             name: "EndlessLobbyHostDoggo".to_string(),

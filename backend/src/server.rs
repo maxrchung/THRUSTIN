@@ -1,6 +1,6 @@
 use crate::commands;
+use crate::communication::WebSocketCommunication;
 use crate::lobby::Lobby;
-use crate::networking::Networking;
 use crate::player::{Player, PlayerState};
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -11,7 +11,7 @@ pub struct Server {
 }
 impl Server {
     pub fn run() {
-        let communication = Rc::new(RefCell::new(Networking::init()));
+        let communication = Rc::new(RefCell::new(WebSocketCommunication::init()));
         let mut lobby_id = 1;
         let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
         let mut players: HashMap<u32, Rc<RefCell<Player>>> = HashMap::new();

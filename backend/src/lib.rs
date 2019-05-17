@@ -7,12 +7,14 @@ extern crate lazy_static; //alexgarbage
 extern crate regex; //alexgarbage
 
 mod commands;
+mod communication;
 mod lobby;
-mod networking;
 mod player;
 mod server;
 mod thrust;
 
+use server::Server;
+
 pub fn run() {
-    server::Server::run();
+    Server::run();
 }

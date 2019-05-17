@@ -20,14 +20,14 @@ fn file(file: PathBuf) -> Option<NamedFile> {
 }
 
 // Specifies handler for processing an incoming websocket connection
-struct Connection {
+struct WebSocketListener {
     out: Sender,
     commands: Arc<Mutex<VecDeque<(u32, String)>>>,
     connections: Arc<Mutex<HashMap<u32, Sender>>>,
     uuid: u32,
 }
 
-impl Handler for Connection {
+impl Handler for WebSocketListener {
     // Adds new connection to global connections
     fn on_open(&mut self, _: Handshake) -> Result<()> {
         let mut connections_lock = self.connections.lock().unwrap();
@@ -57,16 +57,16 @@ impl Handler for Connection {
 
 // Main Networking component that public can use
 #[derive(Debug)]
-pub struct Networking {
+pub struct WebSocketCommunication {
     commands: Arc<Mutex<VecDeque<(u32, String)>>>,
     connections: Arc<Mutex<HashMap<u32, Sender>>>,
     uuid: Arc<Mutex<u32>>,
 }
 
-impl Networking {
+impl WebSocketCommunication {
     // Initialize Networking components
-    pub fn init() -> Networking {
-        let mut communication = Networking {
+    pub fn init() -> WebSocketCommunication {
+        let mut communication = WebSocketCommunication {
             commands: Arc::new(Mutex::new(VecDeque::new())),
             connections: Arc::new(Mutex::new(HashMap::new())),
             // Start at 1 so endless can be 0
@@ -92,7 +92,7 @@ impl Networking {
         let connections_clone = Arc::clone(&self.connections);
         let uuid_clone = Arc::clone(&self.uuid);
         thread::spawn(move || {
-            listen("0.0.0.0:3012", |out| Connection {
+            listen("0.0.0.0:3012", |out| WebSocketListener {
                 out: out,
                 commands: commands_clone.clone(),
                 connections: connections_clone.clone(),
