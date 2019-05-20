@@ -1,5 +1,5 @@
 use crate::commands;
-use crate::communication::WebSocketCommunication;
+use crate::communication::{Communication, WebSocketCommunication};
 use crate::lobby::Lobby;
 use crate::player::{Player, PlayerState};
 use std::cell::RefCell;
@@ -10,8 +10,9 @@ const MAX_INPUT: usize = 6669;
 pub struct Server {
 }
 impl Server {
-    pub fn run() {
-        let communication = Rc::new(RefCell::new(WebSocketCommunication::init()));
+    pub fn run(communication: Rc<RefCell<Communication>>) {
+        communication.borrow().start();
+
         let mut lobby_id = 1;
         let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
         let mut players: HashMap<u32, Rc<RefCell<Player>>> = HashMap::new();
@@ -34,7 +35,7 @@ impl Server {
             &mut lobbies,
         );
 
-        loop {
+        while read.borrow().continue_running() {
             let (token, message) = read.borrow_mut().read_message();
             // Logging for troubleshooting and FBI-ing user commands
             println!("\n{}: {}", &token, &message);
@@ -57,6 +58,8 @@ impl Server {
 
             Server::handle_input(token, split, &mut lobby_id, &mut lobbies, &mut players);
         }
+
+        communication.borrow().stop();
     }
 
     fn handle_input(

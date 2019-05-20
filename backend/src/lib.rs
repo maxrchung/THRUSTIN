@@ -13,8 +13,18 @@ mod player;
 mod server;
 mod thrust;
 
+use communication::FileSystemCommunication;
+use communication::WebSocketCommunication;
 use server::Server;
+use std::cell::RefCell;
+use std::rc::Rc;
 
-pub fn run() {
-    Server::run();
+pub fn run_file_system_server(id: String) {
+    let fs_comm = Rc::new(RefCell::new(FileSystemCommunication::new(id)));
+    Server::run(fs_comm);
+}
+
+pub fn run_web_socket_server() {
+    let ws_comm = Rc::new(RefCell::new(WebSocketCommunication::new()));
+    Server::run(ws_comm);
 }

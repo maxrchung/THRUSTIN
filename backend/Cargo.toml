@@ -5,8 +5,9 @@ authors = ["Max Chung, Alex Liu, Royce Sato"]
 edition = "2018"
 
 [dependencies]
-regex = "1.1.0"
-ws = "*"
-rocket = "*"
-lazy_static = "1.2.0"
+lazy_static = "*"
+notify = "*"
 rand = "*"
+regex = "*"
+rocket = "*"
+ws = "*"

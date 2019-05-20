@@ -1,5 +1,5 @@
 use thrustin;
 
 fn main() {
-    thrustin::run();
+    thrustin::run_web_socket_server();
 }
