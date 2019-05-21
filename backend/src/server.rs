@@ -1,5 +1,5 @@
 use crate::commands;
-use crate::communication::{Communication, WebSocketCommunication};
+use crate::communication::{Communication};
 use crate::lobby::Lobby;
 use crate::player::{Player, PlayerState};
 use std::cell::RefCell;

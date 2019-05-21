@@ -19,12 +19,12 @@ use server::Server;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub fn run_file_system_server(id: String) {
-    let fs_comm = Rc::new(RefCell::new(FileSystemCommunication::new(id)));
+pub fn run_fs_server(id: &str) {
+    let fs_comm = Rc::new(RefCell::new(FileSystemCommunication::new(String::from(id))));
     Server::run(fs_comm);
 }
 
-pub fn run_web_socket_server() {
+pub fn run_ws_server() {
     let ws_comm = Rc::new(RefCell::new(WebSocketCommunication::new()));
     Server::run(ws_comm);
 }

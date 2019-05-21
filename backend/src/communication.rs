@@ -37,7 +37,8 @@ pub struct FileSystemCommunication {
     id: String,
     uuid: u32,
     client_to_token: HashMap<String, u32>,
-    token_to_client: HashMap<u32, String>
+    token_to_client: HashMap<u32, String>,
+    running: bool
 }
 
 impl FileSystemCommunication {
@@ -46,7 +47,8 @@ impl FileSystemCommunication {
             id,
             uuid: 1,
             client_to_token: HashMap::new(),
-            token_to_client: HashMap::new()
+            token_to_client: HashMap::new(),
+            running: true
         }
     }
 }
@@ -60,11 +62,7 @@ impl Communication for FileSystemCommunication {
     }
 
     fn continue_running(&self) -> bool {
-        let end_path = format!("{}/end", &self.id);
-        if Path::new(&end_path).exists() {
-            return false;
-        }
-        return true;
+        return self.running;
     }
 
     fn stop(&self) {
@@ -80,9 +78,15 @@ impl Communication for FileSystemCommunication {
         // Keep on looking until what we want is found
         loop { 
             if let Ok(event) = rx.recv() {
-                // Only process message if message is directored towards us, i.e. has "->server" in filename
+                // Only process message if message is directed towards server, i.e. has "->server" in filename
                 if let DebouncedEvent::Create(path) = event {
-                    let file_name = String::from(path.to_str().expect("Failed to get file name for server message"));
+                    let os_file_name = path.file_name().expect("Failed to get file name for server message");
+                    let file_name = os_file_name.to_os_string().into_string().expect("Failed to convert OS String file name to String");
+                    if file_name == "end" {
+                        self.running = false;
+                        return (0, String::new());
+                    }
+
                     let split: Vec<&str> = file_name.split("->").collect();
                     if split.len() == 2 && split[1] == "server" {
                         let client_name = split[0];
@@ -104,9 +108,11 @@ impl Communication for FileSystemCommunication {
     }
 
     fn send_message(&self, token: &u32, message: &str) {
-        let client_name = self.token_to_client.get(token).expect("Unable to get token_to_client");
-        let file_name = format!("/{}/server->{}", &self.id, client_name);
-        fs::write(file_name, message).expect("Failed to write file to client");
+        if self.running {
+            let client_name = self.token_to_client.get(token).expect("Unable to get token_to_client");
+            let file_name = format!("/{}/server->{}", &self.id, client_name);
+            fs::write(file_name, message).expect("Failed to write file to client");
+        }
     }
 
     fn send_messages(&self, token: &u32, messages: &Vec<String>) {
