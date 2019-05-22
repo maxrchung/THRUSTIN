@@ -1,4 +1,6 @@
-use notify::{DebouncedEvent, RecursiveMode, Watcher};
+// There are known issues with using fs::remove_dir_all on Windows
+// This crate fixes these issues and makes delete more consistent
+use remove_dir_all::remove_dir_all;
 use rocket::response::NamedFile;
 use std::collections::HashMap;
 use std::collections::VecDeque;
@@ -7,8 +9,6 @@ use std::fmt::{Debug, Formatter};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
-use std::sync::mpsc::channel;
-use std::time::Duration;
 use std::vec::Vec;
 use std::{io, thread};
 use ws::{CloseCode, Handler, Handshake, Message, Result, Sender};
@@ -56,7 +56,7 @@ impl FileSystemCommunication {
 impl Communication for FileSystemCommunication {
     fn start(&self) {
         if Path::new(&self.id).exists() {
-            fs::remove_dir_all(&self.id).expect("Failed to remove server directory at start");
+            remove_dir_all(&self.id).expect("Failed to remove server directory at start");
         }
         fs::create_dir(&self.id).expect("Failed to create server directory");
     }
@@ -66,42 +66,35 @@ impl Communication for FileSystemCommunication {
     }
 
     fn stop(&self) {
-        fs::remove_dir_all(&self.id).expect("Failed to remove server directory at end");
+        remove_dir_all(&self.id).expect("Failed to remove server directory at end");
     }
 
     fn read_message(&mut self) -> (u32, String) {
-        // Set up watcher to look for new message
-        let (tx, rx) = channel();
-        let mut watcher = notify::watcher(tx, Duration::from_secs(1)).expect("Failed to make server watcher");
-        watcher.watch(&self.id, RecursiveMode::NonRecursive).expect("Failed to start server watcher");
+        loop {
+            for entry in fs::read_dir(&self.id).expect("Failed to read server directory") {
+                let entry = entry.expect("Failed to make server entry");
+                let path = entry.path();
+                let os_file_name =  path.file_name().expect("Failed to get file name for server message");
+                let file_name = os_file_name.to_os_string().into_string().expect("Failed to convert OS String file name to String");
+                if file_name == "end" {
+                    self.running = false;
+                    return (0, String::new());
+                }
 
-        // Keep on looking until what we want is found
-        loop { 
-            if let Ok(event) = rx.recv() {
-                // Only process message if message is directed towards server, i.e. has "->server" in filename
-                if let DebouncedEvent::Create(path) = event {
-                    let os_file_name = path.file_name().expect("Failed to get file name for server message");
-                    let file_name = os_file_name.to_os_string().into_string().expect("Failed to convert OS String file name to String");
-                    if file_name == "end" {
-                        self.running = false;
-                        return (0, String::new());
+                let split: Vec<&str> = file_name.split("_____").collect();
+                if split.len() == 2 && split[1] == "server" {
+                    let client_name = split[0];
+
+                    if !self.client_to_token.contains_key(client_name) {
+                        self.client_to_token.insert(String::from(client_name), self.uuid);
+                        self.token_to_client.insert(self.uuid, String::from(client_name));
+                        self.uuid = self.uuid + 1;
                     }
 
-                    let split: Vec<&str> = file_name.split("->").collect();
-                    if split.len() == 2 && split[1] == "server" {
-                        let client_name = split[0];
-
-                        if !self.client_to_token.contains_key(client_name) {
-                            self.client_to_token.insert(String::from(client_name), self.uuid);
-                            self.token_to_client.insert(self.uuid, String::from(client_name));
-                            self.uuid = self.uuid + 1;
-                        }
-
-                        let client_token = self.client_to_token.get(client_name).unwrap();
-                        let msg = fs::read_to_string(&path).expect("Failed to read string from server message");
-                        fs::remove_file(path).expect("Failed to remove server message file");
-                        return (*client_token, msg);
-                    }
+                    let client_token = self.client_to_token.get(client_name).unwrap();
+                    let msg = fs::read_to_string(&path).expect("Failed to read string from server message");
+                    fs::remove_file(path).expect("Failed to remove server message file");
+                    return (*client_token, msg);
                 }
             }
         }
@@ -110,8 +103,13 @@ impl Communication for FileSystemCommunication {
     fn send_message(&self, token: &u32, message: &str) {
         if self.running {
             let client_name = self.token_to_client.get(token).expect("Unable to get token_to_client");
-            let file_name = format!("/{}/server->{}", &self.id, client_name);
-            fs::write(file_name, message).expect("Failed to write file to client");
+            let file_name = format!("{}/server_____{}", &self.id, client_name);
+            let file_path = Path::new(&file_name);
+            // Block if path exists already
+            while file_path.exists() {
+            }
+
+            fs::write(file_path, message).expect("Failed to write file to client");
         }
     }
 
@@ -249,7 +247,6 @@ impl Communication for WebSocketCommunication {
         let connections_lock = self.connections.lock().unwrap();
         let sender = connections_lock.get(&token).unwrap();
         // Log server response for troubleshooting and FBI-ing
-        println!("    {}: {}", &token, &message);
         sender.send(message).unwrap();
     }
 

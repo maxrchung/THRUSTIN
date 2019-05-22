@@ -1,1 +1,79 @@
+use std::fs;
+use std::path::{Path};
+use std::thread;
 use thrustin;
+
+pub fn run_test_server(id: &str) {
+    let lifetime = String::from(id);
+    thread::spawn(move || {
+        thrustin::run_fs_server(&lifetime);
+    });
+}
+
+pub struct FileSystemClient {
+    server_path: String,
+    id: String
+}
+
+impl FileSystemClient {
+    pub fn new(server_path: &str, id: &str) -> FileSystemClient {
+        FileSystemClient {
+            server_path: String::from(server_path),
+            id: String::from(id)
+        }
+    }
+
+    fn block_if(&self, path: &str) {
+        let path = Path::new(path);
+        while path.exists() {
+        }
+    }
+
+    fn block_for(&self, path: &str) {
+        let path = Path::new(path);
+        while !path.exists() {
+        }
+    }
+
+    pub fn stop(&self) {
+        self.block_for(&self.server_path);
+
+        let end_path = format!("{}/end", &self.server_path);
+        fs::write(end_path, "").expect("Unable to write end message");
+
+        // Block and make sure server cleans up
+        self.block_if(&self.server_path);
+    }
+
+    pub fn read_message(&self) -> String {
+        self.block_for(&self.server_path);
+
+        // Keep on looking until what we want is found
+        loop { 
+            for entry in fs::read_dir(&self.server_path).expect("Failed to read server directory") {
+                let entry = entry.expect("Failed to make server entry");
+                let path = entry.path();
+                let os_file_name = path.file_name().expect("Failed to get file name for client message");
+                let file_name = os_file_name.to_os_string().into_string().expect("Failed to convert OS String file name to String");
+
+                let split: Vec<&str> = file_name.split("_____").collect();
+                if split.len() == 2 && split[0] == "server" && split[1] == self.id {
+                    let msg = fs::read_to_string(&path).expect("Failed to read string from client message");
+                    fs::remove_file(path).expect("Failed to remove server client file");
+                    return msg;
+                }
+            }
+        }
+    }
+
+    pub fn send_message(&self, msg: &str) {
+        self.block_for(&self.server_path);
+
+        // Block if message hasn't been read yet
+        let formatted = format!("{}/{}_____server", &self.server_path, &self.id);
+        self.block_if(&formatted);
+
+        println!("{:?}",formatted);
+        fs::write(formatted, msg).expect("Unable to write client message");
+    }
+}
