@@ -108,6 +108,8 @@ pub fn out_of_lobby_commands(
 
         ".name" | ".n" => Player::set_name(input, pl, players),
 
+        ".play" | ".p" => Lobby::join_lobby(vec![".join 0"], pl, lobbies),
+
         ".thrust" | ".t" => Lobby::handle_thrusteer_commands(&input, pl, lobbies),
 
         ".unthrust" | ".u" => Lobby::clear_pers_deck(pl, lobbies),
@@ -132,6 +134,7 @@ fn list_out_commands(pl: &Player) {
             (".list", ".l", "Lists info for lobbies that are available"),
             (".make", ".m", "Make a new lobby"),
             (".name xx69SWAGGER911xx", ".n xx69SWAGGER911xx", "If you must, do this to change your name to xx69SWAGGER911xx"),
+            (".play", ".p", "Join an endless public lobby with some other big doggos."),
             (".THRUST", ".t", "This will list out your added THRUSTEES and THRUSTERS. (THRUSTERS are THRUSTED into the THRUSTEES's underscores.) Lobbies will combine and use everyone's awesome THRUSTS."),
             (".THRUST \"Some _____ THRUSTEE\" \"Some THRUSTER\"", ".t \"Some _____ THRUSTEE\" \"Some THRUSTER\"", "Add THRUSTS to your wonderful collection. THRUSTS with an underscore will be put into your THRUSTEES otherwise yeah you guessed it they're put into THRUSTERS. Also, remember to encapsulate each THRUST with a quotation."),
             (".UNTHRUST", ".u", "Destroy all your THRUSTS... [*** !!!CAUTION THIS IS IRREVERSIBLE!!! ***]"),
