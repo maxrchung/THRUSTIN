@@ -100,15 +100,17 @@ impl Player {
         {
             let mut pl = play.borrow_mut();
             pl.name = p_name.clone();
-            pl.send_message(&format!("Name set to: {}", &pl.name));
+            let mut messages = vec![format!("Name set to: {}", &pl.name)];
 
             if pl.state == PlayerState::ChooseName {
                 pl.state = PlayerState::OutOfLobby;
-                pl.send_message(&format!(
-                    "ok {}, now ur redy 2 THRUST, try '.help' for sum more information",
+                messages.push(format!(
+                    "ok {}, now ur redy 2 THRUST, try '.help' for sum updated information",
                     &pl.name
                 ));
             }
+
+            pl.send_messages(&messages);
         }
     }
 }
