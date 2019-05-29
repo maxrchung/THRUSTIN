@@ -59,6 +59,10 @@ impl Communication for FileSystemCommunication {
             remove_dir_all(&self.id).expect("Failed to remove server directory at start");
         }
         fs::create_dir(&self.id).expect("Failed to create server directory");
+
+        // Block for new folder
+        while !Path::new(&self.id).exists() {
+        }
     }
 
     fn continue_running(&self) -> bool {
@@ -92,7 +96,16 @@ impl Communication for FileSystemCommunication {
                     }
 
                     let client_token = self.client_to_token.get(client_name).unwrap();
-                    let msg = fs::read_to_string(&path).expect("Failed to read string from server message");
+                    let mut msg = String::new();
+
+                    // Message may not be done reading yet, so keep on checking
+                    while msg.is_empty() {
+                        match fs::read_to_string(&path) {
+                            Ok(contents) => msg = contents,
+                            _ => ()
+                        }
+                    }
+
                     fs::remove_file(path).expect("Failed to remove server message file");
                     return (*client_token, msg);
                 }

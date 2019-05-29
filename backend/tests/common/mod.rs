@@ -58,8 +58,16 @@ impl FileSystemClient {
 
                 let split: Vec<&str> = file_name.split("_____").collect();
                 if split.len() == 2 && split[0] == "server" && split[1] == self.id {
-                    let msg = fs::read_to_string(&path).expect("Failed to read string from client message");
-                    fs::remove_file(path).expect("Failed to remove server client file");
+                    let mut msg = String::new();
+                    // Message may not be done reading yet, so keep on checking
+                    while msg.is_empty() {
+                        match fs::read_to_string(&path) {
+                            Ok(contents) => msg = contents,
+                            _ => ()
+                        }
+                    }
+                    
+                    fs::remove_file(path).expect("Failed to remove client file");
                     return msg;
                 }
             }
@@ -75,5 +83,16 @@ impl FileSystemClient {
 
         println!("{:?}",formatted);
         fs::write(formatted, msg).expect("Unable to write client message");
+    }
+
+    pub fn send_and_read_message(&self, msg: &str) -> String {
+        self.send_message(msg);
+        self.read_message()
+    }
+
+    pub fn name(&self) -> String {
+        let command = format!(".n {}", self.id);
+        self.send_message(&command);
+        self.read_message()
     }
 }
