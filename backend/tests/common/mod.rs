@@ -25,14 +25,12 @@ impl FileSystemClient {
 
     fn block_if(&self, path: &str) {
         let path = Path::new(path);
-        while path.exists() {
-        }
+        while path.exists() {}
     }
 
     fn block_for(&self, path: &str) {
         let path = Path::new(path);
-        while !path.exists() {
-        }
+        while !path.exists() {}
     }
 
     pub fn stop(&self) {
@@ -45,12 +43,23 @@ impl FileSystemClient {
         self.block_if(&self.server_path);
     }
 
-    pub fn read_message(&self) -> String {
+    pub fn read(&self) -> String {
         self.block_for(&self.server_path);
 
         // Keep on looking until what we want is found
         loop { 
-            for entry in fs::read_dir(&self.server_path).expect("Failed to read server directory") {
+            let mut dir;
+            loop {
+                match fs::read_dir(&self.server_path) {
+                    Ok(read) => {
+                        dir = read; 
+                        break;
+                    }
+                    _ => ()
+                }
+            }
+
+            for entry in dir {
                 let entry = entry.expect("Failed to make server entry");
                 let path = entry.path();
                 let os_file_name = path.file_name().expect("Failed to get file name for client message");
@@ -74,25 +83,24 @@ impl FileSystemClient {
         }
     }
 
-    pub fn send_message(&self, msg: &str) {
+    pub fn send(&self, msg: &str) {
         self.block_for(&self.server_path);
 
         // Block if message hasn't been read yet
         let formatted = format!("{}/{}_____server", &self.server_path, &self.id);
         self.block_if(&formatted);
 
-        println!("{:?}",formatted);
-        fs::write(formatted, msg).expect("Unable to write client message");
+        fs::write(&formatted, msg).expect("Unable to write client message");
     }
 
-    pub fn send_and_read_message(&self, msg: &str) -> String {
-        self.send_message(msg);
-        self.read_message()
+    pub fn send_and_read(&self, msg: &str) -> String {
+        self.send(msg);
+        self.read()
     }
 
     pub fn name(&self) -> String {
         let command = format!(".n {}", self.id);
-        self.send_message(&command);
-        self.read_message()
+        self.send(&command);
+        self.read()
     }
 }

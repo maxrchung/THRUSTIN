@@ -55,14 +55,14 @@ impl FileSystemCommunication {
 
 impl Communication for FileSystemCommunication {
     fn start(&self) {
-        if Path::new(&self.id).exists() {
-            remove_dir_all(&self.id).expect("Failed to remove server directory at start");
+        // I think ideally the whole folder should be wiped, but this can cause conflict with
+        // clients sending before the folder is wiped
+        if !Path::new(&self.id).exists() {
+            fs::create_dir(&self.id).expect("Failed to create server directory");
         }
-        fs::create_dir(&self.id).expect("Failed to create server directory");
 
         // Block for new folder
-        while !Path::new(&self.id).exists() {
-        }
+        while !Path::new(&self.id).exists() {}
     }
 
     fn continue_running(&self) -> bool {
@@ -70,12 +70,23 @@ impl Communication for FileSystemCommunication {
     }
 
     fn stop(&self) {
-        remove_dir_all(&self.id).expect("Failed to remove server directory at end");
+        while remove_dir_all(&self.id).is_err() {}
     }
 
     fn read_message(&mut self) -> (u32, String) {
         loop {
-            for entry in fs::read_dir(&self.id).expect("Failed to read server directory") {
+            let mut dir;
+            loop {
+                match fs::read_dir(&self.id) {
+                    Ok(read) => {
+                        dir = read; 
+                        break;
+                    }
+                    _ => ()
+                }
+            }
+
+            for entry in dir {
                 let entry = entry.expect("Failed to make server entry");
                 let path = entry.path();
                 let os_file_name =  path.file_name().expect("Failed to get file name for server message");

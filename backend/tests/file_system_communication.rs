@@ -18,7 +18,7 @@ fn send_client_message() {
     let id = "send_client_message";
     common::run_test_server(id);
     let a = FileSystemClient::new(id, "a");
-    a.send_message("Now this is epic.");
+    a.send("Now this is epic.");
     a.stop();
 }
 
@@ -27,8 +27,8 @@ fn read_client_message() {
     let id = "read_client_message";
     common::run_test_server(id);
     let a = FileSystemClient::new(id, "a");
-    a.send_message("Now this is epic.");
-    let msg = a.read_message();
+    a.send("Now this is epic.");
+    let msg = a.read();
     assert!(msg.len() > 0);
 
     a.stop();
@@ -39,7 +39,7 @@ fn send_and_read_client_message() {
     let id = "send_and_read_client_message";
     common::run_test_server(id);
     let a = FileSystemClient::new(id, "a");
-    let msg = a.send_and_read_message("Now this is epic.");
+    let msg = a.send_and_read("Now this is epic.");
     assert!(msg.len() > 0);
 
     a.stop();
@@ -50,13 +50,13 @@ fn read_multiple_client_messages() {
     let id = "read_multiple_client_messages";
     common::run_test_server(id);
     let a = FileSystemClient::new(id, "a");
-    a.send_message("Now this is epic.");
+    a.send("Now this is epic.");
     let b = FileSystemClient::new(id, "b");
-    b.send_message(".name yoloSW4G420000000000000");
+    b.send(".name yoloSW4G420000000000000");
 
-    let msg = b.read_message();
+    let msg = b.read();
     assert!(msg.len() > 0);
-    let msg = a.read_message();
+    let msg = a.read();
     assert!(msg.len() > 0);
 
     a.stop();
