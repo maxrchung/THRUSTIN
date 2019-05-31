@@ -1,7 +1,6 @@
 mod common;
 
 use common::FileSystemClient;
-use std::path::{Path};
 
 #[test]
 fn valid_name() {
@@ -15,8 +14,8 @@ fn valid_name() {
 }
 
 #[test]
-fn valid_name_abbreviation() {
-    let id = "valid_name_abbreviation";
+fn valid_name_abbr() {
+    let id = "valid_name_abbr";
     common::run_test_server(id);
     let a = FileSystemClient::new(id, "a");
     let msg = a.send_and_read(".n a");
@@ -37,8 +36,8 @@ fn invalid_command() {
 }
 
 #[test]
-fn help() {
-    let id = "help";
+fn name_help() {
+    let id = "name_help";
     common::run_test_server(id);
     let a = FileSystemClient::new(id, "a");
     let msg = a.send_and_read(".help");
@@ -48,8 +47,8 @@ fn help() {
 }
 
 #[test]
-fn help_abbreviation() {
-    let id = "help_abbreviation";
+fn name_help_abbr() {
+    let id = "name_help_abbr";
     common::run_test_server(id);
     let a = FileSystemClient::new(id, "a");
     let msg = a.send_and_read(".h");
