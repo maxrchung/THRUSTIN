@@ -8,7 +8,6 @@ fn start_and_stop_server() {
     let id = "start_and_stop_server";
     common::run_test_server(id);
     let a = FileSystemClient::new(id, "a");
-
     a.stop();
     assert!(!Path::new(&id).exists());
 }
@@ -29,9 +28,8 @@ fn read_client_message() {
     let a = FileSystemClient::new(id, "a");
     a.send("Now this is epic.");
     let msg = a.read();
-    assert!(msg.len() > 0);
-
     a.stop();
+    assert!(msg.len() > 0);
 }
 
 #[test]
@@ -41,7 +39,6 @@ fn send_and_read_client_message() {
     let a = FileSystemClient::new(id, "a");
     let msg = a.send_and_read("Now this is epic.");
     assert!(msg.len() > 0);
-
     a.stop();
 }
 
@@ -53,12 +50,10 @@ fn read_multiple_client_messages() {
     a.send("Now this is epic.");
     let b = FileSystemClient::new(id, "b");
     b.send(".name yoloSW4G420000000000000");
-
     let msg = b.read();
     assert!(msg.len() > 0);
     let msg = a.read();
     assert!(msg.len() > 0);
-
     a.stop();
 }
 
@@ -68,7 +63,6 @@ fn name_client_message() {
     common::run_test_server(id);
     let a = FileSystemClient::new(id, "a");
     let msg = a.name();
-    assert!(msg.len() > 0);
-
     a.stop();
+    assert!(msg.len() > 0);
 }

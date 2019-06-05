@@ -108,7 +108,7 @@ pub fn out_of_lobby_commands(
 
         ".name" | ".n" => Player::set_name(input, pl, players),
 
-        ".play" | ".p" => Lobby::join_lobby(vec![".join 0"], pl, lobbies),
+        ".play" | ".p" => Lobby::join_lobby(vec![".join", "0"], pl, lobbies),
 
         ".thrust" | ".t" => Lobby::handle_thrusteer_commands(&input, pl, lobbies),
 
