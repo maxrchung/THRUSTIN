@@ -49,7 +49,7 @@ impl Server {
             }
 
             if message.len() > MAX_INPUT {
-                let player = players.get(&token).unwrap().borrow();
+                let player = players.get(&token).expect("player not found for message length check").borrow();
                 player.send_message("ok bro you are typing way too much lmao");
                 return;
             }
@@ -70,11 +70,11 @@ impl Server {
         players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     ) {
         let state = {
-            let player = players.get(&token).unwrap().borrow();
+            let player = players.get(&token).expect("player not found for state").borrow();
             player.state.clone()
         };
 
-        let pl = { players.get(&token).unwrap().clone() };
+        let pl = { players.get(&token).expect("player not found for handle input").clone() };
 
         match state {
             PlayerState::ChooseName => {
