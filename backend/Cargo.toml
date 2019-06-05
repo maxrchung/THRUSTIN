@@ -3,6 +3,8 @@ name = "thrustin"
 version = "0.1.0"
 authors = ["Max Chung, Alex Liu, Royce Sato"]
 edition = "2018"
+description = "xperience epic adventures by THRUSTING some THRUSTERS into THRUSTEES. E"
+license = "MIT"
 
 [dependencies]
 lazy_static = "^1.3.0"
