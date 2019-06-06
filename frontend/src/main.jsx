@@ -27,13 +27,6 @@ class Client extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleClose = this.handleClose.bind(this);
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.handleMessage = this.handleMessage.bind(this);
-        this.scrollToDummy = this.scrollToDummy.bind(this);
-        this.setMessage = this.setMessage.bind(this);
-        this.updateMessageCounter = this.updateMessageCounter.bind(this);
-
         this.state = {
             messageCounter: 1,
             messages: [
@@ -51,31 +44,34 @@ class Client extends React.Component {
         }
         this.connection.onmessage = this.handleMessage; 
         this.connection.onclose = this.handleClose;
-        console.log(this.inputName);
-        this.inputName.focus();
+        this.commandBar.focus();
+        document.addEventListener("keydown", this.handleKeyDown);
     }
 
-    handleClose() {
+    handleClose = () => {
         this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
-    }
+    };
 
-    handleKeyDown(e) {
+    handleKeyDown = (e) => {
+        if (document.activeElement !== this.commandBar) {
+            this.commandBar.focus();
+        }
         if (e.key == "Enter") {
-            const command = e.target.value;
+            const command = this.commandBar.value;
             this.connection.send(command);
             this.setState({
                 messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
             });
-            e.target.value = "";
+            this.commandBar.value = "";
             this.scrollToDummy();
         }
     }
 
-    handleMessage(e) {
+    handleMessage = (e) => {
         this.setMessage(e.data);
     }
 
-    setMessage(message) {
+    setMessage = (message) => {
         this.setState({
             messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={message} />)
         });
@@ -83,16 +79,20 @@ class Client extends React.Component {
         this.scrollToDummy();
     }
 
-    scrollToDummy() {
+    scrollToDummy = () => {
         this.dummy.scrollIntoView();
     }
 
-    updateMessageCounter() {
+    updateMessageCounter = () => {
         const counter = this.state.messageCounter;
         this.setState({
             messageCounter: this.state.messageCounter + 1
         });
         return counter;
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
     }
 
     render() {
@@ -107,7 +107,7 @@ class Client extends React.Component {
                     <div ref={el => this.dummy = el} />
                 </div>
                 <div className="mb-3 mr-3">
-                    <Form.Control ref={(input) => {this.inputName = input}} type="text" placeholder="Enter command..." onKeyDown={this.handleKeyDown} />
+                    <Form.Control ref={(input) => {this.commandBar = input}} type="text" placeholder="Enter command..." />
                 </div>
             </Container>
         );
