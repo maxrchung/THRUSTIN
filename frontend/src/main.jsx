@@ -51,8 +51,8 @@ class Client extends React.Component {
         }
         this.connection.onmessage = this.handleMessage; 
         this.connection.onclose = this.handleClose;
-        console.log(this.inputName);
-        this.inputName.focus();
+        this.commandBar.focus();
+        document.addEventListener("keydown", this.handleKeyDown);
     }
 
     handleClose() {
@@ -60,13 +60,16 @@ class Client extends React.Component {
     }
 
     handleKeyDown(e) {
+        if (document.activeElement !== this.commandBar) {
+            this.commandBar.focus();
+        }
         if (e.key == "Enter") {
-            const command = e.target.value;
+            const command = this.commandBar.value;
             this.connection.send(command);
             this.setState({
                 messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
             });
-            e.target.value = "";
+            this.commandBar.value = "";
             this.scrollToDummy();
         }
     }
@@ -95,6 +98,10 @@ class Client extends React.Component {
         return counter;
     }
 
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
+
     render() {
         return (
             <Container fluid={true}>
@@ -107,7 +114,7 @@ class Client extends React.Component {
                     <div ref={el => this.dummy = el} />
                 </div>
                 <div className="mb-3 mr-3">
-                    <Form.Control ref={(input) => {this.inputName = input}} type="text" placeholder="Enter command..." onKeyDown={this.handleKeyDown} />
+                    <Form.Control ref={(input) => {this.commandBar = input}} type="text" placeholder="Enter command..." />
                 </div>
             </Container>
         );
