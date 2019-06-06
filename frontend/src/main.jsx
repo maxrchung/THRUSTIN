@@ -27,13 +27,6 @@ class Client extends React.Component {
     constructor(props) {
         super(props);
 
-        this.handleClose = this.handleClose.bind(this);
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-        this.handleMessage = this.handleMessage.bind(this);
-        this.scrollToDummy = this.scrollToDummy.bind(this);
-        this.setMessage = this.setMessage.bind(this);
-        this.updateMessageCounter = this.updateMessageCounter.bind(this);
-
         this.state = {
             messageCounter: 1,
             messages: [
@@ -55,11 +48,11 @@ class Client extends React.Component {
         document.addEventListener("keydown", this.handleKeyDown);
     }
 
-    handleClose() {
+    handleClose = () => {
         this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
-    }
+    };
 
-    handleKeyDown(e) {
+    handleKeyDown = (e) => {
         if (document.activeElement !== this.commandBar) {
             this.commandBar.focus();
         }
@@ -74,11 +67,11 @@ class Client extends React.Component {
         }
     }
 
-    handleMessage(e) {
+    handleMessage = (e) => {
         this.setMessage(e.data);
     }
 
-    setMessage(message) {
+    setMessage = (message) => {
         this.setState({
             messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={message} />)
         });
@@ -86,11 +79,11 @@ class Client extends React.Component {
         this.scrollToDummy();
     }
 
-    scrollToDummy() {
+    scrollToDummy = () => {
         this.dummy.scrollIntoView();
     }
 
-    updateMessageCounter() {
+    updateMessageCounter = () => {
         const counter = this.state.messageCounter;
         this.setState({
             messageCounter: this.state.messageCounter + 1
