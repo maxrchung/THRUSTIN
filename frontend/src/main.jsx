@@ -51,7 +51,8 @@ class Client extends React.Component {
         }
         this.connection.onmessage = this.handleMessage; 
         this.connection.onclose = this.handleClose;
-        this.epicMan.focus();
+        console.log(this.inputName);
+        this.inputName.focus();
     }
 
     handleClose() {
@@ -106,7 +107,7 @@ class Client extends React.Component {
                     <div ref={el => this.dummy = el} />
                 </div>
                 <div className="mb-3 mr-3">
-                    <Form.Control ref={(okay) => {this.epicMan = okay}} type="text" placeholder="Enter command..." onKeyDown={this.handleKeyDown} />
+                    <Form.Control ref={(input) => {this.inputName = input}} type="text" placeholder="Enter command..." onKeyDown={this.handleKeyDown} />
                 </div>
             </Container>
         );
