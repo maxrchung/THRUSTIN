@@ -1,7 +1,6 @@
 // Joining, leaving, starting lobbies
 
 mod common;
-
 use common::FileSystemClient;
 
 #[test]
@@ -104,5 +103,43 @@ fn leave_lobby_as_thrustee() {
     assert_eq!(msg, "You left the lobby okay!");
     let msg = b.read();
     assert!(msg.contains("a left the lobby..<br/>Chief left so now we got a new one --> b<br/>Lol yo bro 'cause the THRUSTEE left b is choosin' the next THRUSTEE now!<br/><br/>your THRUSTEE Choices:<br/>"));
+    a.stop();
+}
+
+#[test]
+fn kick_in_lobby() {
+    let id = "kick_in_lobby";
+    common::run_test_server(id);
+    let a = FileSystemClient::new(id, "a");
+    a.name();
+    a.send_and_read(".m");
+    let b = FileSystemClient::new(id, "b");
+    b.name();
+    b.send_and_read(".j 1");
+    a.read();
+    let msg = a.send_and_read(".k b");
+    assert_eq!(msg, "b left the lobby..");
+    let msg = b.read();
+    assert!(msg.contains("You left the lobby okay!"));
+    a.stop();
+}
+
+#[test]
+fn kick_in_game() {
+    let id = "kick_in_game";
+    common::run_test_server(id);
+    let a = FileSystemClient::new(id, "a");
+    a.name();
+    a.send_and_read(".m");
+    let b = FileSystemClient::new(id, "b");
+    b.name();
+    b.send_and_read(".j 1");
+    a.read();
+    a.send_and_read(".s");
+    b.read();
+    let msg = a.send_and_read(".k b");
+    assert_eq!(msg, "b left the lobby..");
+    let msg = b.read();
+    assert!(msg.contains("You left the lobby okay!"));
     a.stop();
 }
