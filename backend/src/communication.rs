@@ -269,9 +269,11 @@ impl Communication for WebSocketCommunication {
     // Send message to client with the corresponding token
     fn send_message(&self, token: &u32, message: &str) {
         let connections_lock = self.connections.lock().unwrap();
-        let sender = connections_lock.get(&token).unwrap();
-        // Log server response for troubleshooting and FBI-ing
-        sender.send(message).unwrap();
+        // Handle case for missing connection - This is possible for disconnects
+        if let Some(sender) = connections_lock.get(&token) {
+            // Log server response for troubleshooting and FBI-ing
+            sender.send(message).unwrap();
+        }
     }
 
     fn send_messages(&self, token: &u32, messages: &Vec<String>) {
