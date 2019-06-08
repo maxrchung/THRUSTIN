@@ -1,5 +1,5 @@
 use std::fs;
-use std::path::{Path};
+use std::path::Path;
 use std::thread;
 use thrustin;
 
@@ -12,14 +12,14 @@ pub fn run_test_server(id: &str) {
 
 pub struct FileSystemClient {
     server_path: String,
-    id: String
+    id: String,
 }
 
 impl FileSystemClient {
     pub fn new(server_path: &str, id: &str) -> FileSystemClient {
         FileSystemClient {
             server_path: String::from(server_path),
-            id: String::from(id)
+            id: String::from(id),
         }
     }
 
@@ -47,23 +47,28 @@ impl FileSystemClient {
         self.block_for(&self.server_path);
 
         // Keep on looking until what we want is found
-        loop { 
+        loop {
             let mut dir;
             loop {
                 match fs::read_dir(&self.server_path) {
                     Ok(read) => {
-                        dir = read; 
+                        dir = read;
                         break;
                     }
-                    _ => ()
+                    _ => (),
                 }
             }
 
             for entry in dir {
                 let entry = entry.expect("Failed to make server entry");
                 let path = entry.path();
-                let os_file_name = path.file_name().expect("Failed to get file name for client message");
-                let file_name = os_file_name.to_os_string().into_string().expect("Failed to convert OS String file name to String");
+                let os_file_name = path
+                    .file_name()
+                    .expect("Failed to get file name for client message");
+                let file_name = os_file_name
+                    .to_os_string()
+                    .into_string()
+                    .expect("Failed to convert OS String file name to String");
 
                 let split: Vec<&str> = file_name.split("_____").collect();
                 if split.len() == 2 && split[0] == "server" && split[1] == self.id {
@@ -72,10 +77,10 @@ impl FileSystemClient {
                     while msg.is_empty() {
                         match fs::read_to_string(&path) {
                             Ok(contents) => msg = contents,
-                            _ => ()
+                            _ => (),
                         }
                     }
-                    
+
                     fs::remove_file(path).expect("Failed to remove client file");
                     return msg;
                 }

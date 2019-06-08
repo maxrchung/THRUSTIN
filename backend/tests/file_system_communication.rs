@@ -1,7 +1,7 @@
 mod common;
 
 use common::FileSystemClient;
-use std::path::{Path};
+use std::path::Path;
 
 #[test]
 fn start_and_stop_server() {

@@ -56,7 +56,10 @@ fn duplicate_name_error() {
     a.name();
     let msg = b.name();
     a.stop();
-    assert_eq!(msg, String::from("yo that name exists ya gotta pick something else aight?"));
+    assert_eq!(
+        msg,
+        String::from("yo that name exists ya gotta pick something else aight?")
+    );
 }
 
 #[test]
@@ -69,5 +72,8 @@ fn duplicate_rename_error() {
     b.name();
     let msg = b.send_and_read(".n a");
     a.stop();
-    assert_eq!(msg, String::from("yo that name exists ya gotta pick something else aight?"));
+    assert_eq!(
+        msg,
+        String::from("yo that name exists ya gotta pick something else aight?")
+    );
 }

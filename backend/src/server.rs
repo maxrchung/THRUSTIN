@@ -1,5 +1,5 @@
 use crate::commands;
-use crate::communication::{Communication};
+use crate::communication::Communication;
 use crate::lobby::Lobby;
 use crate::player::{Player, PlayerState};
 use std::cell::RefCell;
@@ -7,8 +7,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 const MAX_INPUT: usize = 6669;
-pub struct Server {
-}
+pub struct Server {}
 impl Server {
     pub fn run(communication: Rc<RefCell<Communication>>) {
         communication.borrow().start();
@@ -49,7 +48,10 @@ impl Server {
             }
 
             if message.len() > MAX_INPUT {
-                let player = players.get(&token).expect("player not found for message length check").borrow();
+                let player = players
+                    .get(&token)
+                    .expect("player not found for message length check")
+                    .borrow();
                 player.send_message("ok bro you are typing way too much lmao");
                 return;
             }
@@ -70,11 +72,19 @@ impl Server {
         players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     ) {
         let state = {
-            let player = players.get(&token).expect("player not found for state").borrow();
+            let player = players
+                .get(&token)
+                .expect("player not found for state")
+                .borrow();
             player.state.clone()
         };
 
-        let pl = { players.get(&token).expect("player not found for handle input").clone() };
+        let pl = {
+            players
+                .get(&token)
+                .expect("player not found for handle input")
+                .clone()
+        };
 
         match state {
             PlayerState::ChooseName => {

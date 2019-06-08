@@ -1,4 +1,4 @@
-use crate::communication::{Communication};
+use crate::communication::Communication;
 use crate::thrust::Deck;
 use std::collections::HashMap;
 
@@ -114,4 +114,3 @@ impl Player {
         }
     }
 }
-

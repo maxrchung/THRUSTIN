@@ -38,7 +38,7 @@ pub struct FileSystemCommunication {
     uuid: u32,
     client_to_token: HashMap<String, u32>,
     token_to_client: HashMap<u32, String>,
-    running: bool
+    running: bool,
 }
 
 impl FileSystemCommunication {
@@ -48,7 +48,7 @@ impl FileSystemCommunication {
             uuid: 1,
             client_to_token: HashMap::new(),
             token_to_client: HashMap::new(),
-            running: true
+            running: true,
         }
     }
 }
@@ -79,18 +79,23 @@ impl Communication for FileSystemCommunication {
             loop {
                 match fs::read_dir(&self.id) {
                     Ok(read) => {
-                        dir = read; 
+                        dir = read;
                         break;
                     }
-                    _ => ()
+                    _ => (),
                 }
             }
 
             for entry in dir {
                 let entry = entry.expect("Failed to make server entry");
                 let path = entry.path();
-                let os_file_name =  path.file_name().expect("Failed to get file name for server message");
-                let file_name = os_file_name.to_os_string().into_string().expect("Failed to convert OS String file name to String");
+                let os_file_name = path
+                    .file_name()
+                    .expect("Failed to get file name for server message");
+                let file_name = os_file_name
+                    .to_os_string()
+                    .into_string()
+                    .expect("Failed to convert OS String file name to String");
                 if file_name == "end" {
                     self.running = false;
                     return (0, String::new());
@@ -101,8 +106,10 @@ impl Communication for FileSystemCommunication {
                     let client_name = split[0];
 
                     if !self.client_to_token.contains_key(client_name) {
-                        self.client_to_token.insert(String::from(client_name), self.uuid);
-                        self.token_to_client.insert(self.uuid, String::from(client_name));
+                        self.client_to_token
+                            .insert(String::from(client_name), self.uuid);
+                        self.token_to_client
+                            .insert(self.uuid, String::from(client_name));
                         self.uuid = self.uuid + 1;
                     }
 
@@ -113,7 +120,7 @@ impl Communication for FileSystemCommunication {
                     while msg.is_empty() {
                         match fs::read_to_string(&path) {
                             Ok(contents) => msg = contents,
-                            _ => ()
+                            _ => (),
                         }
                     }
 
@@ -126,12 +133,14 @@ impl Communication for FileSystemCommunication {
 
     fn send_message(&self, token: &u32, message: &str) {
         if self.running {
-            let client_name = self.token_to_client.get(token).expect("Unable to get token_to_client");
+            let client_name = self
+                .token_to_client
+                .get(token)
+                .expect("Unable to get token_to_client");
             let file_name = format!("{}/server_____{}", &self.id, client_name);
             let file_path = Path::new(&file_name);
             // Block if path exists already
-            while file_path.exists() {
-            }
+            while file_path.exists() {}
 
             fs::write(file_path, message).expect("Failed to write file to client");
         }
@@ -184,9 +193,13 @@ impl Handler for WebSocketListener {
         connections_lock.remove(&self.uuid).unwrap();
         let mut commands_lock = self.commands.lock().unwrap();
         match code {
-            CloseCode::Normal => commands_lock.push_back((self.uuid, format!(".disconnect CloseCode::Normal {}", reason))),
-            CloseCode::Away => commands_lock.push_back((self.uuid, format!(".disconnect CloseCode::Away {}", reason))),
-            _ => commands_lock.push_back((self.uuid, format!(".disconnect Error {}", reason)))
+            CloseCode::Normal => commands_lock.push_back((
+                self.uuid,
+                format!(".disconnect CloseCode::Normal {}", reason),
+            )),
+            CloseCode::Away => commands_lock
+                .push_back((self.uuid, format!(".disconnect CloseCode::Away {}", reason))),
+            _ => commands_lock.push_back((self.uuid, format!(".disconnect Error {}", reason))),
         }
     }
 }
@@ -252,34 +265,31 @@ impl Communication for WebSocketCommunication {
         true
     }
 
-    fn stop(&self) {
-    }
+    fn stop(&self) {}
 
     // Block and read from queue
     fn read_message(&mut self) -> (u32, String) {
-
         loop {
             match self.commands.lock() {
                 Ok(mut c) => {
                     if let Some(d) = c.pop_front() {
                         return d;
                     }
-                },
+                }
                 Err(_) => {
                     println!("Catastrophic failure if this fails probably.");
-                    
                 }
             }
         }
-/*
-        let mut length = 0;
-        while length == 0 {
-            let commands_lock = self.commands.lock().unwrap();
-            length = commands_lock.len();
-        }
-        let mut commands_lock = self.commands.lock().unwrap();
-        commands_lock.pop_front().unwrap()
-*/
+        /*
+                let mut length = 0;
+                while length == 0 {
+                    let commands_lock = self.commands.lock().unwrap();
+                    length = commands_lock.len();
+                }
+                let mut commands_lock = self.commands.lock().unwrap();
+                commands_lock.pop_front().unwrap()
+        */
     }
 
     // Send message to client with the corresponding token

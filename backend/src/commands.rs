@@ -45,10 +45,16 @@ fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
 }
 
 fn disconnect(token: u32, players: &mut HashMap<u32, Rc<RefCell<Player>>>) {
-    players.remove(&token).expect("what the heck how did you disconnect someone who didn't exist bro BIG ASS BUG!!");
+    players
+        .remove(&token)
+        .expect("what the heck how did you disconnect someone who didn't exist bro BIG ASS BUG!!");
 }
 
-fn disconnect_from_lobby(pl: Rc<RefCell<Player>>, players: &mut HashMap<u32, Rc<RefCell<Player>>>, lobbies: &mut HashMap<i32, Lobby>) {
+fn disconnect_from_lobby(
+    pl: Rc<RefCell<Player>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
+    lobbies: &mut HashMap<i32, Lobby>,
+) {
     disconnect(pl.borrow().token, players);
     Lobby::leave_from_lobby(pl, lobbies);
 }
@@ -287,7 +293,9 @@ pub fn choosing_commands(
 
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
-        _ => pl.borrow().send_message("Brother that is an invalid command."),
+        _ => pl
+            .borrow()
+            .send_message("Brother that is an invalid command."),
     }
 }
 
@@ -377,7 +385,9 @@ pub fn waiting_commands(
 
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
-        _ => pl.borrow().send_message("Bruh... that's an invalid command."),
+        _ => pl
+            .borrow()
+            .send_message("Bruh... that's an invalid command."),
     }
 }
 
