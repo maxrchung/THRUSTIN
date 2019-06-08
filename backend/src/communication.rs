@@ -261,13 +261,8 @@ impl Communication for WebSocketCommunication {
         loop {
             match self.commands.lock() {
                 Ok(mut c) => {
-                    match c.pop_front() {
-                        Some(d) => {
-                            return d;
-                        },
-                        None => {
-                            continue;
-                        }
+                    if let Some(d) = c.pop_front() {
+                        return d;
                     }
                 },
                 Err(_) => {
