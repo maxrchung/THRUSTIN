@@ -399,37 +399,43 @@ impl Lobby {
     }
 
     pub fn kick(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
-        let pl = pl_rc.borrow();
-        if !self.is_host(pl.token) {
-            pl.send_message("Only chief can kick em!");
-            return;
-        }
-
-        if input.len() < 2 {
-            pl.send_message("who we kickkin? TELL ME!");
-            return;
-        }
-
-        let kick = input[1];
-        if self.host.borrow().name == kick {
-            pl.send_message("u cant kick ursel!!");
-            return;
-        }
-
-        let mut kick_ind = -1;
-        for (i, players) in self.list.iter().enumerate() {
-            let players = players.borrow();
-            if players.name == kick {
-                kick_ind = i as i32;
-                break;
+        // Scope guards to avoid borrow panic when THRUSTEE is kicked
+        let mut kick_ind = 
+        {
+            let mut kick_ind = -1;
+            let pl = pl_rc.borrow();
+            if !self.is_host(pl.token) {
+                pl.send_message("Only chief can kick em!");
+                return;
             }
-        }
+
+            if input.len() < 2 {
+                pl.send_message("who we kickkin? TELL ME!");
+                return;
+            }
+
+            let kick = input[1];
+            if self.host.borrow().name == kick {
+                pl.send_message("u cant kick ursel!!");
+                return;
+            }
+
+            for (i, players) in self.list.iter().enumerate() {
+                let players = players.borrow();
+                if players.name == kick {
+                    kick_ind = i as i32;
+                    break;
+                }
+            }
+            kick_ind
+        };
 
         if kick_ind >= 0 {
             self.leave_lobby(self.list[kick_ind as usize].clone());
             return;
         }
-
+        
+        let pl = pl_rc.borrow();
         pl.send_message("Player not in lobby.");
     }
 
