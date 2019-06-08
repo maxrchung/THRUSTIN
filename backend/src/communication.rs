@@ -257,6 +257,26 @@ impl Communication for WebSocketCommunication {
 
     // Block and read from queue
     fn read_message(&mut self) -> (u32, String) {
+
+        loop {
+            match self.commands.lock() {
+                Ok(mut c) => {
+                    match c.pop_front() {
+                        Some(d) => {
+                            return d;
+                        },
+                        None => {
+                            continue;
+                        }
+                    }
+                },
+                Err(_) => {
+                    println!("Catastrophic failure if this fails probably.");
+                    
+                }
+            }
+        }
+/*
         let mut length = 0;
         while length == 0 {
             let commands_lock = self.commands.lock().unwrap();
@@ -264,6 +284,7 @@ impl Communication for WebSocketCommunication {
         }
         let mut commands_lock = self.commands.lock().unwrap();
         commands_lock.pop_front().unwrap()
+*/
     }
 
     // Send message to client with the corresponding token
