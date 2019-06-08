@@ -56,7 +56,7 @@ class Client extends React.Component {
         if (document.activeElement !== this.commandBar) {
             this.commandBar.focus();
         }
-        if (e.key == "Enter") {
+        if (e.key == "Enter" && this.commandBar.value !== "") {
             const command = this.commandBar.value;
             this.connection.send(command);
             this.setState({
