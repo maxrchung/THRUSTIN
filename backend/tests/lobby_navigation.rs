@@ -169,3 +169,40 @@ fn kick_thrustee() {
     assert_eq!(msg, "You left the lobby okay!");
     a.stop();
 }
+
+#[test]
+fn who_out_of_lobby() {
+    let id = "who_out_of_lobby";
+    common::run_test_server(id);
+    let swagout420 = FileSystemClient::new(id, "swagout420");
+    swagout420.name();
+    let msg = swagout420.send_and_read(".w");
+    // Hashmap's hash is randomly seeded so can't assert_eq for order
+    assert!(msg.contains("EndlessLobbyHostDoggo in 0"));
+    assert!(msg.contains("swagout420 (You)"));
+    let yoloyeet69 = FileSystemClient::new(id, "yoloyeet69");
+    yoloyeet69.name();
+    let msg = yoloyeet69.send_and_read(".w");
+    assert!(msg.contains("EndlessLobbyHostDoggo in 0"));
+    assert!(msg.contains("swagout420"));
+    assert!(msg.contains("yoloyeet69 (You)"));
+    yoloyeet69.stop();
+}
+
+#[test]
+fn who_in_lobby() {
+    let id = "who_in_lobby";
+    common::run_test_server(id);
+    let swagout420 = FileSystemClient::new(id, "swagout420");
+    swagout420.name();
+    swagout420.send_and_read(".m");
+    let msg = swagout420.send_and_read(".w");
+    assert!(msg.contains("swagout420: chief (You)"));
+    let yoloyeet69 = FileSystemClient::new(id, "yoloyeet69");
+    yoloyeet69.name();
+    yoloyeet69.send_and_read(".j 1");
+    let msg = yoloyeet69.send_and_read(".w");
+    assert!(msg.contains("swagout420: chief"));
+    assert!(msg.contains("yoloyeet69 (You)"));
+    yoloyeet69.stop();
+}
