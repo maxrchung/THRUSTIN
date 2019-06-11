@@ -406,7 +406,7 @@ impl Lobby {
 
     pub fn kick(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         // Scope guards to avoid borrow panic when THRUSTEE is kicked
-        let mut kick_ind = {
+        let kick_ind = {
             let mut kick_ind = -1;
             let pl = pl_rc.borrow();
             if !self.is_host(pl.token) {

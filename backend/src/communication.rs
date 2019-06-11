@@ -13,6 +13,8 @@ use std::vec::Vec;
 use std::{io, thread};
 use ws::{CloseCode, Handler, Handshake, Message, Result, Sender};
 
+use std::sync::mpsc;
+
 pub trait Communication {
     fn start(&self);
     fn continue_running(&self) -> bool;
@@ -167,8 +169,8 @@ fn file(file: PathBuf) -> Option<NamedFile> {
 // Specifies handler for processing an incoming websocket connection
 struct WebSocketListener {
     out: Sender,
-    commands: Arc<Mutex<VecDeque<(u32, String)>>>,
     connections: Arc<Mutex<HashMap<u32, Sender>>>,
+    send: mpsc::Sender<(u32, String)>,
     uuid: u32,
 }
 
@@ -182,8 +184,7 @@ impl Handler for WebSocketListener {
 
     // Adds message to queue for processing
     fn on_message(&mut self, msg: Message) -> Result<()> {
-        let mut commands_lock = self.commands.lock().unwrap();
-        commands_lock.push_back((self.uuid, msg.to_string()));
+        self.send.send((self.uuid, msg.to_string()));
         Ok(())
     }
 
@@ -191,16 +192,14 @@ impl Handler for WebSocketListener {
     fn on_close(&mut self, code: CloseCode, reason: &str) {
         let mut connections_lock = self.connections.lock().unwrap();
         connections_lock.remove(&self.uuid).unwrap();
-        let mut commands_lock = self.commands.lock().unwrap();
+
         match code {
-            CloseCode::Normal => commands_lock.push_back((
-                self.uuid,
-                format!(".disconnect CloseCode::Normal {}", reason),
-            )),
-            CloseCode::Away => commands_lock
-                .push_back((self.uuid, format!(".disconnect CloseCode::Away {}", reason))),
-            _ => commands_lock.push_back((self.uuid, format!(".disconnect Error {}", reason))),
-        }
+            CloseCode::Normal => self.send.send((self.uuid, format!(".disconnect CloseCode::Normal {}", reason))),
+            
+            CloseCode::Away => self.send.send(
+            (self.uuid, format!(".disconnect CloseCode::Away {}", reason))),
+            _ => self.send.send((self.uuid, format!(".disconnect Error {}", reason))),
+        };
     }
 }
 
@@ -209,14 +208,19 @@ impl Handler for WebSocketListener {
 pub struct WebSocketCommunication {
     commands: Arc<Mutex<VecDeque<(u32, String)>>>,
     connections: Arc<Mutex<HashMap<u32, Sender>>>,
+    send: mpsc::Sender<(u32, String)>,
+    recv: mpsc::Receiver<(u32, String)>,
     uuid: Arc<Mutex<u32>>,
 }
 
 impl WebSocketCommunication {
     pub fn new() -> WebSocketCommunication {
+        let (sender, receiver) = std::sync::mpsc::channel();
         let communication = WebSocketCommunication {
             commands: Arc::new(Mutex::new(VecDeque::new())),
             connections: Arc::new(Mutex::new(HashMap::new())),
+            send: sender,
+            recv: receiver,
             // Start at 1 so endless can be 0
             uuid: Arc::new(Mutex::new(1)),
         };
@@ -235,14 +239,14 @@ impl WebSocketCommunication {
         }
 
         // Websockets
-        let commands_clone = Arc::clone(&self.commands);
         let connections_clone = Arc::clone(&self.connections);
+        let send_clone = self.send.clone();
         let uuid_clone = Arc::clone(&self.uuid);
         thread::spawn(move || {
             ws::listen("0.0.0.0:3012", |out| WebSocketListener {
                 out: out,
-                commands: commands_clone.clone(),
                 connections: connections_clone.clone(),
+                send: send_clone.clone(),
                 uuid: {
                     let mut uuid_lock = uuid_clone.lock().unwrap();
                     let uuid = uuid_lock.clone();
@@ -269,27 +273,13 @@ impl Communication for WebSocketCommunication {
 
     // Block and read from queue
     fn read_message(&mut self) -> (u32, String) {
-        loop {
-            match self.commands.lock() {
-                Ok(mut c) => {
-                    if let Some(d) = c.pop_front() {
-                        return d;
-                    }
-                }
-                Err(_) => {
-                    println!("Catastrophic failure if this fails probably.");
-                }
+        match self.recv.recv() {
+            Ok(msg) => return msg,
+            Err(_) => {
+                println!("Catastrophic failure if this fails probably.");
+                (0, "".to_string())
             }
         }
-        /*
-                let mut length = 0;
-                while length == 0 {
-                    let commands_lock = self.commands.lock().unwrap();
-                    length = commands_lock.len();
-                }
-                let mut commands_lock = self.commands.lock().unwrap();
-                commands_lock.pop_front().unwrap()
-        */
     }
 
     // Send message to client with the corresponding token
