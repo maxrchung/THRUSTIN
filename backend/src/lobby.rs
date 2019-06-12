@@ -1323,7 +1323,7 @@ impl Lobby {
             messages.push(format!("{}. {}", i + 1, &thrustee).clone());
         }
 
-        messages.push("</br>You're THRUSTERS:".to_string());
+        messages.push("<br/>You're THRUSTERS:".to_string());
         for (i, thruster) in pl.personal_deck.thrusters.iter().enumerate() {
             messages.push(format!("{}. {}", i + 1, &thruster).clone());
         }
