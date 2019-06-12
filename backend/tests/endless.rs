@@ -23,3 +23,15 @@ fn play_endless() {
     a.stop();
     assert!(msg.contains("Welcome to the 『Endless Lobby』, big doggo. You lucky, family, you are THRUSTEE!!!!.. . Choose now...    .<br/>your THRUSTEE Choices:"));
 }
+
+#[test]
+// Can play after default THRUST cap is reached
+fn todo_no_endless_point_limit() {
+    panic!();
+}
+
+#[test]
+// Can join after default player cap is reached
+fn todo_no_endless_player_limit() {
+    panic!();
+}
