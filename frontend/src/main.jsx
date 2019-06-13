@@ -5,6 +5,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import SanitizedHTML from "react-sanitized-html";
 
+const MAX_INPUT = 6669;
 function Message(props) {
     return (
         <div className="mb-3 mr-3">
@@ -60,10 +61,15 @@ class Client extends React.Component {
         }
         if (e.key == "Enter" && this.commandBar.value !== "") {
             const command = this.commandBar.value;
-            this.connection.send(command);
             this.setState({
                 messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
             });
+            if (command.length <= MAX_INPUT) {
+                this.connection.send(command);
+            }
+            else {
+                this.setMessage("BRO CHILLOUT that message is too long my man.");
+            }
             this.commandBar.value = "";
             this.scrollToDummy();
         }
