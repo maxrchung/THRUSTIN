@@ -53,7 +53,9 @@ class Client extends React.Component {
     };
 
     handleKeyDown = (e) => {
-        if (document.activeElement !== this.commandBar) {
+        var ctrlPressed = e.getModifierState("Control") || e.getModifierState("Meta");
+
+        if (document.activeElement !== this.commandBar && !ctrlPressed) {
             this.commandBar.focus();
         }
         if (e.key == "Enter" && this.commandBar.value !== "") {
