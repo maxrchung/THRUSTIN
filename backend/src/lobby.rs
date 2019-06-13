@@ -406,7 +406,7 @@ impl Lobby {
 
     pub fn kick(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         // Scope guards to avoid borrow panic when THRUSTEE is kicked
-        let mut kick_ind = {
+        let kick_ind = {
             let mut kick_ind = -1;
             let pl = pl_rc.borrow();
             if !self.is_host(pl.token) {
@@ -1323,7 +1323,7 @@ impl Lobby {
             messages.push(format!("{}. {}", i + 1, &thrustee).clone());
         }
 
-        messages.push("</br>You're THRUSTERS:".to_string());
+        messages.push("<br/>You're THRUSTERS:".to_string());
         for (i, thruster) in pl.personal_deck.thrusters.iter().enumerate() {
             messages.push(format!("{}. {}", i + 1, &thruster).clone());
         }

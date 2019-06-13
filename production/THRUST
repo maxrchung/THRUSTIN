@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Kill existing server
+echo ____ killall thrustin
+sudo killall thrustin
+
+# Undo any existing changes, possible through webpack bundle hashing
+echo ____ cd /home/THRUSTIN
+cd /home/THRUSTIN
+echo ____ git checkout .
+git checkout .
+
+# Get new updates
+echo ____ git pull
+git pull
+    
+# Build frontend files in production
+echo ____ cd /home/THRUSTIN/frontend
+cd /home/THRUSTIN/frontend
+# Install packages if needed
+echo ____ npm install
+npm install
+# Build in production mode
+echo ____ npm run build-prod
+npm run build-prod
+
+# Run server in release
+echo ____ cd /home/THRUSTIN/backend
+cd /home/THRUSTIN/backend
+# Build first so we can see progress in console output
+echo ____ cargo build --release
+cargo build --release
+
+# Delete existing nohup
+echo ____ rm nohup.out
+rm nohup.out
+
+# Run
+echo ____ nohup cargo run --release &
+nohup cargo run --release &

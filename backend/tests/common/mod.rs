@@ -48,7 +48,7 @@ impl FileSystemClient {
 
         // Keep on looking until what we want is found
         loop {
-            let mut dir;
+            let dir;
             loop {
                 match fs::read_dir(&self.server_path) {
                     Ok(read) => {
