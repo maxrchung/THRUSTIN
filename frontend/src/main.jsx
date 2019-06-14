@@ -6,6 +6,7 @@ import Form from 'react-bootstrap/Form';
 import SanitizedHTML from "react-sanitized-html";
 
 const MAX_INPUT = 6669;
+const MAX_MSGS = 696;
 function Message(props) {
     return (
         <div className="mb-3 mr-3">
@@ -60,6 +61,7 @@ class Client extends React.Component {
             this.commandBar.focus();
         }
         if (e.key == "Enter" && this.commandBar.value !== "") {
+            this.handleMessageMax();
             const command = this.commandBar.value;
             this.setState({
                 messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
@@ -80,6 +82,7 @@ class Client extends React.Component {
     }
 
     setMessage = (message) => {
+        this.handleMessageMax();
         this.setState({
             messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={message} />)
         });
@@ -89,6 +92,17 @@ class Client extends React.Component {
 
     scrollToDummy = () => {
         this.dummy.scrollIntoView();
+    }
+
+    handleMessageMax = () => {
+        if (this.state.messageCounter + 1 > MAX_MSGS) {
+            var newMsg = this.state.messages.slice(0);
+            newMsg.shift();
+            this.setState({
+                messages: newMsg
+            });
+            this.scrollToDummy();
+        }
     }
 
     updateMessageCounter = () => {
@@ -103,14 +117,25 @@ class Client extends React.Component {
         document.removeEventListener("keydown", this.handleKeyDown);
     }
 
+    renderTop() {
+        if (this.state.messageCounter > MAX_MSGS) {
+            return <div id="ellipsis" className="p-2 text-center">...</div>;
+        }
+        return (
+            <React.Fragment>
+                <img src="favicon-96.png"/>
+                <div className="mb-3 mr-3">
+                    <hr/>
+                </div>
+            </React.Fragment>
+        );
+    }
+
     render() {
         return (
             <Container fluid={true}>
                 <div id="messages">
-                    <img src="favicon-96.png"/>
-                    <div className="mb-3 mr-3">
-                        <hr/>
-                    </div>
+                    {this.renderTop()}
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>

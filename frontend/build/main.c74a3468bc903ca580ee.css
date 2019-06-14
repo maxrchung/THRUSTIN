@@ -5347,6 +5347,10 @@ body {
 hr {
   border-top: 1px solid rgba(183, 65, 14, 0.4); }
 
+#ellipsis {
+  font-family: "Arial Rounded MT Bold";
+  font-size: 50px; }
+
 ::-webkit-scrollbar {
   width: 1rem; }
 
