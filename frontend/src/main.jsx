@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import SanitizedHTML from "react-sanitized-html";
 
 const MAX_INPUT = 6669;
-const MAX_MSGS = 12;
+const MAX_MSGS = 696;
 function Message(props) {
     return (
         <div className="mb-3 mr-3">
