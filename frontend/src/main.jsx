@@ -6,7 +6,7 @@ import Form from 'react-bootstrap/Form';
 import SanitizedHTML from "react-sanitized-html";
 
 const MAX_INPUT = 6669;
-const MAX_MSGS = 696;
+const MAX_MSGS = 12;
 function Message(props) {
     return (
         <div className="mb-3 mr-3">
@@ -119,7 +119,7 @@ class Client extends React.Component {
 
     renderTop() {
         if (this.state.messageCounter > MAX_MSGS) {
-            return <div id="ellipsis" className="p-2 text-center">...</div>;
+            return <div id="ellipsis" className="py-2">...</div>;
         }
         return (
             <React.Fragment>
