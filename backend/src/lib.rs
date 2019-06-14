@@ -7,17 +7,21 @@ extern crate lazy_static; //alexgarbage
 extern crate regex; //alexgarbage
 
 mod commands;
-mod communication;
+pub mod communication;
 mod lobby;
 mod player;
 mod server;
 mod thrust;
 
-use communication::FileSystemCommunication;
-use communication::WebSocketCommunication;
+use communication::{ChannelCommunication, FileSystemCommunication, WebSocketCommunication};
 use server::Server;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+pub fn run_channel(comm: ChannelCommunication) {
+    let chan_comm = Rc::new(RefCell::new(comm));
+    Server::run(chan_comm);
+}
 
 pub fn run_fs_server(id: &str) {
     let fs_comm = Rc::new(RefCell::new(FileSystemCommunication::new(String::from(id))));

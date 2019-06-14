@@ -1,7 +1,20 @@
 use std::fs;
 use std::path::Path;
 use std::thread;
+use std::cell::RefCell;
+use std::rc::Rc;
 use thrustin;
+use thrustin::communication::ChannelCommunication;
+
+pub fn setup() -> ChannelCommunication {
+    let mut server = ChannelCommunication::new();
+    let mut client = ChannelCommunication::new();
+    ChannelCommunication::bind(&mut server, &mut client);
+    thread::spawn(move || {
+        thrustin::run_channel(server);
+    });
+    client
+}
 
 pub fn run_test_server(id: &str) {
     let lifetime = String::from(id);

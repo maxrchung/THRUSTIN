@@ -9,11 +9,10 @@ use std::fmt::{Debug, Formatter};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
+use std::sync::mpsc;
 use std::vec::Vec;
 use std::{io, thread};
 use ws::{CloseCode, Handler, Handshake, Message, Result, Sender};
-
-use std::sync::mpsc;
 
 pub trait Communication {
     fn start(&self);
@@ -31,6 +30,60 @@ pub trait Communication {
 impl Debug for Communication {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "Debug required for RefCell")
+    }
+}
+
+pub struct ChannelCommunication {
+    send: mpsc::Sender<(u32, String)>,
+    read: mpsc::Receiver<(u32, String)>,
+    to_send: Option<mpsc::Sender<(u32, String)>>,
+    running: bool
+}
+
+impl ChannelCommunication {
+    pub fn new() -> ChannelCommunication {
+        let (send, read) = mpsc::channel();
+        ChannelCommunication {
+            send,
+            read,
+            to_send: None,
+            running: true
+        }
+    }
+
+    pub fn bind(left: &mut ChannelCommunication, right: &mut ChannelCommunication) {
+        right.to_send = Some(left.send.clone());
+        left.to_send = Some(right.send.clone());
+    }
+}
+
+impl Communication for ChannelCommunication {
+    fn start(&self) {
+    }
+
+    fn continue_running(&self) -> bool {
+        return self.running;
+    }
+
+    fn stop(&self) {
+    }
+
+    fn read_message(&mut self) -> (u32, String) {
+        let (token, msg) = self.read.recv().expect("Failed to send message.");
+        // stop server if empty message is sent
+        if msg == "" {
+            self.running = false;
+        }
+        (token, msg)
+    }
+
+    fn send_message(&self, token: &u32, message: &str) {
+        self.send.send((token.clone(), String::from(message))).expect("Failed to send message.");
+    }
+
+    fn send_messages(&self, token: &u32, messages: &Vec<String>) {
+        let message = messages.join("<br/>");
+        self.send_message(token, &message);
     }
 }
 

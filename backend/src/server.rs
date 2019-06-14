@@ -47,6 +47,12 @@ impl Server {
                 );
             }
 
+            // Ignore empty messages
+            if message.is_empty() {
+                return;
+            }
+
+            // Handle messages over cap
             if message.len() > MAX_INPUT {
                 let player = players
                     .get(&token)

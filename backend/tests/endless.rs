@@ -32,6 +32,23 @@ fn todo_no_endless_point_limit() {
 
 #[test]
 // Can join after default player cap is reached
-fn todo_no_endless_player_limit() {
-    panic!();
+fn no_endless_player_limit() {
+    let id = "no_endless_player_limit";
+    common::run_test_server(id);
+    let mut msg = String::new();
+    for client_name in 10..100 {
+        let client = FileSystemClient::new(id, &client_name.to_string());
+        msg = client.name();
+        assert_eq!(msg, client_name.to_string());
+
+        msg = client.send_and_read(".p");
+
+    }
+    let last = FileSystemClient::new(id, "last");
+    last.name();
+    let msg = last.send_and_read(".w");
+    last.stop();
+    assert_eq!(msg, "lool");
+    assert!(msg.contains("Joined: 0"));
+
 }
