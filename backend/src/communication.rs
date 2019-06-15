@@ -11,10 +11,6 @@ use std::{io, thread};
 use ws::{CloseCode, Handler, Handshake, Message, Result};
 
 pub trait Communication {
-    fn start(&self);
-    fn continue_running(&self) -> bool;
-    fn stop(&self);
-
     // mut required for updating  FileSystemCommunication
     // WebSocketCommunication doesn't have mutability issue since everything is behind Arc Mutex
     fn read_message(&mut self) -> (u32, String);
@@ -71,17 +67,22 @@ impl ChannelCommunication {
         }
         last_message
     }
+
+    pub fn read(&mut self) -> (u32, String) {
+        self.read_message()
+    }
+
+    pub fn send(&self, token: u32, msg: &str) {
+        self.send_message(&token, msg);
+    }
+
+    pub fn send_and_read(&mut self, token: u32, msg: &str) -> (u32, String) {
+        self.send(token, msg);
+        self.read()
+    }
 }
 
 impl Communication for ChannelCommunication {
-    fn start(&self) {}
-
-    fn continue_running(&self) -> bool {
-        return self.running;
-    }
-
-    fn stop(&self) {}
-
     fn read_message(&mut self) -> (u32, String) {
         let (token, msg) = self.read.recv().expect("Failed to send message.");
         // stop server if empty message is sent
@@ -188,6 +189,7 @@ impl WebSocketCommunication {
             // Start at 1 so endless can be 0
             uuid: Arc::new(Mutex::new(1)),
         };
+        communication.spawn();
         communication
     }
 
@@ -225,16 +227,6 @@ impl WebSocketCommunication {
 }
 
 impl Communication for WebSocketCommunication {
-    fn start(&self) {
-        self.spawn();
-    }
-
-    fn continue_running(&self) -> bool {
-        true
-    }
-
-    fn stop(&self) {}
-
     // Block and read from queue
     fn read_message(&mut self) -> (u32, String) {
         match self.recv.recv() {

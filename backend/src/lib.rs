@@ -31,8 +31,6 @@ pub fn run_ws_server() {
 
 const MAX_INPUT: usize = 6669;
 fn run(communication: Rc<RefCell<dyn Communication>>) {
-    communication.borrow().start();
-
     let mut lobby_id = 1;
     let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
     let mut players: HashMap<u32, Rc<RefCell<Player>>> = HashMap::new();
@@ -55,7 +53,7 @@ fn run(communication: Rc<RefCell<dyn Communication>>) {
         &mut lobbies,
     );
 
-    while read.borrow().continue_running() {
+    loop {
         let (token, message) = read.borrow_mut().read_message();
         // Logging for troubleshooting and FBI-ing user commands
         println!("\n{}: {}", &token, &message);
@@ -87,8 +85,6 @@ fn run(communication: Rc<RefCell<dyn Communication>>) {
 
         handle_input(token, split, &mut lobby_id, &mut lobbies, &mut players);
     }
-
-    communication.borrow().stop();
 }
 
 fn handle_input(
