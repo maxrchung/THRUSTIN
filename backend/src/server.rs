@@ -9,7 +9,7 @@ use std::rc::Rc;
 const MAX_INPUT: usize = 6669;
 pub struct Server {}
 impl Server {
-    pub fn run(communication: Rc<RefCell<Communication>>) {
+    pub fn run(communication: Rc<RefCell<dyn Communication>>) {
         communication.borrow().start();
 
         let mut lobby_id = 1;

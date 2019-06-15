@@ -900,7 +900,7 @@ impl Lobby {
             Ok(index) => {
                 if index < self.max_thrustee_choices {
                     // Scope refcell borrow
-                    let mut name;
+                    let name;
                     {
                         let mut pl = pl_rc.borrow_mut();
 

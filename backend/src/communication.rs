@@ -27,7 +27,7 @@ pub trait Communication {
     fn send_messages(&self, token: &u32, messages: &Vec<String>);
 }
 
-impl Debug for Communication {
+impl Debug for dyn Communication {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "Debug required for RefCell")
     }
@@ -37,7 +37,8 @@ pub struct ChannelCommunication {
     send: mpsc::Sender<(u32, String)>,
     read: mpsc::Receiver<(u32, String)>,
     to_send: Option<mpsc::Sender<(u32, String)>>,
-    running: bool
+    running: bool,
+    messages: HashMap<u32, Vec<String>>
 }
 
 impl ChannelCommunication {
@@ -47,13 +48,32 @@ impl ChannelCommunication {
             send,
             read,
             to_send: None,
-            running: true
+            running: true,
+            messages: HashMap::new()
         }
     }
 
     pub fn bind(left: &mut ChannelCommunication, right: &mut ChannelCommunication) {
         right.to_send = Some(left.send.clone());
         left.to_send = Some(right.send.clone());
+    }
+
+    pub fn add_message(&mut self, token: u32, msg: String) {
+        if !self.messages.contains_key(&token) {
+            self.messages.insert(token, Vec::new());
+        }
+        let message = self.messages.get_mut(&token).unwrap();
+        message.push(msg.clone());
+    }
+
+    pub fn read_all(&mut self) -> String {
+        let mut last_message = String::new();
+        // Keep on reading while you can and add messages
+        while let Ok((token, msg)) = self.read.try_recv() {
+            last_message = msg.clone();
+            self.add_message(token.clone(), msg.clone());
+        }
+        last_message
     }
 }
 
@@ -74,6 +94,8 @@ impl Communication for ChannelCommunication {
         if msg == "" {
             self.running = false;
         }
+
+        self.add_message(token.clone(), msg.clone());
         (token, msg)
     }
 
@@ -130,7 +152,7 @@ impl Communication for FileSystemCommunication {
 
     fn read_message(&mut self) -> (u32, String) {
         loop {
-            let mut dir;
+            let dir;
             loop {
                 match fs::read_dir(&self.id) {
                     Ok(read) => {
