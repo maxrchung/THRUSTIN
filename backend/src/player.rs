@@ -49,7 +49,7 @@ impl Player {
     pub fn new(token: u32, communication: Rc<RefCell<dyn Communication>>) -> Player {
         Player {
             token: token,
-            name: token.to_string(),
+            name: String::new(),
             state: PlayerState::ChooseName,
             lobby: -1,
             deck: Deck::new(),
