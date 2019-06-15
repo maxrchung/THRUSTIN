@@ -66,11 +66,11 @@ impl ChannelCommunication {
         message.push(msg.clone());
     }
 
-    pub fn read_all(&mut self) -> String {
-        let mut last_message = String::new();
+    pub fn read_all(&mut self) -> (u32, String) {
+        let mut last_message = (0, String::new());
         // Keep on reading while you can and add messages
         while let Ok((token, msg)) = self.read.try_recv() {
-            last_message = msg.clone();
+            last_message = (token, msg.clone());
             self.add_message(token.clone(), msg.clone());
         }
         last_message

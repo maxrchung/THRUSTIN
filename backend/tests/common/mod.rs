@@ -1,8 +1,6 @@
 use std::fs;
 use std::path::Path;
 use std::thread;
-use std::cell::RefCell;
-use std::rc::Rc;
 use thrustin;
 use thrustin::communication::ChannelCommunication;
 
