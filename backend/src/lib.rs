@@ -12,7 +12,7 @@ mod lobby;
 mod player;
 mod thrust;
 
-use communication::{Communication, ChannelCommunication, FileSystemCommunication, WebSocketCommunication};
+use communication::{ChannelCommunication, Communication, WebSocketCommunication};
 use lobby::Lobby;
 use player::{Player, PlayerState};
 use std::cell::RefCell;
@@ -22,11 +22,6 @@ use std::rc::Rc;
 pub fn run_channel(comm: ChannelCommunication) {
     let chan_comm = Rc::new(RefCell::new(comm));
     run(chan_comm);
-}
-
-pub fn run_fs_server(id: &str) {
-    let fs_comm = Rc::new(RefCell::new(FileSystemCommunication::new(String::from(id))));
-    run(fs_comm);
 }
 
 pub fn run_ws_server() {

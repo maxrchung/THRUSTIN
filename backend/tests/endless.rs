@@ -42,7 +42,6 @@ fn no_endless_player_limit() {
         assert_eq!(msg, client_name.to_string());
 
         msg = client.send_and_read(".p");
-
     }
     let last = FileSystemClient::new(id, "last");
     last.name();
@@ -50,5 +49,4 @@ fn no_endless_player_limit() {
     last.stop();
     assert_eq!(msg, "lool");
     assert!(msg.contains("Joined: 0"));
-
 }

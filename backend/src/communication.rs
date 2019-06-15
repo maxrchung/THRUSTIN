@@ -1,18 +1,14 @@
-// There are known issues with using fs::remove_dir_all on Windows
-// This crate fixes these issues and makes delete more consistent
-use remove_dir_all::remove_dir_all;
 use rocket::response::NamedFile;
 use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::fmt;
 use std::fmt::{Debug, Formatter};
-use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
 use std::sync::mpsc;
+use std::sync::{Arc, Mutex};
 use std::vec::Vec;
 use std::{io, thread};
-use ws::{CloseCode, Handler, Handshake, Message, Result, Sender};
+use ws::{CloseCode, Handler, Handshake, Message, Result};
 
 pub trait Communication {
     fn start(&self);
@@ -38,7 +34,7 @@ pub struct ChannelCommunication {
     read: mpsc::Receiver<(u32, String)>,
     to_send: Option<mpsc::Sender<(u32, String)>>,
     running: bool,
-    messages: HashMap<u32, Vec<String>>
+    messages: HashMap<u32, Vec<String>>,
 }
 
 impl ChannelCommunication {
@@ -49,7 +45,7 @@ impl ChannelCommunication {
             read,
             to_send: None,
             running: true,
-            messages: HashMap::new()
+            messages: HashMap::new(),
         }
     }
 
@@ -78,15 +74,13 @@ impl ChannelCommunication {
 }
 
 impl Communication for ChannelCommunication {
-    fn start(&self) {
-    }
+    fn start(&self) {}
 
     fn continue_running(&self) -> bool {
         return self.running;
     }
 
-    fn stop(&self) {
-    }
+    fn stop(&self) {}
 
     fn read_message(&mut self) -> (u32, String) {
         let (token, msg) = self.read.recv().expect("Failed to send message.");
@@ -100,127 +94,9 @@ impl Communication for ChannelCommunication {
     }
 
     fn send_message(&self, token: &u32, message: &str) {
-        self.send.send((token.clone(), String::from(message))).expect("Failed to send message.");
-    }
-
-    fn send_messages(&self, token: &u32, messages: &Vec<String>) {
-        let message = messages.join("<br/>");
-        self.send_message(token, &message);
-    }
-}
-
-#[derive(Debug)]
-pub struct FileSystemCommunication {
-    id: String,
-    uuid: u32,
-    client_to_token: HashMap<String, u32>,
-    token_to_client: HashMap<u32, String>,
-    running: bool,
-}
-
-impl FileSystemCommunication {
-    pub fn new(id: String) -> FileSystemCommunication {
-        FileSystemCommunication {
-            id,
-            uuid: 1,
-            client_to_token: HashMap::new(),
-            token_to_client: HashMap::new(),
-            running: true,
-        }
-    }
-}
-
-impl Communication for FileSystemCommunication {
-    fn start(&self) {
-        // I think ideally the whole folder should be wiped, but this can cause conflict with
-        // clients sending before the folder is wiped
-        if !Path::new(&self.id).exists() {
-            fs::create_dir(&self.id).expect("Failed to create server directory");
-        }
-
-        // Block for new folder
-        while !Path::new(&self.id).exists() {}
-    }
-
-    fn continue_running(&self) -> bool {
-        return self.running;
-    }
-
-    fn stop(&self) {
-        while remove_dir_all(&self.id).is_err() {}
-    }
-
-    fn read_message(&mut self) -> (u32, String) {
-        loop {
-            let dir;
-            loop {
-                match fs::read_dir(&self.id) {
-                    Ok(read) => {
-                        dir = read;
-                        break;
-                    }
-                    _ => (),
-                }
-            }
-
-            for entry in dir {
-                let entry = entry.expect("Failed to make server entry");
-                let path = entry.path();
-                let os_file_name = path
-                    .file_name()
-                    .expect("Failed to get file name for server message");
-                let file_name = os_file_name
-                    .to_os_string()
-                    .into_string()
-                    .expect("Failed to convert OS String file name to String");
-                if file_name == "end" {
-                    self.running = false;
-                    return (0, String::new());
-                }
-
-                let split: Vec<&str> = file_name.split("_____").collect();
-                if split.len() == 2 && split[1] == "server" {
-                    let client_name = split[0];
-
-                    if !self.client_to_token.contains_key(client_name) {
-                        self.client_to_token
-                            .insert(String::from(client_name), self.uuid);
-                        self.token_to_client
-                            .insert(self.uuid, String::from(client_name));
-                        self.uuid = self.uuid + 1;
-                    }
-
-                    let client_token = self.client_to_token.get(client_name).unwrap();
-                    let mut msg = String::new();
-
-                    // Message may not be done reading yet, so keep on checking
-                    while msg.is_empty() {
-                        match fs::read_to_string(&path) {
-                            Ok(contents) => msg = contents,
-                            _ => (),
-                        }
-                    }
-
-                    fs::remove_file(path).expect("Failed to remove server message file");
-                    return (*client_token, msg);
-                }
-            }
-        }
-    }
-
-    fn send_message(&self, token: &u32, message: &str) {
-        if self.running {
-            let client_name = self
-                .token_to_client
-                .get(token)
-                .expect("Unable to get token_to_client");
-            let file_name = format!("{}/server_____{}", &self.id, client_name);
-            let file_path = Path::new(&file_name);
-            // Block if path exists already
-            while file_path.exists() {}
-
-            fs::write(file_path, message).expect("Failed to write file to client");
-        }
+        self.send
+            .send((token.clone(), String::from(message)))
+            .expect("Failed to send message.");
     }
 
     fn send_messages(&self, token: &u32, messages: &Vec<String>) {
@@ -243,8 +119,8 @@ fn file(file: PathBuf) -> Option<NamedFile> {
 
 // Specifies handler for processing an incoming websocket connection
 struct WebSocketListener {
-    out: Sender,
-    connections: Arc<Mutex<HashMap<u32, Sender>>>,
+    out: ws::Sender,
+    connections: Arc<Mutex<HashMap<u32, ws::Sender>>>,
     send: mpsc::Sender<(u32, String)>,
     uuid: u32,
 }
@@ -259,7 +135,9 @@ impl Handler for WebSocketListener {
 
     // Adds message to queue for processing
     fn on_message(&mut self, msg: Message) -> Result<()> {
-        self.send.send((self.uuid, msg.to_string()));
+        self.send
+            .send((self.uuid, msg.to_string()))
+            .expect("Unable to send on message");
         Ok(())
     }
 
@@ -269,11 +147,22 @@ impl Handler for WebSocketListener {
         connections_lock.remove(&self.uuid).unwrap();
 
         match code {
-            CloseCode::Normal => self.send.send((self.uuid, format!(".disconnect CloseCode::Normal {}", reason))),
-            
-            CloseCode::Away => self.send.send(
-            (self.uuid, format!(".disconnect CloseCode::Away {}", reason))),
-            _ => self.send.send((self.uuid, format!(".disconnect Error {}", reason))),
+            CloseCode::Normal => self
+                .send
+                .send((
+                    self.uuid,
+                    format!(".disconnect CloseCode::Normal {}", reason),
+                ))
+                .expect("Unable to sent disconnect Normal"),
+
+            CloseCode::Away => self
+                .send
+                .send((self.uuid, format!(".disconnect CloseCode::Away {}", reason)))
+                .expect("Unable to send disconnect Away"),
+            _ => self
+                .send
+                .send((self.uuid, format!(".disconnect Error {}", reason)))
+                .expect("Unable to send disconnect Error"),
         };
     }
 }
@@ -282,7 +171,7 @@ impl Handler for WebSocketListener {
 #[derive(Debug)]
 pub struct WebSocketCommunication {
     commands: Arc<Mutex<VecDeque<(u32, String)>>>,
-    connections: Arc<Mutex<HashMap<u32, Sender>>>,
+    connections: Arc<Mutex<HashMap<u32, ws::Sender>>>,
     send: mpsc::Sender<(u32, String)>,
     recv: mpsc::Receiver<(u32, String)>,
     uuid: Arc<Mutex<u32>>,
