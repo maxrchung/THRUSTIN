@@ -1,5 +1,3 @@
-use std::fs;
-use std::path::Path;
 use std::thread;
 use thrustin;
 use thrustin::communication::ChannelCommunication;
