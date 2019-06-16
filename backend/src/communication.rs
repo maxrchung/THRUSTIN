@@ -6,6 +6,7 @@ use std::fmt::{Debug, Formatter};
 use std::path::{Path, PathBuf};
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 use std::vec::Vec;
 use std::{io, thread};
 use ws::{CloseCode, Handler, Handshake, Message, Result};
@@ -29,7 +30,6 @@ pub struct ChannelCommunication {
     send: mpsc::Sender<(u32, String)>,
     read: mpsc::Receiver<(u32, String)>,
     to_send: Option<mpsc::Sender<(u32, String)>>,
-    running: bool,
     messages: HashMap<u32, Vec<String>>,
 }
 
@@ -40,7 +40,6 @@ impl ChannelCommunication {
             send,
             read,
             to_send: None,
-            running: true,
             messages: HashMap::new(),
         }
     }
@@ -58,44 +57,37 @@ impl ChannelCommunication {
         message.push(msg.clone());
     }
 
-    pub fn read_all(&mut self) -> (u32, String) {
-        let mut last_message = (0, String::new());
+    pub fn read_all(&mut self) {
+        // Short pause to wait for incoming messages
+        thread::sleep(Duration::from_millis(100));
+
         // Keep on reading while you can and add messages
         while let Ok((token, msg)) = self.read.try_recv() {
-            last_message = (token, msg.clone());
             self.add_message(token.clone(), msg.clone());
         }
-        last_message
     }
 
-    pub fn read(&mut self) -> (u32, String) {
-        self.read_message()
+    pub fn last(&mut self, token: u32) -> String {
+        self.messages
+            .get(&token).expect("Token does not exist")
+            .last().expect("Messages does not have last element")
+            .to_string()
     }
 
     pub fn send(&self, token: u32, msg: &str) {
         self.send_message(&token, msg);
-    }
-
-    pub fn send_and_read(&mut self, token: u32, msg: &str) -> (u32, String) {
-        self.send(token, msg);
-        self.read()
     }
 }
 
 impl Communication for ChannelCommunication {
     fn read_message(&mut self) -> (u32, String) {
         let (token, msg) = self.read.recv().expect("Failed to send message.");
-        // stop server if empty message is sent
-        if msg == "" {
-            self.running = false;
-        }
-
         self.add_message(token.clone(), msg.clone());
         (token, msg)
     }
 
     fn send_message(&self, token: &u32, message: &str) {
-        self.send
+        self.to_send.as_ref().expect("to_send not set")
             .send((token.clone(), String::from(message)))
             .expect("Failed to send message.");
     }
