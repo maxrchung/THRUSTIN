@@ -55,9 +55,9 @@ class Client extends React.Component {
     };
 
     handleKeyDown = (e) => {
-        var ctrlPressed = e.getModifierState("Control") || e.getModifierState("Meta");
+        var isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
 
-        if (document.activeElement !== this.commandBar && !ctrlPressed) {
+        if (document.activeElement !== this.commandBar && !isWhitedModifier) {
             this.commandBar.focus();
         }
         if (e.key == "Enter" && this.commandBar.value !== "") {
