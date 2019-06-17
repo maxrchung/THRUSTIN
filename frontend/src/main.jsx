@@ -2,11 +2,11 @@ import "./main.scss";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
 import SanitizedHTML from "react-sanitized-html";
+import CommandBar from './commandBar';
 
 const MAX_INPUT = 6669;
-const MAX_MSGS = 696;
+const MAX_MSGS = 69;
 function Message(props) {
     return (
         <div className="mb-3 mr-3">
@@ -46,7 +46,7 @@ class Client extends React.Component {
         }
         this.connection.onmessage = this.handleMessage; 
         this.connection.onclose = this.handleClose;
-        this.commandBar.focus();
+        this.inputBar.focus();
         document.addEventListener("keydown", this.handleKeyDown);
     }
 
@@ -55,14 +55,17 @@ class Client extends React.Component {
     };
 
     handleKeyDown = (e) => {
+        console.log("gayman");
         var isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
 
-        if (document.activeElement !== this.commandBar && !isWhitedModifier) {
-            this.commandBar.focus();
+        if (document.activeElement !== this.inputBar && !isWhitedModifier) {
+            this.inputBar.focus();
         }
-        if (e.key == "Enter" && this.commandBar.value !== "") {
+        if (e.key == "Enter" && this.inputBar.value !== "") {
+            console.log("InputBar: ", this.inputBar);
             this.handleMessageMax();
-            const command = this.commandBar.value;
+            const command = this.inputBar.value;
+            //
             this.setState({
                 messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
             });
@@ -72,7 +75,8 @@ class Client extends React.Component {
             else {
                 this.setMessage("BRO CHILLOUT that message is too long my man.");
             }
-            this.commandBar.value = "";
+            this.inputBar.value = "";
+            //
             this.scrollToDummy();
         }
     }
@@ -139,9 +143,7 @@ class Client extends React.Component {
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>
-                <div className="mb-3 mr-3">
-                    <Form.Control ref={(input) => {this.commandBar = input}} type="text" placeholder="Enter command..." />
-                </div>
+                <CommandBar ref={(comBar) => {if(comBar) this.inputBar = comBar.input;}} />
             </Container>
         );
     }
