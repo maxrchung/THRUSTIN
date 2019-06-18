@@ -650,11 +650,7 @@ impl Lobby {
                 let pl_ind = self.search_token(pl.token).unwrap();
                 let next_ind = (pl_ind + 1) % self.list.len();
                 // This needs to be calculated as if pl has been removed
-                let next_thrustee = if pl_ind == self.list.len() - 1 {
-                    0
-                } else {
-                    pl_ind
-                };
+                let next_thrustee = pl_ind % (self.list.len() - 1);
 
                 // Set up messages
                 let mut messages = vec![String::from(format!("{} left the lobby..", pl.name))];
@@ -667,11 +663,11 @@ impl Lobby {
                     )));
                 }
 
-                // Flag that checks if host/chief was changed
-                let mut new_host = false;
+                let mut did_thrustee_change = false;
                 // Handle if player is Choosing
                 if pl.state == PlayerState::Choosing {
                     self.thrustee = next_thrustee;
+                    did_thrustee_change = true;
                     // Next player chooses and replenish cards
                     let mut next = self.list[next_ind].borrow_mut();
                     next.state = PlayerState::Choosing;
@@ -679,30 +675,30 @@ impl Lobby {
                         "Lol yo bro 'cause the THRUSTEE left {} is choosin' the next THRUSTEE now!",
                         next.name
                     )));
-                    new_host = true;
                 }
                 // Handle if player is Deciding
                 else if pl.state == PlayerState::Deciding {
                     self.thrustee = next_thrustee;
+                    did_thrustee_change = true;
                     // Next player decides
                     let mut next = self.list[next_ind].borrow_mut();
                     next.state = PlayerState::Deciding;
                     messages.push(String::from(format!("Lmao the THRUSTEE left and you're next in line, so {} gets to decide which THRUST wins lmfao.", next.name)));
                 }
 
-                // Remove player
+                // Remove player after we are done with managing player state
                 self.list.remove(pl_ind);
 
                 // Send appropriate message
-                for pl_rc in &self.list {
+                for (i, pl_rc) in self.list.iter().enumerate() {
                     let pl = pl_rc.borrow();
-                    if self.is_host(pl.token) && new_host {
-                        let mut host_messages = messages.clone();
+                    if i == next_thrustee && did_thrustee_change {
+                        let mut thrustee_messages = messages.clone();
                         // Add a linebreak for better visibility
-                        host_messages.last_mut().unwrap().push_str("<br/>");
+                        thrustee_messages.last_mut().unwrap().push_str("<br/>");
                         // Notify chief of choices
-                        host_messages.extend(self.print_thrustee_choices());
-                        pl.send_messages(&host_messages);
+                        thrustee_messages.extend(self.print_thrustee_choices());
+                        pl.send_messages(&thrustee_messages);
                     } else {
                         pl.send_messages(&messages);
                     }
