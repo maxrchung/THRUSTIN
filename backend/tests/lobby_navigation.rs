@@ -32,7 +32,7 @@ fn leave_lobby() {
     client.send(2, ".j 1");
     client.send(2, ".l");
     client.read_all();
-    assert_eq!(client.last(2), String::from("You left the lobby okay!"));
+    assert_eq!(client.last(2), String::from("You have been leaved from the lobby okay!"));
     assert_eq!(client.last(1), "2 left the lobby..");
 }
 
@@ -59,7 +59,7 @@ fn leave_lobby_as_thruster() {
     client.send(1, ".s");
     client.send(2, ".l");
     client.read_all();
-    assert_eq!(client.last(2), "You left the lobby okay!");
+    assert_eq!(client.last(2), "You have been leaved from the lobby okay!");
     assert_eq!(client.last(1), "2 left the lobby..");
 }
 
@@ -73,7 +73,7 @@ fn leave_lobby_as_thrustee() {
     client.send(1, ".s");
     client.send(1, ".l");
     client.read_all();
-    assert_eq!(client.last(1), "You left the lobby okay!");
+    assert_eq!(client.last(1), "You have been leaved from the lobby okay!");
     assert!(client.last(2).contains("1 left the lobby..<br/>Chief left so now we got a new one --> 2<br/>Lol yo bro 'cause the THRUSTEE left 2 is choosin' the next THRUSTEE now!<br/><br/>your THRUSTEE Choices:<br/>"));
 }
 
@@ -87,7 +87,7 @@ fn kick_in_lobby() {
     client.send(1, ".k 2");
     client.read_all();
     assert_eq!(client.last(1), "2 left the lobby..");
-    assert_eq!(client.last(2), "You left the lobby okay!");
+    assert_eq!(client.last(2), "You have been leaved from the lobby okay!");
 }
 
 #[test]
@@ -101,7 +101,7 @@ fn kick_in_game() {
     client.send(1, ".k 2");
     client.read_all();
     assert_eq!(client.last(1), "2 left the lobby..");
-    assert_eq!(client.last(2), "You left the lobby okay!");
+    assert_eq!(client.last(2), "You have been leaved from the lobby okay!");
 }
 
 #[test]
@@ -118,7 +118,7 @@ fn kick_thrustee() {
     client.send(1, ".k 2");
     client.read_all();
     assert!(client.last(1).contains("2 left the lobby.."));
-    assert_eq!(client.last(2), "You left the lobby okay!");
+    assert_eq!(client.last(2), "You have been leaved from the lobby okay!");
 }
 
 #[test]

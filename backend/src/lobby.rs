@@ -714,7 +714,7 @@ impl Lobby {
         let mut pl_mut = pl_rc.borrow_mut();
         pl_mut.lobby = -1;
         pl_mut.state = PlayerState::OutOfLobby;
-        pl_mut.send_message("You left the lobby okay!");
+        pl_mut.send_message("You have been leaved from the lobby okay!");
     }
 
     pub fn toggle_house(&mut self, pl_rc: Rc<RefCell<Player>>) {
