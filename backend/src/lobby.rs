@@ -5,8 +5,8 @@ use rand::thread_rng;
 use std::cell::{RefCell, RefMut};
 use std::collections::HashMap;
 use std::rc::Rc;
-use std::usize;
 use std::u8;
+use std::usize;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum LobbyState {

@@ -32,7 +32,10 @@ fn leave_lobby() {
     client.send(2, ".j 1");
     client.send(2, ".l");
     client.read_all();
-    assert_eq!(client.last(2), String::from("You have been leaved from the lobby okay!"));
+    assert_eq!(
+        client.last(2),
+        String::from("You have been leaved from the lobby okay!")
+    );
     assert_eq!(client.last(1), "2 left the lobby..");
 }
 
@@ -45,8 +48,12 @@ fn start_lobby() {
     client.send(2, ".j 1");
     client.send(1, ".s");
     client.read_all();
-    assert!(client.last(1).contains("You are the THRUSTEE. Choose NOW.........."));
-    assert!(client.last(2).contains("You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!"));
+    assert!(client
+        .last(1)
+        .contains("You are the THRUSTEE. Choose NOW.........."));
+    assert!(client
+        .last(2)
+        .contains("You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!"));
 }
 
 #[test]
@@ -207,21 +214,22 @@ fn thrust_back_and_forth() {
     assert!(msg.contains("1. "));
     assert!(msg.contains("2. "));
     // If THRUSTER was in lobby when game was started
-    assert_eq!(client.last(2), "You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!");
+    assert_eq!(
+        client.last(2),
+        "You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!"
+    );
     client.send(2, ".l");
     client.send(2, ".j 1");
     client.read_all();
     // If THRUSTER joined midgame
-    assert_eq!(client.last(2), "Joined: 1<br/>THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!");
+    assert_eq!(
+        client.last(2),
+        "Joined: 1<br/>THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!"
+    );
 
     for n in 0..2 {
-        let (thrustee, thruster) = if n == 0 {
-            (1, 2)
-        }
-        else {
-            (2, 1)
-        };
-    
+        let (thrustee, thruster) = if n == 0 { (1, 2) } else { (2, 1) };
+
         client.send(thrustee, ".t 0");
         client.read_all();
         let msg = client.last(thrustee);
@@ -240,12 +248,24 @@ fn thrust_back_and_forth() {
         client.send(thrustee, ".t 0");
         client.read_all();
         let msg = client.last(thrustee);
-        assert!(msg.contains(&format!("{} has chosen this THRUSTER as the chosen THRUST, bois:", thrustee)));
-        assert!(msg.contains(&format!("The winning THRUSTER, {} now has 1/7 point(s)! Watch out!", thruster)));
+        assert!(msg.contains(&format!(
+            "{} has chosen this THRUSTER as the chosen THRUST, bois:",
+            thrustee
+        )));
+        assert!(msg.contains(&format!(
+            "The winning THRUSTER, {} now has 1/7 point(s)! Watch out!",
+            thruster
+        )));
         assert!(msg.contains("get rdy to THRUST....."));
         let msg = client.last(thruster);
-        assert!(msg.contains(&format!("{} has chosen this THRUSTER as the chosen THRUST, bois:", thrustee)));
-        assert!(msg.contains(&format!("The winning THRUSTER, {} now has 1/7 point(s)! Watch out!", thruster)));
+        assert!(msg.contains(&format!(
+            "{} has chosen this THRUSTER as the chosen THRUST, bois:",
+            thrustee
+        )));
+        assert!(msg.contains(&format!(
+            "The winning THRUSTER, {} now has 1/7 point(s)! Watch out!",
+            thruster
+        )));
         assert!(msg.contains("You are the neXt THRUSTEE! GetT ready to CHOOSE a good THRUSTEE!"));
         assert!(msg.contains("your THRUSTEE Choices:"));
         assert!(msg.contains("0. "));

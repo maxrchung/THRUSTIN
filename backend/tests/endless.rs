@@ -28,5 +28,12 @@ fn endless_configurations() {
     client.send(1, ".p");
     client.send(1, ".i");
     client.read_all();
-    assert_eq!(client.last(1), format!("\\\\Lobby info//<br/>Name: 0<br/>Players: 1 / {}<br/>Max points: {}", usize::MAX, u8::MAX));
+    assert_eq!(
+        client.last(1),
+        format!(
+            "\\\\Lobby info//<br/>Name: 0<br/>Players: 1 / {}<br/>Max points: {}",
+            usize::MAX,
+            u8::MAX
+        )
+    );
 }

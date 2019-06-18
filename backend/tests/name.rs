@@ -24,7 +24,10 @@ fn invalid_rename_in_lobby() {
     client.send(1, ".m");
     client.send(1, ".n player1");
     client.read_all();
-    assert_eq!(client.last(1), "Broski that shall be an invalid command. enter .help");
+    assert_eq!(
+        client.last(1),
+        "Broski that shall be an invalid command. enter .help"
+    );
 }
 
 #[test]
@@ -44,7 +47,10 @@ fn duplicate_name_error() {
     client.send(1, ".n 1");
     client.send(2, ".n 1");
     client.read_all();
-    assert_eq!(client.last(2), "yo that name exists ya gotta pick something else aight?");
+    assert_eq!(
+        client.last(2),
+        "yo that name exists ya gotta pick something else aight?"
+    );
 }
 
 #[test]
@@ -54,5 +60,8 @@ fn duplicate_rename_error() {
     client.send(2, ".n 2");
     client.send(2, ".n 1");
     client.read_all();
-    assert_eq!(client.last(2), "yo that name exists ya gotta pick something else aight?");
+    assert_eq!(
+        client.last(2),
+        "yo that name exists ya gotta pick something else aight?"
+    );
 }

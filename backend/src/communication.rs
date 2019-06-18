@@ -68,13 +68,18 @@ impl ChannelCommunication {
     }
 
     pub fn all(&self, token: u32) -> Vec<String> {
-        self.messages.get(&token).expect("Token does not exist for all").to_vec()
+        self.messages
+            .get(&token)
+            .expect("Token does not exist for all")
+            .to_vec()
     }
 
     pub fn last(&self, token: u32) -> String {
         self.messages
-            .get(&token).expect("Token does not exist for last")
-            .last().expect("Messages does not have last element")
+            .get(&token)
+            .expect("Token does not exist for last")
+            .last()
+            .expect("Messages does not have last element")
             .to_string()
     }
 
@@ -102,7 +107,9 @@ impl Communication for ChannelCommunication {
     }
 
     fn send_message(&self, token: &u32, message: &str) {
-        self.to_send.as_ref().expect("to_send not set")
+        self.to_send
+            .as_ref()
+            .expect("to_send not set")
             .send((token.clone(), String::from(message)))
             .expect("Failed to send message.");
     }
