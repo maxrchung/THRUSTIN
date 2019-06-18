@@ -5,6 +5,8 @@ use rand::thread_rng;
 use std::cell::{RefCell, RefMut};
 use std::collections::HashMap;
 use std::rc::Rc;
+use std::usize;
+use std::u8;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum LobbyState {
@@ -90,11 +92,11 @@ impl Lobby {
         let lobby = Lobby {
             pw: "".to_string(),
             list: Vec::new(),
-            max: 0,
+            max: usize::MAX,
             id: 0,
             state: LobbyState::Waiting,
             hand_size: 5,
-            max_points: 7,
+            max_points: u8::MAX,
             host: player.clone(),
             thrustee: 0,
             thrustee_choices: Vec::new(),

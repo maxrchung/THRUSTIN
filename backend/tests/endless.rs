@@ -1,5 +1,8 @@
 mod common;
 
+use std::u8;
+use std::usize;
+
 #[test]
 fn join_endless() {
     let mut client = common::setup();
@@ -19,18 +22,11 @@ fn play_endless() {
 }
 
 #[test]
-//Can join after default player cap is reached
-fn no_endless_player_limit() {
+fn endless_configurations() {
     let mut client = common::setup();
-    for client_name in 1..21 {
-        client.send(client_name, &format!(".n {}", client_name));
-        client.send(client_name, &format!(".p {}", client_name));
-    }
+    client.send(1, ".n 1");
+    client.send(1, ".p");
+    client.send(1, ".i");
     client.read_all();
-    assert_eq!(client.last(20), "Joined: 0<br/>THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!");
-}
-
-#[test]
-// Can play after default THRUST cap is reached
-fn todo_no_endless_point_limit() {
+    assert_eq!(client.last(1), format!("\\\\Lobby info//<br/>Name: 0<br/>Players: 1 / {}<br/>Max points: {}", usize::MAX, u8::MAX));
 }
