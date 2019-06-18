@@ -67,13 +67,6 @@ impl ChannelCommunication {
         }
     }
 
-    pub fn all(&self, token: u32) -> Vec<String> {
-        self.messages
-            .get(&token)
-            .expect("Token does not exist for all")
-            .to_vec()
-    }
-
     pub fn last(&self, token: u32) -> String {
         self.messages
             .get(&token)
