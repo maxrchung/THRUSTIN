@@ -49,7 +49,7 @@ impl ChannelCommunication {
         left.to_send = Some(right.send.clone());
     }
 
-    pub fn add_message(&mut self, token: u32, msg: String) {
+    fn add_message(&mut self, token: u32, msg: String) {
         if !self.messages.contains_key(&token) {
             self.messages.insert(token, Vec::new());
         }
