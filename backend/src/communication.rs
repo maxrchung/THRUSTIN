@@ -74,6 +74,17 @@ impl ChannelCommunication {
             .to_string()
     }
 
+    // Since THRUSTS are randomized, we aren't really sure how many THRUSTS we need
+    // This will take care of default possibilities...
+    pub fn thrust(&mut self, token: u32) {
+        self.send(token.clone(), ".t 0");
+        self.send(token.clone(), ".t 0 1");
+        self.send(token.clone(), ".t 0 1");
+        self.send(token.clone(), ".t 0 1 2");
+        self.send(token.clone(), ".t 0 1 2 3");
+        self.send(token.clone(), ".t 0 1 2 4");
+    }
+
     pub fn send(&self, token: u32, msg: &str) {
         self.send_message(&token, msg);
     }
