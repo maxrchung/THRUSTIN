@@ -67,16 +67,20 @@ impl ChannelCommunication {
         }
     }
 
-    pub fn last(&mut self, token: u32) -> String {
+    pub fn all(&self, token: u32) -> Vec<String> {
+        self.messages.get(&token).expect("Token does not exist for all").to_vec()
+    }
+
+    pub fn last(&self, token: u32) -> String {
         self.messages
-            .get(&token).expect("Token does not exist")
+            .get(&token).expect("Token does not exist for last")
             .last().expect("Messages does not have last element")
             .to_string()
     }
 
     // Since THRUSTS are randomized, we aren't really sure how many THRUSTS we need
     // This will take care of default possibilities...
-    pub fn thrust(&mut self, token: u32) {
+    pub fn thrust(&self, token: u32) {
         self.send(token.clone(), ".t 0");
         self.send(token.clone(), ".t 0 1");
         self.send(token.clone(), ".t 0 1");
