@@ -320,7 +320,7 @@ impl Lobby {
         let pl = pl_rc.borrow();
         if !self.is_host(pl.token) {
             pl.send_message(
-                "The chief of the lobby is the only one who may set the THRUSTEE count.",
+                "Only chief of the lobby is the only one who may set the THRUSTEE count.",
             );
             return;
         }
@@ -715,6 +715,11 @@ impl Lobby {
 
     pub fn toggle_house(&mut self, pl_rc: Rc<RefCell<Player>>) {
         let pl = pl_rc.borrow();
+        if !self.is_host(pl.token) {
+            pl.send_message(&format!("Only chief can decide whether or not toggle the house (default provided) THRUSTS for THRUSTING!"));
+            return;
+        }
+
         self.use_house = !self.use_house;
         if self.use_house {
             pl.send_message(&"Now using house cards!");
@@ -755,7 +760,7 @@ impl Lobby {
             let pl = pl_rc.borrow();
 
             if !self.is_host(pl.token) {
-                pl.send_message(&format!("Only host can start game!"));
+                pl.send_message(&format!("Only chief can start game!"));
                 return;
             }
         }
