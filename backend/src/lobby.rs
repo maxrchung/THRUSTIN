@@ -516,41 +516,6 @@ impl Lobby {
         }
     }
 
-    pub fn join_endless(
-        pl_rc: Rc<RefCell<Player>>,
-        lobby: &mut HashMap<i32, Lobby>,
-        lobby_id: &i32,
-    ) {
-        let mut pl = pl_rc.borrow_mut();
-        let mut messages = Vec::new();
-        if let Some(mut lob) = lobby.get_mut(&lobby_id) {
-            messages.push(format!("Joined: {:#?}", &lobby_id));
-
-            // Set points to 0 (just in case?)
-            pl.points = 0;
-
-            // add players' personal deck (.thrustee/.thruster) to lobby deck
-            Lobby::add_pers_deck_to_lob(lob, &mut pl);
-
-            pl.state = {
-                if let Some(state) =
-                    Lobby::get_joining_pl_state(&mut lob, &mut pl, &mut messages, &pl_rc)
-                {
-                    state
-                } else {
-                    return;
-                }
-            };
-            lob.send_message(&format!("{} has joined the lobby.", pl.name));
-            // adding the new player to lobby
-            pl.lobby = lob.id;
-            lob.list.push(pl_rc.clone());
-            pl.send_messages(&messages);
-        } else {
-            pl.send_message("Lobby does not exist.");
-        }
-    }
-
     pub fn join_lobby(
         input: Vec<&str>,
         pl_rc: Rc<RefCell<Player>>,
@@ -564,12 +529,6 @@ impl Lobby {
 
         match input[1].to_string().parse::<i32>() {
             Ok(lobby_id) => {
-                // Handle joining endless lobby (lmao)
-                if lobby_id == 0 {
-                    Lobby::join_endless(pl_rc, lobby, &lobby_id);
-                    return;
-                }
-
                 let mut pl = pl_rc.borrow_mut();
                 let mut messages = Vec::new();
                 if let Some(mut lob) = lobby.get_mut(&lobby_id) {
