@@ -37,3 +37,23 @@ fn endless_configurations() {
         )
     );
 }
+
+// Bug: Panic occurrs when trying to join endless after leaving
+// Reason: THRUSTEE was not being reset properly when new lobby starts
+#[test]
+fn joining_after_round_is_played() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".p");
+    client.send(2, ".n 2");
+    client.send(2, ".p");
+    client.send(1, ".t 0");
+    client.thrust(2);
+    client.send(1, ".t 0");
+    client.send(1, ".l");
+    client.send(2, ".l");
+    client.send(1, ".p");
+    client.send(2, ".p");
+    client.read_all();
+    assert_eq!(client.last(2), "Joined: 0<br/>THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!");
+}

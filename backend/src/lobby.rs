@@ -503,6 +503,7 @@ impl Lobby {
             pl.send_messages(&messages);
             pl.lobby = lob.id;
             lob.list.push(pl_rc.clone());
+            lob.thrustee = 0;
             return None; //dude lmao
         } else {
             Lobby::handle_join_cases(&pl, &lob, &mut wait, messages);
