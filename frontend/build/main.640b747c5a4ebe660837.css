@@ -5358,6 +5358,7 @@ hr {
   background-color: #B7410E; }
 
 .form-control {
+  color: #6c757d !important;
   background-size: 100% 100%, 100% 100%; }
 
 .form-control,
@@ -5369,8 +5370,8 @@ hr {
 
 .rbt-input-hint {
   line-height: 1.725 !important;
-  color: #495057 !important;
-  opacity: 0.60; }
+  color: #6c757d !important;
+  opacity: 0.65; }
 
 .rbt-menu {
   display: none !important; }

@@ -121,6 +121,7 @@ hr {
 
 // Prevent resize animation of input
 .form-control {
+	color: #6c757d !important;
     background-size: 100% 100%, 100% 100%;
 }
 // Change input bottom bar to be rust colored
@@ -136,8 +137,8 @@ hr {
 
 .rbt-input-hint {
 	line-height: 1.725 !important;
-	color: #495057 !important;
-	opacity: 0.60;
+	color: #6c757d !important;
+	opacity: 0.65;
 }
 
 .rbt-menu {
