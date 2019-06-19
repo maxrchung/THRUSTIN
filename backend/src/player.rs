@@ -34,7 +34,7 @@ pub struct Player {
 
     pub points: u8,
 
-    comm: Rc<RefCell<Communication>>,
+    comm: Rc<RefCell<dyn Communication>>,
 }
 
 impl Player {
@@ -46,10 +46,10 @@ impl Player {
         self.comm.borrow().send_messages(&self.token, messages);
     }
 
-    pub fn new(token: u32, communication: Rc<RefCell<Communication>>) -> Player {
+    pub fn new(token: u32, communication: Rc<RefCell<dyn Communication>>) -> Player {
         Player {
             token: token,
-            name: token.to_string(),
+            name: String::new(),
             state: PlayerState::ChooseName,
             lobby: -1,
             deck: Deck::new(),
@@ -59,7 +59,7 @@ impl Player {
         }
     }
 
-    pub fn new_endless_host(communication: Rc<RefCell<Communication>>) -> Player {
+    pub fn new_endless_host(communication: Rc<RefCell<dyn Communication>>) -> Player {
         Player {
             token: 0,
             name: "EndlessLobbyHostDoggo".to_string(),

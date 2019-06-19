@@ -1,45 +1,54 @@
-
 mod common;
-use common::FileSystemClient;
 
 #[test]
 fn thruster() {
-    let id = "thruster";
-    common::run_test_server(id);
-    let a = FileSystemClient::new(id, "a");
-    a.name();
-    let msg = a.send_and_read(".t \"It's yo boy epic swagger!!\"");
-    assert_eq!(msg, "Added \"It's yo boy epic swagger!!\" to THRUSTERS!");
-    let msg = a.send_and_read(".t");
-    assert_eq!(msg, "You're THRUSTEES:<br/><br/>You're THRUSTERS:<br/>1. It's yo boy epic swagger!!");
-    a.stop();
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".t \"It's yo boy epic swagger!!\"");
+    client.read_all();
+    assert_eq!(
+        client.last(1),
+        "Added \"It's yo boy epic swagger!!\" to THRUSTERS!"
+    );
+    client.send(1, ".t");
+    client.read_all();
+    assert_eq!(
+        client.last(1),
+        "You're THRUSTEES:<br/><br/>You're THRUSTERS:<br/>1. It's yo boy epic swagger!!"
+    );
 }
 
 #[test]
 fn thrustee() {
-    let id = "thrustee";
-    common::run_test_server(id);
-    let a = FileSystemClient::new(id, "a");
-    a.name();
-    let msg = a.send_and_read(".t \"It's yo boy, _ swagger!!\"");
-    assert_eq!(msg, "Added \"It's yo boy, _ swagger!!\" to THRUSTEES!");
-    let msg = a.send_and_read(".t");
-    assert_eq!(msg, "You're THRUSTEES:<br/>1. It's yo boy, _ swagger!!<br/><br/>You're THRUSTERS:");
-    a.stop();
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".t \"It's yo boy, _ swagger!!\"");
+    client.read_all();
+    assert_eq!(
+        client.last(1),
+        "Added \"It's yo boy, _ swagger!!\" to THRUSTEES!"
+    );
+    client.send(1, ".t");
+    client.read_all();
+    assert_eq!(
+        client.last(1),
+        "You're THRUSTEES:<br/>1. It's yo boy, _ swagger!!<br/><br/>You're THRUSTERS:"
+    );
 }
 
 #[test]
 fn unthrust() {
-    let id = "unthrust";
-    common::run_test_server(id);
-    let a = FileSystemClient::new(id, "a");
-    a.name();
-    a.send_and_read(".t \"It's yo boy swaggy swagger!!\"");
-    a.send_and_read(".t \"It's yo boy super swagger!!\"");
-    let msg = a.send_and_read(".t");
-    // THRUSTS are sorted
-    assert_eq!(msg, "You're THRUSTEES:<br/><br/>You're THRUSTERS:<br/>1. It's yo boy super swagger!!<br/>2. It's yo boy swaggy swagger!!");
-    let msg = a.send_and_read(".u");
-    assert_eq!(msg, "Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
-    a.stop();
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".t \"It's yo boy swaggy swagger!!\"");
+    client.send(1, ".t \"It's yo boy super swagger!!\"");
+    client.send(1, ".t");
+    client.read_all();
+    assert_eq!(client.last(1), "You're THRUSTEES:<br/><br/>You're THRUSTERS:<br/>1. It's yo boy super swagger!!<br/>2. It's yo boy swaggy swagger!!");
+    client.send(1, ".u");
+    client.read_all();
+    assert_eq!(
+        client.last(1),
+        "Personal THRUSTS have been cleared! If this was an accident, Good Luck!"
+    );
 }

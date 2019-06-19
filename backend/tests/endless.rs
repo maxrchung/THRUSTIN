@@ -1,37 +1,59 @@
 mod common;
 
-use common::FileSystemClient;
+use std::u8;
+use std::usize;
 
 #[test]
 fn join_endless() {
-    let id = "join_endless";
-    common::run_test_server(id);
-    let a = FileSystemClient::new(id, "a");
-    a.name();
-    let msg = a.send_and_read(".j 0");
-    a.stop();
-    assert!(msg.contains("Welcome to the 『Endless Lobby』, big doggo. You lucky, family, you are THRUSTEE!!!!.. . Choose now...    .<br/>your THRUSTEE Choices:"));
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".j 0");
+    client.read_all();
+    assert!(client.last(1).contains("Welcome to the 『Endless Lobby』, big doggo. You lucky, family, you are THRUSTEE!!!!.. . Choose now...    .<br/>your THRUSTEE Choices:"));
 }
 
 #[test]
 fn play_endless() {
-    let id = "play_endless";
-    common::run_test_server(id);
-    let a = FileSystemClient::new(id, "a");
-    a.name();
-    let msg = a.send_and_read(".p");
-    a.stop();
-    assert!(msg.contains("Welcome to the 『Endless Lobby』, big doggo. You lucky, family, you are THRUSTEE!!!!.. . Choose now...    .<br/>your THRUSTEE Choices:"));
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".p");
+    client.read_all();
+    assert!(client.last(1).contains("Welcome to the 『Endless Lobby』, big doggo. You lucky, family, you are THRUSTEE!!!!.. . Choose now...    .<br/>your THRUSTEE Choices:"));
 }
 
 #[test]
-// Can play after default THRUST cap is reached
-fn todo_no_endless_point_limit() {
-    panic!();
+fn endless_configurations() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".p");
+    client.send(1, ".i");
+    client.read_all();
+    assert_eq!(
+        client.last(1),
+        format!(
+            "\\\\Lobby info//<br/>Name: 0<br/>Players: 1 / {}<br/>Max points: {}",
+            usize::MAX,
+            u8::MAX
+        )
+    );
 }
 
+// Bug: Panic occurrs when trying to join endless after leaving
+// Reason: THRUSTEE was not being reset properly when new lobby starts
 #[test]
-// Can join after default player cap is reached
-fn todo_no_endless_player_limit() {
-    panic!();
+fn joining_after_round_is_played() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".p");
+    client.send(2, ".n 2");
+    client.send(2, ".p");
+    client.send(1, ".t 0");
+    client.thrust(2);
+    client.send(1, ".t 0");
+    client.send(1, ".l");
+    client.send(2, ".l");
+    client.send(1, ".p");
+    client.send(2, ".p");
+    client.read_all();
+    assert_eq!(client.last(2), "Joined: 0<br/>THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!");
 }

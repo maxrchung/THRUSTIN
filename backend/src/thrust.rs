@@ -167,6 +167,20 @@ impl Default for Deck {
             "shut up",
             "camellia",
             "in a hot minute",
+            "omegaalphahypergigaSUPERLUL, literally the biggest laugh out loud ever",
+            "lmao there’s literally no better time to be alive than now",
+            "I can’t stop yeetin on dem haters",
+            "literally garbage",
+            "slurping sips of sewer water",
+            "when you’re planning to cook some boiled eggs but drop your eggs too fast into your pot of boiling water and crack the bottom of your eggs and it’s too late now because the water’s too hot to take the eggs out but it’s probably gonna be fine anyway right",
+            "aliens lol",
+            "a couple shots of soy sauce make me go woozy",
+            "boiling some pee pee",
+            "drinking some boiled pee pee",
+            "we’re just living in a simulation",
+            "nothing matters because this is all a dream",
+            "I am afraid that I have allowed myself to rust in many ways",
+            "watching paint dry"
         ];
 
         let thrustees = vec![
@@ -233,6 +247,14 @@ impl Default for Deck {
             "Hey man, sorry I missed your message, I was cooking up some  _____.",
             "I’ll tell you about _____ in 10 years.",
             "Yeah, I’ll be writing about _____ in my diary for the next 6 months.",
+            "1969 meme: _____, 2019 meme: _____, 2069 meme: _____",
+            "Guilty Crown is _____.",
+            "Guilty Crown is literally garbage. _____",
+            "I like a good cuck or two, but then there’s _____.",
+            "A perfect night out with _____ and _____.",
+            "Rust is a multi-paradigm _____ focused on safety, especially safe concurrency.",
+            "Rust is a reddish- or yellowish-brown flaky coating of iron oxide that is formed on iron or steel by oxidation, especially in the presence of _____.",
+            "Nobody:<br/>Me: _____",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
