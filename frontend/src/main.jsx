@@ -6,7 +6,7 @@ import SanitizedHTML from "react-sanitized-html";
 import CommandBar from './commandBar';
 
 const MAX_INPUT = 6669;
-const MAX_MSGS = 69;
+const MAX_MSGS = 696;
 function Message(props) {
     return (
         <div className="mb-3 mr-3">
@@ -65,7 +65,6 @@ class Client extends React.Component {
             console.log("InputBar: ", this.inputBar);
             this.handleMessageMax();
             const command = this.inputBar.value;
-            //
             this.setState({
                 messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
             });
@@ -76,7 +75,6 @@ class Client extends React.Component {
                 this.setMessage("BRO CHILLOUT that message is too long my man.");
             }
             this.inputBar.value = "";
-            //
             this.scrollToDummy();
         }
     }

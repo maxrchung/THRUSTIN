@@ -131,3 +131,15 @@ hr {
 .form-control::placeholder {
     line-height: 1.725;
 }
+
+// Typeahead styling
+
+.rbt-input-hint {
+	line-height: 1.725 !important;
+	color: #495057 !important;
+	opacity: 0.60;
+}
+
+.rbt-menu {
+	display: none !important;
+}
