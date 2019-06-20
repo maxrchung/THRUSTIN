@@ -273,25 +273,15 @@ impl Deck {
 
     pub fn add_thruster(&mut self, thruster: &String) {
         self.thrusters.push(thruster.to_string());
-        self.sort_thrusters();
     }
 
     pub fn add_thrustee(&mut self, thrustee: &String) {
         self.thrustees.push(thrustee.to_string());
-        self.sort_thrustees();
-    }
-
-    pub fn sort_thrusters(&mut self) {
-        self.thrusters.sort();
-    }
-
-    pub fn sort_thrustees(&mut self) {
-        self.thrustees.sort();
     }
 
     pub fn sort(&mut self) {
-        self.sort_thrusters();
-        self.sort_thrustees();
+        self.thrusters.sort();
+        self.thrustees.sort();
     }
 
     pub fn thrust(thruster: &String, thrustee: &String) -> String {

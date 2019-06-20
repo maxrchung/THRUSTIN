@@ -63,7 +63,7 @@ pub struct Lobby {
 
 impl Lobby {
     fn new(player: &Rc<RefCell<Player>>, pw: String, max: usize, id: i32) -> Lobby {
-        let mut lobby = Lobby {
+        let lobby = Lobby {
             pw: pw,
             list: Vec::with_capacity(max as usize),
             max: max,
@@ -82,9 +82,6 @@ impl Lobby {
             thrusted_players: Vec::new(),
             use_house: true,
         };
-
-        //addin "personal decks" to lobby(default) deck. .
-        Lobby::add_pers_deck_to_lob(&mut lobby, &mut player.borrow_mut());
         lobby
     }
 
@@ -136,6 +133,15 @@ impl Lobby {
         }
     }
 
+    fn add_deck_to_lob(&mut self, deck: Deck) {
+        self.deck
+            .thrustees
+            .append(&mut deck.thrustees.clone());
+        self.deck
+            .thrusters
+            .append(&mut deck.thrusters.clone());
+    }
+
     //////////
     //public//
     //////////
@@ -144,28 +150,9 @@ impl Lobby {
     //general stuff?//
     //////////////////
 
-    pub fn add_pers_deck_to_lob(lob: &mut Lobby, pl: &mut RefMut<Player>) {
-        lob.deck
-            .thrustees
-            .append(&mut pl.personal_deck.thrustees.clone());
-        lob.deck
-            .thrusters
-            .append(&mut pl.personal_deck.thrusters.clone());
-    }
-
-    pub fn remove_pers_deck_from_lob(lob: &mut Lobby, pl: &mut RefMut<Player>) {
-        lob.deck
-            .thrustees
-            .retain(|thrustee| (!pl.personal_deck.thrustees.contains(&thrustee)));
-        lob.deck
-            .thrustees
-            .retain(|thruster| (!pl.personal_deck.thrusters.contains(&thruster)));
-    }
-
-    pub fn shuffle_deck(lobby: &mut Lobby) {
-        lobby.deck.sort();
-        lobby.deck.thrusters.shuffle(&mut thread_rng());
-        lobby.deck.thrustees.shuffle(&mut thread_rng());
+    pub fn shuffle_deck(&mut self) {
+        self.deck.thrusters.shuffle(&mut thread_rng());
+        self.deck.thrustees.shuffle(&mut thread_rng());
     }
 
     pub fn make_endless_lobby(
@@ -554,10 +541,11 @@ impl Lobby {
                     // Set points to 0 (just in case?)
                     pl.points = 0;
 
-                    // add players' personal deck (.thrustee/.thruster) to lobby deck
-                    Lobby::add_pers_deck_to_lob(lob, &mut pl);
-
                     pl.state = if lob.state == LobbyState::Playing {
+                        // add players' personal deck (.thrustee/.thruster) to lobby deck if game is underway
+                        lob.add_deck_to_lob(pl.personal_deck.clone());
+                        lob.shuffle_deck();
+
                         if let Some(state) =
                             Lobby::get_joining_pl_state(&mut lob, &mut pl, &mut messages, &pl_rc)
                         {
@@ -645,18 +633,24 @@ impl Lobby {
                     next.state = PlayerState::Deciding;
                     messages.push(String::from(format!("Lmao the THRUSTEE left and you're next in line, so {} gets to decide which THRUST wins lmfao.", next.name)));
                 }
+                // Handle if player is Normal
+                else {
+                    if pl_ind < self.thrustee {
+                        self.thrustee = self.thrustee - 1;
+                    }
+                }
 
                 // Remove player after we are done with managing player state
                 self.list.remove(pl_ind);
 
                 // Send appropriate message
-                for (i, pl_rc) in self.list.iter().enumerate() {
+                for pl_rc in &self.list {
                     let pl = pl_rc.borrow();
-                    if i == next_thrustee && did_thrustee_change {
+                    if did_thrustee_change && pl.state == PlayerState::Choosing {
                         let mut thrustee_messages = messages.clone();
                         // Add a linebreak for better visibility
                         thrustee_messages.last_mut().unwrap().push_str("<br/>");
-                        // Notify chief of choices
+                        // Notify new Choosing THRUSTEE of choices
                         thrustee_messages.extend(self.print_thrustee_choices());
                         pl.send_messages(&thrustee_messages);
                     } else {
@@ -725,16 +719,29 @@ impl Lobby {
             }
         }
 
-        self.state = LobbyState::Playing;
+        self.deck.thrusters = Vec::new(); 
+        self.deck.thrustees = Vec::new();
 
         // Add in house cards to lobby deck if bool is true
         if self.use_house {
             let default_deck = Deck::default();
-            self.deck.thrusters.extend(default_deck.thrusters);
-            self.deck.thrustees.extend(default_deck.thrustees);
+            self.deck.thrusters = default_deck.thrusters;
+            self.deck.thrustees = default_deck.thrustees;
         }
 
-        Lobby::shuffle_deck(self);
+        // Add each person's deck in
+        {
+            let decks: Vec<Deck> = self.list
+                .iter()
+                .map(|pl| pl.borrow().personal_deck.clone())
+                .collect();
+            for deck in decks {
+                self.add_deck_to_lob(deck);
+            }
+        }
+
+        self.shuffle_deck();
+        self.state = LobbyState::Playing;
 
         // Setup new thrustee choices
         for _ in 0..self.max_thrustee_choices {
@@ -1209,102 +1216,5 @@ impl Lobby {
             messages.push(message);
         }
         pl.send_messages(&messages);
-    }
-
-    pub fn handle_thrusteer_commands(
-        input: &Vec<&str>,
-        pl_rc: Rc<RefCell<Player>>,
-        lobby: &mut HashMap<i32, Lobby>,
-    ) {
-        let pl = pl_rc.borrow_mut();
-
-        if input.len() < 2 {
-            Lobby::display_deck(pl);
-            return;
-        }
-
-        let mut new_item = String::new();
-        for s in input.iter().skip(1) {
-            new_item.push_str(s);
-            new_item.push_str(" ");
-        }
-
-        new_item.pop();
-
-        if let (Some(beginning), Some(ending)) = (new_item.chars().next(), new_item.chars().next())
-        {
-            let quotation = "\"".to_string().chars().last().unwrap();
-
-            if beginning != quotation || ending != quotation {
-                pl.send_message("Please surround the THRUST with quotes.");
-                return;
-            }
-        } else {
-            Lobby::display_deck(pl);
-            return;
-        }
-
-        new_item.pop();
-        new_item.remove(0);
-
-        if new_item.contains("_") {
-            Lobby::add_thrustee(pl, lobby, new_item.clone());
-            return;
-        } else {
-            Lobby::add_thruster(pl, lobby, new_item.clone());
-            return;
-        }
-    }
-
-    pub fn add_thruster(mut pl: RefMut<Player>, lobby: &mut HashMap<i32, Lobby>, new_item: String) {
-        pl.personal_deck.add_thruster(&new_item);
-        pl.send_message(&format!("Added \"{}\" to THRUSTERS!", &new_item));
-
-        if let Some(lob) = lobby.get_mut(&pl.lobby) {
-            if lob.state == LobbyState::Waiting {
-                Lobby::add_pers_deck_to_lob(lob, &mut pl);
-            }
-        }
-    }
-
-    pub fn add_thrustee(mut pl: RefMut<Player>, lobby: &mut HashMap<i32, Lobby>, new_item: String) {
-        pl.personal_deck.add_thrustee(&new_item);
-        pl.send_message(&format!("Added \"{}\" to THRUSTEES!", &new_item));
-
-        if let Some(lob) = lobby.get_mut(&pl.lobby) {
-            if lob.state == LobbyState::Waiting {
-                Lobby::add_pers_deck_to_lob(lob, &mut pl);
-            }
-        }
-    }
-
-    pub fn display_deck(pl: RefMut<Player>) {
-        let mut messages = Vec::new();
-
-        messages.push("You're THRUSTEES:".to_string());
-        for (i, thrustee) in pl.personal_deck.thrustees.iter().enumerate() {
-            messages.push(format!("{}. {}", i + 1, &thrustee).clone());
-        }
-
-        messages.push("<br/>You're THRUSTERS:".to_string());
-        for (i, thruster) in pl.personal_deck.thrusters.iter().enumerate() {
-            messages.push(format!("{}. {}", i + 1, &thruster).clone());
-        }
-
-        pl.send_messages(&messages);
-    }
-
-    pub fn clear_pers_deck(pl_rc: Rc<RefCell<Player>>, lobby: &mut HashMap<i32, Lobby>) {
-        let mut pl = pl_rc.borrow_mut();
-
-        if let Some(lob) = lobby.get_mut(&pl.lobby) {
-            if lob.state == LobbyState::Waiting {
-                Lobby::remove_pers_deck_from_lob(lob, &mut pl);
-            }
-        }
-
-        pl.personal_deck = Deck::new();
-
-        pl.send_message("Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
     }
 }
