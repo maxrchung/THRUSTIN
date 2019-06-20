@@ -113,4 +113,69 @@ impl Player {
             pl.send_messages(&messages);
         }
     }
+
+    pub fn handle_thrusteer_commands(
+        &mut self,
+        input: &Vec<&str>,
+    ) {
+        if input.len() < 2 {
+            self.display_deck();
+            return;
+        }
+
+        let mut new_item = String::new();
+        for s in input.iter().skip(1) {
+            new_item.push_str(s);
+            new_item.push_str(" ");
+        }
+
+        new_item.pop();
+
+        if let (Some(beginning), Some(ending)) = (new_item.chars().next(), new_item.chars().next())
+        {
+            let quotation = "\"".to_string().chars().last().unwrap();
+
+            if beginning != quotation || ending != quotation {
+                self.send_message("Please surround the THRUST with quotes.");
+                return;
+            }
+        } else {
+            self.display_deck();
+            return;
+        }
+
+        new_item.pop();
+        new_item.remove(0);
+
+        if new_item.contains("_") {
+            self.personal_deck.add_thrustee(&new_item);
+            self.send_message(&format!("Added \"{}\" to THRUSTEES!", &new_item));
+            return;
+        } else {
+            self.personal_deck.add_thruster(&new_item);
+            self.send_message(&format!("Added \"{}\" to THRUSTERS!", &new_item));
+        }
+        self.personal_deck.sort();
+    }
+
+    pub fn display_deck(&self) {
+        let mut messages = Vec::new();
+
+        messages.push("You're THRUSTEES:".to_string());
+        for (i, thrustee) in self.personal_deck.thrustees.iter().enumerate() {
+            messages.push(format!("{}. {}", i + 1, &thrustee).clone());
+        }
+
+        messages.push("<br/>You're THRUSTERS:".to_string());
+        for (i, thruster) in self.personal_deck.thrusters.iter().enumerate() {
+            messages.push(format!("{}. {}", i + 1, &thruster).clone());
+        }
+
+        self.send_messages(&messages);
+    }
+
+    pub fn clear_pers_deck(&mut self) {
+        self.personal_deck = Deck::new();
+        self.send_message("Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
+    }
 }

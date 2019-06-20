@@ -116,9 +116,9 @@ pub fn out_of_lobby_commands(
 
         ".play" | ".p" => Lobby::join_lobby(vec![".join", "0"], pl, lobbies),
 
-        ".thrust" | ".t" => Lobby::handle_thrusteer_commands(&input, pl, lobbies),
+        ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input),
 
-        ".unthrust" | ".u" => Lobby::clear_pers_deck(pl, lobbies),
+        ".unthrust" | ".u" => pl.borrow_mut().clear_pers_deck(),
 
         ".who" | ".w" => Lobby::list_all_players(pl, players),
 
@@ -167,9 +167,9 @@ pub fn in_lobby_commands(
 
         ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
 
-        ".thrust" | ".t" => Lobby::handle_thrusteer_commands(&input, pl.clone(), lobbies),
+        ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input),
 
-        ".unthrust" | ".u" => Lobby::clear_pers_deck(pl, lobbies),
+        ".unthrust" | ".u" => pl.borrow_mut().clear_pers_deck(),
 
         ".who" | ".w" => lobby.list_lobby_players(pl),
 
