@@ -46,7 +46,6 @@ class Client extends React.Component {
         }
         this.connection.onmessage = this.handleMessage; 
         this.connection.onclose = this.handleClose;
-        this.inputBar.focus();
         document.addEventListener("keydown", this.handleKeyDown);
     }
 
@@ -55,26 +54,24 @@ class Client extends React.Component {
     };
 
     handleKeyDown = (e) => {
-        console.log("gayman");
         var isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
 
-        if (document.activeElement !== this.inputBar && !isWhitedModifier) {
-            this.inputBar.focus();
+        if (document.activeElement !== this.typeahead && !isWhitedModifier) {
+            this.typeahead.focus();
         }
         if (e.key == "Enter" && this.inputBar.value !== "") {
-            console.log("InputBar: ", this.inputBar);
             this.handleMessageMax();
             const command = this.inputBar.value;
             this.setState({
                 messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
             });
-            if (command.length <= MAX_INPUT) {
+            if (command.length <= MAX_INPUT) { 
                 this.connection.send(command);
             }
             else {
                 this.setMessage("BRO CHILLOUT that message is too long my man.");
-            }
-            this.inputBar.value = "";
+			}
+			this.typeahead.clear();
             this.scrollToDummy();
         }
     }
@@ -141,7 +138,12 @@ class Client extends React.Component {
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>
-                <CommandBar ref={(comBar) => {if(comBar) this.inputBar = comBar.input;}} />
+                <CommandBar ref={(comBar) => {
+					if(comBar) {
+						this.typeahead = comBar.wrappedTypeahead;
+						this.inputBar = comBar.wrappedTypeahead.getInput();
+					}
+				}} />
             </Container>
         );
     }
