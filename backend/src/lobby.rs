@@ -111,11 +111,6 @@ impl Lobby {
     ///////////
     //private//
     ///////////
-    pub fn is_host(&self, player: u32) -> bool {
-        (self.host.borrow().token == player)
-            && (self.host.borrow().name != "EndlessLobbyChiefDoggo".to_string())
-    }
-
     fn search_token(&self, token: u32) -> Option<usize> {
         for (i, pl) in self.list.iter().enumerate() {
             let tok = pl.borrow().token;
@@ -149,6 +144,10 @@ impl Lobby {
     //////////////////
     //general stuff?//
     //////////////////
+    pub fn is_host(&self, player: u32) -> bool {
+        (self.host.borrow().token == player)
+            && (self.host.borrow().name != "EndlessLobbyChiefDoggo".to_string())
+    }
 
     pub fn shuffle_deck(&mut self) {
         self.deck.thrusters.shuffle(&mut thread_rng());
