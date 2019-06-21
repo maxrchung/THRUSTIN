@@ -111,7 +111,7 @@ impl Lobby {
     ///////////
     //private//
     ///////////
-    fn is_host(&self, player: u32) -> bool {
+    pub fn is_host(&self, player: u32) -> bool {
         (self.host.borrow().token == player)
             && (self.host.borrow().name != "EndlessLobbyChiefDoggo".to_string())
     }

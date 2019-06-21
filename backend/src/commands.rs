@@ -161,7 +161,7 @@ pub fn in_lobby_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".h" => list_in_commands(&pl.borrow()),
+        ".help" | ".h" => list_in_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
 
         ".info" | ".i" => lobby.info(pl),
 
@@ -199,17 +199,19 @@ pub fn in_lobby_commands(
     }
 }
 
-fn list_in_commands(pl: &Player) {
-    pl.send_messages(&vec![
-        String::from("Hey cool so now you're in the lobby and now you've got some more commands. If you're the chief, you've got access to some special options to configure the lobby's game experience. Otherwise, normal non-chiefs, yall can chill out and wait for the game to start."),
-        generate_table(vec![
-            (".help", ".h", "this is it chief"),
-            (".info", ".i", "I'm pretty sure this will give you some info about the lobby you're in."),
-            (".leave", ".l", "We're sorry to see you go..."),
-            (".THRUST", ".t", "This will list out your added THRUSTEES and THRUSTERS. (THRUSTERS are THRUSTED into the THRUSTEES's underscores.) Lobbies will combine and use everyone's awesome THRUSTS."),
-            (".THRUST \"Some _____ THRUSTEE\" \"Some THRUSTER\"", ".t \"Some _____ THRUSTEE\" \"Some THRUSTER\"", "Add THRUSTS to your wonderful collection. THRUSTS with an underscore will be put into your THRUSTEES otherwise yeah you guessed it they're put into THRUSTERS. Also, remember to encapsulate each THRUST with a quotation."),
-            (".UNTHRUST", ".u", "Destroy all your THRUSTS... [*** !!!CAUTION THIS IS IRREVERSIBLE!!! ***]"),
-            (".who", ".w", "See who's whacking up this swag lobby with you"),
+fn list_in_commands(pl: &Player, host: bool) {
+    let mut commands = vec![
+        (".help", ".h", "this is it chief"),
+        (".info", ".i", "I'm pretty sure this will give you some info about the lobby you're in."),
+        (".leave", ".l", "We're sorry to see you go..."),
+        (".THRUST", ".t", "This will list out your added THRUSTEES and THRUSTERS. (THRUSTERS are THRUSTED into the THRUSTEES's underscores.) Lobbies will combine and use everyone's awesome THRUSTS."),
+        (".THRUST \"Some _____ THRUSTEE\" \"Some THRUSTER\"", ".t \"Some _____ THRUSTEE\" \"Some THRUSTER\"", "Add THRUSTS to your wonderful collection. THRUSTS with an underscore will be put into your THRUSTEES otherwise yeah you guessed it they're put into THRUSTERS. Also, remember to encapsulate each THRUST with a quotation."),
+        (".UNTHRUST", ".u", "Destroy all your THRUSTS... [*** !!!CAUTION THIS IS IRREVERSIBLE!!! ***]"),
+        (".who", ".w", "See who's whacking up this swag lobby with you"),
+    ];
+    
+    if host {
+        commands.append(&mut vec![
             (".chief xxXAzn1994", ".c  xxXAzn1994", "(chief-only) Make xxXAzn1994 the chief of the lobby"),
             (".house", ".ho", "(chief-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
             (".kick YOLOSWAGGER69", ".k YOLOSWAGGER69", "(chief-only) Someone causing you trouble? Toxicity got you down? Well if you are a chief you can kick YOLOSWAGGER69 out of your lobby using this command."),
@@ -219,8 +221,14 @@ fn list_in_commands(pl: &Player) {
             (".start", ".s", "(chief-only) Yup, naturally as the chief you can start up the game."),
             (".THRUSTEE", ".tee", "(chief-only) Hey there, this command will allow you to configure how many choices a THRUSTEE may choose from."),
             (".THRUSTER", ".ter", "(chief-only) This little command here will allow you to configure how many THRUSTERS one may hold onto at one time."),
-        ])
-    ]);
+        ]);
+    }
+    let message = &vec![
+        String::from("Hey cool so now you're in the lobby and now you've got some more commands. If you're the chief, you've got access to some special options to configure the lobby's game experience. Otherwise, normal non-chiefs, yall can chill out and wait for the game to start."),
+        generate_table(commands)
+    ];
+
+    pl.send_messages(message);
 }
 
 ////////////////////
@@ -235,7 +243,7 @@ pub fn playing_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".h" => list_playing_commands(&pl.borrow()),
+        ".help" | ".h" => list_playing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
 
         ".info" | ".i" => lobby.info(pl),
 
@@ -253,18 +261,27 @@ pub fn playing_commands(
     }
 }
 
-fn list_playing_commands(pl: &Player) {
-    pl.send_messages(&vec![
+fn list_playing_commands(pl: &Player, host: bool) {
+    let mut commands = vec![
+        (".help", ".h", "this is it chief"),
+        (".info", ".i", "Look at your lobby's settings for some info(rmation)."),
+        (".leave", ".l", "Goodbye..."),
+        (".points", ".p", "See who's got the points in the lobby."),
+        (".THRUST 0", ".t 0", "THRUST your first THRUSTER in baby."),
+    ];
+
+    if host {
+        commands.append(&mut vec![
+            (".kick BOY_MAN_01", ".k BOY_MAN_01", "(chief-only) Destroy BOY_MAN_01 from your lobby..."),
+        ]);
+    }
+    
+    let message = &vec![
         String::from("Great. Now you're in the phase where you are a THRUSTER. In this state, you can THRUST one of your THRUSTER options into the THRUSTEE. Make sure it's a good one!"),
-        generate_table(vec![
-            (".help", ".h", "this is it chief"),
-            (".info", ".i", "Look at your lobby's settings for some info(rmation)."),
-            (".leave", ".l", "Goodbye..."),
-            (".points", ".p", "See who's got the points in the lobby."),
-            (".THRUST 0", ".t 0", "THRUST your first THRUSTER in baby."),
-            (".kick GUY_MAN_01", ".k GUY_MAN_01", "(chief-only) Kick GUY_MAN_01 from your lobby..."),
-        ])
-    ]);
+        generate_table(commands)
+    ];
+
+    pl.send_messages(message);
 }
 
 ////////////
@@ -279,7 +296,7 @@ pub fn choosing_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".h" => list_choosing_commands(&pl.borrow()),
+        ".help" | ".h" => list_choosing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
 
         ".info" | ".i" => lobby.info(pl),
 
@@ -299,18 +316,27 @@ pub fn choosing_commands(
     }
 }
 
-fn list_choosing_commands(pl: &Player) {
-    pl.send_messages(&vec![
-        String::from("Okay you're a THRUSTEE now. First thing you've gotta do is choose a great THRUSTEE that other THRUSTERS can THRUST into. Make sure it's a juicy one!"),
-        generate_table(vec![
-            (".help", ".h", "this is it chief"),
-            (".info", ".i", "Observe the information data relevant to your lobby's configurations"),
-            (".leave", ".l", "This shall be farewell, for now..."),
-            (".points", ".p", "See who's got the points in the lobby."),
-            (".THRUST 2", ".t 2", "Choose THRUSTEE at index 2 to use."),
+fn list_choosing_commands(pl: &Player, host: bool) {
+    let mut commands = vec![
+        (".help", ".h", "this is it chief"),
+        (".info", ".i", "Observe the information data relevant to your lobby's configurations"),
+        (".leave", ".l", "This shall be farewell, for now..."),
+        (".points", ".p", "See who's got the points in the lobby."),
+        (".THRUST 2", ".t 2", "Choose THRUSTEE at index 2 to use."),
+    ];
+
+    if host {
+        commands.append(&mut vec![
             (".kick BOY_MAN_01", ".k BOY_MAN_01", "(chief-only) Destroy BOY_MAN_01 from your lobby..."),
-        ])
-    ]);
+        ]);
+    }
+
+    let message = &vec![
+        String::from("Okay you're a THRUSTEE now. First thing you've gotta do is choose a great THRUSTEE that other THRUSTERS can THRUST into. Make sure it's a juicy one!"),
+        generate_table(commands)
+    ];
+
+    pl.send_messages(message);
 }
 
 ////////////
@@ -325,7 +351,7 @@ pub fn deciding_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".h" => list_deciding_commands(&pl.borrow()),
+        ".help" | ".h" => list_deciding_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
 
         ".info" | ".i" => lobby.info(pl),
 
@@ -343,18 +369,27 @@ pub fn deciding_commands(
     }
 }
 
-fn list_deciding_commands(pl: &Player) {
-    pl.send_messages(&vec![
+fn list_deciding_commands(pl: &Player, host: bool) {
+    let mut commands = vec![
+        (".help", ".h", "this is it chief"),
+        (".info", ".i", "Browse the inherent settings that have been configured in the presence of this lobby's settings existence."),
+        (".leave", ".l", "Farewell friend..."),
+        (".points", ".p", "See who's got the points in the lobby."),
+        (".THRUST 1", ".t 1", "You've made your decision. THRUSTER at index 1 is the best one."),
+    ];
+
+    if host {
+        commands.append(&mut vec![
+            (".kick BOY_MAN_01", ".k BOY_MAN_01", "(chief-only) Destroy BOY_MAN_01 from your lobby..."),
+        ]);
+    }
+    
+    let message = &vec![
         String::from("Yeah guy it's time for you to decide on the best THRUSTER. Pick the one that you like the best. Trust your head and your gut. You can do it. I believe in you."),
-        generate_table(vec![
-            (".help", ".h", "this is it chief"),
-            (".info", ".i", "Browse the inherent settings that have been configured in the presence of this lobby's settings existence."),
-            (".leave", ".l", "Farewell friend..."),
-            (".points", ".p", "See who's got the points in the lobby."),
-            (".THRUST 1", ".t 1", "You've made your decision. THRUSTER at index 1 is the best one."),
-            (".kick MAN_BOY_01", ".k MAN_BOY_01", "(chief-only) Discard MAN_BOY_01 from your lobby..."),
-        ])
-    ]);
+        generate_table(commands)
+    ];
+
+    pl.send_messages(message);
 }
 
 ///////////
@@ -369,7 +404,7 @@ pub fn waiting_commands(
     let com = get_command(&input);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".h" => list_waiting_commands(&pl.borrow()),
+        ".help" | ".h" => list_waiting_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
 
         ".info" | ".i" => lobby.info(pl),
 
@@ -391,16 +426,25 @@ pub fn waiting_commands(
     }
 }
 
-fn list_waiting_commands(pl: &Player) {
-    pl.send_messages(&vec![
-        String::from("Aite my dude you needa chill and wait for the THRUSTEE to choose a good THRUSTEE to be THRUSTED with."),
-        generate_table(vec![
-            (".help", ".h", "this is it chief"),
-            (".info", ".i", "Wondering... what is the relevancy of the configurations to do with this lobby's present status of being set."),
-            (".leave", ".l", "The distance between us shall increase... metaphorically..."),
-            (".points", ".p", "See who's got the points in the lobby."),
-            (".THRUST", ".t", "This doesn't actually do anything. We're just here to let you know you can't THRUST."),
+fn list_waiting_commands(pl: &Player, host: bool) {
+    let mut commands = vec![
+        (".help", ".h", "this is it chief"),
+        (".info", ".i", "Wondering... what is the relevancy of the configurations to do with this lobby's present status of being set."),
+        (".leave", ".l", "The distance between us shall increase... metaphorically..."),
+        (".points", ".p", "See who's got the points in the lobby."),
+        (".THRUST", ".t", "This doesn't actually do anything. We're just here to let you know you can't THRUST."),
+    ];
+
+    if host {
+        commands.append(&mut vec![
             (".kick SAMPLE_USER_000666", ".k SAMPLE_USER_000666", "(chief-only) Eliminate SAMPLE_USER_000666 from your lobby..."),
-        ])
-    ]);
+        ]);
+    }
+
+    let message = &vec![
+        String::from("Aite my dude you needa chill and wait for the THRUSTEE to choose a good THRUSTEE to be THRUSTED with."),
+        generate_table(commands)
+    ];
+
+    pl.send_messages(message);
 }
