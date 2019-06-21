@@ -227,6 +227,8 @@ impl Lobby {
             messages.push(String::from("There's no players lmfao"));
         }
 
+        messages.sort_unstable_by(|a, b| a.cmp(b));
+
         pl.send_messages(&messages);
     }
 
@@ -1198,6 +1200,7 @@ impl Lobby {
         let pl = pl_rc.borrow();
         let mut messages = Vec::new();
 
+        
         for player in players.values() {
             let pl_i = player.borrow();
             let mut person = "";
@@ -1214,6 +1217,8 @@ impl Lobby {
 
             messages.push(message);
         }
+
+        messages.sort_unstable_by(|a, b| a.cmp(b));
         pl.send_messages(&messages);
     }
 }
