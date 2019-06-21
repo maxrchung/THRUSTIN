@@ -227,7 +227,7 @@ impl Lobby {
             messages.push(String::from("There's no players lmfao"));
         }
 
-        messages.sort_unstable_by(|a, b| a.cmp(b));
+        messages.sort_unstable_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
 
         pl.send_messages(&messages);
     }
@@ -1203,10 +1203,15 @@ impl Lobby {
         
         for player in players.values() {
             let pl_i = player.borrow();
+            if pl_i.token == 0 {
+                continue;
+            }
+            
             let mut person = "";
             if pl_i.token == pl.token {
                 person = " (You)";
             }
+
 
             let message =
                 if pl_i.state == PlayerState::InLobby || pl_i.state == PlayerState::Playing {
@@ -1218,7 +1223,7 @@ impl Lobby {
             messages.push(message);
         }
 
-        messages.sort_unstable_by(|a, b| a.cmp(b));
+        messages.sort_unstable_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
         pl.send_messages(&messages);
     }
 }

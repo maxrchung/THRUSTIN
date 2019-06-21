@@ -42,3 +42,18 @@ fn todo_points() {}
 
 #[test]
 fn todo_password() {}
+
+#[test]
+fn only_chief_help_commands() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".m");
+    client.send(2, ".n 2");
+    client.send(2, ".j 1");
+    client.send(1, ".h");
+    client.send(2, ".h");
+    client.read_all();
+
+    assert!(!client.last(2).to_lowercase().contains("chief-only"));
+    assert!(client.last(1).to_lowercase().contains("chief-only"));
+}
