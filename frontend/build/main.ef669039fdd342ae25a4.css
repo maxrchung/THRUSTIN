@@ -5376,3 +5376,6 @@ hr {
 .rbt-menu {
   display: none !important; }
 
+.rbt.clearfix.open {
+  margin-bottom: 1rem !important; }
+

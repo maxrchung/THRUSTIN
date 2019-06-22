@@ -135,12 +135,18 @@ hr {
 
 // Typeahead styling
 
-.rbt-input-hint {
-	line-height: 1.725 !important;
-	color: #6c757d !important;
-	opacity: 0.65;
-}
+.rbt {
+	&-input-hint {
+		line-height: 1.725 !important;
+		color: #6c757d !important;
+		opacity: 0.65;
+	}
 
-.rbt-menu {
-	display: none !important;
+	&-menu {
+		display: none !important;
+	}
+
+	&.clearfix.open {
+		margin-bottom: 1rem !important;
+	}
 }
