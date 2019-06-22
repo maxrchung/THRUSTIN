@@ -134,15 +134,11 @@ fn who_out_of_lobby() {
     client.send(1, ".n 1");
     client.send(1, ".w");
     client.read_all();
-    let msg = client.last(1);
-    // Hashmap's hash is randomly seeded so can't assert_eq for order
-    assert!(msg.contains("1 (You)"));
+    assert_eq!(client.last(1), "1 (You)");
     client.send(2, ".n 2");
     client.send(2, ".w");
     client.read_all();
-    let msg = client.last(2);
-    assert!(msg.contains("1"));
-    assert!(msg.contains("2 (You)"));
+    assert_eq!(client.last(2), "1<br/>2 (You)");
 }
 
 #[test]
@@ -152,14 +148,12 @@ fn who_in_lobby() {
     client.send(1, ".m");
     client.send(1, ".w");
     client.read_all();
-    assert!(client.last(1).contains("1: chief (You)"));
+    assert_eq!(client.last(1), "1: chief (You)");
     client.send(2, ".n 2");
     client.send(2, ".j 1");
     client.send(2, ".w");
     client.read_all();
-    let msg = client.last(2);
-    assert!(msg.contains("1: chief"));
-    assert!(msg.contains("2 (You)"));
+    assert_eq!(client.last(2), "1: chief<br/>2 (You)");
 }
 
 // Bug: If THRUSTEE chooser is not a host and leaves, next user is unable to see THRUSTEE choices to pick
