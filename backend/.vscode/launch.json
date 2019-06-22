@@ -1,0 +1,178 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'thrustin'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=thrustin"
+                ],
+                "filter": {
+                    "name": "thrustin",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'thrustin'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=thrustin",
+                    "--package=thrustin"
+                ],
+                "filter": {
+                    "name": "thrustin",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'thrustin'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=thrustin",
+                    "--package=thrustin"
+                ],
+                "filter": {
+                    "name": "thrustin",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'channel_communication'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=channel_communication",
+                    "--package=thrustin"
+                ],
+                "filter": {
+                    "name": "channel_communication",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'lobby_configuration'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=lobby_configuration",
+                    "--package=thrustin"
+                ],
+                "filter": {
+                    "name": "lobby_configuration",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'thrusts'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=thrusts",
+                    "--package=thrustin"
+                ],
+                "filter": {
+                    "name": "thrusts",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'lobby_navigation'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=lobby_navigation",
+                    "--package=thrustin"
+                ],
+                "filter": {
+                    "name": "lobby_navigation",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'endless'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=endless",
+                    "--package=thrustin"
+                ],
+                "filter": {
+                    "name": "endless",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug integration test 'name'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--test=name",
+                    "--package=thrustin"
+                ],
+                "filter": {
+                    "name": "name",
+                    "kind": "test"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
