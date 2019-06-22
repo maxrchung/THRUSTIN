@@ -134,16 +134,21 @@ fn file(file: PathBuf) -> Option<NamedFile> {
 // Specifies handler for processing an incoming websocket connection
 struct WebSocketListener {
     out: ws::Sender,
-    connections: Arc<Mutex<HashMap<u32, ws::Sender>>>,
+    connections: Arc<Mutex<HashMap<u32, (String, ws::Sender)>>>,
     send: mpsc::Sender<(u32, String)>,
     uuid: u32,
 }
 
 impl Handler for WebSocketListener {
     // Adds new connection to global connections
-    fn on_open(&mut self, _: Handshake) -> Result<()> {
+    fn on_open(&mut self, handshake: Handshake) -> Result<()> {
+        let ip_addr = if let Some(ip_addr) = handshake.remote_addr()? {
+            ip_addr
+        } else {
+            String::new()
+        };
         let mut connections_lock = self.connections.lock().unwrap();
-        connections_lock.insert(self.uuid, self.out.clone());
+        connections_lock.insert(self.uuid, (ip_addr, self.out.clone()));
         Ok(())
     }
 
@@ -185,7 +190,7 @@ impl Handler for WebSocketListener {
 #[derive(Debug)]
 pub struct WebSocketCommunication {
     commands: Arc<Mutex<VecDeque<(u32, String)>>>,
-    connections: Arc<Mutex<HashMap<u32, ws::Sender>>>,
+    connections: Arc<Mutex<HashMap<u32, (String, ws::Sender)>>>,
     send: mpsc::Sender<(u32, String)>,
     recv: mpsc::Receiver<(u32, String)>,
     uuid: Arc<Mutex<u32>>,
@@ -244,7 +249,9 @@ impl Communication for WebSocketCommunication {
     fn read_message(&mut self) -> (u32, String) {
         match self.recv.recv() {
             Ok((token, message)) => {
-                println!("{}|{}{}|{}", Local::now(), &token, ">", &message);
+                let connections_lock = self.connections.lock().unwrap();
+                let (ip_addr, _) = connections_lock.get(&token).unwrap();
+                println!("{}|{}|{}{}|{}", Local::now(), ip_addr, &token, ">", &message);
                 (token, message)
             }
             Err(_) => {
@@ -258,10 +265,10 @@ impl Communication for WebSocketCommunication {
     fn send_message(&self, token: &u32, message: &str) {
         let connections_lock = self.connections.lock().unwrap();
         // Handle case for missing connection - This is possible for disconnects
-        if let Some(sender) = connections_lock.get(&token) {
+        if let Some((ip_addr, sender)) = connections_lock.get(&token) {
             // Log server response for troubleshooting and FBI-ing
             sender.send(message).unwrap();
-            println!("{}|{}{}|{}", Local::now(), ">", token, message);
+            println!("{}|{}|{}{}|{}", Local::now(), ip_addr, ">", token, message);
         }
     }
 
