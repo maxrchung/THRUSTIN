@@ -1,7 +1,5 @@
 use crate::player::{Player, PlayerState};
 use crate::thrust::Deck;
-use rand::seq::SliceRandom;
-use rand::thread_rng;
 use std::cell::{RefCell, RefMut};
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -147,11 +145,6 @@ impl Lobby {
     pub fn is_host(&self, player: u32) -> bool {
         (self.host.borrow().token == player)
             && (self.host.borrow().name != "EndlessLobbyChiefDoggo".to_string())
-    }
-
-    pub fn shuffle_deck(&mut self) {
-        self.deck.thrusters.shuffle(&mut thread_rng());
-        self.deck.thrustees.shuffle(&mut thread_rng());
     }
 
     pub fn make_endless_lobby(
@@ -545,7 +538,7 @@ impl Lobby {
                     pl.state = if lob.state == LobbyState::Playing {
                         // add players' personal deck (.thrustee/.thruster) to lobby deck if game is underway
                         lob.add_deck_to_lob(pl.personal_deck.clone());
-                        lob.shuffle_deck();
+                        lob.deck.shuffle_deck();
 
                         if let Some(state) =
                             Lobby::get_joining_pl_state(&mut lob, &mut pl, &mut messages, &pl_rc)
@@ -689,15 +682,8 @@ impl Lobby {
 
     pub fn start_endless(&mut self) {
         self.state = LobbyState::Playing;
-
-        // Add in house cards to lobby deck if bool is true
-        if self.use_house {
-            let default_deck = Deck::default();
-            self.deck.thrusters.extend(default_deck.thrusters);
-            self.deck.thrustees.extend(default_deck.thrustees);
-        }
-
-        Lobby::shuffle_deck(self);
+        self.deck = Deck::default();
+        self.deck.shuffle_deck();
 
         // Setup new thrustee choices
         for _ in 0..self.max_thrustee_choices {
@@ -720,14 +706,11 @@ impl Lobby {
             }
         }
 
-        self.deck.thrusters = Vec::new(); 
-        self.deck.thrustees = Vec::new();
-
+        self.deck.clear();
         // Add in house cards to lobby deck if bool is true
         if self.use_house {
             let default_deck = Deck::default();
-            self.deck.thrusters = default_deck.thrusters;
-            self.deck.thrustees = default_deck.thrustees;
+            self.deck = default_deck;
         }
 
         // Add each person's deck in
@@ -741,7 +724,7 @@ impl Lobby {
             }
         }
 
-        self.shuffle_deck();
+        self.deck.shuffle_deck();
         self.state = LobbyState::Playing;
 
         // Setup new thrustee choices
@@ -804,7 +787,7 @@ impl Lobby {
             player.deck = Deck::new();
             player.state = PlayerState::InLobby;
         }
-        Lobby::shuffle_deck(self);
+        self.deck.shuffle_deck();
     }
 
     pub fn clear_endless(&mut self) {
@@ -820,7 +803,7 @@ impl Lobby {
                 .thrusters
                 .append(&mut player.personal_deck.thrusters.clone());
         }
-        Lobby::shuffle_deck(self);
+        self.deck.shuffle_deck();
 
         // Handles if lobby for restarts when no one is in there for some reason (not enough house cards during testing)
         if self.list.len() != 0 {

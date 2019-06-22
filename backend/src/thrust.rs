@@ -1,3 +1,5 @@
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 use regex::Regex;
 
 #[derive(Clone, Debug)]
@@ -279,9 +281,19 @@ impl Deck {
         self.thrustees.push(thrustee.to_string());
     }
 
+    pub fn clear(&mut self) {
+        self.thrusters.clear();
+        self.thrustees.clear();
+    }
+
     pub fn sort(&mut self) {
         self.thrusters.sort();
         self.thrustees.sort();
+    }
+
+    pub fn shuffle_deck(&mut self) {
+        self.thrusters.shuffle(&mut thread_rng());
+        self.thrustees.shuffle(&mut thread_rng());
     }
 
     pub fn thrust(thruster: &String, thrustee: &String) -> String {
