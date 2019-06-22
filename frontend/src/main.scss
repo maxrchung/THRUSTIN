@@ -102,6 +102,11 @@ body {
     overflow-x: hidden;
 }
 
+#messages div {
+	margin-right: 1rem !important;
+	margin-bottom: 1rem !important;
+}
+
 hr {
     border-top: 1px solid rgba($rust, .4);
 }
@@ -148,5 +153,6 @@ hr {
 
 	&.clearfix.open {
 		margin-bottom: 1rem !important;
+		margin-right: 1rem !important;
 	}
 }

@@ -10,7 +10,7 @@ const MAX_MSGS = 696;
 
 function Message(props) {
     return (
-        <div className="mb-3 mr-3">
+        <div>
             <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
             <SanitizedHTML
              allowedTags={["br","u","table","tr","th","td","a","img"]} 

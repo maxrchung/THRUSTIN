@@ -5344,6 +5344,10 @@ body {
   overflow-y: auto;
   overflow-x: hidden; }
 
+#messages div {
+  margin-right: 1rem !important;
+  margin-bottom: 1rem !important; }
+
 hr {
   border-top: 1px solid rgba(183, 65, 14, 0.4); }
 
@@ -5377,5 +5381,6 @@ hr {
   display: none !important; }
 
 .rbt.clearfix.open {
-  margin-bottom: 1rem !important; }
+  margin-bottom: 1rem !important;
+  margin-right: 1rem !important; }
 
