@@ -55,9 +55,6 @@ fn run(communication: Rc<RefCell<dyn Communication>>) {
 
     loop {
         let (token, message) = read.borrow_mut().read_message();
-        // Logging for troubleshooting and FBI-ing user commands
-        println!("\n{}: {}", &token, &message);
-
         // Add to players list if not already
         if let None = players.get(&token) {
             players.insert(

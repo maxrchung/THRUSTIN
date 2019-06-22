@@ -15,7 +15,6 @@ pub trait Communication {
     // mut required for updating  FileSystemCommunication
     // WebSocketCommunication doesn't have mutability issue since everything is behind Arc Mutex
     fn read_message(&mut self) -> (u32, String);
-
     fn send_message(&self, token: &u32, message: &str);
     fn send_messages(&self, token: &u32, messages: &Vec<String>);
 }
@@ -237,7 +236,11 @@ impl Communication for WebSocketCommunication {
     // Block and read from queue
     fn read_message(&mut self) -> (u32, String) {
         match self.recv.recv() {
-            Ok(msg) => return msg,
+            Ok((token, message)) => {
+                // Logging for troubleshooting and FBI-ing user commands
+                println!("\n{}: {}", &token, &message);
+                (token, message)
+            }
             Err(_) => {
                 println!("Catastrophic failure if this fails probably.");
                 (0, "".to_string())
