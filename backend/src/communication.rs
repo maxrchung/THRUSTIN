@@ -142,11 +142,13 @@ struct WebSocketListener {
 impl Handler for WebSocketListener {
     // Adds new connection to global connections
     fn on_open(&mut self, handshake: Handshake) -> Result<()> {
-        let ip_addr = if let Some(ip_addr) = handshake.remote_addr()? {
-            ip_addr
-        } else {
-            String::new()
-        };
+        let mut ip_addr = String::new();
+        if let Ok(remote_addr) = handshake.remote_addr() {
+            if let Some(remote_addr) = remote_addr {
+                ip_addr = remote_addr
+            }
+        }
+
         let mut connections_lock = self.connections.lock().unwrap();
         connections_lock.insert(self.uuid, (ip_addr, self.out.clone()));
         Ok(())
@@ -250,8 +252,10 @@ impl Communication for WebSocketCommunication {
         match self.recv.recv() {
             Ok((token, message)) => {
                 let connections_lock = self.connections.lock().unwrap();
-                let (ip_addr, _) = connections_lock.get(&token).unwrap();
-                println!("{}|{}|{}{}|{}", Local::now(), ip_addr, &token, ">", &message);
+                // May disconnect ?
+                if let Some((ip_addr, _)) = connections_lock.get(&token) {
+                    println!("{}|{}|{}{}|{}", Local::now(), ip_addr, &token, ">", &message);
+                }
                 (token, message)
             }
             Err(_) => {
