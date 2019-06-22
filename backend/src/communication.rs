@@ -1,3 +1,4 @@
+use chrono::{Local};
 use rocket::response::NamedFile;
 use std::collections::HashMap;
 use std::collections::VecDeque;
@@ -30,16 +31,18 @@ pub struct ChannelCommunication {
     read: mpsc::Receiver<(u32, String)>,
     to_send: Option<mpsc::Sender<(u32, String)>>,
     messages: HashMap<u32, Vec<String>>,
+    enable_logging: bool
 }
 
 impl ChannelCommunication {
-    pub fn new() -> ChannelCommunication {
+    pub fn new(enable_logging: bool) -> ChannelCommunication {
         let (send, read) = mpsc::channel();
         ChannelCommunication {
             send,
             read,
             to_send: None,
             messages: HashMap::new(),
+            enable_logging
         }
     }
 
@@ -63,6 +66,9 @@ impl ChannelCommunication {
         // Keep on reading while you can and add messages
         while let Ok((token, msg)) = self.read.try_recv() {
             self.add_message(token.clone(), msg.clone());
+            if self.enable_logging {
+                println!("{}|{}{}|{}", Local::now(), &token, ">", &msg);
+            }
         }
     }
 
@@ -88,6 +94,7 @@ impl ChannelCommunication {
 
     pub fn send(&self, token: u32, msg: &str) {
         self.send_message(&token, msg);
+        println!("{}|{}{}|{}", Local::now(), ">", &token, &msg);
     }
 }
 
@@ -237,8 +244,7 @@ impl Communication for WebSocketCommunication {
     fn read_message(&mut self) -> (u32, String) {
         match self.recv.recv() {
             Ok((token, message)) => {
-                // Logging for troubleshooting and FBI-ing user commands
-                println!("\n{}: {}", &token, &message);
+                println!("{}|{}{}|{}", Local::now(), &token, ">", &message);
                 (token, message)
             }
             Err(_) => {
@@ -255,6 +261,7 @@ impl Communication for WebSocketCommunication {
         if let Some(sender) = connections_lock.get(&token) {
             // Log server response for troubleshooting and FBI-ing
             sender.send(message).unwrap();
+            println!("{}|{}{}|{}", Local::now(), ">", token, message);
         }
     }
 

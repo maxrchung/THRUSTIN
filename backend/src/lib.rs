@@ -5,6 +5,7 @@ extern crate rocket; // Macro stuff to make rocket work
 #[macro_use]
 extern crate lazy_static; //alexgarbage
 extern crate regex; //alexgarbage
+extern crate chrono;
 
 mod commands;
 pub mod communication;
