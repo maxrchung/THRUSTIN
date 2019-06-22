@@ -3,11 +3,11 @@ import {Typeahead} from 'react-bootstrap-typeahead';
 
 class CommandBar extends React.Component {
     state = {
-        options: ["Okay", "Epic"],
-    };
-    
+		options: ["Okay", "Epic"],
+	};
+
 	render() {
-		const {multiple, options} = this.state;
+		const {options} = this.state;
 
 		return (
 			<React.Fragment>
@@ -16,6 +16,8 @@ class CommandBar extends React.Component {
 					autoFocus={true}
 					ref={(input) => {this.wrappedTypeahead = input}}
 					options={options}
+					onChange={(selected) => this.setState({selected})}
+					onKeyDown={this.handleKeyDown}
 					placeholder="Enter command..."
 				/>
 			</React.Fragment>

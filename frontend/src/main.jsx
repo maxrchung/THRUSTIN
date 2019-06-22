@@ -7,6 +7,7 @@ import CommandBar from './commandBar';
 
 const MAX_INPUT = 6669;
 const MAX_MSGS = 696;
+
 function Message(props) {
     return (
         <div className="mb-3 mr-3">
@@ -33,7 +34,7 @@ class Client extends React.Component {
             messageCounter: 1,
             messages: [
                 <Message key={0} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously). If you wanta keep up with our development check us out on <a href=&quot;https://github.com/maxrchung/THRUSTIN/&quot;>GitHub.com</a> and <a href=&quot;https://twitter.com/THRUSTIN_rs?iloveducks&quot;>Twitter.com</a>."/>,
-            ]
+			],
         };
     }
 
@@ -59,21 +60,33 @@ class Client extends React.Component {
         if (document.activeElement !== this.typeahead && !isWhitedModifier) {
             this.typeahead.focus();
         }
-        if (e.key == "Enter" && this.inputBar.value !== "") {
-            this.handleMessageMax();
-            const command = this.inputBar.value;
-            this.setState({
-                messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
-            });
-            if (command.length <= MAX_INPUT) { 
-                this.connection.send(command);
-            }
-            else {
-                this.setMessage("BRO CHILLOUT that message is too long my man.");
+		if (e.key == "Enter" && this.inputBar.value !== "") {
+			const hintVal = this.getHintVal(); // Autocomplete check
+
+			if (hintVal) {
+				this.setState({
+					messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={hintVal} />)
+				})
+				this.connection.send(hintVal);
 			}
+			else {
+				this.handleMessageMax();
+				const command = this.inputBar.value;
+				this.setState({
+					messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
+				})
+				if (command.length <= MAX_INPUT) { 
+					this.connection.send(command);
+				}
+				else {
+					this.setMessage("BRO CHILLOUT that message is too long my man.");
+				}
+				
+			}
+
 			this.typeahead.clear();
-            this.scrollToDummy();
-        }
+			this.scrollToDummy();
+		}
     }
 
     handleMessage = (e) => {
@@ -114,7 +127,11 @@ class Client extends React.Component {
 
     componentWillUnmount() {
         document.removeEventListener("keydown", this.handleKeyDown);
-    }
+	}
+	
+	getHintVal() {
+		return document.getElementsByClassName('rbt-input-hint')[0].value;
+	}
 
     renderTop() {
         if (this.state.messageCounter > MAX_MSGS) {
@@ -128,9 +145,10 @@ class Client extends React.Component {
                 </div>
             </React.Fragment>
         );
-    }
+	}
 
     render() {
+		
         return (
             <Container fluid={true}>
                 <div id="messages">
@@ -138,12 +156,14 @@ class Client extends React.Component {
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>
-                <CommandBar ref={(comBar) => {
-					if(comBar) {
-						this.typeahead = comBar.wrappedTypeahead;
-						this.inputBar = comBar.wrappedTypeahead.getInput();
-					}
-				}} />
+				<CommandBar 
+					ref={(comBar) => {
+						if(comBar) {
+							this.typeahead = comBar.wrappedTypeahead;
+							this.inputBar = comBar.wrappedTypeahead.getInput();
+						}
+					}}
+				/>
             </Container>
         );
     }
