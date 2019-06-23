@@ -94,7 +94,9 @@ impl ChannelCommunication {
 
     pub fn send(&self, token: u32, msg: &str) {
         self.send_message(&token, msg);
-        println!("{}|{}{}|{}", Local::now(), ">", &token, &msg);
+        if self.enable_logging {
+            println!("{}|{}{}|{}", Local::now(), ">", &token, &msg);
+        }
     }
 }
 
