@@ -286,6 +286,28 @@ impl Deck {
         self.thrustees.clear();
     }
 
+    pub fn count_max_thrustees(&self) -> i32 {
+        let mut max = 0;
+        for thrustee in &self.thrustees {
+            let count = Deck::count_underscore(&thrustee);
+            if count > max {
+                max = count;
+            }
+        }
+        max
+    }
+
+    pub fn count_underscore(thrustee: &String) -> i32 {
+        lazy_static! {
+            static ref RE: Regex = Regex::new("([_]+)").unwrap();
+        }
+        let mut count = 0;
+        for _ in RE.find_iter(thrustee) {
+            count += 1;
+        }
+        return count;
+    }
+
     pub fn sort(&mut self) {
         self.thrusters.sort();
         self.thrustees.sort();
@@ -302,16 +324,5 @@ impl Deck {
         }
         let result = RE.replace(&thrustee, &(thruster)[..]);
         result.to_string()
-    }
-
-    pub fn count_underscore(thrustee: &String) -> i32 {
-        lazy_static! {
-            static ref RE: Regex = Regex::new("([_]+)").unwrap();
-        }
-        let mut count: i32 = 0;
-        for _ in RE.find_iter(thrustee) {
-            count += 1;
-        }
-        return count;
     }
 }

@@ -266,3 +266,16 @@ fn thrust_back_and_forth() {
         assert!(msg.contains("2. "));
     }
 }
+
+// This must be prevented so that underscore validation can be done properly
+// e.g. we don't want a scenario where someone adds a THRUSTEE with 10 underscore spots
+// but the lobby only allows 5 max THRUSTERS
+#[test]
+fn todo_deck_is_not_added_midgame() {
+}
+
+// There can be a scenario where someone joins midgame and exceeds the THRUSTERS cap
+// When this happens, they should get clones of the new THRUSTERS
+#[test]
+fn todo_thrusters_reused_for_deck() {
+}

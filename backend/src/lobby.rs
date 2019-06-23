@@ -126,15 +126,6 @@ impl Lobby {
         }
     }
 
-    fn add_deck_to_lob(&mut self, deck: Deck) {
-        self.deck
-            .thrustees
-            .append(&mut deck.thrustees.clone());
-        self.deck
-            .thrusters
-            .append(&mut deck.thrusters.clone());
-    }
-
     //////////
     //public//
     //////////
@@ -536,8 +527,6 @@ impl Lobby {
                     pl.points = 0;
 
                     pl.state = if lob.state == LobbyState::Playing {
-                        // add players' personal deck (.thrustee/.thruster) to lobby deck if game is underway
-                        lob.add_deck_to_lob(pl.personal_deck.clone());
                         lob.deck.shuffle_deck();
 
                         if let Some(state) =
@@ -720,8 +709,38 @@ impl Lobby {
                 .map(|pl| pl.borrow().personal_deck.clone())
                 .collect();
             for deck in decks {
-                self.add_deck_to_lob(deck);
+                self.deck
+                    .thrustees
+                    .append(&mut deck.thrustees.clone());
+                self.deck
+                    .thrusters
+                    .append(&mut deck.thrusters.clone());
             }
+        }
+
+
+        // Validate THRUSTEES
+        if self.deck.thrustees.len() < self.max_thrustee_choices as usize {
+            let msg = format!("Dude, I can't start the game for you because yall don't got enough THRUSTEES. Here's a lil bit of mathematics:<br/>\
+            {} (Total THRUSTEES) < {} (Maximum THRUSTEE Choices)", self.deck.thrustees.len(), self.max_thrustee_choices);
+            pl_rc.borrow().send_message(&msg);
+            return;
+        }
+
+        // Validate THRUSTERS
+        if self.deck.thrusters.len() < self.hand_size as usize * self.list.len() {
+            let msg = format!("Yo... got an issue boss, we don't go enough THRUSTERS. Let me calculate to tell you why:<br/>\
+            {} (Total THRUSTERS) < {} (Maximum THRUSTER Choices) * {} (Number Of People In Lobby)", self.deck.thrusters.len(), self.hand_size, self.list.len());
+            pl_rc.borrow().send_message(&msg);
+            return;
+        }
+
+        // Validate underscores
+        if self.deck.count_max_thrustees() > self.max_thrustee_choices as i32 {
+            let msg = format!("Hello, I am unable to start the game. This is because there is a THRUSTEE that requires too many THRUSTERS. Allow me to explain through geometry:<br/>\
+            {} (Maximum THRUSTERS calculated for a THRUSTEE) > {} (Maximum THRUSTER Choices)", self.deck.thrusters.len(), self.hand_size);
+            pl_rc.borrow().send_message(&msg);
+            return;
         }
 
         self.deck.shuffle_deck();
