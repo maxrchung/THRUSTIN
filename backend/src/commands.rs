@@ -63,13 +63,13 @@ fn disconnect_from_lobby(
 //choose name//
 ///////////////
 pub fn choose_name_commands(
-    input: Vec<&str>,
+    split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
-    let com = get_command(&input);
+    let com = get_command(&split);
     match &*com {
-        ".name" | ".n" => Player::set_name(input, pl, players),
+        ".name" | ".n" => Player::set_name(split, pl, players),
 
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
 
@@ -96,27 +96,28 @@ fn list_choose_name_commands(pl: &Player) {
 //out of lobby//
 ////////////////
 pub fn out_of_lobby_commands(
-    input: Vec<&str>,
+    input: &str,
+    split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
-    let com = get_command(&input);
+    let com = get_command(&split);
     match &*com {
         ".help" | ".h" => list_out_commands(&pl.borrow()),
 
-        ".join" | ".j" => Lobby::join_lobby(input, pl, lobbies),
+        ".join" | ".j" => Lobby::join_lobby(split, pl, lobbies),
 
         ".list" | ".l" => Lobby::list_lobby(pl, lobbies),
 
         ".make" | ".m" => Lobby::make_lobby(pl, lobby_id, lobbies),
 
-        ".name" | ".n" => Player::set_name(input, pl, players),
+        ".name" | ".n" => Player::set_name(split, pl, players),
 
         ".play" | ".p" => Lobby::join_lobby(vec![".join", "0"], pl, lobbies),
 
-        ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input),
+        ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input, &split),
 
         ".unthrust" | ".u" => pl.borrow_mut().clear_pers_deck(),
 
@@ -153,12 +154,13 @@ fn list_out_commands(pl: &Player) {
 //in lobby//
 ////////////
 pub fn in_lobby_commands(
-    input: Vec<&str>,
+    input: &str,
+    split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
-    let com = get_command(&input);
+    let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
         ".help" | ".h" => list_in_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
@@ -167,29 +169,29 @@ pub fn in_lobby_commands(
 
         ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
 
-        ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input),
+        ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input, &split),
 
         ".unthrust" | ".u" => pl.borrow_mut().clear_pers_deck(),
 
         ".who" | ".w" => lobby.list_lobby_players(pl),
 
-        ".chief" | ".c" => lobby.switch_host(input, pl),
+        ".chief" | ".c" => lobby.switch_host(split, pl),
 
         ".house" | ".ho" => lobby.toggle_house(pl),
 
-        ".kick" | ".k" => lobby.kick(input, pl),
+        ".kick" | ".k" => lobby.kick(split, pl),
 
-        ".password" | ".pa" => lobby.set_password(input, pl),
+        ".password" | ".pa" => lobby.set_password(split, pl),
 
-        ".players" | ".pl" => lobby.player_max(input, pl),
+        ".players" | ".pl" => lobby.player_max(split, pl),
 
-        ".points" | ".po" => lobby.point_max(input, pl),
+        ".points" | ".po" => lobby.point_max(split, pl),
 
         ".start" | ".s" => lobby.start_game(pl),
 
-        ".thrustee" | ".tee" => lobby.max_thrustee(input, pl),
+        ".thrustee" | ".tee" => lobby.max_thrustee(split, pl),
 
-        ".thruster" | ".ter" => lobby.max_thruster(input, pl),
+        ".thruster" | ".ter" => lobby.max_thruster(split, pl),
 
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
@@ -235,12 +237,12 @@ fn list_in_commands(pl: &Player, host: bool) {
 //playing commands//
 ////////////////////
 pub fn playing_commands(
-    input: Vec<&str>,
+    split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
-    let com = get_command(&input);
+    let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
         ".help" | ".h" => list_playing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
@@ -251,9 +253,9 @@ pub fn playing_commands(
 
         ".points" | ".p" => lobby.display_points(pl),
 
-        ".thrust" | ".t" => lobby.handle_thrust(input, pl),
+        ".thrust" | ".t" => lobby.handle_thrust(split, pl),
 
-        ".kick" | ".k" => lobby.kick(input, pl),
+        ".kick" | ".k" => lobby.kick(split, pl),
 
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
@@ -288,12 +290,12 @@ fn list_playing_commands(pl: &Player, host: bool) {
 //choosing//
 ////////////
 pub fn choosing_commands(
-    input: Vec<&str>,
+    split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
-    let com = get_command(&input);
+    let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
         ".help" | ".h" => list_choosing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
@@ -304,9 +306,9 @@ pub fn choosing_commands(
 
         ".points" | ".p" => lobby.display_points(pl),
 
-        ".thrust" | ".t" => lobby.choose(input, pl),
+        ".thrust" | ".t" => lobby.choose(split, pl),
 
-        ".kick" | ".k" => lobby.kick(input, pl),
+        ".kick" | ".k" => lobby.kick(split, pl),
 
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
@@ -343,12 +345,12 @@ fn list_choosing_commands(pl: &Player, host: bool) {
 //deciding//
 ////////////
 pub fn deciding_commands(
-    input: Vec<&str>,
+    split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
-    let com = get_command(&input);
+    let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
         ".help" | ".h" => list_deciding_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
@@ -359,9 +361,9 @@ pub fn deciding_commands(
 
         ".points" | ".p" => lobby.display_points(pl),
 
-        ".thrust" | ".t" => lobby.decide(input, pl),
+        ".thrust" | ".t" => lobby.decide(split, pl),
 
-        ".kick" | ".k" => lobby.kick(input, pl),
+        ".kick" | ".k" => lobby.kick(split, pl),
 
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 
@@ -396,12 +398,12 @@ fn list_deciding_commands(pl: &Player, host: bool) {
 //waiting//
 ///////////
 pub fn waiting_commands(
-    input: Vec<&str>,
+    split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
-    let com = get_command(&input);
+    let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
         ".help" | ".h" => list_waiting_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
@@ -416,7 +418,7 @@ pub fn waiting_commands(
             .borrow()
             .send_message("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),
 
-        ".kick" | ".k" => lobby.kick(input, pl),
+        ".kick" | ".k" => lobby.kick(split, pl),
 
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
 

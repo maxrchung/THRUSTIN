@@ -116,45 +116,26 @@ impl Player {
 
     pub fn handle_thrusteer_commands(
         &mut self,
-        input: &Vec<&str>,
+        input: &str,
+        split: &Vec<&str>,
     ) {
-        if input.len() < 2 {
+        if split.len() < 2 {
             self.display_deck();
             return;
         }
 
-        let mut new_item = String::new();
-        for s in input.iter().skip(1) {
-            new_item.push_str(s);
-            new_item.push_str(" ");
-        }
-
-        new_item.pop();
-
-        if let (Some(beginning), Some(ending)) = (new_item.chars().next(), new_item.chars().next())
-        {
-            let quotation = "\"".to_string().chars().last().unwrap();
-
-            if beginning != quotation || ending != quotation {
-                self.send_message("Please surround the THRUST with quotes.");
-                return;
+        // Add thrust depending if we detect underscore or not
+        let thrusts = Deck::find_thrusts(input);
+        for thrust in thrusts {
+            if thrust.contains("_") {
+                self.personal_deck.add_thrustee(&thrust);
+                self.send_message(&format!("Added \"{}\" to THRUSTEES!", &thrust));
+            } else {
+                self.personal_deck.add_thruster(&thrust);
+                self.send_message(&format!("Added \"{}\" to THRUSTERS!", &thrust));
             }
-        } else {
-            self.display_deck();
-            return;
         }
 
-        new_item.pop();
-        new_item.remove(0);
-
-        if new_item.contains("_") {
-            self.personal_deck.add_thrustee(&new_item);
-            self.send_message(&format!("Added \"{}\" to THRUSTEES!", &new_item));
-            return;
-        } else {
-            self.personal_deck.add_thruster(&new_item);
-            self.send_message(&format!("Added \"{}\" to THRUSTERS!", &new_item));
-        }
         self.personal_deck.sort();
     }
 

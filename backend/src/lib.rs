@@ -79,19 +79,18 @@ fn run(communication: Rc<RefCell<dyn Communication>>) {
             return;
         }
 
-        let split: Vec<&str> = message.split(' ').collect();
-
-        handle_input(token, split, &mut lobby_id, &mut lobbies, &mut players);
+        handle_input(token, &message, &mut lobby_id, &mut lobbies, &mut players);
     }
 }
 
 fn handle_input(
     token: u32,
-    split: Vec<&str>,
+    input: &str,
     lobby_id: &mut i32,
     lobbies: &mut HashMap<i32, Lobby>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
+    let split: Vec<&str> = input.split(' ').collect();
     let state = {
         let player = players
             .get(&token)
@@ -113,11 +112,11 @@ fn handle_input(
         }
 
         PlayerState::OutOfLobby => {
-            commands::out_of_lobby_commands(split, pl, players, lobby_id, lobbies);
+            commands::out_of_lobby_commands(input, split, pl, players, lobby_id, lobbies);
         }
 
         PlayerState::InLobby => {
-            commands::in_lobby_commands(split, pl, players, lobbies);
+            commands::in_lobby_commands(input, split, pl, players, lobbies);
         }
 
         PlayerState::Playing => {
