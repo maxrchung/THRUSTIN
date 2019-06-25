@@ -273,11 +273,11 @@ impl Deck {
         }
     }
 
-    pub fn add_thruster(&mut self, thruster: &String) {
+    pub fn add_thruster(&mut self, thruster: &str) {
         self.thrusters.push(thruster.to_string());
     }
 
-    pub fn add_thrustee(&mut self, thrustee: &String) {
+    pub fn add_thrustee(&mut self, thrustee: &str) {
         self.thrustees.push(thrustee.to_string());
     }
 
@@ -297,15 +297,26 @@ impl Deck {
         max
     }
 
-    pub fn count_underscore(thrustee: &String) -> i32 {
+    pub fn count_underscore(thrustee: &str) -> i32 {
         lazy_static! {
-            static ref RE: Regex = Regex::new("([_]+)").unwrap();
+            static ref REGEX_UNDERSCORE: Regex = Regex::new("_+").unwrap();
         }
         let mut count = 0;
-        for _ in RE.find_iter(thrustee) {
+        for _ in REGEX_UNDERSCORE.find_iter(thrustee) {
             count += 1;
         }
         return count;
+    }
+
+    pub fn find_thrusts(thrust: &str) -> Vec<String> {
+        lazy_static! {
+            static ref REGEX_THRUST: Regex = Regex::new("\"(.*?)\"").unwrap();
+        }
+        let mut thrusts = Vec::new();
+        for capture in REGEX_THRUST.captures_iter(thrust) {
+            thrusts.push(String::from(&capture[1]));
+        }
+        thrusts
     }
 
     pub fn sort(&mut self) {
@@ -324,5 +335,35 @@ impl Deck {
         }
         let result = RE.replace(&thrustee, &(thruster)[..]);
         result.to_string()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn single_underscore() {
+        assert_eq!(1, Deck::count_underscore("_"));
+    }
+
+    #[test]
+    fn multiple_underscores() {
+        assert_eq!(3, Deck::count_underscore("Hey what is up my _ __ ___"));
+    }
+
+    #[test]
+    fn find_empty_thrust() {
+        assert_eq!(vec![""], Deck::find_thrusts(".t \"\""));
+    }
+
+    #[test]
+    fn find_single_thrust() {
+        assert_eq!(vec!["YOL0 SW@G"], Deck::find_thrusts(".t \"YOL0 SW@G\""));
+    }
+
+    #[test]
+    fn find_multiple_thrusts() {
+        assert_eq!(vec!["", "Swag", "Now __ is it fam"], Deck::find_thrusts(".t \"\" \"Swag\" \"Now __ is it fam\""));
     }
 }
