@@ -1,7 +1,7 @@
 mod common;
 
 #[test]
-fn thruster() {
+fn add_thruster() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".t \"It's yo boy epic swagger!!\"");
@@ -19,7 +19,7 @@ fn thruster() {
 }
 
 #[test]
-fn thrustee() {
+fn add_thrustee() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".t \"It's yo boy, _ swagger!!\"");

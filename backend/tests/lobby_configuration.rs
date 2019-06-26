@@ -26,6 +26,21 @@ fn only_chief_commands() {
 }
 
 #[test]
+fn only_chief_shows_help_commands() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".m");
+    client.send(2, ".n 2");
+    client.send(2, ".j 1");
+    client.send(1, ".h");
+    client.send(2, ".h");
+    client.read_all();
+
+    assert!(!client.last(2).to_lowercase().contains("chief-only"));
+    assert!(client.last(1).to_lowercase().contains("chief-only"));
+}
+
+#[test]
 fn fail_start_validation() {
     let mut client = common::setup();
     client.send(1, ".n 1");
@@ -76,31 +91,13 @@ fn fail_underscore_validation() {
 }
 
 #[test]
-fn only_chief_help_commands() {
-    let mut client = common::setup();
-    client.send(1, ".n 1");
-    client.send(1, ".m");
-    client.send(2, ".n 2");
-    client.send(2, ".j 1");
-    client.send(1, ".h");
-    client.send(2, ".h");
-    client.read_all();
-
-    assert!(!client.last(2).to_lowercase().contains("chief-only"));
-    assert!(client.last(1).to_lowercase().contains("chief-only"));
-}
+fn todo_appoint_another_chief() {}
 
 #[test]
-fn todo_no_thrusts() {}
+fn todo_set_player_max() {}
 
 #[test]
-fn todo_appoint_chief() {}
+fn todo_set_points_max() {}
 
 #[test]
-fn todo_players() {}
-
-#[test]
-fn todo_points() {}
-
-#[test]
-fn todo_password() {}
+fn todo_set_password() {}

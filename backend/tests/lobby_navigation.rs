@@ -159,7 +159,7 @@ fn who_in_lobby() {
 // Bug: If THRUSTEE chooser is not a host and leaves, next user is unable to see THRUSTEE choices to pick
 // Reason: THRUSTEE was improperly being chosen based on who was chief
 #[test]
-fn next_thrustee_no_chief_display() {
+fn new_thrustee_is_not_chief() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".p");
@@ -175,7 +175,7 @@ fn next_thrustee_no_chief_display() {
 }
 
 #[test]
-fn next_thrustee_chief_display() {
+fn new_thrustee_is_chief() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".m");

@@ -1,7 +1,7 @@
 mod common;
 
 #[test]
-fn name() {
+fn set_name() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.read_all();
