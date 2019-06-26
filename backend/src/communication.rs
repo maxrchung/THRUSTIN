@@ -31,18 +31,18 @@ pub struct ChannelCommunication {
     read: mpsc::Receiver<(u32, String)>,
     to_send: Option<mpsc::Sender<(u32, String)>>,
     messages: HashMap<u32, Vec<String>>,
-    enable_logging: bool
+    can_log: bool
 }
 
 impl ChannelCommunication {
-    pub fn new(enable_logging: bool) -> ChannelCommunication {
+    pub fn new(can_log: bool) -> ChannelCommunication {
         let (send, read) = mpsc::channel();
         ChannelCommunication {
             send,
             read,
             to_send: None,
             messages: HashMap::new(),
-            enable_logging
+            can_log
         }
     }
 
@@ -66,7 +66,7 @@ impl ChannelCommunication {
         // Keep on reading while you can and add messages
         while let Ok((token, msg)) = self.read.try_recv() {
             self.add_message(token.clone(), msg.clone());
-            if self.enable_logging {
+            if self.can_log {
                 println!("{}|{}{}|{}", Local::now(), &token, ">", &msg);
             }
         }
@@ -94,7 +94,7 @@ impl ChannelCommunication {
 
     pub fn send(&self, token: u32, msg: &str) {
         self.send_message(&token, msg);
-        if self.enable_logging {
+        if self.can_log {
             println!("{}|{}{}|{}", Local::now(), ">", &token, &msg);
         }
     }
@@ -217,7 +217,7 @@ impl WebSocketCommunication {
 
     // Spawn threads for web server use
     fn spawn(&self) {
-        // Only run rocket on development build
+        // Only ` rocket on development build
         // Production will have NGINX return static files rather than rocket
         if cfg!(debug_assertions) {
             // Serve static files for client website
