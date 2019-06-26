@@ -722,7 +722,7 @@ impl Lobby {
         // Validate THRUSTEES
         if self.deck.thrustees.len() < self.max_thrustee_choices as usize {
             let msg = format!("Dude, I can't start the game for you because yall don't got enough THRUSTEES. Here's a lil bit of mathematics:<br/>\
-            {} (Total THRUSTEES) < {} (Maximum THRUSTEE Choices)", self.deck.thrustees.len(), self.max_thrustee_choices);
+            {} (Total THRUSTEES) < {} (THRUSTEE Choices)", self.deck.thrustees.len(), self.max_thrustee_choices);
             pl_rc.borrow().send_message(&msg);
             return;
         }
@@ -730,15 +730,16 @@ impl Lobby {
         // Validate THRUSTERS
         if self.deck.thrusters.len() < self.hand_size as usize * self.list.len() {
             let msg = format!("Yo... got an issue boss, we don't go enough THRUSTERS. Let me calculate to tell you why:<br/>\
-            {} (Total THRUSTERS) < {} (Maximum THRUSTER Choices) * {} (Number Of People In Lobby)", self.deck.thrusters.len(), self.hand_size, self.list.len());
+            {} (Total THRUSTERS) < {} (THRUSTER Choices) * {} (Number Of People In Lobby)", self.deck.thrusters.len(), self.hand_size, self.list.len());
             pl_rc.borrow().send_message(&msg);
             return;
         }
 
         // Validate underscores
-        if self.deck.count_max_thrustees() > self.max_thrustee_choices as i32 {
+        let underscores = self.deck.count_max_underscores();
+        if underscores > self.max_thrustee_choices as i32 {
             let msg = format!("Hello, I am unable to start the game. This is because there is a THRUSTEE that requires too many THRUSTERS. Allow me to explain through geometry:<br/>\
-            {} (Maximum THRUSTERS calculated for a THRUSTEE) > {} (Maximum THRUSTER Choices)", self.deck.thrusters.len(), self.hand_size);
+            {} (THRUSTER Choices) < {} (THRUSTERS For A THRUSTEE)", self.hand_size, underscores);
             pl_rc.borrow().send_message(&msg);
             return;
         }
@@ -1056,7 +1057,7 @@ impl Lobby {
 
                     // Check correct # of thrusters
                     let num_thrusters = input.len() as i32 - 1;
-                    let num_underscore = Deck::count_underscore(&self.current_thrustee);
+                    let num_underscore = Deck::count_underscores(&self.current_thrustee);
                     if num_thrusters != num_underscore {
                         pl.send_message("bro that ain't the right number of THRUSTERS");
                         return;
