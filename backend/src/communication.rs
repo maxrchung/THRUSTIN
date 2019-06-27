@@ -1,4 +1,4 @@
-use chrono::{Local};
+use chrono::Local;
 use rocket::response::NamedFile;
 use std::collections::HashMap;
 use std::collections::VecDeque;
@@ -31,7 +31,7 @@ pub struct ChannelCommunication {
     read: mpsc::Receiver<(u32, String)>,
     to_send: Option<mpsc::Sender<(u32, String)>>,
     messages: HashMap<u32, Vec<String>>,
-    can_log: bool
+    can_log: bool,
 }
 
 impl ChannelCommunication {
@@ -42,7 +42,7 @@ impl ChannelCommunication {
             read,
             to_send: None,
             messages: HashMap::new(),
-            can_log
+            can_log,
         }
     }
 
@@ -256,7 +256,14 @@ impl Communication for WebSocketCommunication {
                 let connections_lock = self.connections.lock().unwrap();
                 // May disconnect ?
                 if let Some((ip_addr, _)) = connections_lock.get(&token) {
-                    println!("{}|{}|{}{}|{}", Local::now(), ip_addr, &token, ">", &message);
+                    println!(
+                        "{}|{}|{}{}|{}",
+                        Local::now(),
+                        ip_addr,
+                        &token,
+                        ">",
+                        &message
+                    );
                 }
                 (token, message)
             }

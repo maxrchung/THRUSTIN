@@ -211,7 +211,7 @@ fn list_in_commands(pl: &Player, host: bool) {
         (".UNTHRUST", ".u", "Destroy all your THRUSTS... [*** !!!CAUTION THIS IS IRREVERSIBLE!!! ***]"),
         (".who", ".w", "See who's whacking up this swag lobby with you"),
     ];
-    
+
     if host {
         commands.append(&mut vec![
             (".chief xxXAzn1994", ".c  xxXAzn1994", "(chief-only) Make xxXAzn1994 the chief of the lobby"),
@@ -266,18 +266,24 @@ pub fn playing_commands(
 fn list_playing_commands(pl: &Player, host: bool) {
     let mut commands = vec![
         (".help", ".h", "this is it chief"),
-        (".info", ".i", "Look at your lobby's settings for some info(rmation)."),
+        (
+            ".info",
+            ".i",
+            "Look at your lobby's settings for some info(rmation).",
+        ),
         (".leave", ".l", "Goodbye..."),
         (".points", ".p", "See who's got the points in the lobby."),
         (".THRUST 0", ".t 0", "THRUST your first THRUSTER in baby."),
     ];
 
     if host {
-        commands.append(&mut vec![
-            (".kick BOY_MAN_01", ".k BOY_MAN_01", "(chief-only) Destroy BOY_MAN_01 from your lobby..."),
-        ]);
+        commands.append(&mut vec![(
+            ".kick BOY_MAN_01",
+            ".k BOY_MAN_01",
+            "(chief-only) Destroy BOY_MAN_01 from your lobby...",
+        )]);
     }
-    
+
     let message = &vec![
         String::from("Great. Now you're in the phase where you are a THRUSTER. In this state, you can THRUST one of your THRUSTER options into the THRUSTEE. Make sure it's a good one!"),
         generate_table(commands)
@@ -321,16 +327,22 @@ pub fn choosing_commands(
 fn list_choosing_commands(pl: &Player, host: bool) {
     let mut commands = vec![
         (".help", ".h", "this is it chief"),
-        (".info", ".i", "Observe the information data relevant to your lobby's configurations"),
+        (
+            ".info",
+            ".i",
+            "Observe the information data relevant to your lobby's configurations",
+        ),
         (".leave", ".l", "This shall be farewell, for now..."),
         (".points", ".p", "See who's got the points in the lobby."),
         (".THRUST 2", ".t 2", "Choose THRUSTEE at index 2 to use."),
     ];
 
     if host {
-        commands.append(&mut vec![
-            (".kick BOY_MAN_01", ".k BOY_MAN_01", "(chief-only) Destroy BOY_MAN_01 from your lobby..."),
-        ]);
+        commands.append(&mut vec![(
+            ".kick BOY_MAN_01",
+            ".k BOY_MAN_01",
+            "(chief-only) Destroy BOY_MAN_01 from your lobby...",
+        )]);
     }
 
     let message = &vec![
@@ -381,11 +393,13 @@ fn list_deciding_commands(pl: &Player, host: bool) {
     ];
 
     if host {
-        commands.append(&mut vec![
-            (".kick BOY_MAN_01", ".k BOY_MAN_01", "(chief-only) Destroy BOY_MAN_01 from your lobby..."),
-        ]);
+        commands.append(&mut vec![(
+            ".kick BOY_MAN_01",
+            ".k BOY_MAN_01",
+            "(chief-only) Destroy BOY_MAN_01 from your lobby...",
+        )]);
     }
-    
+
     let message = &vec![
         String::from("Yeah guy it's time for you to decide on the best THRUSTER. Pick the one that you like the best. Trust your head and your gut. You can do it. I believe in you."),
         generate_table(commands)
@@ -438,9 +452,11 @@ fn list_waiting_commands(pl: &Player, host: bool) {
     ];
 
     if host {
-        commands.append(&mut vec![
-            (".kick SAMPLE_USER_000666", ".k SAMPLE_USER_000666", "(chief-only) Eliminate SAMPLE_USER_000666 from your lobby..."),
-        ]);
+        commands.append(&mut vec![(
+            ".kick SAMPLE_USER_000666",
+            ".k SAMPLE_USER_000666",
+            "(chief-only) Eliminate SAMPLE_USER_000666 from your lobby...",
+        )]);
     }
 
     let message = &vec![

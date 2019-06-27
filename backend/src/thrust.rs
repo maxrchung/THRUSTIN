@@ -389,6 +389,9 @@ mod tests {
 
     #[test]
     fn find_multiple_thrusts() {
-        assert_eq!(vec!["", "Swag", "Now __ is it fam"], Deck::find_thrusts(".t \"\" \"Swag\" \"Now __ is it fam\""));
+        assert_eq!(
+            vec!["", "Swag", "Now __ is it fam"],
+            Deck::find_thrusts(".t \"\" \"Swag\" \"Now __ is it fam\"")
+        );
     }
 }

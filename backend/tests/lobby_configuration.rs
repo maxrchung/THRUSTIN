@@ -9,14 +9,14 @@ fn only_chief_commands() {
     client.send(2, ".j 1");
 
     let only_chief = vec![
-        ".c 2", 
+        ".c 2",
         ".ho",
         ".k 1",
         ".pa yoloswag",
         ".po 420",
         ".s",
         ".tee 10",
-        ".ter 10"
+        ".ter 10",
     ];
     for command in only_chief {
         client.send(2, command);
@@ -71,7 +71,10 @@ fn fail_thruster_validation() {
     client.send(1, ".n 1");
     client.send(1, ".m");
     client.send(1, ".ho");
-    client.send(1, ".t \"Now this is _____\" \"Now this ain't _____\" \"What's swagging my _____\"");
+    client.send(
+        1,
+        ".t \"Now this is _____\" \"Now this ain't _____\" \"What's swagging my _____\"",
+    );
     client.send(1, ".s");
     client.read_all();
     assert_eq!(client.last(1), "Yo... got an issue boss, we don't go enough THRUSTERS. Let me calculate to tell you why:<br/>\

@@ -55,5 +55,8 @@ fn join_after_a_round_is_played() {
     client.send(1, ".p");
     client.send(2, ".p");
     client.read_all();
-    assert_eq!(client.last(2), "Joined: 0<br/>THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!");
+    assert_eq!(
+        client.last(2),
+        "Joined: 0<br/>THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!"
+    );
 }

@@ -114,11 +114,7 @@ impl Player {
         }
     }
 
-    pub fn handle_thrusteer_commands(
-        &mut self,
-        input: &str,
-        split: &Vec<&str>,
-    ) {
+    pub fn handle_thrusteer_commands(&mut self, input: &str, split: &Vec<&str>) {
         if split.len() < 2 {
             self.display_deck();
             return;
@@ -157,6 +153,8 @@ impl Player {
 
     pub fn clear_pers_deck(&mut self) {
         self.personal_deck = Deck::new();
-        self.send_message("Personal THRUSTS have been cleared! If this was an accident, Good Luck!");
+        self.send_message(
+            "Personal THRUSTS have been cleared! If this was an accident, Good Luck!",
+        );
     }
 }

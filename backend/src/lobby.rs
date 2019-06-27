@@ -704,20 +704,16 @@ impl Lobby {
 
         // Add each person's deck in
         {
-            let decks: Vec<Deck> = self.list
+            let decks: Vec<Deck> = self
+                .list
                 .iter()
                 .map(|pl| pl.borrow().personal_deck.clone())
                 .collect();
             for deck in decks {
-                self.deck
-                    .thrustees
-                    .append(&mut deck.thrustees.clone());
-                self.deck
-                    .thrusters
-                    .append(&mut deck.thrusters.clone());
+                self.deck.thrustees.append(&mut deck.thrustees.clone());
+                self.deck.thrusters.append(&mut deck.thrusters.clone());
             }
         }
-
 
         // Validate THRUSTEES
         if self.deck.thrustees.len() < self.max_thrustee_choices as usize {
@@ -1203,18 +1199,16 @@ impl Lobby {
         let pl = pl_rc.borrow();
         let mut messages = Vec::new();
 
-        
         for player in players.values() {
             let pl_i = player.borrow();
             if pl_i.token == 0 {
                 continue;
             }
-            
+
             let mut person = "";
             if pl_i.token == pl.token {
                 person = " (You)";
             }
-
 
             let message =
                 if pl_i.state == PlayerState::InLobby || pl_i.state == PlayerState::Playing {
