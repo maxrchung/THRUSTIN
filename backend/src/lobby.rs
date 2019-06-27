@@ -16,46 +16,32 @@ pub enum LobbyState {
 pub struct Lobby {
     //optional password for lobby
     pw: String,
-
     //list of players
     list: Vec<Rc<RefCell<Player>>>,
-
     //max number of players
     max: usize,
-
     //max hand size
     hand_size: u8,
-
     //points
     max_points: u8,
-
     //lobby id
     id: i32,
-
     //lobby state
     state: LobbyState,
-
     //host of lobby
     //pub host: usize,
     host: Rc<RefCell<Player>>,
-
     //current thrustee (player)
     thrustee: usize,
-
     deck: Deck,
     //current thrustee (card)
     current_thrustee: String,
-
     current_thrusts: HashMap<u32, String>,
     //maps thrust index to token (end me)
     index_to_token: HashMap<i32, u32>,
-
     thrusted_players: Vec<u32>,
-
     thrustee_choices: Vec<String>,
-
     max_thrustee_choices: u8,
-
     use_house: bool,
 }
 
