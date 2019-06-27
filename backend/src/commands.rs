@@ -163,14 +163,6 @@ pub fn in_lobby_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
 
-    // Support special shuffle command in debug mode to help integration test
-    if cfg!(debug_assertions) {
-        if &com == ".s" || &com == ".sh" {
-            lobby.toggle_shuffle(pl);
-            return;
-        }
-    }
-
     match &*com {
         ".help" | ".h" => list_in_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
 

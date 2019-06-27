@@ -651,21 +651,6 @@ impl Lobby {
         }
     }
 
-    pub fn toggle_shuffle(&mut self, pl_rc: Rc<RefCell<Player>>) {
-        let pl = pl_rc.borrow();
-        if !self.is_host(pl.token) {
-            pl.send_message(&format!("MASSIVE ERROR! Only chief may decide how to decide if the lobby requires shuffling or not"));
-            return;
-        }
-
-        self.deck.can_shuffle = !self.deck.can_shuffle;
-        if self.deck.can_shuffle {
-            pl.send_message(&"Now we're shufflin doggy!!");
-        } else {
-            pl.send_message(&"Now we aren't shufflin anymore dog...");
-        }
-    }
-
     /////////////////
     //game commands//
     /////////////////

@@ -6,7 +6,6 @@ use regex::Regex;
 pub struct Deck {
     pub thrusters: Vec<String>,
     pub thrustees: Vec<String>,
-    pub can_shuffle: bool
 }
 
 impl Default for Deck {
@@ -287,7 +286,6 @@ impl Default for Deck {
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
             thrusters: thrusters.iter().map(ToString::to_string).collect(),
-            can_shuffle: true
         }
     }
 }
@@ -297,7 +295,6 @@ impl Deck {
         Deck {
             thrusters: Vec::new(),
             thrustees: Vec::new(),
-            can_shuffle: true
         }
     }
 
@@ -353,10 +350,8 @@ impl Deck {
     }
 
     pub fn shuffle_deck(&mut self) {
-        if self.can_shuffle {
-            self.thrusters.shuffle(&mut thread_rng());
-            self.thrustees.shuffle(&mut thread_rng());
-        }
+        self.thrusters.shuffle(&mut thread_rng());
+        self.thrustees.shuffle(&mut thread_rng());
     }
 
     pub fn thrust(thruster: &String, thrustee: &String) -> String {
