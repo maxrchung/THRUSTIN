@@ -18,45 +18,45 @@ pub struct Lobby {
     pw: String,
 
     //list of players
-    pub list: Vec<Rc<RefCell<Player>>>,
+    list: Vec<Rc<RefCell<Player>>>,
 
     //max number of players
-    pub max: usize,
+    max: usize,
 
     //max hand size
-    pub hand_size: u8,
+    hand_size: u8,
 
     //points
-    pub max_points: u8,
+    max_points: u8,
 
     //lobby id
-    pub id: i32,
+    id: i32,
 
     //lobby state
-    pub state: LobbyState,
+    state: LobbyState,
 
     //host of lobby
     //pub host: usize,
-    pub host: Rc<RefCell<Player>>,
+    host: Rc<RefCell<Player>>,
 
     //current thrustee (player)
-    pub thrustee: usize,
+    thrustee: usize,
 
-    pub deck: Deck,
+    deck: Deck,
     //current thrustee (card)
-    pub current_thrustee: String,
+    current_thrustee: String,
 
-    pub current_thrusts: HashMap<u32, String>,
+    current_thrusts: HashMap<u32, String>,
     //maps thrust index to token (end me)
-    pub index_to_token: HashMap<i32, u32>,
+    index_to_token: HashMap<i32, u32>,
 
-    pub thrusted_players: Vec<u32>,
+    thrusted_players: Vec<u32>,
 
-    pub thrustee_choices: Vec<String>,
+    thrustee_choices: Vec<String>,
 
-    pub max_thrustee_choices: u8,
+    max_thrustee_choices: u8,
 
-    pub use_house: bool,
+    use_house: bool,
 }
 
 impl Lobby {
