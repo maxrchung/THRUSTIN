@@ -354,6 +354,14 @@ impl Deck {
         self.thrustees.shuffle(&mut thread_rng());
     }
 
+    pub fn shuffle_thrusters(&mut self) {
+        self.thrusters.shuffle(&mut thread_rng());
+    }
+
+    pub fn shuffle_thrustees(&mut self) {
+        self.thrustees.shuffle(&mut thread_rng());
+    }
+
     pub fn thrust(thruster: &String, thrustee: &String) -> String {
         lazy_static! {
             static ref RE: Regex = Regex::new("[_]+").unwrap();
