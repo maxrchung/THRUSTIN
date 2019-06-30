@@ -660,7 +660,6 @@ impl Lobby {
 
         // Reset game settings
         self.game = LobbyGame::new();
-        
         self.game.deck.clear();
         // Add in house cards to lobby deck if bool is true
         if self.use_house {
@@ -711,20 +710,15 @@ impl Lobby {
         self.state = LobbyState::Playing;
         self.refill_thrustees();
 
+        // Elaborateness to call &mut self
+        for i in 0..self.list.len() {
+            let pl = self.list[i].clone();
+            self.refill_thrusters(&mut pl.borrow_mut()); 
+        }
+
         for (i, pl) in self.list.iter().enumerate() {
             let mut pl = pl.borrow_mut();
             pl.state = PlayerState::Waiting;
-
-            for _ in 0..self.hand_size {
-                if let Some(card) = self.game.deck.thrusters.pop() {
-                    pl.deck.thrusters.push(card.clone());
-                } else {
-                    self.host
-                        .borrow()
-                        .send_message(&"Chief, there ain't enough cards to start");
-                    return;
-                }
-            }
 
             if i == self.game.thrustee {
                 pl.state = PlayerState::Choosing;
