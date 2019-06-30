@@ -866,9 +866,9 @@ impl Lobby {
                         self.current_thrustee = card;
                         pl.state = PlayerState::Deciding;
 
-                        // Clear choices
+                        // Refill choices
                         self.thrustee_choices.clear();
-
+                        self.refill_thrustees();
                         name = pl.name.clone();
                     }
 
@@ -937,8 +937,6 @@ impl Lobby {
 
                         // Set current THRUSTEE to THRUSTER state
                         pl.state = PlayerState::Waiting;
-
-                        self.refill_thrustees();
                         (name, chosen_thrust)
                     };
 
