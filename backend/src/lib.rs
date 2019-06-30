@@ -10,6 +10,7 @@ extern crate regex; //alexgarbage
 mod commands;
 pub mod communication;
 mod lobby;
+mod lobby_game;
 mod player;
 mod thrust;
 
