@@ -1,5 +1,6 @@
 use crate::lobby_game::{LobbyGame};
 use crate::player::{Player, PlayerState};
+use crate::player_game::{PlayerGame};
 use crate::thrust::Deck;
 use std::cell::{RefCell, RefMut};
 use std::collections::HashMap;
@@ -82,16 +83,16 @@ impl Lobby {
 
     fn refill_thrusters(&mut self, pl: &mut Player) {
         // Clear dude's deck beforehand
-        pl.deck.thrusters.clear();
+        pl.game.deck.thrusters.clear();
         // Distribute thrusters to player
         for _ in 0..self.hand_size {
             if let Some(card) = self.game.deck.thrusters.pop() {
-                pl.deck.thrusters.push(card);
+                pl.game.deck.thrusters.push(card);
             } else {
                 // Refill thrusters if empty
                 self.game.deck.thrusters = self.game.deck_reference.thrusters.clone();
                 self.game.deck.shuffle_thrusters();
-                pl.deck.thrusters.push(self.game.deck.thrusters.pop().unwrap());
+                pl.game.deck.thrusters.push(self.game.deck.thrusters.pop().unwrap());
             }
         }
     }
@@ -417,7 +418,7 @@ impl Lobby {
                 messages.push(
                     format!("This is your THRUSTEE: {}<br/>", &lob.game.current_thrustee).to_string(),
                 );
-                messages.extend(Lobby::get_thrusters(&pl.deck.thrusters));
+                messages.extend(Lobby::get_thrusters(&pl.game.deck.thrusters));
             }
 
             _ => (),
@@ -430,8 +431,6 @@ impl Lobby {
         messages: &mut Vec<String>,
         pl_rc: &Rc<RefCell<Player>>,
     ) -> Option<PlayerState> {
-        // Clear dude's deck beforehand
-        pl.deck.thrusters.clear();
         // Distribute thrusters to player
         lob.refill_thrusters(pl);
 
@@ -494,12 +493,9 @@ impl Lobby {
 
                     messages.push(format!("Joined: {:#?}", &lobby_id));
 
-                    // Set points to 0 (just in case?)
-                    pl.points = 0;
-
+                    // Reset player game settings on join
+                    pl.game = PlayerGame::new();
                     pl.state = if lob.state == LobbyState::Playing {
-                        lob.game.deck.shuffle_deck();
-
                         if let Some(state) =
                             Lobby::get_joining_pl_state(&mut lob, &mut pl, &mut messages, &pl_rc)
                         {
@@ -713,6 +709,8 @@ impl Lobby {
         // Elaborateness to call &mut self
         for i in 0..self.list.len() {
             let pl = self.list[i].clone();
+            // While we're at it reset the player's game settings omegalul
+            pl.borrow_mut().game = PlayerGame::new();
             self.refill_thrusters(&mut pl.borrow_mut()); 
         }
 
@@ -798,7 +796,7 @@ impl Lobby {
                             );
                             p.send_messages(&messages);
                         } else {
-                            messages.extend(Lobby::get_thrusters(&p.deck.thrusters));
+                            messages.extend(Lobby::get_thrusters(&p.game.deck.thrusters));
                             p.send_messages(&messages);
                         }
                     }
@@ -849,8 +847,8 @@ impl Lobby {
                             Some(tkn) => {
                                 let (pts, name) = {
                                     let mut chosen_thruster = self.list[tkn].borrow_mut();
-                                    chosen_thruster.points += 1;
-                                    (chosen_thruster.points.clone(), chosen_thruster.name.clone())
+                                    chosen_thruster.game.points += 1;
+                                    (chosen_thruster.game.points.clone(), chosen_thruster.name.clone())
                                 };
 
                                 // Check if winner
@@ -946,7 +944,7 @@ impl Lobby {
                             return;
                         }
                         indexes.push(dex);
-                        if dex >= pl.deck.thrusters.len() as i32 || index < 0 {
+                        if dex >= pl.game.deck.thrusters.len() as i32 || index < 0 {
                             pl.send_message("That shit's out of bound bro");
                             return;
                         }
@@ -965,7 +963,7 @@ impl Lobby {
                     // Handle mutliple underscores
                     for i in 1..input.len() {
                         let picked_thruster =
-                            pl.deck.thrusters[input[i].parse::<usize>().unwrap()].clone();
+                            pl.game.deck.thrusters[input[i].parse::<usize>().unwrap()].clone();
                         to_remove.push(picked_thruster.clone());
                         // Surround with <u> to underline text
                         let formatted_thruster = format!("<u>{}</u>", picked_thruster);
@@ -974,12 +972,12 @@ impl Lobby {
 
                     // Remove thrusted thrusters
                     let mut updated_thrusters: Vec<String> = Vec::new();
-                    for thruster in &pl.deck.thrusters {
+                    for thruster in &pl.game.deck.thrusters {
                         if !to_remove.contains(thruster) {
                             updated_thrusters.push(thruster.clone())
                         }
                     }
-                    pl.deck.thrusters = updated_thrusters;
+                    pl.game.deck.thrusters = updated_thrusters;
                     self.game.thrusted_players.push(pl.token.clone());
 
                     // Handle picked
@@ -1017,7 +1015,7 @@ impl Lobby {
 
         for rc in &self.list {
             let player = rc.borrow();
-            messages.push(format!("{}: {}", player.name, player.points));
+            messages.push(format!("{}: {}", player.name, player.game.points));
         }
 
         pl.send_messages(&messages);

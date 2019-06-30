@@ -1,4 +1,5 @@
 use crate::communication::Communication;
+use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
 use std::collections::HashMap;
 
@@ -19,22 +20,14 @@ pub enum PlayerState {
 #[derive(Clone, Debug)]
 pub struct Player {
     pub token: u32,
-
     //name of player
     pub name: String,
-
     //player state
     pub state: PlayerState,
-
     pub lobby: i32,
-
-    pub deck: Deck,
-
     pub personal_deck: Deck,
-
-    pub points: u8,
-
     comm: Rc<RefCell<dyn Communication>>,
+    pub game: PlayerGame
 }
 
 impl Player {
@@ -52,10 +45,9 @@ impl Player {
             name: String::new(),
             state: PlayerState::ChooseName,
             lobby: -1,
-            deck: Deck::new(),
             personal_deck: Deck::new(),
-            points: 0,
             comm: communication,
+            game: PlayerGame::new(),
         }
     }
 
@@ -65,10 +57,9 @@ impl Player {
             name: "EndlessLobbyHostDoggo".to_string(),
             state: PlayerState::Playing,
             lobby: 0,
-            deck: Deck::new(),
             personal_deck: Deck::new(),
-            points: 0,
             comm: communication,
+            game: PlayerGame::new(),
         }
     }
 

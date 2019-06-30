@@ -12,6 +12,7 @@ pub mod communication;
 mod lobby;
 mod lobby_game;
 mod player;
+mod player_game;
 mod thrust;
 
 use communication::{ChannelCommunication, Communication, WebSocketCommunication};
