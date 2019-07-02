@@ -27,7 +27,7 @@ pub struct Player {
     pub lobby: i32,
     pub personal_deck: Deck,
     comm: Rc<RefCell<dyn Communication>>,
-    pub game: PlayerGame
+    pub game: PlayerGame,
 }
 
 impl Player {

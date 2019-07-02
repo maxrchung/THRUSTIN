@@ -1,4 +1,3 @@
-
 use crate::thrust::Deck;
 use std::collections::HashMap;
 
@@ -32,7 +31,7 @@ impl LobbyGame {
             index_to_token: HashMap::new(),
             thrusted_players: Vec::new(),
             thrustee: 0,
-            thrustee_choices: Vec::new()
+            thrustee_choices: Vec::new(),
         }
     }
 }

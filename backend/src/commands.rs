@@ -244,12 +244,17 @@ fn list_playing_commands(pl: &Player, host: bool) {
 
     if host {
         commands.append(&mut vec![
-        (".end", ".e", "(chief-only) End the game and return to the lobby setup."),
-        (
-            ".kick BOY_MAN_01",
-            ".k BOY_MAN_01",
-            "(chief-only) Destroy BOY_MAN_01 from your lobby...",
-        )]);
+            (
+                ".end",
+                ".e",
+                "(chief-only) End the game and return to the lobby setup.",
+            ),
+            (
+                ".kick BOY_MAN_01",
+                ".k BOY_MAN_01",
+                "(chief-only) Destroy BOY_MAN_01 from your lobby...",
+            ),
+        ]);
     }
 
     let message = &vec![
@@ -407,12 +412,17 @@ fn list_waiting_commands(pl: &Player, host: bool) {
 
     if host {
         commands.append(&mut vec![
-        (".end", ".e", "(chief-only) The game reaches an end and returns to lobby setup."),            
-        (
-            ".kick SAMPLE_USER_000666",
-            ".k SAMPLE_USER_000666",
-            "(chief-only) Eliminate SAMPLE_USER_000666 from your lobby...",
-        )]);
+            (
+                ".end",
+                ".e",
+                "(chief-only) The game reaches an end and returns to lobby setup.",
+            ),
+            (
+                ".kick SAMPLE_USER_000666",
+                ".k SAMPLE_USER_000666",
+                "(chief-only) Eliminate SAMPLE_USER_000666 from your lobby...",
+            ),
+        ]);
     }
 
     let message = &vec![

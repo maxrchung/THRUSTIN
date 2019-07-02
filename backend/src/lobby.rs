@@ -1,6 +1,6 @@
-use crate::lobby_game::{LobbyGame};
+use crate::lobby_game::LobbyGame;
 use crate::player::{Player, PlayerState};
-use crate::player_game::{PlayerGame};
+use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
 use std::cell::{RefCell, RefMut};
 use std::collections::HashMap;
@@ -35,7 +35,7 @@ pub struct Lobby {
     host: Rc<RefCell<Player>>,
     max_thrustee_choices: u8,
     use_house: bool,
-    game: LobbyGame
+    game: LobbyGame,
 }
 
 impl Lobby {
@@ -51,7 +51,7 @@ impl Lobby {
             host: player.clone(),
             max_thrustee_choices: 3,
             use_house: true,
-            game: LobbyGame::new()
+            game: LobbyGame::new(),
         }
     }
 
@@ -92,7 +92,10 @@ impl Lobby {
                 // Refill thrusters if empty
                 self.game.deck.thrusters = self.game.deck_reference.thrusters.clone();
                 self.game.deck.shuffle_thrusters();
-                pl.game.deck.thrusters.push(self.game.deck.thrusters.pop().unwrap());
+                pl.game
+                    .deck
+                    .thrusters
+                    .push(self.game.deck.thrusters.pop().unwrap());
             }
         }
     }
@@ -105,7 +108,9 @@ impl Lobby {
             } else {
                 self.game.deck.thrustees = self.game.deck_reference.thrustees.clone();
                 self.game.deck.shuffle_thrustees();
-                self.game.thrustee_choices.push(self.game.deck.thrustees.pop().unwrap());
+                self.game
+                    .thrustee_choices
+                    .push(self.game.deck.thrustees.pop().unwrap());
             }
         }
     }
@@ -163,7 +168,10 @@ impl Lobby {
 
         let password = input[1];
         self.pw = password.to_string();
-        pl.send_message(&format!("Now, the password has now been locked and loaded, my dude, now it's: {}", password));
+        pl.send_message(&format!(
+            "Now, the password has now been locked and loaded, my dude, now it's: {}",
+            password
+        ));
     }
 
     pub fn list_lobby_players(&self, pl_rc: Rc<RefCell<Player>>) {
@@ -417,7 +425,8 @@ impl Lobby {
 
             PlayerState::Deciding => {
                 messages.push(
-                    format!("This is your THRUSTEE: {}<br/>", &lob.game.current_thrustee).to_string(),
+                    format!("This is your THRUSTEE: {}<br/>", &lob.game.current_thrustee)
+                        .to_string(),
                 );
                 messages.extend(Lobby::get_thrusters(&pl.game.deck.thrusters));
             }
@@ -712,7 +721,7 @@ impl Lobby {
             let pl = self.list[i].clone();
             // While we're at it reset the player's game settings omegalul
             pl.borrow_mut().game = PlayerGame::new();
-            self.refill_thrusters(&mut pl.borrow_mut()); 
+            self.refill_thrusters(&mut pl.borrow_mut());
         }
 
         for (i, pl) in self.list.iter().enumerate() {
@@ -734,7 +743,9 @@ impl Lobby {
     pub fn end(&mut self, pl: Rc<RefCell<Player>>) {
         let pl = pl.borrow();
         if !self.is_host(pl.token) {
-            pl.send_message(&format!("Only chief shall have the privilege to end the game."));
+            pl.send_message(&format!(
+                "Only chief shall have the privilege to end the game."
+            ));
             return;
         }
 
@@ -840,7 +851,8 @@ impl Lobby {
 
                         // Get chosen thrust
                         let chosen_thrust = self
-                            .game.current_thrusts
+                            .game
+                            .current_thrusts
                             .remove(&self.game.index_to_token.get(&index).unwrap())
                             .unwrap();
 
@@ -993,9 +1005,11 @@ impl Lobby {
                     self.game.thrusted_players.push(pl.token.clone());
 
                     // Handle picked
-                    self.game.current_thrusts
+                    self.game
+                        .current_thrusts
                         .insert(pl.token, resulting_thrust.clone());
-                    self.game.index_to_token
+                    self.game
+                        .index_to_token
                         .insert((self.game.current_thrusts.len() - 1) as i32, pl.token);
 
                     self.refill_thrusters(&mut pl);

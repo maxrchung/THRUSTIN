@@ -109,8 +109,13 @@ fn appoint_another_chief() {
     assert_eq!(client.last(1), "Only chief can start game!");
     client.send(2, ".s");
     client.read_all();
-    assert_eq!(client.last(2), "You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!");
-    assert!(client.last(1).contains("You are the THRUSTEE. Choose NOW.........."));
+    assert_eq!(
+        client.last(2),
+        "You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!"
+    );
+    assert!(client
+        .last(1)
+        .contains("You are the THRUSTEE. Choose NOW.........."));
 }
 
 #[test]
@@ -142,9 +147,13 @@ fn set_points_max() {
     client.thrust(2);
     client.send(1, ".t 0");
     client.read_all();
-    assert!(client.last(1).contains("2 has chosen this THRUSTER as the chosen THRUST, bois:"));
+    assert!(client
+        .last(1)
+        .contains("2 has chosen this THRUSTER as the chosen THRUST, bois:"));
     assert!(client.last(1).contains("Congratulations, 2! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!"));
-    assert!(client.last(2).contains("2 has chosen this THRUSTER as the chosen THRUST, bois:"));
+    assert!(client
+        .last(2)
+        .contains("2 has chosen this THRUSTER as the chosen THRUST, bois:"));
     assert!(client.last(2).contains("Congratulations, 2! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!"));
 }
 
@@ -155,7 +164,10 @@ fn set_password() {
     client.send(1, ".m");
     client.send(1, ".pa lololol");
     client.read_all();
-    assert_eq!(client.last(1), "Now, the password has now been locked and loaded, my dude, now it's: lololol");
+    assert_eq!(
+        client.last(1),
+        "Now, the password has now been locked and loaded, my dude, now it's: lololol"
+    );
     client.send(2, ".n 2");
     client.send(2, ".j 1");
     client.read_all();

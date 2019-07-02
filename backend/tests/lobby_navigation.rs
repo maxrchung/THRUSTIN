@@ -277,7 +277,10 @@ fn end_midgame() {
     client.send(1, ".s");
     client.send(2, ".e");
     client.read_all();
-    assert_eq!(client.last(2), "Only chief shall have the privilege to end the game.");
+    assert_eq!(
+        client.last(2),
+        "Only chief shall have the privilege to end the game."
+    );
     client.send(1, ".e");
     client.read_all();
     assert_eq!(client.last(1), "Yo guys, the game's been manually ended by the chief almighty. Yall have been returned to the lobby setup area.");
