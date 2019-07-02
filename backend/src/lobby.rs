@@ -163,6 +163,7 @@ impl Lobby {
 
         let password = input[1];
         self.pw = password.to_string();
+        pl.send_message(&format!("Now, the password has now been locked and loaded, my dude, now it's: {}", password));
     }
 
     pub fn list_lobby_players(&self, pl_rc: Rc<RefCell<Player>>) {
