@@ -70,11 +70,8 @@ pub fn choose_name_commands(
     let com = get_command(&split);
     match &*com {
         ".name" | ".n" => Player::set_name(split, pl, players),
-
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
-
         ".disconnect" => disconnect(pl.borrow().token, players),
-
         _ => {
             pl.borrow()
                 .send_message("u gotta pick a name bro, try '.name URNAMeHERE'");
@@ -106,25 +103,15 @@ pub fn out_of_lobby_commands(
     let com = get_command(&split);
     match &*com {
         ".help" | ".h" => list_out_commands(&pl.borrow()),
-
         ".join" | ".j" => Lobby::join_lobby(split, pl, lobbies),
-
         ".list" | ".l" => Lobby::list_lobby(pl, lobbies),
-
         ".make" | ".m" => Lobby::make_lobby(pl, lobby_id, lobbies),
-
         ".name" | ".n" => Player::set_name(split, pl, players),
-
         ".play" | ".p" => Lobby::join_lobby(vec![".join", "0"], pl, lobbies),
-
         ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input, &split),
-
         ".unthrust" | ".u" => pl.borrow_mut().clear_pers_deck(),
-
         ".who" | ".w" => Lobby::list_all_players(pl, players),
-
         ".disconnect" => disconnect(pl.borrow().token, players),
-
         _ => {
             pl.borrow()
                 .send_message("Bruh that's an invalid command...!.    try .help");
@@ -165,37 +152,21 @@ pub fn in_lobby_commands(
 
     match &*com {
         ".help" | ".h" => list_in_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
-
         ".info" | ".i" => lobby.info(pl),
-
         ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
-
         ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input, &split),
-
         ".unthrust" | ".u" => pl.borrow_mut().clear_pers_deck(),
-
         ".who" | ".w" => lobby.list_lobby_players(pl),
-
         ".chief" | ".c" => lobby.switch_host(split, pl),
-
         ".house" | ".ho" => lobby.toggle_house(pl),
-
         ".kick" | ".k" => lobby.kick(split, pl),
-
         ".password" | ".pa" => lobby.set_password(split, pl),
-
         ".players" | ".pl" => lobby.player_max(split, pl),
-
         ".points" | ".po" => lobby.point_max(split, pl),
-
         ".start" | ".s" => lobby.start_game(pl),
-
         ".thrustee" | ".tee" => lobby.max_thrustee(split, pl),
-
         ".thruster" | ".ter" => lobby.max_thruster(split, pl),
-
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-
         _ => pl
             .borrow()
             .send_message("Broski that shall be an invalid command. enter .help"),
@@ -247,19 +218,13 @@ pub fn playing_commands(
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
         ".help" | ".h" => list_playing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
-
         ".info" | ".i" => lobby.info(pl),
-
         ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
-
         ".points" | ".p" => lobby.display_points(pl),
-
         ".thrust" | ".t" => lobby.handle_thrust(split, pl),
-
         ".kick" | ".k" => lobby.kick(split, pl),
-
+        ".end" | ".e" => lobby.end(pl),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-
         _ => pl.borrow().send_message("Bruh that's an invalid command."),
     }
 }
@@ -278,7 +243,9 @@ fn list_playing_commands(pl: &Player, host: bool) {
     ];
 
     if host {
-        commands.append(&mut vec![(
+        commands.append(&mut vec![
+        (".end", ".e", "(chief-only) End the game and return to the lobby setup."),
+        (
             ".kick BOY_MAN_01",
             ".k BOY_MAN_01",
             "(chief-only) Destroy BOY_MAN_01 from your lobby...",
@@ -306,19 +273,13 @@ pub fn choosing_commands(
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
         ".help" | ".h" => list_choosing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
-
         ".info" | ".i" => lobby.info(pl),
-
         ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
-
         ".points" | ".p" => lobby.display_points(pl),
-
         ".thrust" | ".t" => lobby.choose(split, pl),
-
+        ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
-
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-
         _ => pl
             .borrow()
             .send_message("Brother that is an invalid command."),
@@ -339,7 +300,9 @@ fn list_choosing_commands(pl: &Player, host: bool) {
     ];
 
     if host {
-        commands.append(&mut vec![(
+        commands.append(&mut vec![
+        (".end", ".e", "(chief-only) Committing to the usage of this command shall terminate the in-game state of the match and return thy fellow players to the waiting lobby."),
+        (
             ".kick BOY_MAN_01",
             ".k BOY_MAN_01",
             "(chief-only) Destroy BOY_MAN_01 from your lobby...",
@@ -367,19 +330,13 @@ pub fn deciding_commands(
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
         ".help" | ".h" => list_deciding_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
-
         ".info" | ".i" => lobby.info(pl),
-
         ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
-
         ".points" | ".p" => lobby.display_points(pl),
-
         ".thrust" | ".t" => lobby.decide(split, pl),
-
+        ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
-
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-
         _ => pl.borrow().send_message("Bro! That's an invalid command."),
     }
 }
@@ -394,7 +351,9 @@ fn list_deciding_commands(pl: &Player, host: bool) {
     ];
 
     if host {
-        commands.append(&mut vec![(
+        commands.append(&mut vec![
+        (".end", ".e", "(chief-only) This ends the in-game game. Players are returned to the waiting lobby (where lobby settings can be set)."),
+        (
             ".kick BOY_MAN_01",
             ".k BOY_MAN_01",
             "(chief-only) Destroy BOY_MAN_01 from your lobby...",
@@ -422,21 +381,15 @@ pub fn waiting_commands(
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
         ".help" | ".h" => list_waiting_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
-
         ".info" | ".i" => lobby.info(pl),
-
         ".points" | ".p" => lobby.display_points(pl),
-
         ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
-
         ".thrust" | ".t" => pl
             .borrow()
             .send_message("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),
-
+        ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
-
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-
         _ => pl
             .borrow()
             .send_message("Bruh... that's an invalid command."),
@@ -453,7 +406,9 @@ fn list_waiting_commands(pl: &Player, host: bool) {
     ];
 
     if host {
-        commands.append(&mut vec![(
+        commands.append(&mut vec![
+        (".end", ".e", "(chief-only) The game reaches an end and returns to lobby setup."),            
+        (
             ".kick SAMPLE_USER_000666",
             ".k SAMPLE_USER_000666",
             "(chief-only) Eliminate SAMPLE_USER_000666 from your lobby...",

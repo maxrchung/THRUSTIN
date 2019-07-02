@@ -267,13 +267,19 @@ fn thrust_back_and_forth() {
     }
 }
 
-// This must be prevented so that underscore validation can be done properly
-// e.g. we don't want a scenario where someone adds a THRUSTEE with 10 underscore spots
-// but the lobby only allows 5 max THRUSTERS
 #[test]
-fn todo_deck_is_not_added_midgame() {}
-
-// There can be a scenario where someone joins midgame and exceeds the THRUSTERS cap
-// When this happens, they should get clones of the new THRUSTERS
-#[test]
-fn todo_thrusters_reused_for_deck() {}
+fn end_midgame() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".m");
+    client.send(2, ".n 2");
+    client.send(2, ".j 1");
+    client.send(1, ".s");
+    client.send(2, ".e");
+    client.read_all();
+    assert_eq!(client.last(2), "Only chief shall have the privilege to end the game.");
+    client.send(1, ".e");
+    client.read_all();
+    assert_eq!(client.last(1), "Yo guys, the game's been manually ended by the chief almighty. Yall have been returned to the lobby setup area.");
+    assert_eq!(client.last(2), "Yo guys, the game's been manually ended by the chief almighty. Yall have been returned to the lobby setup area.");
+}
