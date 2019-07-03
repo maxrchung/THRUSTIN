@@ -269,7 +269,7 @@ fn thrust_back_and_forth() {
 
 #[test]
 fn end_midgame() {
-    let mut client = common::setup_with_logging();
+    let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".m");
     client.send(2, ".n 2");
