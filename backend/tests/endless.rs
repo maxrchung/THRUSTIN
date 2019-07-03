@@ -47,9 +47,9 @@ fn join_after_a_round_is_played() {
     client.send(1, ".p");
     client.send(2, ".n 2");
     client.send(2, ".p");
-    client.send(1, ".t 0");
+    client.send(1, ".t 1");
     client.thrust(2);
-    client.send(1, ".t 0");
+    client.send(1, ".t 1");
     client.send(1, ".l");
     client.send(2, ".l");
     client.send(1, ".p");
@@ -67,14 +67,14 @@ fn rejoin_after_choosing_thrustee() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".p");
-    client.send(1, ".t 0");
+    client.send(1, ".t 1");
     client.send(1, ".l");
     client.send(1, ".p");
     client.read_all();
     let msg = client.last(1);
     assert!(msg.contains("You lucky, family, you are THRUSTEE!!!!"));
     assert!(msg.contains("your THRUSTEE Choices:"));
-    assert!(msg.contains("0. "));
     assert!(msg.contains("1. "));
     assert!(msg.contains("2. "));
+    assert!(msg.contains("3. "));
 }

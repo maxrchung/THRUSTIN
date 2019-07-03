@@ -767,7 +767,8 @@ impl Lobby {
     pub fn print_thrustee_choices(&self) -> Vec<String> {
         let mut messages = vec!["your THRUSTEE Choices:".to_string()];
         for (index, thrustee) in self.game.thrustee_choices.iter().enumerate() {
-            messages.push(format!("{}. {}", &index, &thrustee).to_string());
+            // Convert from 0-indexing to 1-indexing
+            messages.push(format!("{}. {}", &index + 1, &thrustee).to_string());
         }
         messages
     }
@@ -784,6 +785,8 @@ impl Lobby {
 
         match input[1].parse::<u8>() {
             Ok(index) => {
+                // Convert from 1-indexing to 0-indexing
+                let index = index - 1;
                 if index < self.max_thrustee_choices {
                     // Scope refcell borrow
                     let name;
@@ -845,6 +848,8 @@ impl Lobby {
 
         match input[1].parse::<usize>() {
             Ok(index) => {
+                // Convert from 1-indexing to 0-indexing
+                let index = index - 1;
                 if index < self.game.current_thrusts.len() {
                     // Because of multiple mutable references
                     let (name, token, chosen_thrust) = {
@@ -948,6 +953,8 @@ impl Lobby {
 
         match input[1].parse::<i32>() {
             Ok(index) => {
+                // Convert from 1-indexing to 0-indexing
+                let index = index - 1;
                 // For handling mut borrow
                 let resulting_thrust = {
                     let mut pl = pl_rc.borrow_mut();
@@ -1017,7 +1024,8 @@ impl Lobby {
                 // Notify message
                 self.send_message(&format!(
                     "{}. {}",
-                    &(self.game.current_thrusts.len() as i32 - 1),
+                    // Use 1-indexing for showing result
+                    &self.game.current_thrusts.len(),
                     &resulting_thrust
                 ));
             }
@@ -1048,7 +1056,8 @@ impl Lobby {
     pub fn get_thrusters(thrusters: &Vec<String>) -> Vec<String> {
         let mut messages = vec!["Here are your THRUSTERS:".to_string()];
         for (index, thruster) in thrusters.iter().enumerate() {
-            messages.push(format!("{}. {}", &index, &thruster).to_string());
+            // Convert from 0-indexing to 1-indexing
+            messages.push(format!("{}. {}", &index + 1, &thruster).to_string());
         }
         messages
     }

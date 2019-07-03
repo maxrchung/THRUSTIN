@@ -119,9 +119,9 @@ fn kick_thrustee() {
     client.send(2, ".n 2");
     client.send(2, ".j 1");
     client.send(1, ".s");
-    client.send(1, ".t 0");
+    client.send(1, ".t 1");
     client.thrust(2);
-    client.send(1, ".t 0");
+    client.send(1, ".t 1");
     client.send(1, ".k 2");
     client.read_all();
     assert!(client.last(1).contains("2 left the lobby.."));
@@ -169,9 +169,9 @@ fn new_thrustee_is_not_chief() {
     client.read_all();
     let msg = client.last(2);
     assert!(msg.contains("your THRUSTEE Choices:"));
-    assert!(msg.contains("<br/>0. "));
     assert!(msg.contains("<br/>1. "));
     assert!(msg.contains("<br/>2. "));
+    assert!(msg.contains("<br/>3. "));
 }
 
 #[test]
@@ -186,9 +186,9 @@ fn new_thrustee_is_chief() {
     client.read_all();
     let msg = client.last(2);
     assert!(msg.contains("your THRUSTEE Choices:"));
-    assert!(msg.contains("<br/>0. "));
     assert!(msg.contains("<br/>1. "));
     assert!(msg.contains("<br/>2. "));
+    assert!(msg.contains("<br/>3. "));
 }
 
 #[test]
@@ -203,9 +203,9 @@ fn thrust_back_and_forth() {
     let msg = client.last(1);
     assert!(msg.contains("You are the THRUSTEE. Choose NOW.........."));
     assert!(msg.contains("your THRUSTEE Choices:"));
-    assert!(msg.contains("0. "));
     assert!(msg.contains("1. "));
     assert!(msg.contains("2. "));
+    assert!(msg.contains("3. "));
     // If THRUSTER was in lobby when game was started
     assert_eq!(
         client.last(2),
@@ -223,7 +223,7 @@ fn thrust_back_and_forth() {
     for n in 0..2 {
         let (thrustee, thruster) = if n == 0 { (1, 2) } else { (2, 1) };
 
-        client.send(thrustee, ".t 0");
+        client.send(thrustee, ".t 1");
         client.read_all();
         let msg = client.last(thrustee);
         assert!(msg.contains(&format!("{} has chosen this new THRUSTEE:", thrustee)));
@@ -232,13 +232,13 @@ fn thrust_back_and_forth() {
         assert!(msg.contains(&format!("{} has chosen this new THRUSTEE:", thrustee)));
         assert!(msg.contains("Here are your THRUSTERS:"));
         // Should not have more than 5 options
-        assert!(!msg.contains("5. "));
+        assert!(!msg.contains("6. "));
 
         client.thrust(thruster);
         client.read_all();
-        assert!(client.last(thrustee).contains("0. "));
+        assert!(client.last(thrustee).contains("1. "));
 
-        client.send(thrustee, ".t 0");
+        client.send(thrustee, ".t 1");
         client.read_all();
         let msg = client.last(thrustee);
         assert!(msg.contains(&format!(
@@ -261,9 +261,9 @@ fn thrust_back_and_forth() {
         )));
         assert!(msg.contains("You are the neXt THRUSTEE! GetT ready to CHOOSE a good THRUSTEE!"));
         assert!(msg.contains("your THRUSTEE Choices:"));
-        assert!(msg.contains("0. "));
         assert!(msg.contains("1. "));
         assert!(msg.contains("2. "));
+        assert!(msg.contains("3. "));
     }
 }
 

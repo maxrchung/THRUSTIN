@@ -143,9 +143,9 @@ fn set_points_max() {
     client.send(2, ".n 2");
     client.send(2, ".j 1");
     client.send(1, ".s");
-    client.send(1, ".t 0");
+    client.send(1, ".t 1");
     client.thrust(2);
-    client.send(1, ".t 0");
+    client.send(1, ".t 1");
     client.read_all();
     assert!(client
         .last(1)
