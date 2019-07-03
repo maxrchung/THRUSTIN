@@ -741,12 +741,14 @@ impl Lobby {
     }
 
     pub fn end(&mut self, pl: Rc<RefCell<Player>>) {
-        let pl = pl.borrow();
-        if !self.is_host(pl.token) {
-            pl.send_message(&format!(
-                "Only chief shall have the privilege to end the game."
-            ));
-            return;
+        {
+            let pl = pl.borrow();
+            if !self.is_host(pl.token) {
+                pl.send_message(&format!(
+                    "Only chief shall have the privilege to end the game."
+                ));
+                return;
+            }
         }
 
         self.end_game();
