@@ -199,6 +199,13 @@ impl Default for Deck {
             "godspeed",
             "extremely smooth brain idea",
             "you snooze you lose brain cells",
+            "getting stuck in a vat of shit and having to breathe poop through your nose",
+            "sex noises",
+            "cow ass",
+            "blood is lubrication",
+            "they literally implanted a nuclear bomb in my brain that could blow at any time, watch out",
+            "like, there’s an alien race coming from the next universe over ready to fire a galaxy disintegrating explosion laser, and I’m like what am I gonna make for dinner tonight",
+            "gimme your money if you wanna die",
         ];
 
         let thrustees = vec![
@@ -282,6 +289,12 @@ impl Default for Deck {
             "When I look in the mirror, I see _____.",
             "Nobody’s safe when _____.",
             "DOCTORS HATE HIM, with this one WEIRD but simple TRICK you could solve ALL OF THE WORLD PEACE IN THE WORLD: _____.",
+            "The dark ages began because of _____.",
+            "The coup started because _____.",
+            "Chicken, broccoli, and _____, a suitable dish for each and every occasion.",
+            "Nothing beats a weekend getaway to _____.",
+            "When you go to a fancy restaurant and eat hella expensive _____.",
+            "I would probably consider _____ a mild discomfort.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
