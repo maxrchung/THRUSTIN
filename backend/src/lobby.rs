@@ -843,20 +843,19 @@ impl Lobby {
             return;
         }
 
-        match input[1].parse::<i32>() {
+        match input[1].parse::<usize>() {
             Ok(index) => {
-                if index < self.game.current_thrusts.len() as i32 && index >= 0 {
+                if index < self.game.current_thrusts.len() {
                     // Because of multiple mutable references
-                    let (name, chosen_thrust) = {
+                    let (name, token, chosen_thrust) = {
                         let mut pl = pl_rc.borrow_mut();
                         let name = pl.name.clone();
 
                         // Get chosen thrust
-                        let chosen_thrust = self
+                        let (token, chosen_thrust) = self
                             .game
-                            .current_thrusts
-                            .remove(&self.game.index_to_token.get(&index).unwrap())
-                            .unwrap();
+                            .current_thrusts.get(&index)
+                            .unwrap().clone();
 
                         // Clear thrust values
                         self.game.current_thrusts.clear();
@@ -864,15 +863,15 @@ impl Lobby {
 
                         // Set current THRUSTEE to THRUSTER state
                         pl.state = PlayerState::Waiting;
-                        (name, chosen_thrust)
+                        (name, token, chosen_thrust)
                     };
 
                     let (chosen_thruster_pts, chosen_thruster_name) = {
                         // Assign picked thruster a point
-                        match self.search_token(*self.game.index_to_token.get(&index).unwrap()) {
-                            Some(tkn) => {
+                        match self.search_token(token) {
+                            Some(index) => {
                                 let (pts, name) = {
-                                    let mut chosen_thruster = self.list[tkn].borrow_mut();
+                                    let mut chosen_thruster = self.list[index].borrow_mut();
                                     chosen_thruster.game.points += 1;
                                     (chosen_thruster.game.points.clone(), chosen_thruster.name.clone())
                                 };
@@ -881,7 +880,7 @@ impl Lobby {
                                 if pts >= self.max_points {
                                     let messages = vec![
                                         format!("{} has chosen this THRUSTER as the chosen THRUST, bois:<br/>{}<br/>", name, chosen_thrust),
-                                        format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!",  self.list[tkn].borrow().name)
+                                        format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!",  self.list[index].borrow().name)
                                     ];
                                     self.send_messages(messages);
                                     self.end_game();
@@ -1009,10 +1008,7 @@ impl Lobby {
                     // Handle picked
                     self.game
                         .current_thrusts
-                        .insert(pl.token, resulting_thrust.clone());
-                    self.game
-                        .index_to_token
-                        .insert((self.game.current_thrusts.len() - 1) as i32, pl.token);
+                        .insert(self.game.current_thrusts.len(), (pl.token, resulting_thrust.clone()));
 
                     self.refill_thrusters(&mut pl);
                     resulting_thrust

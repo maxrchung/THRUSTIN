@@ -5,18 +5,16 @@ use std::collections::HashMap;
 // These are reset to new() at game start
 #[derive(Clone, Debug)]
 pub struct LobbyGame {
-    //current thrustee (player)
+    // current thrustee (player)
     pub thrustee: usize,
-    //Deck that lobby will be actively playing with
+    // Deck that lobby will be actively playing with
     pub deck: Deck,
-    //Deck that lobby will keep as reference when needing to refill thrusters/thrustees
+    // Deck that lobby will keep as reference when needing to refill thrusters/thrustees
     pub deck_reference: Deck,
-    //current thrustee (card)
+    // current thrustee (card)
     pub current_thrustee: String,
-    pub current_thrusts: HashMap<u32, String>,
-    //maps thrust index to token (end me)
-    // BROKEN: Need to fix because players can leave and shift lobby order, just use token
-    pub index_to_token: HashMap<i32, u32>,
+    // Maps submitted thrust index to (token, thruster)
+    pub current_thrusts: HashMap<usize, (u32, String)>,
     pub thrusted_players: Vec<u32>,
     pub thrustee_choices: Vec<String>,
 }
@@ -28,7 +26,6 @@ impl LobbyGame {
             deck_reference: Deck::new(),
             current_thrustee: String::new(),
             current_thrusts: HashMap::new(),
-            index_to_token: HashMap::new(),
             thrusted_players: Vec::new(),
             thrustee: 0,
             thrustee_choices: Vec::new(),
