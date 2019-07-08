@@ -1,3 +1,5 @@
+// Naming player
+
 mod common;
 
 #[test]

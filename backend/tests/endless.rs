@@ -1,3 +1,5 @@
+// Tests specific for endless lobby or endless lobby interaction
+
 mod common;
 
 use std::u8;

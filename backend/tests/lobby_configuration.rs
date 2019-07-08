@@ -1,3 +1,5 @@
+// Tests for configuring lobby settings
+
 mod common;
 
 #[test]

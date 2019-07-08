@@ -1,3 +1,5 @@
+// Testing channels client communication
+
 mod common;
 
 #[test]
