@@ -3,7 +3,7 @@ use crate::player::{Player, PlayerState};
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
 use std::cell::{RefCell, RefMut};
-use std::collections::HashMap;
+use std::collections::{HashSet,HashMap};
 use std::rc::Rc;
 use std::u8;
 use std::usize;
@@ -84,8 +84,13 @@ impl Lobby {
     fn refill_thrusters(&mut self, pl: &mut Player) {
         // Clear dude's deck beforehand
         pl.game.deck.thrusters.clear();
-        // Distribute thrusters to player
-        for _ in 0..self.hand_size {
+        self.refill_remaining_thrusters(pl);
+    }
+
+    // refill_thrusters() but does not clear deck beforehand
+    fn refill_remaining_thrusters(&mut self, pl: &mut Player) {
+        // Distribute thrusters to player to fill thrusters
+        for _ in pl.game.deck.thrusters.len()..self.hand_size as usize {
             if let Some(card) = self.game.deck.thrusters.pop() {
                 pl.game.deck.thrusters.push(card);
             } else {
@@ -783,11 +788,12 @@ impl Lobby {
             }
         }
 
-        match input[1].parse::<u8>() {
+        // Use i32 so index-1 doesn't underflow
+        match input[1].parse::<i32>() {
             Ok(index) => {
                 // Convert from 1-indexing to 0-indexing
                 let index = index - 1;
-                if index < self.max_thrustee_choices {
+                if index < self.max_thrustee_choices as i32 && index > -1 {
                     // Scope refcell borrow
                     let name;
                     {
@@ -846,11 +852,12 @@ impl Lobby {
             return;
         }
 
-        match input[1].parse::<usize>() {
+        // Use i32 so index-1 doesn't underflow
+        match input[1].parse::<i32>() {
             Ok(index) => {
                 // Convert from 1-indexing to 0-indexing
                 let index = index - 1;
-                if index < self.game.current_thrusts.len() {
+                if index < self.game.current_thrusts.len() as i32 && index > -1 {
                     // Because of multiple mutable references
                     let (name, token, chosen_thrust) = {
                         let mut pl = pl_rc.borrow_mut();
@@ -859,7 +866,7 @@ impl Lobby {
                         // Get chosen thrust
                         let (token, chosen_thrust) = self
                             .game
-                            .current_thrusts.get(&index)
+                            .current_thrusts.get(&(index as usize))
                             .unwrap().clone();
 
                         // Clear thrust values
@@ -944,6 +951,13 @@ impl Lobby {
     pub fn handle_thrust(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
         {
             let pl = pl_rc.borrow();
+
+            // Check if thrusted
+            if self.game.thrusted_players.contains(&pl.token) {
+                pl.send_message("You have already THRUSTED, you cannot THRUST again.");
+                return;
+            }
+            
             // Check number of inputs
             if input.len() < 2 {
                 pl.send_message(&"Index required!");
@@ -951,90 +965,66 @@ impl Lobby {
             }
         }
 
-        match input[1].parse::<i32>() {
-            Ok(index) => {
+        // For handling mut borrow
+        let resulting_thrust = {
+            let mut pl = pl_rc.borrow_mut();
+
+            // Check correct # of thrusters
+            let num_thrusters = input.len() as i32 - 1;
+            let num_underscore = Deck::count_underscores(&self.game.current_thrustee);
+            if num_thrusters != num_underscore {
+                pl.send_message("bro that ain't the right number of THRUSTERS");
+                return;
+            }
+
+            let mut resulting_thrust = self.game.current_thrustee.clone();
+            let mut to_remove = HashSet::new();
+            // Handle mutliple underscores
+            for i in 1..input.len() {
                 // Convert from 1-indexing to 0-indexing
-                let index = index - 1;
-                // For handling mut borrow
-                let resulting_thrust = {
-                    let mut pl = pl_rc.borrow_mut();
+                // Use i32 to account for underflow
+                let index = input[i].parse::<i32>().unwrap() - 1;
 
-                    // Check correct # of thrusters
-                    let num_thrusters = input.len() as i32 - 1;
-                    let num_underscore = Deck::count_underscores(&self.game.current_thrustee);
-                    if num_thrusters != num_underscore {
-                        pl.send_message("bro that ain't the right number of THRUSTERS");
-                        return;
-                    }
-                    let mut indexes: Vec<i32> = Vec::new();
-                    // Check thrust out of bounds
-                    for i in 1..input.len() {
-                        let dex = input[i].parse::<i32>().unwrap();
-                        if indexes.contains(&dex) {
-                            // Check if dupes
-                            pl.send_message("y'ain't allowed to thrust duplicate THRUSTERS broski");
-                            return;
-                        }
-                        indexes.push(dex);
-                        if dex >= pl.game.deck.thrusters.len() as i32 || index < 0 {
-                            pl.send_message("That shit's out of bound bro");
-                            return;
-                        }
-                    }
+                // Check if valid index
+                if index >= pl.game.deck.thrusters.len() as i32 || index < 0 {
+                    pl.send_message("That shit's out of bound bro");
+                    return;
+                }
 
-                    // Check if thrusted
-                    for player_token in &self.game.thrusted_players {
-                        if pl.token == *player_token {
-                            pl.send_message("You have already THRUSTED, you cannot THRUST again.");
-                            return;
-                        }
-                    }
-
-                    let mut resulting_thrust = self.game.current_thrustee.clone();
-                    let mut to_remove: Vec<String> = Vec::new();
-                    // Handle mutliple underscores
-                    for i in 1..input.len() {
-                        let picked_thruster =
-                            pl.game.deck.thrusters[input[i].parse::<usize>().unwrap()].clone();
-                        to_remove.push(picked_thruster.clone());
-                        // Surround with <u> to underline text
-                        let formatted_thruster = format!("<u>{}</u>", picked_thruster);
-                        resulting_thrust = Deck::thrust(&formatted_thruster, &resulting_thrust);
-                    }
-
-                    // Remove thrusted thrusters
-                    let mut updated_thrusters: Vec<String> = Vec::new();
-                    for thruster in &pl.game.deck.thrusters {
-                        if !to_remove.contains(thruster) {
-                            updated_thrusters.push(thruster.clone())
-                        }
-                    }
-                    pl.game.deck.thrusters = updated_thrusters;
-                    self.game.thrusted_players.push(pl.token.clone());
-
-                    // Handle picked
-                    self.game
-                        .current_thrusts
-                        .insert(self.game.current_thrusts.len(), (pl.token, resulting_thrust.clone()));
-
-                    self.refill_thrusters(&mut pl);
-                    resulting_thrust
-                };
-
-                // Notify message
-                self.send_message(&format!(
-                    "{}. {}",
-                    // Use 1-indexing for showing result
-                    &self.game.current_thrusts.len(),
-                    &resulting_thrust
-                ));
+                let picked_thruster =
+                    pl.game.deck.thrusters[index as usize].clone();
+                to_remove.insert(picked_thruster.clone());
+                // Surround with <u> to underline text
+                let formatted_thruster = format!("<u>{}</u>", picked_thruster);
+                resulting_thrust = Deck::thrust(&formatted_thruster, &resulting_thrust);
             }
-            _ => {
-                pl_rc
-                    .borrow()
-                    .send_message("That is an invalid parameter, use an index instead");
+
+            // Remove thrusted thrusters
+            let mut updated_thrusters = Vec::new();
+            for thruster in &pl.game.deck.thrusters {
+                if !to_remove.contains(thruster) {
+                    updated_thrusters.push(thruster.clone())
+                }
             }
+            pl.game.deck.thrusters = updated_thrusters;
+            self.game.thrusted_players.push(pl.token.clone());
+
+            // Handle picked
+            self.game
+                .current_thrusts
+                .insert(self.game.current_thrusts.len(), (pl.token, resulting_thrust.clone()));
+
+            self.refill_remaining_thrusters(&mut pl);
+            resulting_thrust
         };
+
+        // Notify message
+        self.send_message(&format!(
+            "{}. {}",
+            // Use 1-indexing for showing result
+            &self.game.current_thrusts.len(),
+            &resulting_thrust
+        ));
     }
 
     pub fn display_points(&self, pl: Rc<RefCell<Player>>) {
