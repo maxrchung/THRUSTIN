@@ -10,7 +10,7 @@ fn add_thruster() {
     client.read_all();
     assert_eq!(
         client.last(1),
-        "Added \"It's yo boy epic swagger!!\" to THRUSTERS!"
+        "Added to THRUSTERS:<br/>1. It's yo boy epic swagger!!"
     );
     client.send(1, ".t");
     client.read_all();
@@ -28,7 +28,7 @@ fn add_thrustee() {
     client.read_all();
     assert_eq!(
         client.last(1),
-        "Added \"It's yo boy, _ swagger!!\" to THRUSTEES!"
+        "Added to THRUSTEES:<br/>1. It's yo boy, _ swagger!!"
     );
     client.send(1, ".t");
     client.read_all();
@@ -60,6 +60,8 @@ fn multiple_thrust() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".t \"It's yo boy swaggy swagger!!\" \"Now what is up swagger\" \"It's yo boy ___\" \"Now what is up ____\"");
+    client.read_all();
+    assert_eq!(client.last(1), "Added to THRUSTEES:<br/>1. It's yo boy ___<br/>2. Now what is up ____<br/><br/>Added to THRUSTERS:<br/>1. It's yo boy swaggy swagger!!<br/>2. Now what is up swagger");
     client.send(1, ".t");
     client.read_all();
     assert_eq!(client.last(1), "You're THRUSTEES:<br/>1. It's yo boy ___<br/>2. Now what is up ____<br/><br/>You're THRUSTERS:<br/>1. It's yo boy swaggy swagger!!<br/>2. Now what is up swagger");

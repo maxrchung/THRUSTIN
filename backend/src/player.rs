@@ -118,17 +118,42 @@ impl Player {
             return;
         }
 
+        let mut added_thrustees = Vec::new();
+        let mut added_thrusters = Vec::new();
         for thrust in thrusts {
             if thrust.contains("_") {
                 self.personal_deck.add_thrustee(&thrust);
-                self.send_message(&format!("Added \"{}\" to THRUSTEES!", &thrust));
+                added_thrustees.push(thrust);
             } else {
                 self.personal_deck.add_thruster(&thrust);
-                self.send_message(&format!("Added \"{}\" to THRUSTERS!", &thrust));
+                added_thrusters.push(thrust);
             }
         }
 
         self.personal_deck.sort();
+
+
+        let mut messages = Vec::new();
+        if !added_thrustees.is_empty() {
+            added_thrustees.sort();
+            messages.push(String::from("Added to THRUSTEES:"));
+            for (index, thrustee) in added_thrustees.iter().enumerate() {
+                messages.push(format!("{}. {}", index + 1, thrustee));
+            }
+        }
+
+        if !added_thrusters.is_empty() {
+            added_thrusters.sort();
+            if !added_thrustees.is_empty() {
+                messages.push(String::new());
+            }
+            messages.push(String::from("Added to THRUSTERS:"));
+            for (index, thruster) in added_thrusters.iter().enumerate() {
+                messages.push(format!("{}. {}", index + 1, thruster));
+            }
+        }
+
+        self.send_messages(&messages);
     }
 
     pub fn display_deck(&self) {
