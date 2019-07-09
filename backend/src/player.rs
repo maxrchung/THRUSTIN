@@ -113,6 +113,11 @@ impl Player {
 
         // Add thrust depending if we detect underscore or not
         let thrusts = Deck::find_thrusts(input);
+        if thrusts.is_empty() {
+            self.send_message("No THRUSTS found. Did you forget quotations? Try something like .t \"Hello there!\"");
+            return;
+        }
+
         for thrust in thrusts {
             if thrust.contains("_") {
                 self.personal_deck.add_thrustee(&thrust);
