@@ -1,7 +1,7 @@
 [![THRUSTIN](https://raw.githubusercontent.com/maxrchung/THRUSTIN/master/logo/THRUSTIN-3000.png)](https://THRUSTIN.rs)
 
 # The Purpose
-Okay. So this page is gonna be a reference for all the commands. Yeah THRUSTIN is like an online Cards Against Humanity fill in the blank game that's like in the form of a console and you type and give a bunch of commands to it in order to interact with it. I think this is really hopefully gonna be a great way to layout what we have designed and will have been designing for the past and future. You can also use this as a guide or tutorial or instruction manual for all the commands and their uses. You can also use this as a guide or tutorial if you wish to create your own client to connect to the THRUSTIN.rs server. Hit us up with a web socket connection on port 3011.
+Okay. This was originally a wiki reference for all the commands but I'm just gonna move it to the front yeah. Yeah THRUSTIN is like an online Cards Against Humanity fill in the blank game that's like in the form of a console and you type and give a bunch of commands to it in order to interact with it. I think this is really hopefully gonna be a great way to layout what we have designed and will have been designing for the past and future. You can also use this as a guide or tutorial or instruction manual for all the commands and their uses. You can also use this as a guide or tutorial if you wish to create your own client to connect to the THRUSTIN.rs server. Hit us up with a web socket connection on port 3011.
 
 Wait I don't really know why I'm doing this. We already have `.help` commands in the game. I don't know.
 
