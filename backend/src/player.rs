@@ -1,4 +1,5 @@
 use crate::communication::Communication;
+use crate::database::MongoDB;
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
 use std::collections::HashMap;
@@ -28,6 +29,7 @@ pub struct Player {
     pub personal_deck: Deck,
     comm: Rc<RefCell<dyn Communication>>,
     pub game: PlayerGame,
+    db: Rc<RefCell<MongoDB>>
 }
 
 impl Player {
@@ -39,27 +41,29 @@ impl Player {
         self.comm.borrow().send_messages(&self.token, messages);
     }
 
-    pub fn new(token: u32, communication: Rc<RefCell<dyn Communication>>) -> Player {
+    pub fn new(token: u32, comm: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<MongoDB>>) -> Player {
         Player {
             token: token,
             name: String::new(),
             state: PlayerState::ChooseName,
             lobby: -1,
             personal_deck: Deck::new(),
-            comm: communication,
+            comm,
             game: PlayerGame::new(),
+            db
         }
     }
 
-    pub fn new_endless_host(communication: Rc<RefCell<dyn Communication>>) -> Player {
+    pub fn new_endless_host(comm: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<MongoDB>>) -> Player {
         Player {
             token: 0,
             name: "EndlessLobbyHostDoggo".to_string(),
             state: PlayerState::Playing,
             lobby: 0,
             personal_deck: Deck::new(),
-            comm: communication,
+            comm,
             game: PlayerGame::new(),
+            db
         }
     }
 

@@ -9,6 +9,7 @@ extern crate regex; //alexgarbage
 
 mod commands;
 pub mod communication;
+mod database;
 mod lobby;
 mod lobby_game;
 mod player;
@@ -16,6 +17,7 @@ mod player_game;
 mod thrust;
 
 use communication::{ChannelCommunication, Communication, WebSocketCommunication};
+use database::MongoDB;
 use lobby::Lobby;
 use player::{Player, PlayerState};
 use std::cell::RefCell;
@@ -37,6 +39,7 @@ fn run(communication: Rc<RefCell<dyn Communication>>) {
     let mut lobby_id = 1;
     let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
     let mut players: HashMap<u32, Rc<RefCell<Player>>> = HashMap::new();
+    let db = Rc::new(RefCell::new(MongoDB::new()));
 
     let read = communication.clone();
 
@@ -46,6 +49,7 @@ fn run(communication: Rc<RefCell<dyn Communication>>) {
         endless_uuid,
         Rc::new(RefCell::new(Player::new_endless_host(
             communication.clone(),
+            db.clone()
         ))),
     );
 
@@ -62,7 +66,7 @@ fn run(communication: Rc<RefCell<dyn Communication>>) {
         if let None = players.get(&token) {
             players.insert(
                 token.clone(),
-                Rc::new(RefCell::new(Player::new(token, communication.clone()))),
+                Rc::new(RefCell::new(Player::new(token, communication.clone(), db.clone()))),
             );
         }
 
