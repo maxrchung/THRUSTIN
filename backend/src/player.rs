@@ -2,6 +2,7 @@ use crate::communication::Communication;
 use crate::database::MongoDB;
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
+use mongodb::Bson;
 use std::collections::HashMap;
 
 use std::cell::RefCell;
@@ -67,19 +68,65 @@ impl Player {
         }
     }
 
+    pub fn login(
+        &mut self,
+        split: std::vec::Vec<&str>,
+    ) {
+        if split.len() != 3 {
+            self.send_message("You must provide USER and PASSWORD for your account.");
+        }
+
+        let user = split[1];
+        let pass = split[2];
+        match self.db.borrow().login(user, pass) {
+            Some(doc) => {
+                if let Ok(name) = doc.get_str("name") {
+                    self.name = String::from(name);
+                }
+            }
+            None => {
+                self.send_message("Failed to login lol are you sure you know what you're doing?");
+            }
+        }
+    }
+
+    pub fn register(
+        &mut self,
+        split: std::vec::Vec<&str>
+    ) {
+        if split.len() != 4 {
+            self.send_message("Ok you've got an invalid number of parameters for registration.");
+        }
+
+        let pass = split[2];
+        let pass_conf = split[3];
+        if pass != pass_conf {
+            self.send_message("Registration failed. The given password confirmation does not match the given password.")
+        }
+
+        let user = split[1];
+        if self.db.borrow().register(user, pass) {
+            self.name = String::from(user);
+            self.send_message("Lol ok nice you registered and good to go.");
+        }
+        else {
+            self.send_message("Registration has failed. Unable to add user to database. Maybe username isn't unique?")
+        }
+    }
+
     pub fn set_name(
-        input: std::vec::Vec<&str>,
+        split: std::vec::Vec<&str>,
         play: Rc<RefCell<Player>>,
         players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     ) {
         {
             let player = play.borrow();
-            if input.len() < 2 {
+            if split.len() < 2 {
                 player.send_message("You need a name!");
                 return;
             }
         }
-        let p_name = input[1].to_string();
+        let p_name = split[1].to_string();
 
         {
             for pl in players.values() {

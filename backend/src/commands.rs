@@ -69,8 +69,10 @@ pub fn choose_name_commands(
 ) {
     let com = get_command(&split);
     match &*com {
-        ".name" | ".n" => Player::set_name(split, pl, players),
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
+        ".login" | ".l" => pl.borrow_mut().login(split),
+        ".name" | ".n" => Player::set_name(split, pl, players),
+        ".register" | ".r" => pl.borrow_mut().register(split),
         ".disconnect" => disconnect(pl.borrow().token, players),
         _ => {
             pl.borrow()

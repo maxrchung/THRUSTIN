@@ -1,4 +1,4 @@
-use mongodb::{Bson, bson, Client, doc, ThreadedClient};
+use mongodb::{bson, Client, doc, ThreadedClient};
 use mongodb::Document;
 use mongodb::coll::Collection;
 use mongodb::db::ThreadedDatabase;
@@ -48,12 +48,10 @@ impl MongoDB {
     }
 
     pub fn register(&self, user: &str, pass: &str) -> bool {
-        if self.find_user(user).is_some() {
-            false;
-        }
         let doc = doc! {
             "user": user,
-            "pass": pass
+            "pass": pass,
+            "name": user
         };
         match self.users.insert_one(doc.clone(), None) {
             Ok(_) => true,
