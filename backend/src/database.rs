@@ -11,10 +11,24 @@ pub struct MongoDB {
 impl MongoDB {
     pub fn new() -> MongoDB {
         let client = Client::connect("localhost", 27017).expect("Failed to initialize client");
-        let db = client.db("THRUSTIN");
+        let db = client.db("thrustin");
         let users = db.collection("users");
         MongoDB {
             users
+        }
+    }
+
+    fn find_user(&self, user: &str) -> Option<Document> {
+        let doc = doc! {
+            "user": user
+        };
+        let mut cursor = self.users.find(Some(doc.clone()), None).ok().expect("Failed to find login");
+        let item = cursor.next();
+        // Return doc if found, otherwise None
+        match item {
+            Some(Ok(doc)) => Some(doc),
+            Some(Err(_)) => None,
+            None => None,
         }
     }
 
@@ -33,21 +47,11 @@ impl MongoDB {
         }
     }
 
-    pub fn find_user(&self, user: &str) -> Option<Document> {
-        let doc = doc! {
-            "user": user
-        };
-        let mut cursor = self.users.find(Some(doc.clone()), None).ok().expect("Failed to find login");
-        let item = cursor.next();
-        // Return doc if found, otherwise None
-        match item {
-            Some(Ok(doc)) => Some(doc),
-            Some(Err(_)) => None,
-            None => None,
-        }
-    }
-
     pub fn register(&self, user: &str, pass: &str) -> bool {
+        if self.find_user(user).is_some() {
+            return false;
+        }
+
         let doc = doc! {
             "user": user,
             "pass": pass,

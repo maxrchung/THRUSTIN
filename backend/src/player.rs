@@ -74,6 +74,7 @@ impl Player {
     ) {
         if split.len() != 3 {
             self.send_message("You must provide USER and PASSWORD for your account.");
+            return;
         }
 
         let user = split[1];
@@ -96,18 +97,20 @@ impl Player {
     ) {
         if split.len() != 4 {
             self.send_message("Ok you've got an invalid number of parameters for registration.");
+            return;
         }
 
         let pass = split[2];
         let pass_conf = split[3];
         if pass != pass_conf {
-            self.send_message("Registration failed. The given password confirmation does not match the given password.")
+            self.send_message("Registration failed. The given password confirmation does not match the given password.");
+            return;
         }
 
         let user = split[1];
         if self.db.borrow().register(user, pass) {
             self.name = String::from(user);
-            self.send_message("Lol ok nice you registered and good to go.");
+            self.send_message("Lol ok nice you registered and good to go.")
         }
         else {
             self.send_message("Registration has failed. Unable to add user to database. Maybe username isn't unique?")
