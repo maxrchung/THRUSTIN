@@ -206,6 +206,11 @@ impl Default for Deck {
             "they literally implanted a nuclear bomb in my brain that could blow at any time, watch out",
             "like, there’s an alien race coming from the next universe over ready to fire a galaxy disintegrating explosion laser, and I’m like what am I gonna make for dinner tonight",
             "gimme your money if you wanna die",
+            "hardening shit into the form of a penis—it’s like clay—then penetrating myself with it",
+            "anal beads made out of squishy eyeballs",
+            "clone myself so I can rape myself",
+            "urine trouble",
+            "peepee machine",
         ];
 
         let thrustees = vec![
@@ -295,6 +300,11 @@ impl Default for Deck {
             "Nothing beats a weekend getaway to _____.",
             "When you go to a fancy restaurant and eat hella expensive _____.",
             "I would probably consider _____ a mild discomfort.",
+            "With a little black magic you can easily turn _____ into _____.",
+            "Everyone makes mistakes. You can’t help but _____ sometimes.",
+            "After touching the forbidden _____, you’ve been cursed by the _____.",
+            "With next-generation food science technology, they can now make artificially synthesized _____ to eat.",
+            "Nobody would complain if _____ just fell from the sky.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
