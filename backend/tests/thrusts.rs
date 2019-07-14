@@ -73,5 +73,8 @@ fn no_quotations_thrust() {
     client.send(1, ".n 1");
     client.send(1, ".t lol");
     client.read_all();
-    assert_eq!(client.last(1), "No THRUSTS found. Did you forget quotations? Try something like .t \"Hello there!\"");
+    assert_eq!(
+        client.last(1),
+        "No THRUSTS found. Did you forget quotations? Try something like .t \"Hello there!\""
+    );
 }

@@ -87,16 +87,10 @@ fn out_of_range_thrust() {
     client.send(1, ".p");
     client.send(1, ".t 0");
     client.read_all();
-    assert_eq!(
-        client.last(1),
-        "That shit's out of bound bro"
-    );
+    assert_eq!(client.last(1), "That shit's out of bound bro");
     client.send(1, ".t 6");
     client.read_all();
-    assert_eq!(
-        client.last(1),
-        "That shit's out of bound bro"
-    );
+    assert_eq!(client.last(1), "That shit's out of bound bro");
     client.send(1, ".t 1");
 
     client.send(2, ".n 2");
@@ -105,21 +99,12 @@ fn out_of_range_thrust() {
     client.thrust(2);
 
     client.send(1, ".t 0");
-        assert_eq!(
-        client.last(1),
-        "That shit's out of bound bro"
-    );
+    assert_eq!(client.last(1), "That shit's out of bound bro");
     client.read_all();
-        assert_eq!(
-        client.last(1),
-        "That shit's out of bound bro"
-    );
+    assert_eq!(client.last(1), "That shit's out of bound bro");
     client.send(1, ".t 6");
     client.read_all();
-        assert_eq!(
-        client.last(1),
-        "That shit's out of bound bro"
-    );
+    assert_eq!(client.last(1), "That shit's out of bound bro");
 }
 
 #[test]
@@ -133,9 +118,11 @@ fn cannot_thrust_again() {
     client.thrust(2);
     client.send(2, ".t");
     client.read_all();
-    assert_eq!(client.last(2), "You have already THRUSTED, you cannot THRUST again.");
+    assert_eq!(
+        client.last(2),
+        "You have already THRUSTED, you cannot THRUST again."
+    );
 }
-
 
 #[test]
 fn shows_correct_index_after_thrusting() {

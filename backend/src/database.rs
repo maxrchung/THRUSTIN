@@ -1,26 +1,29 @@
-use mongodb::{bson, Client, doc, ThreadedClient};
-use mongodb::Document;
 use mongodb::coll::Collection;
 use mongodb::db::ThreadedDatabase;
+use mongodb::Document;
+use mongodb::{bson, doc, Client, ThreadedClient};
 
 #[derive(Debug)]
 pub struct MongoDB {
-    pub users: Collection
+    pub users: Collection,
 }
 
 impl MongoDB {
     pub fn new(db_name: &str) -> MongoDB {
-        let client = Client::connect("localhost", 27017).expect("Failed to initialize database client");
+        let client =
+            Client::connect("localhost", 27017).expect("Failed to initialize database client");
         let db = client.db(db_name);
         let users = db.collection("users");
-        MongoDB {
-            users
-        }
+        MongoDB { users }
     }
 
     fn find_user_doc(&self, user: &str) -> Option<Document> {
         let doc = doc! { "user": user };
-        let mut cursor = self.users.find(Some(doc.clone()), None).ok().expect("Failed to find login");
+        let mut cursor = self
+            .users
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find login");
         // Return doc if found, otherwise None
         match cursor.next() {
             Some(Ok(doc)) => Some(doc),
@@ -31,7 +34,11 @@ impl MongoDB {
 
     pub fn does_name_exist(&self, name: &str) -> bool {
         let doc = doc! { "name": name };
-        let mut cursor = self.users.find(Some(doc.clone()), None).ok().expect("Failed to find login");
+        let mut cursor = self
+            .users
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find login");
         // bool for found
         match cursor.next() {
             Some(Ok(_)) => true,
@@ -45,7 +52,11 @@ impl MongoDB {
             "user": user,
             "pass": pass
         };
-        let mut cursor = self.users.find(Some(doc.clone()), None).ok().expect("Failed to find login");
+        let mut cursor = self
+            .users
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find login");
         let item = cursor.next();
         // Return doc if found, otherwise None
         match item {
@@ -67,19 +78,13 @@ impl MongoDB {
         };
         match self.users.insert_one(doc.clone(), None) {
             Ok(_) => true,
-            Err(_) => false
+            Err(_) => false,
         }
     }
 
-    pub fn add_thrustee(&self, user: &str, thrustee: &str) {
+    pub fn add_thrustee(&self, user: &str, thrustee: &str) {}
 
-    }
+    pub fn add_thruster(&self, user: &str, thruster: &str) {}
 
-    pub fn add_thruster(&self, user: &str, thruster: &str) {
-
-    }
-
-    pub fn unthrust(&self, user: &str) {
-
-    }
+    pub fn unthrust(&self, user: &str) {}
 }

@@ -34,7 +34,10 @@ pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
     let chan_comm = Rc::new(RefCell::new(comm));
     let db = Rc::new(RefCell::new(MongoDB::new(db_name)));
     // When testing db, drop the users store on load
-    db.borrow().users.drop().expect(&format!("Unable to drop test db: {}", db_name));
+    db.borrow()
+        .users
+        .drop()
+        .expect(&format!("Unable to drop test db: {}", db_name));
     run(chan_comm, db);
 }
 
@@ -58,7 +61,7 @@ fn run(communication: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<MongoDB>>) 
         endless_uuid,
         Rc::new(RefCell::new(Player::new_endless_host(
             communication.clone(),
-            db.clone()
+            db.clone(),
         ))),
     );
 
@@ -75,7 +78,11 @@ fn run(communication: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<MongoDB>>) 
         if let None = players.get(&token) {
             players.insert(
                 token.clone(),
-                Rc::new(RefCell::new(Player::new(token, communication.clone(), db.clone()))),
+                Rc::new(RefCell::new(Player::new(
+                    token,
+                    communication.clone(),
+                    db.clone(),
+                ))),
             );
         }
 

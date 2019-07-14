@@ -3,7 +3,7 @@ use crate::player::{Player, PlayerState};
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
 use std::cell::{RefCell, RefMut};
-use std::collections::{HashSet,HashMap};
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 use std::u8;
 use std::usize;
@@ -866,8 +866,10 @@ impl Lobby {
                         // Get chosen thrust
                         let (token, chosen_thrust) = self
                             .game
-                            .current_thrusts.get(&(index as usize))
-                            .unwrap().clone();
+                            .current_thrusts
+                            .get(&(index as usize))
+                            .unwrap()
+                            .clone();
 
                         // Clear thrust values
                         self.game.current_thrusts.clear();
@@ -957,7 +959,7 @@ impl Lobby {
                 pl.send_message("You have already THRUSTED, you cannot THRUST again.");
                 return;
             }
-            
+
             // Check number of inputs
             if input.len() < 2 {
                 pl.send_message(&"Index required!");
@@ -991,8 +993,7 @@ impl Lobby {
                     return;
                 }
 
-                let picked_thruster =
-                    pl.game.deck.thrusters[index as usize].clone();
+                let picked_thruster = pl.game.deck.thrusters[index as usize].clone();
                 to_remove.insert(picked_thruster.clone());
                 // Surround with <u> to underline text
                 let formatted_thruster = format!("<u>{}</u>", picked_thruster);
@@ -1010,9 +1011,10 @@ impl Lobby {
             self.game.thrusted_players.push(pl.token.clone());
 
             // Handle picked
-            self.game
-                .current_thrusts
-                .insert(self.game.current_thrusts.len(), (pl.token, resulting_thrust.clone()));
+            self.game.current_thrusts.insert(
+                self.game.current_thrusts.len(),
+                (pl.token, resulting_thrust.clone()),
+            );
 
             self.refill_remaining_thrusters(&mut pl);
             resulting_thrust

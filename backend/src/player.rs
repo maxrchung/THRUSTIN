@@ -30,7 +30,7 @@ pub struct Player {
     pub personal_deck: Deck,
     comm: Rc<RefCell<dyn Communication>>,
     pub game: PlayerGame,
-    db: Rc<RefCell<MongoDB>>
+    db: Rc<RefCell<MongoDB>>,
 }
 
 impl Player {
@@ -42,7 +42,11 @@ impl Player {
         self.comm.borrow().send_messages(&self.token, messages);
     }
 
-    pub fn new(token: u32, comm: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<MongoDB>>) -> Player {
+    pub fn new(
+        token: u32,
+        comm: Rc<RefCell<dyn Communication>>,
+        db: Rc<RefCell<MongoDB>>,
+    ) -> Player {
         Player {
             token: token,
             name: String::new(),
@@ -51,11 +55,14 @@ impl Player {
             personal_deck: Deck::new(),
             comm,
             game: PlayerGame::new(),
-            db
+            db,
         }
     }
 
-    pub fn new_endless_host(comm: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<MongoDB>>) -> Player {
+    pub fn new_endless_host(
+        comm: Rc<RefCell<dyn Communication>>,
+        db: Rc<RefCell<MongoDB>>,
+    ) -> Player {
         Player {
             token: 0,
             name: "EndlessLobbyHostDoggo".to_string(),
@@ -64,14 +71,11 @@ impl Player {
             personal_deck: Deck::new(),
             comm,
             game: PlayerGame::new(),
-            db
+            db,
         }
     }
 
-    pub fn login(
-        &mut self,
-        split: std::vec::Vec<&str>,
-    ) {
+    pub fn login(&mut self, split: std::vec::Vec<&str>) {
         if split.len() != 3 {
             self.send_message("You must provide USER and PASSWORD for your account.");
             return;
@@ -83,7 +87,10 @@ impl Player {
             Some(doc) => {
                 if let Ok(name) = doc.get_str("name") {
                     self.name = String::from(name);
-                    self.send_message(&format!("Welcome back ([USER] >>>\"{}\"<<<) to THRUSTIN.", name));
+                    self.send_message(&format!(
+                        "Welcome back ([USER] >>>\"{}\"<<<) to THRUSTIN.",
+                        name
+                    ));
                 }
             }
             None => {
@@ -92,10 +99,7 @@ impl Player {
         }
     }
 
-    pub fn register(
-        &mut self,
-        split: std::vec::Vec<&str>
-    ) {
+    pub fn register(&mut self, split: std::vec::Vec<&str>) {
         if split.len() != 4 {
             self.send_message("Ok you've got an invalid number of parameters for registration.");
             return;
@@ -112,8 +116,7 @@ impl Player {
         if self.db.borrow().register(user, pass) {
             self.name = String::from(user);
             self.send_message("Lol ok nice you registered and good to go.")
-        }
-        else {
+        } else {
             self.send_message("Registration has failed. Unable to add user to database. Maybe username isn't unique?")
         }
     }
@@ -137,15 +140,13 @@ impl Player {
         {
             for player in players.values() {
                 if name == player.borrow().name {
-                    pl.borrow()
-                        .send_message(msg_name_exists);
+                    pl.borrow().send_message(msg_name_exists);
                     return;
                 }
             }
         }
         // Check if name exists in db
-        if pl.borrow().db.borrow().does_name_exist(&name)
-        {
+        if pl.borrow().db.borrow().does_name_exist(&name) {
             pl.borrow().send_message(msg_name_exists);
             return;
         }
@@ -191,7 +192,6 @@ impl Player {
         }
 
         self.personal_deck.sort();
-
 
         let mut messages = Vec::new();
         if !added_thrustees.is_empty() {

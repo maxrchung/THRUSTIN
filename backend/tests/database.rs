@@ -7,10 +7,16 @@ fn invalid_login() {
     let mut client = common::setup_with_db("invalid_login");
     client.send(1, ".l yowhat'sgood");
     client.read_all();
-    assert_eq!(client.last(1), "You must provide USER and PASSWORD for your account.");
+    assert_eq!(
+        client.last(1),
+        "You must provide USER and PASSWORD for your account."
+    );
     client.send(1, ".l yowhat'sgood swagginout");
     client.read_all();
-    assert_eq!(client.last(1), "Failed to login lol are you sure you know what you're doing?");
+    assert_eq!(
+        client.last(1),
+        "Failed to login lol are you sure you know what you're doing?"
+    );
 }
 
 #[test]
@@ -18,10 +24,16 @@ fn invalid_register() {
     let mut client = common::setup_with_db("invalid_register");
     client.send(1, ".r yowhat'sgood doggy");
     client.read_all();
-    assert_eq!(client.last(1), "Ok you've got an invalid number of parameters for registration.");
+    assert_eq!(
+        client.last(1),
+        "Ok you've got an invalid number of parameters for registration."
+    );
     client.send(1, ".r yowhat'sgood swagginout swagginour");
     client.read_all();
-    assert_eq!(client.last(1), "Registration failed. The given password confirmation does not match the given password.");
+    assert_eq!(
+        client.last(1),
+        "Registration failed. The given password confirmation does not match the given password."
+    );
 }
 
 #[test]
@@ -38,7 +50,10 @@ fn existing_register() {
     client.send(1, ".r yo what what");
     client.send(2, ".r yo what what");
     client.read_all();
-    assert_eq!(client.last(2), "Registration has failed. Unable to add user to database. Maybe username isn't unique?");
+    assert_eq!(
+        client.last(2),
+        "Registration has failed. Unable to add user to database. Maybe username isn't unique?"
+    );
 }
 
 #[test]
@@ -48,7 +63,10 @@ fn register_and_login() {
     client.send(1, ".disconnect");
     client.send(2, ".l yo what");
     client.read_all();
-    assert_eq!(client.last(2), "Welcome back ([USER] >>>\"yo\"<<<) to THRUSTIN.");
+    assert_eq!(
+        client.last(2),
+        "Welcome back ([USER] >>>\"yo\"<<<) to THRUSTIN."
+    );
 }
 
 #[test]
@@ -57,5 +75,8 @@ fn name_checks_database() {
     client.send(1, ".r SWAGGINGi'mSWAGGINGOUT yo yo");
     client.send(2, ".n SWAGGINGi'mSWAGGINGOUT");
     client.read_all();
-    assert_eq!(client.last(2), "yo that name exists ya gotta pick something else aight?");
+    assert_eq!(
+        client.last(2),
+        "yo that name exists ya gotta pick something else aight?"
+    );
 }
