@@ -40,3 +40,22 @@ fn existing_register() {
     client.read_all();
     assert_eq!(client.last(2), "Registration has failed. Unable to add user to database. Maybe username isn't unique?");
 }
+
+#[test]
+fn register_and_login() {
+    let mut client = common::setup_with_db("register_and_login");
+    client.send(1, ".r yo what what");
+    client.send(1, ".disconnect");
+    client.send(2, ".l yo what");
+    client.read_all();
+    assert_eq!(client.last(2), "Welcome back ([USER] >>>\"yo\"<<<) to THRUSTIN.");
+}
+
+#[test]
+fn name_checks_database() {
+    let mut client = common::setup_with_db("name_checks_database");
+    client.send(1, ".r SWAGGINGi'mSWAGGINGOUT yo yo");
+    client.send(2, ".n SWAGGINGi'mSWAGGINGOUT");
+    client.read_all();
+    assert_eq!(client.last(2), "yo that name exists ya gotta pick something else aight?");
+}

@@ -83,6 +83,7 @@ impl Player {
             Some(doc) => {
                 if let Ok(name) = doc.get_str("name") {
                     self.name = String::from(name);
+                    self.send_message(&format!("Welcome back ([USER] >>>\"{}\"<<<) to THRUSTIN.", name));
                 }
             }
             None => {
@@ -119,44 +120,49 @@ impl Player {
 
     pub fn set_name(
         split: std::vec::Vec<&str>,
-        play: Rc<RefCell<Player>>,
+        pl: Rc<RefCell<Player>>,
         players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     ) {
-        {
-            let player = play.borrow();
-            if split.len() < 2 {
-                player.send_message("You need a name!");
+        let name = {
+            let pl = pl.borrow();
+            if split.len() != 2 {
+                pl.send_message("You need a name!");
                 return;
             }
-        }
-        let p_name = split[1].to_string();
+            split[1].to_string()
+        };
 
+        let msg_name_exists = "yo that name exists ya gotta pick something else aight?";
+        // Check if name exists in players list
         {
-            for pl in players.values() {
-                let name = &pl.borrow().name;
-                if &p_name == name {
-                    play.borrow()
-                        .send_message("yo that name exists ya gotta pick something else aight?");
+            for player in players.values() {
+                if name == player.borrow().name {
+                    pl.borrow()
+                        .send_message(msg_name_exists);
                     return;
                 }
             }
         }
-
+        // Check if name exists in db
+        if pl.borrow().db.borrow().does_name_exist(&name)
         {
-            let mut pl = play.borrow_mut();
-            pl.name = p_name.clone();
-            let mut messages = vec![format!("Name set to: {}", &pl.name)];
-
-            if pl.state == PlayerState::ChooseName {
-                pl.state = PlayerState::OutOfLobby;
-                messages.push(format!(
-                    "ok {}, now ur redy 2 THRUST, try '.help' for sum updated information",
-                    &pl.name
-                ));
-            }
-
-            pl.send_messages(&messages);
+            pl.borrow().send_message(msg_name_exists);
+            return;
         }
+
+        let mut pl = pl.borrow_mut();
+        pl.name = name.clone();
+        let mut messages = vec![format!("Name set to: {}", &pl.name)];
+
+        if pl.state == PlayerState::ChooseName {
+            pl.state = PlayerState::OutOfLobby;
+            messages.push(format!(
+                "ok {}, now ur redy 2 THRUST, try '.help' for sum updated information",
+                &pl.name
+            ));
+        }
+
+        pl.send_messages(&messages);
     }
 
     pub fn handle_thrusteer_commands(&mut self, input: &str, split: &Vec<&str>) {

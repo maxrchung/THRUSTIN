@@ -18,17 +18,25 @@ impl MongoDB {
         }
     }
 
-    fn find_user(&self, user: &str) -> Option<Document> {
-        let doc = doc! {
-            "user": user
-        };
+    fn find_user_doc(&self, user: &str) -> Option<Document> {
+        let doc = doc! { "user": user };
         let mut cursor = self.users.find(Some(doc.clone()), None).ok().expect("Failed to find login");
-        let item = cursor.next();
         // Return doc if found, otherwise None
-        match item {
+        match cursor.next() {
             Some(Ok(doc)) => Some(doc),
             Some(Err(_)) => None,
             None => None,
+        }
+    }
+
+    pub fn does_name_exist(&self, name: &str) -> bool {
+        let doc = doc! { "name": name };
+        let mut cursor = self.users.find(Some(doc.clone()), None).ok().expect("Failed to find login");
+        // bool for found
+        match cursor.next() {
+            Some(Ok(_)) => true,
+            Some(Err(_)) => false,
+            None => false,
         }
     }
 
@@ -48,7 +56,7 @@ impl MongoDB {
     }
 
     pub fn register(&self, user: &str, pass: &str) -> bool {
-        if self.find_user(user).is_some() {
+        if self.find_user_doc(user).is_some() {
             return false;
         }
 
