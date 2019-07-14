@@ -61,8 +61,8 @@ impl ChannelCommunication {
 
     pub fn read_all(&mut self) {
         // Short pause to wait for incoming messages
-        // Increased from 100 to 200 for database commands
-        thread::sleep(Duration::from_millis(200));
+        // Increased from 100 to 300 for database commands
+        thread::sleep(Duration::from_millis(300));
 
         // Keep on reading while you can and add messages
         while let Ok((token, msg)) = self.read.try_recv() {
