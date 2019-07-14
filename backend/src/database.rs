@@ -5,13 +5,13 @@ use mongodb::db::ThreadedDatabase;
 
 #[derive(Debug)]
 pub struct MongoDB {
-    users: Collection
+    pub users: Collection
 }
 
 impl MongoDB {
-    pub fn new() -> MongoDB {
-        let client = Client::connect("localhost", 27017).expect("Failed to initialize client");
-        let db = client.db("thrustin");
+    pub fn new(db_name: &str) -> MongoDB {
+        let client = Client::connect("localhost", 27017).expect("Failed to initialize database client");
+        let db = client.db(db_name);
         let users = db.collection("users");
         MongoDB {
             users

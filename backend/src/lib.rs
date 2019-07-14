@@ -24,22 +24,31 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-pub fn run_channel(comm: ChannelCommunication) {
+pub fn run_test_server(comm: ChannelCommunication) {
     let chan_comm = Rc::new(RefCell::new(comm));
-    run(chan_comm);
+    let db = Rc::new(RefCell::new(MongoDB::new("thrustin_test")));
+    run(chan_comm, db);
+}
+
+pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
+    let chan_comm = Rc::new(RefCell::new(comm));
+    let db = Rc::new(RefCell::new(MongoDB::new(db_name)));
+    // When testing db, drop the users store on load
+    db.borrow().users.drop().expect(&format!("Unable to drop test db: {}", db_name));
+    run(chan_comm, db);
 }
 
 pub fn run_ws_server() {
     let ws_comm = Rc::new(RefCell::new(WebSocketCommunication::new()));
-    run(ws_comm);
+    let db = Rc::new(RefCell::new(MongoDB::new("thrustin")));
+    run(ws_comm, db);
 }
 
 const MAX_INPUT: usize = 6669;
-fn run(communication: Rc<RefCell<dyn Communication>>) {
+fn run(communication: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<MongoDB>>) {
     let mut lobby_id = 1;
     let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
     let mut players: HashMap<u32, Rc<RefCell<Player>>> = HashMap::new();
-    let db = Rc::new(RefCell::new(MongoDB::new()));
 
     let read = communication.clone();
 
