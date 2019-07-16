@@ -950,9 +950,9 @@ impl Lobby {
         };
     }
 
-    pub fn handle_thrust(&mut self, input: Vec<&str>, pl_rc: Rc<RefCell<Player>>) {
+    pub fn handle_thrust(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
         {
-            let pl = pl_rc.borrow();
+            let pl = pl.borrow();
 
             // Check if thrusted
             if self.game.thrusted_players.contains(&pl.token) {
@@ -969,7 +969,7 @@ impl Lobby {
 
         // For handling mut borrow
         let resulting_thrust = {
-            let mut pl = pl_rc.borrow_mut();
+            let mut pl = pl.borrow_mut();
 
             // Check correct # of thrusters
             let num_thrusters = input.len() as i32 - 1;
@@ -985,7 +985,13 @@ impl Lobby {
             for i in 1..input.len() {
                 // Convert from 1-indexing to 0-indexing
                 // Use i32 to account for underflow
-                let index = input[i].parse::<i32>().unwrap() - 1;
+                let index = match input[i].parse::<i32>() {
+                    Ok(value) => value - 1,
+                    Err(_) => {
+                        pl.send_message("Yeah it looks like your THRUST didn't work. Index failed to be provided?");
+                        return;
+                    }
+                };
 
                 // Check if valid index
                 if index >= pl.game.deck.thrusters.len() as i32 || index < 0 {
