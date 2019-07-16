@@ -2,7 +2,6 @@ use crate::communication::Communication;
 use crate::database::MongoDB;
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
-use mongodb::Bson;
 use std::collections::HashMap;
 
 use std::cell::RefCell;
@@ -31,6 +30,8 @@ pub struct Player {
     comm: Rc<RefCell<dyn Communication>>,
     pub game: PlayerGame,
     db: Rc<RefCell<MongoDB>>,
+    // Whether or not user is logged in through DB
+    is_authenticated: bool,
 }
 
 impl Player {
@@ -56,6 +57,7 @@ impl Player {
             comm,
             game: PlayerGame::new(),
             db,
+            is_authenticated: false
         }
     }
 
@@ -72,6 +74,7 @@ impl Player {
             comm,
             game: PlayerGame::new(),
             db,
+            is_authenticated: false
         }
     }
 
@@ -84,14 +87,28 @@ impl Player {
         let user = split[1];
         let pass = split[2];
         match self.db.borrow().login(user, pass) {
+            // lol I'm not gonna handle multiple logins.
+            // You get hacked u lose lmao
+            // You login in from another device you chillin
             Some(doc) => {
+                if let Ok(thrustees) = doc.get_array("thrustees") {
+                    self.personal_deck.thrustees = MongoDB::bson_array_to_strings(thrustees.to_vec());
+                }
+
+                if let Ok(thrusters) = doc.get_array("thrusters") {
+                    self.personal_deck.thrusters = MongoDB::bson_array_to_strings(thrusters.to_vec());
+                }
+
                 if let Ok(name) = doc.get_str("name") {
                     self.name = String::from(name);
                     self.send_message(&format!(
-                        "Welcome back ([USER] >>>\"{}\"<<<) to THRUSTIN.",
+                        "Welcome back ([USER] >>>\"{}\"<<< [USER]) to THRUSTIN.",
                         name
                     ));
                 }
+                self.state = PlayerState::OutOfLobby;
+                self.is_authenticated = true;
+
             }
             None => {
                 self.send_message("Failed to login lol are you sure you know what you're doing?");
@@ -115,13 +132,16 @@ impl Player {
         let user = split[1];
         if self.db.borrow().register(user, pass) {
             self.name = String::from(user);
-            self.send_message("Lol ok nice you registered and good to go.")
+            self.send_message("Lol ok nice you registered and good to go.");
+            self.is_authenticated = true;
+            self.state = PlayerState::OutOfLobby;
         } else {
-            self.send_message("Registration has failed. Unable to add user to database. Maybe username isn't unique?")
+            self.send_message("Registration has failed. Unable to add user to database. Maybe username isn't unique?");
         }
     }
 
-    pub fn set_name(
+    // static function so pl borrow can be compared against players
+    pub fn name(
         split: std::vec::Vec<&str>,
         pl: Rc<RefCell<Player>>,
         players: &mut HashMap<u32, Rc<RefCell<Player>>>,
@@ -166,7 +186,7 @@ impl Player {
         pl.send_messages(&messages);
     }
 
-    pub fn handle_thrusteer_commands(&mut self, input: &str, split: &Vec<&str>) {
+    pub fn thrust(&mut self, input: &str, split: &Vec<&str>) {
         if split.len() < 2 {
             self.display_deck();
             return;
@@ -175,7 +195,7 @@ impl Player {
         // Add thrust depending if we detect underscore or not
         let thrusts = Deck::find_thrusts(input);
         if thrusts.is_empty() {
-            self.send_message("No THRUSTS found. Did you forget quotations? Try something like .t \"Hello there!\"");
+            self.send_message("No THRUST arguments found. Did you forget quotations? Try something like .t \"Hello there!\"");
             return;
         }
 
@@ -200,16 +220,23 @@ impl Player {
             for (index, thrustee) in added_thrustees.iter().enumerate() {
                 messages.push(format!("{}. {}", index + 1, thrustee));
             }
+            if self.is_authenticated {
+                self.db.borrow().update_thrustees(&self.name, added_thrustees.clone());
+            }
         }
 
         if !added_thrusters.is_empty() {
             added_thrusters.sort();
+            // Add a new line if there is a message for added THRUSTEES
             if !added_thrustees.is_empty() {
                 messages.push(String::new());
             }
             messages.push(String::from("Added to THRUSTERS:"));
             for (index, thruster) in added_thrusters.iter().enumerate() {
                 messages.push(format!("{}. {}", index + 1, thruster));
+            }
+            if self.is_authenticated {
+                self.db.borrow().update_thrusters(&self.name, added_thrusters);
             }
         }
 
@@ -232,8 +259,11 @@ impl Player {
         self.send_messages(&messages);
     }
 
-    pub fn clear_pers_deck(&mut self) {
+    pub fn unthrust(&mut self) {
         self.personal_deck = Deck::new();
+        if self.is_authenticated {
+            self.db.borrow().unthrust(&self.name);
+        }
         self.send_message(
             "Personal THRUSTS have been cleared! If this was an accident, Good Luck!",
         );

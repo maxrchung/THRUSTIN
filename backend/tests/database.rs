@@ -65,7 +65,7 @@ fn register_and_login() {
     client.read_all();
     assert_eq!(
         client.last(2),
-        "Welcome back ([USER] >>>\"yo\"<<<) to THRUSTIN."
+        "Welcome back ([USER] >>>\"yo\"<<< [USER]) to THRUSTIN."
     );
 }
 
@@ -78,5 +78,27 @@ fn name_checks_database() {
     assert_eq!(
         client.last(2),
         "yo that name exists ya gotta pick something else aight?"
+    );
+}
+
+#[test]
+fn thrust_database() {
+    let mut client = common::setup_with_db("thrust_database");
+    client.send(1, ".r 1 1 1");
+    client.send(1, ".t \"Yo what's up\" \"Hey, it's _____.\"");
+    client.send(2, ".l 1 1");
+    client.send(2, ".t");
+    client.read_all();
+    assert_eq!(
+        client.last(2),
+        "You're THRUSTEES:<br/>1. Hey, it's _____.<br/><br/>You're THRUSTERS:<br/>1. Yo what's up",
+    );
+    client.send(2, ".u");
+    client.send(3, ".l 1 1");
+    client.send(3, ".t");
+    client.read_all();
+    assert_eq!(
+        client.last(3),
+        "You're THRUSTEES:<br/><br/>You're THRUSTERS:",
     );
 }

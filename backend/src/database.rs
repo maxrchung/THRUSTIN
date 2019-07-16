@@ -1,7 +1,6 @@
 use mongodb::coll::Collection;
 use mongodb::db::ThreadedDatabase;
-use mongodb::Document;
-use mongodb::{bson, doc, Client, ThreadedClient};
+use mongodb::{Array, bson, Bson, doc, Client, Document, ThreadedClient};
 
 #[derive(Debug)]
 pub struct MongoDB {
@@ -18,7 +17,9 @@ impl MongoDB {
     }
 
     fn find_user_doc(&self, user: &str) -> Option<Document> {
-        let doc = doc! { "user": user };
+        let doc = doc!{ 
+            "user": user 
+        };
         let mut cursor = self
             .users
             .find(Some(doc.clone()), None)
@@ -33,7 +34,9 @@ impl MongoDB {
     }
 
     pub fn does_name_exist(&self, name: &str) -> bool {
-        let doc = doc! { "name": name };
+        let doc = doc!{ 
+            "name": name 
+        };
         let mut cursor = self
             .users
             .find(Some(doc.clone()), None)
@@ -48,7 +51,7 @@ impl MongoDB {
     }
 
     pub fn login(&self, user: &str, pass: &str) -> Option<Document> {
-        let doc = doc! {
+        let doc = doc!{
             "user": user,
             "pass": pass
         };
@@ -70,11 +73,10 @@ impl MongoDB {
         if self.find_user_doc(user).is_some() {
             return false;
         }
-
-        let doc = doc! {
+        let doc = doc!{
             "user": user,
             "pass": pass,
-            "name": user
+            "name": user,
         };
         match self.users.insert_one(doc.clone(), None) {
             Ok(_) => true,
@@ -82,9 +84,68 @@ impl MongoDB {
         }
     }
 
-    pub fn add_thrustee(&self, user: &str, thrustee: &str) {}
+    fn strings_to_bson_array(strings: Vec<String>) -> Array {
+        let mut array = Vec::new();
+        for string in strings {
+            array.push(Bson::String(string));
+        }
+        array
+    }
 
-    pub fn add_thruster(&self, user: &str, thruster: &str) {}
+    pub fn bson_array_to_strings(array: Array) -> Vec<String> {
+        let mut strings = Vec::new();
+        for bson in array {
+            if let Bson::String(bson_string) = bson {
+                strings.push(bson_string);
+            }
+        }
+        strings
+    }
 
-    pub fn unthrust(&self, user: &str) {}
+    pub fn update_thrustees(&self, name: &str, thrustees: Vec<String>) -> bool {
+        let filter = doc!{ 
+            "name": name 
+        };
+        let array = MongoDB::strings_to_bson_array(thrustees);
+        let update = doc!{ 
+            "$set": { 
+                "thrustees": array 
+            } 
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
+    pub fn update_thrusters(&self, name: &str, thrusters: Vec<String>) -> bool {
+        let filter = doc!{ "name": name };
+        let array = MongoDB::strings_to_bson_array(thrusters);
+        let update = doc!{ 
+            "$set": { 
+                "thrusters": array 
+            } 
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
+    pub fn unthrust(&self, name: &str) -> bool {
+        let filter = doc!{ 
+            "name": name 
+        };
+        let array: Array = Vec::new();
+        let update = doc!{ 
+            "$set": { 
+                "thrusters": array.clone(),
+                "thrustees": array,
+            }
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
 }

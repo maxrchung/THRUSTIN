@@ -71,7 +71,7 @@ pub fn choose_name_commands(
     match &*com {
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
         ".login" | ".l" => pl.borrow_mut().login(split),
-        ".name" | ".n" => Player::set_name(split, pl, players),
+        ".name" | ".n" => Player::name(split, pl, players),
         ".register" | ".r" => pl.borrow_mut().register(split),
         ".disconnect" => disconnect(pl.borrow().token, players),
         _ => {
@@ -108,10 +108,10 @@ pub fn out_of_lobby_commands(
         ".join" | ".j" => Lobby::join_lobby(split, pl, lobbies),
         ".list" | ".l" => Lobby::list_lobby(pl, lobbies),
         ".make" | ".m" => Lobby::make_lobby(pl, lobby_id, lobbies),
-        ".name" | ".n" => Player::set_name(split, pl, players),
+        ".name" | ".n" => Player::name(split, pl, players),
         ".play" | ".p" => Lobby::join_lobby(vec![".join", "0"], pl, lobbies),
-        ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input, &split),
-        ".unthrust" | ".u" => pl.borrow_mut().clear_pers_deck(),
+        ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
+        ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".who" | ".w" => Lobby::list_all_players(pl, players),
         ".disconnect" => disconnect(pl.borrow().token, players),
         _ => {
@@ -156,8 +156,8 @@ pub fn in_lobby_commands(
         ".help" | ".h" => list_in_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
-        ".thrust" | ".t" => pl.borrow_mut().handle_thrusteer_commands(&input, &split),
-        ".unthrust" | ".u" => pl.borrow_mut().clear_pers_deck(),
+        ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
+        ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".who" | ".w" => lobby.list_lobby_players(pl),
         ".chief" | ".c" => lobby.switch_host(split, pl),
         ".house" | ".ho" => lobby.toggle_house(pl),
