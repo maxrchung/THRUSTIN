@@ -66,7 +66,7 @@ fn run(communication: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<MongoDB>>) 
     );
 
     // Create Endless Lobby
-    Lobby::make_endless_lobby(
+    Lobby::make_endless(
         &players.get(&endless_uuid).unwrap().clone(),
         &mut 0,
         &mut lobbies,

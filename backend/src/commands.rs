@@ -56,7 +56,7 @@ fn disconnect_from_lobby(
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     disconnect(pl.borrow().token, players);
-    Lobby::leave_from_lobby(pl, lobbies);
+    Lobby::leave_and_delete(pl, lobbies);
 }
 
 ///////////////
@@ -105,14 +105,14 @@ pub fn out_of_lobby_commands(
     let com = get_command(&split);
     match &*com {
         ".help" | ".h" => list_out_commands(&pl.borrow()),
-        ".join" | ".j" => Lobby::join_lobby(split, pl, lobbies),
-        ".list" | ".l" => Lobby::list_lobby(pl, lobbies),
-        ".make" | ".m" => Lobby::make_lobby(pl, lobby_id, lobbies),
+        ".join" | ".j" => Lobby::join(split, pl, lobbies),
+        ".list" | ".l" => Lobby::list(pl, lobbies),
+        ".make" | ".m" => Lobby::make(pl, lobby_id, lobbies),
         ".name" | ".n" => Player::name(split, pl, players),
-        ".play" | ".p" => Lobby::join_lobby(vec![".join", "0"], pl, lobbies),
+        ".play" | ".p" => Lobby::join(vec![".join", "0"], pl, lobbies),
         ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
         ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
-        ".who" | ".w" => Lobby::list_all_players(pl, players),
+        ".who" | ".w" => Player::who(pl, players),
         ".disconnect" => disconnect(pl.borrow().token, players),
         _ => {
             pl.borrow()
@@ -155,19 +155,19 @@ pub fn in_lobby_commands(
     match &*com {
         ".help" | ".h" => list_in_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
-        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
+        ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
         ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
         ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
-        ".who" | ".w" => lobby.list_lobby_players(pl),
-        ".chief" | ".c" => lobby.switch_host(split, pl),
-        ".house" | ".ho" => lobby.toggle_house(pl),
+        ".who" | ".w" => lobby.who(pl),
+        ".chief" | ".c" => lobby.host(split, pl),
+        ".house" | ".ho" => lobby.house(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
-        ".password" | ".pa" => lobby.set_password(split, pl),
-        ".players" | ".pl" => lobby.player_max(split, pl),
-        ".points" | ".po" => lobby.point_max(split, pl),
-        ".start" | ".s" => lobby.start_game(pl),
-        ".thrustee" | ".tee" => lobby.max_thrustee(split, pl),
-        ".thruster" | ".ter" => lobby.max_thruster(split, pl),
+        ".password" | ".pa" => lobby.password(split, pl),
+        ".players" | ".pl" => lobby.players(split, pl),
+        ".points" | ".po" => lobby.points(split, pl),
+        ".start" | ".s" => lobby.start(pl),
+        ".thrustees" | ".e" => lobby.thrustees(split, pl),
+        ".thrusters" | ".r" => lobby.thrusters(split, pl),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl
             .borrow()
@@ -195,8 +195,8 @@ fn list_in_commands(pl: &Player, host: bool) {
             (".players 420", ".pl 420", "(chief-only) Okay, how many players do you want to allow in your lobby? 420?"),
             (".points 1", ".po 1", "(chief-only) Okay, how many points do you want to go to? 1? Don't do 1... cause then the game will end really fast."),
             (".start", ".s", "(chief-only) Yup, naturally as the chief you can start up the game."),
-            (".THRUSTEE", ".tee", "(chief-only) Hey there, this command will allow you to configure how many choices a THRUSTEE may choose from."),
-            (".THRUSTER", ".ter", "(chief-only) This little command here will allow you to configure how many THRUSTERS one may hold onto at one time."),
+            (".THRUSTEES", ".e", "(chief-only) Hey there, this command will allow you to configure how many choices a THRUSTEE may choose from."),
+            (".THRUSTERS", ".r", "(chief-only) This little command here will allow you to configure how many THRUSTERS one may hold onto at one time."),
         ]);
     }
     let message = &vec![
@@ -221,9 +221,9 @@ pub fn playing_commands(
     match &*com {
         ".help" | ".h" => list_playing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
-        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
-        ".points" | ".p" => lobby.display_points(pl),
-        ".thrust" | ".t" => lobby.handle_thrust(split, pl),
+        ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
+        ".points" | ".p" => lobby.points_in_game(pl),
+        ".thrust" | ".t" => lobby.thrust(split, pl),
         ".kick" | ".k" => lobby.kick(split, pl),
         ".end" | ".e" => lobby.end(pl),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
@@ -281,8 +281,8 @@ pub fn choosing_commands(
     match &*com {
         ".help" | ".h" => list_choosing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
-        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
-        ".points" | ".p" => lobby.display_points(pl),
+        ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
+        ".points" | ".p" => lobby.points_in_game(pl),
         ".thrust" | ".t" => lobby.choose(split, pl),
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
@@ -338,8 +338,8 @@ pub fn deciding_commands(
     match &*com {
         ".help" | ".h" => list_deciding_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
-        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
-        ".points" | ".p" => lobby.display_points(pl),
+        ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
+        ".points" | ".p" => lobby.points_in_game(pl),
         ".thrust" | ".t" => lobby.decide(split, pl),
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
@@ -389,8 +389,8 @@ pub fn waiting_commands(
     match &*com {
         ".help" | ".h" => list_waiting_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
-        ".points" | ".p" => lobby.display_points(pl),
-        ".leave" | ".l" => Lobby::leave_from_lobby(pl, lobbies),
+        ".points" | ".p" => lobby.points_in_game(pl),
+        ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
         ".thrust" | ".t" => pl
             .borrow()
             .send_message("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),

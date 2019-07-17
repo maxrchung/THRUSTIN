@@ -314,13 +314,6 @@ impl Default for Deck {
 }
 
 impl Deck {
-    pub fn new() -> Deck {
-        Deck {
-            thrusters: Vec::new(),
-            thrustees: Vec::new(),
-        }
-    }
-
     pub fn add_thruster(&mut self, thruster: &str) {
         self.thrusters.push(thruster.to_string());
     }
@@ -365,6 +358,13 @@ impl Deck {
             thrusts.push(String::from(&capture[1]));
         }
         thrusts
+    }
+
+    pub fn new() -> Deck {
+        Deck {
+            thrusters: Vec::new(),
+            thrustees: Vec::new(),
+        }
     }
 
     pub fn sort(&mut self) {

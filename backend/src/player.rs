@@ -20,62 +20,36 @@ pub enum PlayerState {
 
 #[derive(Clone, Debug)]
 pub struct Player {
-    pub token: u32,
-    //name of player
-    pub name: String,
-    //player state
-    pub state: PlayerState,
-    pub lobby: i32,
-    pub personal_deck: Deck,
     comm: Rc<RefCell<dyn Communication>>,
-    pub game: PlayerGame,
     db: Rc<RefCell<MongoDB>>,
     // Whether or not user is logged in through DB
     is_authenticated: bool,
+    pub game: PlayerGame,
+    pub lobby: i32,
+    // name of player
+    pub name: String,
+    pub personal_deck: Deck,
+    // player state
+    pub state: PlayerState,
+    pub token: u32,
+
 }
 
 impl Player {
-    pub fn send_message(&self, message: &str) {
-        self.comm.borrow().send_message(&self.token, message);
-    }
+    pub fn display_deck(&self) {
+        let mut messages = Vec::new();
 
-    pub fn send_messages(&self, messages: &Vec<String>) {
-        self.comm.borrow().send_messages(&self.token, messages);
-    }
-
-    pub fn new(
-        token: u32,
-        comm: Rc<RefCell<dyn Communication>>,
-        db: Rc<RefCell<MongoDB>>,
-    ) -> Player {
-        Player {
-            token: token,
-            name: String::new(),
-            state: PlayerState::ChooseName,
-            lobby: -1,
-            personal_deck: Deck::new(),
-            comm,
-            game: PlayerGame::new(),
-            db,
-            is_authenticated: false
+        messages.push("You're THRUSTEES:".to_string());
+        for (i, thrustee) in self.personal_deck.thrustees.iter().enumerate() {
+            messages.push(format!("{}. {}", i + 1, &thrustee).clone());
         }
-    }
 
-    pub fn new_endless_host(
-        comm: Rc<RefCell<dyn Communication>>,
-        db: Rc<RefCell<MongoDB>>,
-    ) -> Player {
-        Player {
-            token: 0,
-            name: "EndlessLobbyHostDoggo".to_string(),
-            state: PlayerState::Playing,
-            lobby: 0,
-            personal_deck: Deck::new(),
-            comm,
-            game: PlayerGame::new(),
-            db,
-            is_authenticated: false
+        messages.push("<br/>You're THRUSTERS:".to_string());
+        for (i, thruster) in self.personal_deck.thrusters.iter().enumerate() {
+            messages.push(format!("{}. {}", i + 1, &thruster).clone());
         }
+
+        self.send_messages(&messages);
     }
 
     pub fn login(&mut self, split: std::vec::Vec<&str>) {
@@ -116,31 +90,7 @@ impl Player {
         }
     }
 
-    pub fn register(&mut self, split: std::vec::Vec<&str>) {
-        if split.len() != 4 {
-            self.send_message("Ok you've got an invalid number of parameters for registration.");
-            return;
-        }
-
-        let pass = split[2];
-        let pass_conf = split[3];
-        if pass != pass_conf {
-            self.send_message("Registration failed. The given password confirmation does not match the given password.");
-            return;
-        }
-
-        let user = split[1];
-        if self.db.borrow().register(user, pass) {
-            self.name = String::from(user);
-            self.send_message("Lol ok nice you registered and good to go.");
-            self.is_authenticated = true;
-            self.state = PlayerState::OutOfLobby;
-        } else {
-            self.send_message("Registration has failed. Unable to add user to database. Maybe username isn't unique?");
-        }
-    }
-
-    // static function so pl borrow can be compared against players
+     // static function so pl borrow can be compared against players
     pub fn name(
         split: std::vec::Vec<&str>,
         pl: Rc<RefCell<Player>>,
@@ -184,6 +134,73 @@ impl Player {
         }
 
         pl.send_messages(&messages);
+    }
+
+    pub fn new(
+        token: u32,
+        comm: Rc<RefCell<dyn Communication>>,
+        db: Rc<RefCell<MongoDB>>,
+    ) -> Player {
+        Player {
+            token: token,
+            name: String::new(),
+            state: PlayerState::ChooseName,
+            lobby: -1,
+            personal_deck: Deck::new(),
+            comm,
+            game: PlayerGame::new(),
+            db,
+            is_authenticated: false
+        }
+    }
+
+    pub fn new_endless_host(
+        comm: Rc<RefCell<dyn Communication>>,
+        db: Rc<RefCell<MongoDB>>,
+    ) -> Player {
+        Player {
+            token: 0,
+            name: "EndlessLobbyHostDoggo".to_string(),
+            state: PlayerState::Playing,
+            lobby: 0,
+            personal_deck: Deck::new(),
+            comm,
+            game: PlayerGame::new(),
+            db,
+            is_authenticated: false
+        }
+    }
+
+    pub fn register(&mut self, split: std::vec::Vec<&str>) {
+        if split.len() != 4 {
+            self.send_message("Ok you've got an invalid number of parameters for registration.");
+            return;
+        }
+
+        let pass = split[2];
+        let pass_conf = split[3];
+        if pass != pass_conf {
+            self.send_message("Registration failed. The given password confirmation does not match the given password.");
+            return;
+        }
+
+        let user = split[1];
+        if self.db.borrow().register(user, pass) {
+            self.name = String::from(user);
+            self.send_message("Lol ok nice you registered and good to go.");
+            self.is_authenticated = true;
+            self.state = PlayerState::OutOfLobby;
+        } else {
+            self.send_message("Registration has failed. Unable to add user to database. Maybe username isn't unique?");
+        }
+    }
+
+    pub fn send_message(&self, message: &str) {
+        self.comm.borrow().send_message(&self.token, message);
+    }
+
+    pub fn send_messages(&self, messages: &Vec<String>) {
+        self.comm.borrow().send_messages(&self.token, messages);
     }
 
     pub fn thrust(&mut self, input: &str, split: &Vec<&str>) {
@@ -243,22 +260,6 @@ impl Player {
         self.send_messages(&messages);
     }
 
-    pub fn display_deck(&self) {
-        let mut messages = Vec::new();
-
-        messages.push("You're THRUSTEES:".to_string());
-        for (i, thrustee) in self.personal_deck.thrustees.iter().enumerate() {
-            messages.push(format!("{}. {}", i + 1, &thrustee).clone());
-        }
-
-        messages.push("<br/>You're THRUSTERS:".to_string());
-        for (i, thruster) in self.personal_deck.thrusters.iter().enumerate() {
-            messages.push(format!("{}. {}", i + 1, &thruster).clone());
-        }
-
-        self.send_messages(&messages);
-    }
-
     pub fn unthrust(&mut self) {
         self.personal_deck = Deck::new();
         if self.is_authenticated {
@@ -267,5 +268,37 @@ impl Player {
         self.send_message(
             "Personal THRUSTS have been cleared! If this was an accident, Good Luck!",
         );
+    }
+
+    pub fn who(
+        pl: Rc<RefCell<Player>>,
+        players: &mut HashMap<u32, Rc<RefCell<Player>>>,
+    ) {
+        let pl = pl.borrow();
+        let token = pl.token;
+        let mut messages = Vec::new();
+        for pl_rc in players.values() {
+            let pl = pl_rc.borrow();
+            if pl.token == 0 {
+                continue;
+            }
+
+            let mut person = "";
+            if token == pl.token {
+                person = " (You)";
+            }
+
+            let message =
+                if pl.state == PlayerState::InLobby || pl.state == PlayerState::Playing {
+                    format!("{} in {}{}", pl.name, pl.lobby, person).to_string()
+                } else {
+                    format!("{}{}", pl.name, person).to_string()
+                };
+
+            messages.push(message);
+        }
+
+        messages.sort_unstable_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+        pl.send_messages(&messages);
     }
 }

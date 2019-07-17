@@ -17,8 +17,8 @@ fn only_chief_commands() {
         ".pa yoloswag",
         ".po 420",
         ".s",
-        ".tee 10",
-        ".ter 10",
+        ".e 10",
+        ".r 10",
     ];
     for command in only_chief {
         client.send(2, command);
