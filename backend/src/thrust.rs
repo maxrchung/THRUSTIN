@@ -211,6 +211,16 @@ impl Default for Deck {
             "clone myself so I can rape myself",
             "urine trouble",
             "peepee machine",
+            "I’m slappin’ my knees right now",
+            "you’re addicted",
+            "I find my sister sexually attractive",
+            "GunZ: The Duel",
+            "I need a drink",
+            "",
+            "somebody once told me the world is gonna roll me I ain't the sharpest tool in the shed she was looking kind of dumb with her finger and her thumb in the shape of an \"L\" on her forehead well the years start coming and they don't stop coming and they don't stop coming and they don't stop coming and they don't stop coming and they don't stop coming and they don't stop coming and they don't stop coming and they don't stop coming and they don't stop coming and they don't stop coming",
+            "I print anime girls out on paper from the library printer so I can feel my girls in real life",
+            "Camellia - Exit This Earth's Atomosphere | Roblox death sound remix",
+            "just kidding bitch lol",
         ];
 
         let thrustees = vec![
@@ -305,6 +315,14 @@ impl Default for Deck {
             "After touching the forbidden _____, you’ve been cursed by the _____.",
             "With next-generation food science technology, they can now make artificially synthesized _____ to eat.",
             "Nobody would complain if _____ just fell from the sky.",
+            "_____. That’s a banger.",
+            "I can’t stop crying. _____.",
+            "I love dicks but not when they’re _____.",
+            "After playtesting THRUSTIN for some time, I’ve noticed that there are quite a few THRUSTERS and THRUSTEES that are targeted towards Kenny. Because this game can be quite derogatory in nature, Kenny has unfairly been the butt of many offensive jokes. This THRUSTEE is here to acknowledge that Kenny is a good person. Kenny is a good person. _____.",
+            "A baby is born when a _____ loves a _____ very much.",
+            "Hold my beer, _____.",
+            "-__-",
+            "Xxx_AzNKniGhT1337_xxX",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
