@@ -348,7 +348,8 @@ impl Lobby {
                             );
                             pl.send_messages(&messages);
                         } else {
-                            messages.extend(Lobby::build_thrusters_messages(&pl.game.deck.thrusters));
+                            messages
+                                .extend(Lobby::build_thrusters_messages(&pl.game.deck.thrusters));
                             pl.send_messages(&messages);
                         }
                     }
@@ -461,8 +462,7 @@ impl Lobby {
                 }
             }
             _ => {
-                pl
-                    .borrow()
+                pl.borrow()
                     .send_message("That is an invalid parameter, use an index instead");
             }
         };
@@ -499,7 +499,7 @@ impl Lobby {
         pl.send_message("Player not in lobby.");
     }
 
-        pub fn house(&mut self, pl: Rc<RefCell<Player>>) {
+    pub fn house(&mut self, pl: Rc<RefCell<Player>>) {
         let pl = pl.borrow();
         if !self.is_host(pl.token) {
             pl.send_message(&format!("Only chief can decide whether or not toggle the house (default provided) THRUSTS for THRUSTING!"));
@@ -519,7 +519,11 @@ impl Lobby {
         let mut info = Vec::new();
         info.push(format!("\\\\Lobby info//"));
         info.push(format!("Name: {}", self.id));
-        info.push(format!("Players: {} / {}", self.list.len(), self.max_players));
+        info.push(format!(
+            "Players: {} / {}",
+            self.list.len(),
+            self.max_players
+        ));
         info.push(format!("Max points: {}", self.max_points));
 
         if self.is_host(pl.token) {
@@ -533,7 +537,7 @@ impl Lobby {
         self.host.borrow().token == player
     }
 
-      pub fn kick(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
+    pub fn kick(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
         // Scope guards to avoid borrow panic when THRUSTEE is kicked
         let kick_ind = {
             let mut kick_ind = -1;
@@ -573,11 +577,7 @@ impl Lobby {
         pl.send_message("Player not in lobby.");
     }
 
-    pub fn join(
-        input: Vec<&str>,
-        pl: Rc<RefCell<Player>>,
-        lobby: &mut HashMap<i32, Lobby>,
-    ) {
+    pub fn join(input: Vec<&str>, pl: Rc<RefCell<Player>>, lobby: &mut HashMap<i32, Lobby>) {
         if input.len() < 2 {
             pl.borrow().send_message("Lobby name required!");
             return;
@@ -631,9 +631,9 @@ impl Lobby {
                 }
             }
 
-            _ => {
-                pl.borrow().send_message("nibba that is a invalid input my nibba")
-            } //i love rust
+            _ => pl
+                .borrow()
+                .send_message("nibba that is a invalid input my nibba"), //i love rust
         }
     }
 
@@ -677,11 +677,7 @@ impl Lobby {
         pl.send_messages(&messages);
     }
 
-    pub fn make(
-        pl_rc: Rc<RefCell<Player>>,
-        lobby_id: &mut i32,
-        lobbies: &mut HashMap<i32, Lobby>,
-    ) {
+    pub fn make(pl_rc: Rc<RefCell<Player>>, lobby_id: &mut i32, lobbies: &mut HashMap<i32, Lobby>) {
         let mut new_lobby = Lobby::new(&pl_rc, *lobby_id, 10, 7);
         let mut pl = pl_rc.borrow_mut();
 

@@ -1,19 +1,19 @@
 use argon2;
 use mongodb::coll::Collection;
 use mongodb::db::ThreadedDatabase;
-use mongodb::{Array, bson, Bson, doc, Client, Document, ThreadedClient};
+use mongodb::{bson, doc, Array, Bson, Client, Document, ThreadedClient};
 use rand::Rng;
 
 #[derive(Debug)]
 pub struct MongoDB {
     pub users: Collection,
-    config: argon2::Config<'static>
+    config: argon2::Config<'static>,
 }
 
 impl MongoDB {
     fn find_user_doc(&self, user: &str) -> Option<Document> {
-        let doc = doc!{ 
-            "user": user 
+        let doc = doc! {
+            "user": user
         };
         let mut cursor = self
             .users
@@ -32,12 +32,14 @@ impl MongoDB {
         let mut rng = rand::thread_rng();
         // Damn this was hard
         let salt: Vec<u8> = (0..32).map(|_| rng.gen()).collect();
-        let hash = argon2::hash_encoded(pass.as_bytes(), &salt, &self.config).expect("Failed to hash password");
+        let hash = argon2::hash_encoded(pass.as_bytes(), &salt, &self.config)
+            .expect("Failed to hash password");
         String::from(hash)
     }
 
     fn verify_password(&self, hash: &str, pass: &str) -> bool {
-        let matches = argon2::verify_encoded(hash, pass.as_bytes()).expect("Failed to verify password");
+        let matches =
+            argon2::verify_encoded(hash, pass.as_bytes()).expect("Failed to verify password");
         matches
     }
 
@@ -60,8 +62,8 @@ impl MongoDB {
     }
 
     pub fn does_name_exist(&self, name: &str) -> bool {
-        let doc = doc!{ 
-            "name": name 
+        let doc = doc! {
+            "name": name
         };
         let mut cursor = self
             .users
@@ -77,7 +79,7 @@ impl MongoDB {
     }
 
     pub fn login(&self, user: &str, pass: &str) -> Option<Document> {
-        let doc = doc!{
+        let doc = doc! {
             "user": user,
         };
         let mut cursor = self
@@ -92,12 +94,11 @@ impl MongoDB {
                 Some(&Bson::String(ref hash)) => {
                     if self.verify_password(hash, pass) {
                         Some(doc)
-                    }
-                    else {
+                    } else {
                         None
                     }
-                },
-                _ => None
+                }
+                _ => None,
             },
             Some(Err(_)) => None,
             None => None,
@@ -110,21 +111,18 @@ impl MongoDB {
         let db = client.db(db_name);
         let users = db.collection("users");
         let config = argon2::Config::default();
-        MongoDB { 
-            users,
-            config
-        }
+        MongoDB { users, config }
     }
 
     pub fn password(&self, name: &str, pass: &str) -> bool {
-        let filter = doc!{ 
-            "name": name 
+        let filter = doc! {
+            "name": name
         };
         let hash = self.hash_password(pass);
-        let update = doc!{ 
-            "$set": { 
-                "pass": &hash 
-            } 
+        let update = doc! {
+            "$set": {
+                "pass": &hash
+            }
         };
         match self.users.update_one(filter, update, None) {
             Ok(_) => true,
@@ -137,7 +135,7 @@ impl MongoDB {
             return false;
         }
         let hash = self.hash_password(pass);
-        let doc = doc!{
+        let doc = doc! {
             "user": user,
             "pass": &hash,
             "name": user,
@@ -149,12 +147,12 @@ impl MongoDB {
     }
 
     pub fn unthrust(&self, name: &str) -> bool {
-        let filter = doc!{ 
-            "name": name 
+        let filter = doc! {
+            "name": name
         };
         let array: Array = Vec::new();
-        let update = doc!{ 
-            "$set": { 
+        let update = doc! {
+            "$set": {
                 "thrusters": array.clone(),
                 "thrustees": array,
             }
@@ -166,13 +164,13 @@ impl MongoDB {
     }
 
     pub fn username(&self, name: &str, user: &str) -> bool {
-        let filter = doc!{ 
-            "name": name 
+        let filter = doc! {
+            "name": name
         };
-        let update = doc!{ 
-            "$set": { 
-                "user": user 
-            } 
+        let update = doc! {
+            "$set": {
+                "user": user
+            }
         };
         match self.users.update_one(filter, update, None) {
             Ok(_) => true,
@@ -181,14 +179,14 @@ impl MongoDB {
     }
 
     pub fn thrustees(&self, name: &str, thrustees: Vec<String>) -> bool {
-        let filter = doc!{ 
-            "name": name 
+        let filter = doc! {
+            "name": name
         };
         let array = MongoDB::strings_to_bson_array(thrustees);
-        let update = doc!{ 
-            "$set": { 
-                "thrustees": array 
-            } 
+        let update = doc! {
+            "$set": {
+                "thrustees": array
+            }
         };
         match self.users.update_one(filter, update, None) {
             Ok(_) => true,
@@ -197,12 +195,12 @@ impl MongoDB {
     }
 
     pub fn thrusters(&self, name: &str, thrusters: Vec<String>) -> bool {
-        let filter = doc!{ "name": name };
+        let filter = doc! { "name": name };
         let array = MongoDB::strings_to_bson_array(thrusters);
-        let update = doc!{ 
-            "$set": { 
-                "thrusters": array 
-            } 
+        let update = doc! {
+            "$set": {
+                "thrusters": array
+            }
         };
         match self.users.update_one(filter, update, None) {
             Ok(_) => true,

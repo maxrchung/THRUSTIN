@@ -32,7 +32,6 @@ pub struct Player {
     // player state
     pub state: PlayerState,
     pub token: u32,
-
 }
 
 impl Player {
@@ -66,11 +65,13 @@ impl Player {
             // You login in from another device you chillin
             Some(doc) => {
                 if let Ok(thrustees) = doc.get_array("thrustees") {
-                    self.personal_deck.thrustees = MongoDB::bson_array_to_strings(thrustees.to_vec());
+                    self.personal_deck.thrustees =
+                        MongoDB::bson_array_to_strings(thrustees.to_vec());
                 }
 
                 if let Ok(thrusters) = doc.get_array("thrusters") {
-                    self.personal_deck.thrusters = MongoDB::bson_array_to_strings(thrusters.to_vec());
+                    self.personal_deck.thrusters =
+                        MongoDB::bson_array_to_strings(thrusters.to_vec());
                 }
 
                 if let Ok(name) = doc.get_str("name") {
@@ -82,7 +83,6 @@ impl Player {
                 }
                 self.state = PlayerState::OutOfLobby;
                 self.is_authenticated = true;
-
             }
             None => {
                 self.send_message("Failed to login lol are you sure you know what you're doing?");
@@ -90,7 +90,7 @@ impl Player {
         }
     }
 
-     // static function so pl borrow can be compared against players
+    // static function so pl borrow can be compared against players
     pub fn name(
         split: Vec<&str>,
         pl: Rc<RefCell<Player>>,
@@ -150,7 +150,7 @@ impl Player {
             comm,
             game: PlayerGame::new(),
             db,
-            is_authenticated: false
+            is_authenticated: false,
         }
     }
 
@@ -167,7 +167,7 @@ impl Player {
             comm,
             game: PlayerGame::new(),
             db,
-            is_authenticated: false
+            is_authenticated: false,
         }
     }
 
@@ -176,7 +176,7 @@ impl Player {
             self.send_message("Brethren, you must be authenticated to do this...");
             return;
         }
-        
+
         if split.len() != 3 {
             self.send_message("INVALID!!!! InvaliDDD!!!!!! YOUR PASSWORD commands needs to be formatted correctly with the right arguments... God...");
             return;
@@ -189,8 +189,7 @@ impl Player {
 
         if self.db.borrow().password(&self.name, split[1]) {
             self.send_message("Awesome, your password was changed. Don't forget that the next time you login. Duh.");
-        }
-        else {
+        } else {
             self.send_message("Catastrophic error probably occurred. I don't know, but it looks like your password was NOT saved.");
         }
     }
@@ -262,7 +261,9 @@ impl Player {
                 messages.push(format!("{}. {}", index + 1, thrustee));
             }
             if self.is_authenticated {
-                self.db.borrow().thrustees(&self.name, added_thrustees.clone());
+                self.db
+                    .borrow()
+                    .thrustees(&self.name, added_thrustees.clone());
             }
         }
 
@@ -306,22 +307,20 @@ impl Player {
         }
 
         if split[1] != split[2] {
-            self.send_message("I'm sorry. There was an error confirming your username. (Did you mistype?)");
+            self.send_message(
+                "I'm sorry. There was an error confirming your username. (Did you mistype?)",
+            );
             return;
         }
 
         if self.db.borrow().username(&self.name, split[1]) {
             self.send_message("Congrats, your username was changed. Don't forget that the next time you login. Duh.");
-        }
-        else {
+        } else {
             self.send_message("Man I don't know what to say. There was an error saving the username to database MongoDB.");
         }
     }
 
-    pub fn who(
-        pl: Rc<RefCell<Player>>,
-        players: &mut HashMap<u32, Rc<RefCell<Player>>>,
-    ) {
+    pub fn who(pl: Rc<RefCell<Player>>, players: &mut HashMap<u32, Rc<RefCell<Player>>>) {
         let pl = pl.borrow();
         let token = pl.token;
         let mut messages = Vec::new();
@@ -336,12 +335,11 @@ impl Player {
                 person = " (You)";
             }
 
-            let message =
-                if pl.state == PlayerState::InLobby || pl.state == PlayerState::Playing {
-                    format!("{} in {}{}", pl.name, pl.lobby, person).to_string()
-                } else {
-                    format!("{}{}", pl.name, person).to_string()
-                };
+            let message = if pl.state == PlayerState::InLobby || pl.state == PlayerState::Playing {
+                format!("{} in {}{}", pl.name, pl.lobby, person).to_string()
+            } else {
+                format!("{}{}", pl.name, person).to_string()
+            };
 
             messages.push(message);
         }
