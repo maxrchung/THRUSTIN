@@ -40,6 +40,11 @@ We have a thing called an endless lobby that anyone can more easily join and pla
 ## They Are Not Case Sensitive
 You can do `.HELP` or `.help` it doesn't matter. We keep the `.` though, for command. We are gonna support chat so we want some differentiation, and `.` is fairly easier to type on mobile. Do we really care about mobile though? This whole thing is not very mobile friendly or friendly at all.
 
+## How Bout That We Finally Got To Making Accounts For The Database (MongoDB)
+Yeah.
+
+We're gonna start using the database for some nice things. Once you register an account with a username and password, you'll save some things on next login. What we're gonna do: saved THRUSTEES and THRUSTERS you've added; game stats (milestone 4.20), admin accounts (milestone 69), banning (milestone -69).
+
 # Phases
 Now let us dive into all the commands you can use. We shall divide each section up by the respective phase they can be used in then go from there. I don't know how much detail I'm going to put into explaining each command's usage. This might be pretty long so I'm not sure. I'm not sure man.
 
@@ -49,8 +54,14 @@ In this phase you're responsible for giving yourself a name. We want you to give
 ##### `.h(elp)`
 Get help explanation for this section.
 
+##### `.l(ogin) SecretUser SecretPassword!!!!`
+Login to a registered account. Yo you get some epic perks for logging in...
+
 ##### `.n(ame) SWAGGYSWAG`
 Give yourself the name SWAGGYSWAG. Note that you probably shouldn't put spaces in there I'm not sure what's gonna happen probably bad.
+
+##### `.r(egister) SecretUser SecretPassword!!!! SecretPassword!!!!``
+Register an account to get some sick as hell features like saved THRUSTS and stats (eventually).
 
 ## Out of Lobby
 The zone outside of lobbies where you can chill and organize yourself.
@@ -124,10 +135,10 @@ Shows everyone in this lobby.
 ##### `.s(tart)`
 (Chief-Only) Start the game barring there's no issues.
 
-##### `.(THRUS)TEE 3`
+##### `.(THRUSTE)E(S) 3`
 (Chief-Only) Set the number of THRUSTEE choices to 3.
 
-##### `.(THRUS)TER 3`
+##### `.(THRUSTE)R(S) 3`
 (Chief-Only) Set the number of THRUSTERS you can have to 3.
 
 ## In Game (Choosing THRUSTEE)
