@@ -26,7 +26,7 @@ pub struct Lobby {
     //lobby id
     id: i32,
     //max number of players
-    max: usize,
+    max_players: usize,
     //points
     max_points: u8,
     max_thrustee_choices: u8,
@@ -189,11 +189,11 @@ impl Lobby {
         pl.send_message("You have been leaved from the lobby okay!");
     }
 
-    fn new(player: &Rc<RefCell<Player>>, id: i32, max: usize, max_points: u8) -> Lobby {
+    fn new(player: &Rc<RefCell<Player>>, id: i32, max_players: usize, max_points: u8) -> Lobby {
         Lobby {
             pw: String::new(),
             list: Vec::new(),
-            max,
+            max_players,
             id,
             state: LobbyState::Waiting,
             hand_size: 5,
@@ -301,13 +301,9 @@ impl Lobby {
     }
 
     pub fn choose(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
-        {
-            let pl = pl.borrow();
-
-            if input.len() < 2 {
-                pl.send_message("ya need to pick a NUMERIC, Boy");
-                return;
-            }
+        if input.len() < 2 {
+            pl.borrow().send_message("ya need to pick a NUMERIC, Boy");
+            return;
         }
 
         // Use i32 so index-1 doesn't underflow
@@ -523,7 +519,7 @@ impl Lobby {
         let mut info = Vec::new();
         info.push(format!("\\\\Lobby info//"));
         info.push(format!("Name: {}", self.id));
-        info.push(format!("Players: {} / {}", self.list.len(), self.max));
+        info.push(format!("Players: {} / {}", self.list.len(), self.max_players));
         info.push(format!("Max points: {}", self.max_points));
 
         if self.is_host(pl.token) {
@@ -593,7 +589,7 @@ impl Lobby {
                 let mut messages = Vec::new();
                 if let Some(mut lob) = lobby.get_mut(&lobby_id) {
                     // Lobby full check
-                    if lob.list.len() >= lob.max {
+                    if lob.list.len() >= lob.max_players {
                         pl_mut.send_message("bro this lobbBY is FULLLLL!!");
                         return;
                     }
@@ -667,7 +663,7 @@ impl Lobby {
                     "id: {} | {}/{} players | {}",
                     lob.id,
                     lob.list.len(),
-                    lob.max,
+                    lob.max_players,
                     state
                 )
                 .to_string(),
@@ -752,8 +748,8 @@ impl Lobby {
                     pl.send_message(&format!("too many players in here right now man!"));
                     return;
                 }
-                self.max = max;
-                pl.send_message(&format!("max players set to {}", self.max));
+                self.max_players = max;
+                pl.send_message(&format!("max players set to {}", self.max_players));
             }
 
             _ => pl.send_message(&"only numbers dude!!!"),
@@ -825,7 +821,7 @@ impl Lobby {
                     return;
                 }
                 self.max_thrustee_choices = max;
-                pl.send_message(&format!("max THRUSTEE set to {}", self.max));
+                pl.send_message(&format!("max THRUSTEE set to {}", self.max_players));
             }
 
             _ => pl.send_message(&"Thou hast entered a value that we have deemed as unparsable for the requested THRUSTEE command that thou hast witch hath entered hitherto."),
@@ -852,7 +848,7 @@ impl Lobby {
                 }
 
                 self.hand_size = max;
-                pl.send_message(&format!("max THRUSTERS set to {}", self.max));
+                pl.send_message(&format!("max THRUSTERS set to {}", self.max_players));
             }
 
             _ => {
