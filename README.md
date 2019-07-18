@@ -93,6 +93,12 @@ Destroy all your personal THRUSTS lol.
 ##### `.w(ho)`
 Shows everyone out and in lobbies.
 
+##### `.us(ername) SomeOtherUserName__ SomeOtherUserName__`
+If logged in, changes your username to SomeOtherUserName__. It's kind of weird the more I think about it how Username and Name are so closely related. I could have done something to make them closer to the same, but in the end I decided not to. I personally find the use case of just logging in with a standard User/Pass account, then making up some random Name to troll with, quite appealing so yeah that's that.
+
+##### `.pa(ssword) Y0L0Ep1C420420420 Y0L0Ep1C420420420`
+If logged in, changes your password to Y0L0Ep1C420420420, so you know, if you're a hacker you can screw the hacked guys' account over lol.
+
 ## In Lobby
 Commands when you are in a lobby. Note that now you'll see some (Chief-Only) commands that only chiefs may do.
 
