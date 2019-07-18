@@ -60,7 +60,7 @@ Login to a registered account. Yo you get some epic perks for logging in...
 ##### `.n(ame) SWAGGYSWAG`
 Give yourself the name SWAGGYSWAG. Note that you probably shouldn't put spaces in there I'm not sure what's gonna happen probably bad.
 
-##### `.r(egister) SecretUser SecretPassword!!!! SecretPassword!!!!``
+##### `.r(egister) SecretUser SecretPassword!!!! SecretPassword!!!!`
 Register an account to get some sick as hell features like saved THRUSTS and stats (eventually).
 
 ## Out of Lobby
