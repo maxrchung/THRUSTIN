@@ -86,7 +86,9 @@ fn list_choose_name_commands(pl: &Player) {
         String::from("Alright so the first phase we've got here is this Choose Name phase. What you're gonna do here is set yourself up with a name that you'll go by. i think this is a great idea because now you have a name and people can call you by your name later when we implement chat. Names give people a sense of identity and belonging. Could you imagine having not a name? What if we reduced you just to some unique number ID, now I think that would be rude, do you not agree? I dont' really remember but I think you can change your name later too so don't worry its just like real life, how we change who we are, the way we speak and walk our gait when we're around other people."),
         generate_table(vec![
             (".help", ".h", "this is it chief"),
-            (".name Y0LoSWAG4206669", ".n Y0LoSWAG4206669", "great this will change your name to Y0LoSWAG4206669")
+            (".login AwesomeUser Pa$4WorD??", ".l AwesomeUser Pa$4WorD??", "Login to the AwesomeUser account with Pa$4WorD?? as password."),
+            (".name Y0LoSWAG4206669", ".n Y0LoSWAG4206669", "great this will change your name to Y0LoSWAG4206669"),
+            (".register AwesomeUser Pa$4WorD?? Pa$4WorD??", ".r AwesomeUser Pa$4WorD?? Pa$4WorD??", "Register an account and confirm the password."),
         ])
     ]);
 }
