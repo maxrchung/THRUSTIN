@@ -116,14 +116,12 @@ fn change_user_and_pass() {
         client.last(3),
         "Failed to login lol are you sure you know what you're doing?"
     );
-
     client.send(3, ".l 1 1.5");
     client.read_all();
     assert_eq!(
         client.last(3),
         "Failed to login lol are you sure you know what you're doing?"
     );
-
     client.send(3, ".l 1.5 1.5");
     client.read_all();
     assert_eq!(

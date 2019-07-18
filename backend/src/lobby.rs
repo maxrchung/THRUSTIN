@@ -301,7 +301,7 @@ impl Lobby {
     }
 
     pub fn choose(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
-        if input.len() < 2 {
+        if input.len() != 2 {
             pl.borrow().send_message("ya need to pick a NUMERIC, Boy");
             return;
         }
@@ -365,7 +365,7 @@ impl Lobby {
     }
 
     pub fn decide(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
-        if input.len() < 2 {
+        if input.len() != 2 {
             pl.borrow().send_message("ya need to pick a numbert boi");
             return;
         }
@@ -475,7 +475,7 @@ impl Lobby {
             return;
         }
 
-        if input.len() < 2 {
+        if input.len() != 2 {
             pl.send_message("Who's the new chief tho");
             return;
         }
@@ -543,7 +543,7 @@ impl Lobby {
                 return;
             }
 
-            if input.len() < 2 {
+            if input.len() != 2 {
                 pl.send_message("who we kickkin? TELL ME!");
                 return;
             }
@@ -596,7 +596,7 @@ impl Lobby {
 
                     //Lobby Password Check
                     if lob.pw != "" {
-                        if input.len() < 3 {
+                        if input.len() != 3 {
                             pl_mut.send_message("Ya need a password BR)");
                             return;
                         } else if lob.pw != input[2] {
@@ -712,7 +712,7 @@ impl Lobby {
             return;
         }
 
-        if input.len() < 2 {
+        if input.len() != 2 {
             pl.send_message("?? what's the pass boss??");
             return;
         }
@@ -732,7 +732,7 @@ impl Lobby {
             return;
         }
 
-        if input.len() < 2 {
+        if input.len() != 2 {
             pl.send_message("ya gotta set the new limit");
             return;
         }
@@ -763,7 +763,7 @@ impl Lobby {
             return;
         }
 
-        if input.len() < 2 {
+        if input.len() != 2 {
             pl.send_message("ya gotta set the new limit");
             return;
         }
@@ -807,7 +807,7 @@ impl Lobby {
             return;
         }
 
-        if input.len() < 2 {
+        if input.len() != 2 {
             pl.send_message(
                 "A value must be provided to determine what the THRUSTEE count is to be.",
             );
@@ -835,7 +835,7 @@ impl Lobby {
             return;
         }
 
-        if input.len() < 2 {
+        if input.len() != 2 {
             pl.send_message("You need to give me a value man");
             return;
         }
@@ -857,7 +857,7 @@ impl Lobby {
         }
     }
 
-        pub fn thrust(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
+    pub fn thrust(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
         {
             let pl = pl.borrow();
 
