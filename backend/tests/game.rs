@@ -116,7 +116,7 @@ fn cannot_thrust_again() {
     client.send(2, ".p");
     client.send(1, ".t 1");
     client.thrust(2);
-    client.send(2, ".t");
+    client.thrust(2);
     client.read_all();
     assert_eq!(
         client.last(2),
