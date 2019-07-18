@@ -172,6 +172,11 @@ impl Player {
     }
 
     pub fn password(&mut self, split: Vec<&str>) {
+        if !self.is_authenticated {
+            self.send_message("Brethren, you must be authenticated to do this...");
+            return;
+        }
+        
         if split.len() != 3 {
             self.send_message("INVALID!!!! InvaliDDD!!!!!! YOUR PASSWORD commands needs to be formatted correctly with the right arguments... God...");
             return;
@@ -290,6 +295,11 @@ impl Player {
     }
 
     pub fn username(&mut self, split: Vec<&str>) {
+        if !self.is_authenticated {
+            self.send_message("Brethren, you must be authenticated to do this...");
+            return;
+        }
+
         if split.len() != 3 {
             self.send_message("Invalid number of arguments have been provided to .username command. Please try: `.username [USER] [USER]`");
             return;
