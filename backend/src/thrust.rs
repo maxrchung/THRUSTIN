@@ -457,17 +457,6 @@ impl Deck {
         self.thrustees.clear();
     }
 
-    pub fn count_max_underscores(&self) -> i32 {
-        let mut max = 0;
-        for thrustee in &self.thrustees {
-            let count = Deck::count_underscores(&thrustee);
-            if count > max {
-                max = count;
-            }
-        }
-        max
-    }
-
     pub fn count_underscores(thrustee: &str) -> i32 {
         lazy_static! {
             static ref REGEX_UNDERSCORE: Regex = Regex::new("_+").unwrap();

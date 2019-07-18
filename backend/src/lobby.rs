@@ -971,27 +971,14 @@ impl Lobby {
         }
 
         // Validate THRUSTEES
-        if self.game.deck.thrustees.len() < self.max_thrustee_choices as usize {
-            let msg = format!("Dude, I can't start the game for you because yall don't got enough THRUSTEES. Here's a lil bit of mathematics:<br/>\
-            {} (Total THRUSTEES) < {} (THRUSTEE Choices)", self.game.deck.thrustees.len(), self.max_thrustee_choices);
-            pl.borrow().send_message(&msg);
+        if self.game.deck.thrustees.is_empty() {
+            pl.borrow().send_message("Dude, I can't start the game for you because yall don't got enough THRUSTEES. Here's a lil bit of mathematics:<br/>Total THRUSTEES HAS to BE GREATER THAN 0");
             return;
         }
 
         // Validate THRUSTERS
-        if self.game.deck.thrusters.len() < self.hand_size as usize * self.list.len() {
-            let msg = format!("Yo... got an issue boss, we don't go enough THRUSTERS. Let me calculate to tell you why:<br/>\
-            {} (Total THRUSTERS) < {} (THRUSTER Choices) * {} (Number Of People In Lobby)", self.game.deck.thrusters.len(), self.hand_size, self.list.len());
-            pl.borrow().send_message(&msg);
-            return;
-        }
-
-        // Validate underscores
-        let underscores = self.game.deck.count_max_underscores();
-        if underscores > self.hand_size as i32 {
-            let msg = format!("Hello, I am unable to start the game. This is because there is a THRUSTEE that requires too many THRUSTERS. Allow me to explain through geometry:<br/>\
-            {} (THRUSTER Choices) < {} (THRUSTERS For A THRUSTEE)", self.hand_size, underscores);
-            pl.borrow().send_message(&msg);
+        if self.game.deck.thrusters.is_empty() {
+            pl.borrow().send_message("Yo... got an issue boss, we don't go enough THRUSTERS. Let me calculate to tell you why:<br/>Total THRUSTERS HAS to BE GREATER THAN 0");
             return;
         }
 
