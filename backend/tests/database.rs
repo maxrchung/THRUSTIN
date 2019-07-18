@@ -102,3 +102,32 @@ fn thrust_database() {
         "You're THRUSTEES:<br/><br/>You're THRUSTERS:",
     );
 }
+
+#[test]
+fn change_user_and_pass() {
+    let mut client = common::setup_with_db("change_user_and_pass");
+    client.send(1, ".r 1 1 1");
+    client.send(2, ".l 1 1");
+    client.send(2, ".us 1.5 1.5");
+    client.send(2, ".pa 1.5 1.5");
+    client.send(3, ".l 1.5 1");
+    client.read_all();
+    assert_eq!(
+        client.last(3),
+        "Failed to login lol are you sure you know what you're doing?"
+    );
+
+    client.send(3, ".l 1 1.5");
+    client.read_all();
+    assert_eq!(
+        client.last(3),
+        "Failed to login lol are you sure you know what you're doing?"
+    );
+
+    client.send(3, ".l 1.5 1.5");
+    client.read_all();
+    assert_eq!(
+        client.last(3),
+        "Welcome back ([USER] >>>\"1\"<<< [USER]) to THRUSTIN."
+    );
+}

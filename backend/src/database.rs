@@ -87,6 +87,21 @@ impl MongoDB {
         MongoDB { users }
     }
 
+    pub fn password(&self, name: &str, pass: &str) -> bool {
+        let filter = doc!{ 
+            "name": name 
+        };
+        let update = doc!{ 
+            "$set": { 
+                "pass": pass 
+            } 
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
     pub fn register(&self, user: &str, pass: &str) -> bool {
         if self.find_user_doc(user).is_some() {
             return false;
@@ -118,8 +133,23 @@ impl MongoDB {
             Err(_) => false,
         }
     }
-    
-    pub fn update_thrustees(&self, name: &str, thrustees: Vec<String>) -> bool {
+
+    pub fn username(&self, name: &str, user: &str) -> bool {
+        let filter = doc!{ 
+            "name": name 
+        };
+        let update = doc!{ 
+            "$set": { 
+                "user": user 
+            } 
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
+    pub fn thrustees(&self, name: &str, thrustees: Vec<String>) -> bool {
         let filter = doc!{ 
             "name": name 
         };
@@ -135,7 +165,7 @@ impl MongoDB {
         }
     }
 
-    pub fn update_thrusters(&self, name: &str, thrusters: Vec<String>) -> bool {
+    pub fn thrusters(&self, name: &str, thrusters: Vec<String>) -> bool {
         let filter = doc!{ "name": name };
         let array = MongoDB::strings_to_bson_array(thrusters);
         let update = doc!{ 

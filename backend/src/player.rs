@@ -22,9 +22,9 @@ pub enum PlayerState {
 pub struct Player {
     comm: Rc<RefCell<dyn Communication>>,
     db: Rc<RefCell<MongoDB>>,
-    // Whether or not user is logged in through DB
-    is_authenticated: bool,
     pub game: PlayerGame,
+    // Whether or not user is logged in through DB
+    pub is_authenticated: bool,
     pub lobby: i32,
     // name of player
     pub name: String,
@@ -52,7 +52,7 @@ impl Player {
         self.send_messages(&messages);
     }
 
-    pub fn login(&mut self, split: std::vec::Vec<&str>) {
+    pub fn login(&mut self, split: Vec<&str>) {
         if split.len() != 3 {
             self.send_message("You must provide USER and PASSWORD for your account.");
             return;
@@ -92,7 +92,7 @@ impl Player {
 
      // static function so pl borrow can be compared against players
     pub fn name(
-        split: std::vec::Vec<&str>,
+        split: Vec<&str>,
         pl: Rc<RefCell<Player>>,
         players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     ) {
@@ -171,7 +171,26 @@ impl Player {
         }
     }
 
-    pub fn register(&mut self, split: std::vec::Vec<&str>) {
+    pub fn password(&mut self, split: Vec<&str>) {
+        if split.len() != 3 {
+            self.send_message("INVALID!!!! InvaliDDD!!!!!! YOUR PASSWORD commands needs to be formatted correctly with the right arguments... God...");
+            return;
+        }
+
+        if split[1] != split[2] {
+            self.send_message("It looks like your password confirmation failed. Chances are you probably mistyped.");
+            return;
+        }
+
+        if self.db.borrow().password(&self.name, split[1]) {
+            self.send_message("Awesome, your password was changed. Don't forget that the next time you login. Duh.");
+        }
+        else {
+            self.send_message("Catastrophic error probably occurred. I don't know, but it looks like your password was NOT saved.");
+        }
+    }
+
+    pub fn register(&mut self, split: Vec<&str>) {
         if split.len() != 4 {
             self.send_message("Ok you've got an invalid number of parameters for registration.");
             return;
@@ -238,7 +257,7 @@ impl Player {
                 messages.push(format!("{}. {}", index + 1, thrustee));
             }
             if self.is_authenticated {
-                self.db.borrow().update_thrustees(&self.name, added_thrustees.clone());
+                self.db.borrow().thrustees(&self.name, added_thrustees.clone());
             }
         }
 
@@ -253,7 +272,7 @@ impl Player {
                 messages.push(format!("{}. {}", index + 1, thruster));
             }
             if self.is_authenticated {
-                self.db.borrow().update_thrusters(&self.name, added_thrusters);
+                self.db.borrow().thrusters(&self.name, added_thrusters);
             }
         }
 
@@ -268,6 +287,25 @@ impl Player {
         self.send_message(
             "Personal THRUSTS have been cleared! If this was an accident, Good Luck!",
         );
+    }
+
+    pub fn username(&mut self, split: Vec<&str>) {
+        if split.len() != 3 {
+            self.send_message("Invalid number of arguments have been provided to .username command. Please try: `.username [USER] [USER]`");
+            return;
+        }
+
+        if split[1] != split[2] {
+            self.send_message("I'm sorry. There was an error confirming your username. (Did you mistype?)");
+            return;
+        }
+
+        if self.db.borrow().username(&self.name, split[1]) {
+            self.send_message("Congrats, your username was changed. Don't forget that the next time you login. Duh.");
+        }
+        else {
+            self.send_message("Man I don't know what to say. There was an error saving the username to database MongoDB.");
+        }
     }
 
     pub fn who(
