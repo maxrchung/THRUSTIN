@@ -992,7 +992,7 @@ impl Lobby {
 
         // Validate underscores
         let underscores = self.game.deck.count_max_underscores();
-        if underscores > self.max_thrustee_choices as i32 {
+        if underscores > self.hand_size as i32 {
             let msg = format!("Hello, I am unable to start the game. This is because there is a THRUSTEE that requires too many THRUSTERS. Allow me to explain through geometry:<br/>\
             {} (THRUSTER Choices) < {} (THRUSTERS For A THRUSTEE)", self.hand_size, underscores);
             pl.borrow().send_message(&msg);
