@@ -328,7 +328,8 @@ impl Default for Deck {
             "maybe",
             "i dunno man",
 			"splitting yourself in two with a cleaver which results in your body & consciousness to become two separate beings",
-			"achieving dependency from one's own consciousness and living life in 3rd person (Maybe this is the true identity of The Boy in the Mirror... The man staring back is the one controlling your body, you are merely a simulation...)"
+			"achieving dependency from one's own consciousness and living life in 3rd person (Maybe this is the true identity of The Boy in the Mirror... The man staring back is the one controlling your body, you are merely a simulation...)",
+			
         ];
 
         let thrustees = vec![
@@ -482,7 +483,7 @@ impl Default for Deck {
 			"After meeting up with Dean Herbert, the creator of osu!, I asked him what he had planned. Dean said he would be adding _____ in the future.",
 			"My balls are so red, bruised, and swollen it feels so good 🥊🥊🥊🎊🥴 Please _____ it more.",
 			"🤡_____🤡",
-			"I’m getting cucked by _____.",
+            "I’m getting cucked by _____.",
             "There’s no easy way to say it, but _____.",
             "_____ and _____.",
             "They recently discovered some cave paintings depicting _____.",
