@@ -522,17 +522,19 @@ impl Lobby {
         let mut info = Vec::new();
         info.push(format!("\\\\Lobby info//"));
         info.push(format!("Name: {}", self.id));
+        if self.is_host(pl.token) {
+            info.push(format!("***(Only chief [that's you!] may see this!) Password: {}", self.pw));
+        }
+        info.push(format!("Chief: {}", self.host.borrow().name));
         info.push(format!(
-            "Players: {} / {}",
+            "Players: {}/{}",
             self.list.len(),
             self.max_players
         ));
-        info.push(format!("Max points: {}", self.max_points));
-
-        if self.is_host(pl.token) {
-            info.push(format!("Pw: {}", self.pw));
-        }
-
+        info.push(format!("Max points? {}", self.max_points));
+        info.push(format!("Use house THRUSTS? {}", self.use_house));
+        info.push(format!("THRUSTEES? {}", self.max_thrustee_choices));
+        info.push(format!("THRUSTERS? {}", self.hand_size));
         pl.send_messages(&info);
     }
 

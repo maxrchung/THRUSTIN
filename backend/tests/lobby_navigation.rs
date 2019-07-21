@@ -53,7 +53,7 @@ fn start_lobby() {
         .contains("You are the THRUSTEE. Choose NOW.........."));
     assert!(client
         .last(2)
-        .contains("You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!"));
+        .contains("You are a THRUSTER. waiting for a good THRUSTEE from 1; mmm baby!"));
 }
 
 #[test]

@@ -30,14 +30,7 @@ fn endless_configurations() {
     client.send(1, ".p");
     client.send(1, ".i");
     client.read_all();
-    assert_eq!(
-        client.last(1),
-        format!(
-            "\\\\Lobby info//<br/>Name: 0<br/>Players: 1 / {}<br/>Max points: {}",
-            usize::MAX,
-            u8::MAX
-        )
-    );
+    assert_eq!(client.last(1), "\\\\Lobby info//<br/>Name: 0<br/>Chief: EndlessLobbyHostDoggo<br/>Players: 1/18446744073709551615<br/>Max points? 255<br/>Use house THRUSTS? true<br/>THRUSTEES? 3<br/>THRUSTERS? 5");
 }
 
 // Bug: Panic occurrs when trying to join endless after leaving
@@ -59,7 +52,7 @@ fn join_after_a_round_is_played() {
     client.read_all();
     assert_eq!(
         client.last(2),
-        "Joined: 0<br/>THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!"
+        "Joined: 0<br/>THRUSTEE 1 is currently CHOOSING next THRUSTEE. Hold on tight!"
     );
 }
 

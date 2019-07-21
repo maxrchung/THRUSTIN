@@ -20,7 +20,7 @@ fn thrust_back_and_forth() {
     // If THRUSTER was in lobby when game was started
     assert_eq!(
         client.last(2),
-        "You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!"
+        "You are a THRUSTER. waiting for a good THRUSTEE from 1; mmm baby!"
     );
     client.send(2, ".l");
     client.send(2, ".j 1");
@@ -28,7 +28,7 @@ fn thrust_back_and_forth() {
     // If THRUSTER joined midgame
     assert_eq!(
         client.last(2),
-        "Joined: 1<br/>THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!"
+        "Joined: 1<br/>THRUSTEE 1 is currently CHOOSING next THRUSTEE. Hold on tight!"
     );
 
     for n in 0..2 {
@@ -204,13 +204,13 @@ fn show_player_picking_thrustee() {
 
     // THRUSTER start
     client.read_all();
-    assert_eq!(client.last(2), "You are a THRUSTER. waiting for a good THRUSTEE from 1; mmm baby");
+    assert_eq!(client.last(2), "You are a THRUSTER. waiting for a good THRUSTEE from 1; mmm baby!");
 
     // THRUSTER joins THRUSTEE is choosing
     client.send(3, ".n 3");
     client.send(3, ".j 1");
     client.read_all();
-    assert_eq!(client.last(3), "THRUSTEE 1 is currently CHOOSING next THRUSTEE. Hold on tight!");
+    assert_eq!(client.last(3), "Joined: 1<br/>THRUSTEE 1 is currently CHOOSING next THRUSTEE. Hold on tight!");
 
     // THRUSTER joins after THRUSTEE chooses
     client.send(1, ".t 1");
