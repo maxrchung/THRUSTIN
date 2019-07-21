@@ -270,6 +270,16 @@ impl Communication for WebSocketCommunication {
                         &message
                     );
                 }
+                // This block will run if connection has already been disconnected
+                else {
+                    println!(
+                        "{}|_|{}{}|{}",
+                        Local::now(),
+                        &token,
+                        ">",
+                        &message
+                    );
+                }
                 (token, message)
             }
             Err(_) => {
