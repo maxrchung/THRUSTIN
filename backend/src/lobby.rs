@@ -92,14 +92,13 @@ impl Lobby {
             PlayerState::Choosing => {
                 *wait = true;
                 messages.push(
-                    "THRUSTEE is currently CHOOSING next THRUSTEE. Hold on tight!".to_string(),
+                    format!("THRUSTEE {} is currently CHOOSING next THRUSTEE. Hold on tight!", &thrustee.name),
                 );
             }
 
             PlayerState::Deciding => {
                 messages.push(
-                    format!("This is your THRUSTEE: {}<br/>", &lob.game.current_thrustee)
-                        .to_string(),
+                    format!("This is {}'s THRUSTEE for you: {}<br/>", &thrustee.name, &lob.game.current_thrustee),
                 );
                 messages.extend(Lobby::build_thrusters_messages(&pl.game.deck.thrusters));
             }
@@ -421,7 +420,7 @@ impl Lobby {
                                 }
                                 (pts, winner)
                             }
-                            None => (0, String::from("THE GUY WHO LEFT (look imma be real it's easier right now for me to jam some placeholder text here than properly handle THRUSTERS who leave the game after THRUSTING yeah aite we're just gonna clear his points)"))
+                            None => (0, String::from("[[[THE GUY WHO LEFT (look imma be real it's easier right now for me to jam some placeholder text here than properly handle THRUSTERS who leave the game after THRUSTING yeah aite we're just gonna clear his points)]]]"))
                         }
                     };
 
@@ -435,6 +434,7 @@ impl Lobby {
                     )
                     .to_string()];
 
+                    let thrustee_name = self.list[self.game.thrustee].borrow().name.clone();
                     for (i, pl) in self.list.iter().enumerate() {
                         let mut messages = common.clone();
 
@@ -453,7 +453,10 @@ impl Lobby {
                             );
                             messages.extend(self.print_thrustee_choices());
                         } else {
-                            messages.push("get rdy to THRUST.....".to_string());
+                            let mut thruster_player = pl.borrow_mut();
+                            // Set players to Waiting so they can't submit THRUSTER after THRUST is already chosen
+                            thruster_player.state = PlayerState::Waiting;
+                            messages.push(format!("{} is choosing.... get rdy to THRUST.....", &thrustee_name));
                         }
                         pl.borrow().send_messages(&messages);
                     }
@@ -979,6 +982,7 @@ impl Lobby {
             self.refill_thrusters(&mut pl.borrow_mut());
         }
 
+        let thrustee_name = self.list[self.game.thrustee].borrow().name.clone();
         for (i, pl) in self.list.iter().enumerate() {
             let mut pl = pl.borrow_mut();
             pl.state = PlayerState::Waiting;
@@ -990,7 +994,7 @@ impl Lobby {
                 messages.extend(self.print_thrustee_choices());
                 pl.send_messages(&messages);
             } else {
-                pl.send_message("You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!");
+                pl.send_message(&format!("You are a THRUSTER. waiting for a good THRUSTEE from {}; mmm baby!", &thrustee_name));
             }
         }
     }

@@ -173,3 +173,57 @@ fn who_in_game() {
     assert_eq!(client.last(1), "1/7 points: 2<br/>0/7 points: 1 (Yourself)");
     assert_eq!(client.last(2), "1/7 points: 2 (Yourself)<br/>0/7 points: 1");
 }
+
+// Bug: THRUSTER could still THRUST after THRUSTEE already decides
+#[test]
+fn cant_thrust_after_decide() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".p");
+    client.send(2, ".n 2");
+    client.send(2, ".p");
+    client.send(3, ".n 3");
+    client.send(3, ".p");
+    client.send(1, ".t 1");
+    client.thrust(2);
+    client.send(1, ".t 1");
+    client.thrust(3);
+    client.read_all();
+    assert_eq!(client.last(3), "Chill out homeboy... you needa w8 for THRUSTEE to choose...");
+}
+
+// For THRUSTERS, sends which THRUSTEE is currently choosing, so you know who to annoy to pick faster
+#[test]
+fn show_player_picking_thrustee() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".m");
+    client.send(2, ".n 2");
+    client.send(2, ".j 1");
+    client.send(1, ".s");
+
+    // THRUSTER start
+    client.read_all();
+    assert_eq!(client.last(2), "You are a THRUSTER. waiting for a good THRUSTEE from 1; mmm baby");
+
+    // THRUSTER joins THRUSTEE is choosing
+    client.send(3, ".n 3");
+    client.send(3, ".j 1");
+    client.read_all();
+    assert_eq!(client.last(3), "THRUSTEE 1 is currently CHOOSING next THRUSTEE. Hold on tight!");
+
+    // THRUSTER joins after THRUSTEE chooses
+    client.send(1, ".t 1");
+    client.thrust(2);
+    client.send(4, ".n 4");
+    client.send(4, ".j 1");
+    client.read_all();
+    assert!(client.last(4).contains("This is 1's THRUSTEE for you:"));
+
+    // THRUSTER after THRUSTEE decides
+    client.send(1, ".t 1");
+    client.read_all();
+    assert!(client.last(1).contains("2 is choosing.... get rdy to THRUST....."));
+    assert!(client.last(3).contains("2 is choosing.... get rdy to THRUST....."));
+    assert!(client.last(4).contains("2 is choosing.... get rdy to THRUST....."));
+}
