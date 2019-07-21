@@ -145,3 +145,31 @@ fn shows_correct_index_after_thrusting() {
     assert!(client.last(1).contains("2. "));
     assert!(client.last(2).contains("2. "));
 }
+
+#[test]
+fn who_in_game() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".m");
+    client.send(1, ".s");
+    client.send(1, ".w");
+    client.read_all();
+    assert_eq!(client.last(1), "0/7 points: 1 (Yourself)");
+
+    client.send(2, ".n 2");
+    client.send(2, ".j 1");
+    client.send(1, ".w");
+    client.send(2, ".w");
+    client.read_all();
+    assert_eq!(client.last(1), "0/7 points: 2<br/>0/7 points: 1 (Yourself)");
+    assert_eq!(client.last(2), "0/7 points: 2 (Yourself)<br/>0/7 points: 1");
+
+    client.send(1, ".t 1");
+    client.thrust(2);
+    client.send(1, ".t 1");
+    client.send(1, ".w");
+    client.send(2, ".w");
+    client.read_all();
+    assert_eq!(client.last(1), "1/7 points: 2<br/>0/7 points: 1 (Yourself)");
+    assert_eq!(client.last(2), "1/7 points: 2 (Yourself)<br/>0/7 points: 1");
+}

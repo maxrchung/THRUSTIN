@@ -238,10 +238,10 @@ pub fn playing_commands(
         ".help" | ".h" => list_playing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
-        ".points" | ".p" => lobby.points_in_game(pl),
         ".thrust" | ".t" => lobby.thrust(split, pl),
         ".kick" | ".k" => lobby.kick(split, pl),
         ".end" | ".e" => lobby.end(pl),
+        ".who" | ".w" => lobby.who_in_game(pl),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl.borrow().send_message("Bruh that's an invalid command."),
     }
@@ -256,8 +256,8 @@ fn list_playing_commands(pl: &Player, host: bool) {
             "Look at your lobby's settings for some info(rmation).",
         ),
         (".leave", ".l", "Goodbye..."),
-        (".points", ".p", "See who's got the points in the lobby."),
         (".THRUST 1", ".t 1", "THRUST your first THRUSTER in baby."),
+        (".who", ".w", "See who's got the points in the lobby and find out who you are."),
     ];
 
     if host {
@@ -298,10 +298,10 @@ pub fn choosing_commands(
         ".help" | ".h" => list_choosing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
-        ".points" | ".p" => lobby.points_in_game(pl),
         ".thrust" | ".t" => lobby.choose(split, pl),
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
+        ".who" | ".w" => lobby.who_in_game(pl),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl
             .borrow()
@@ -318,8 +318,8 @@ fn list_choosing_commands(pl: &Player, host: bool) {
             "Observe the information data relevant to your lobby's configurations",
         ),
         (".leave", ".l", "This shall be farewell, for now..."),
-        (".points", ".p", "See who's got the points in the lobby."),
         (".THRUST 2", ".t 2", "Choose THRUSTEE at index 2 to use."),
+        (".who", ".w", "See who's got the points in the lobby."),
     ];
 
     if host {
@@ -355,10 +355,10 @@ pub fn deciding_commands(
         ".help" | ".h" => list_deciding_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
-        ".points" | ".p" => lobby.points_in_game(pl),
         ".thrust" | ".t" => lobby.decide(split, pl),
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
+        ".who" | ".w" => lobby.who_in_game(pl),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl.borrow().send_message("Bro! That's an invalid command."),
     }
@@ -369,8 +369,8 @@ fn list_deciding_commands(pl: &Player, host: bool) {
         (".help", ".h", "this is it chief"),
         (".info", ".i", "Browse the inherent settings that have been configured in the presence of this lobby's settings existence."),
         (".leave", ".l", "Farewell friend..."),
-        (".points", ".p", "See who's got the points in the lobby."),
         (".THRUST 1", ".t 1", "You've made your decision. THRUSTER at index 1 is the best one."),
+        (".who", ".w", "See how the points are shapin' up and who is in the lobby?"),
     ];
 
     if host {
@@ -405,13 +405,13 @@ pub fn waiting_commands(
     match &*com {
         ".help" | ".h" => list_waiting_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
-        ".points" | ".p" => lobby.points_in_game(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
         ".thrust" | ".t" => pl
             .borrow()
             .send_message("Chill out homeboy... you needa w8 for THRUSTEE to choose..."),
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
+        ".who" | ".w" => lobby.who_in_game(pl),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl
             .borrow()
@@ -424,8 +424,8 @@ fn list_waiting_commands(pl: &Player, host: bool) {
         (".help", ".h", "this is it chief"),
         (".info", ".i", "Wondering... what is the relevancy of the configurations to do with this lobby's present status of being set."),
         (".leave", ".l", "The distance between us shall increase... metaphorically..."),
-        (".points", ".p", "See who's got the points in the lobby."),
         (".THRUST", ".t", "This doesn't actually do anything. We're just here to let you know you can't THRUST."),
+        (".who", ".w", "Who it be what's going down. How many points you got?"),
     ];
 
     if host {

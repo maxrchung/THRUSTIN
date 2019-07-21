@@ -778,22 +778,6 @@ impl Lobby {
         }
     }
 
-    pub fn points_in_game(&self, pl: Rc<RefCell<Player>>) {
-        let pl = pl.borrow();
-        let mut messages = Vec::new();
-        messages.push(format!(
-            "This is the Max points to strive for to win: {}",
-            self.max_points
-        ));
-
-        for rc in &self.list {
-            let player = rc.borrow();
-            messages.push(format!("{}: {}", player.name, player.game.points));
-        }
-
-        pl.send_messages(&messages);
-    }
-
     pub fn thrustees(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
         let pl = pl.borrow();
         if !self.is_host(pl.token) {
@@ -1042,11 +1026,28 @@ impl Lobby {
             messages.push(message);
         }
 
-        if messages.is_empty() {
-            messages.push(String::from("There's no players lmfao"));
+        messages.sort_unstable_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+
+        pl.send_messages(&messages);
+    }
+
+    pub fn who_in_game(&self, pl: Rc<RefCell<Player>>) {
+        let pl = pl.borrow();
+        let token = pl.token;
+        let mut messages = Vec::new();
+        for rc in &self.list {
+            let player = rc.borrow();
+            let you = if token == player.token {
+                " (Yourself)"
+            }
+            else {
+                ""
+            };
+            messages.push(format!("{}/{} points: {}{}", player.game.points, self.max_points, player.name, you));
         }
 
-        messages.sort_unstable_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+        // Sort the messages so that they are ordered by highest points
+        messages.sort_unstable_by(|a, b| a.cmp(b).reverse());
 
         pl.send_messages(&messages);
     }
