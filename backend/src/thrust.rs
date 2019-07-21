@@ -262,7 +262,7 @@ impl Default for Deck {
 			"tripping while running away from the police, getting your dick stuck up your nose and accidentally cumming from nose penetration",
 			"THRUSTIN bugs",
 			"normies",
-			"Okay, retard.",
+			"Okay, retard",
 			"the revenge of Paxton",
 			"Paxton getting fired",
 			"FU🈵CK!!!! PL😵EASE H e 😖LP m EEE!! I’M SPE😜😜RGIN G OU T!!❗!!!!❗😨😫",
