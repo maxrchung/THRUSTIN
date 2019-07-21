@@ -373,7 +373,7 @@ impl Default for Deck {
             "I really want to _____ before I die.",
             "There's only one more thing I like more than anime, and it's _____.", 
             "Whenever I see _____ it reminds me of Kenny.", 
-            "Fuck _____ I'm going to play osu! and suck my own dick.",
+            "Fuck _____, I'm going to play osu! and suck my own dick.",
             "They should really bring back _____, I missed it when it was banned in 2020.", 
             "Do you ever wake up and _____?", 
             "I sit and ponder why _____.", 
