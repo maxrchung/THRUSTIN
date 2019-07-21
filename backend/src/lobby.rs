@@ -403,7 +403,7 @@ impl Lobby {
                         // Assign picked thruster a point
                         match self.search_token(token) {
                             Some(index) => {
-                                let (pts, name) = {
+                                let (pts, winner) = {
                                     let mut chosen_thruster = self.list[index].borrow_mut();
                                     chosen_thruster.game.points += 1;
                                     (chosen_thruster.game.points.clone(), chosen_thruster.name.clone())
@@ -412,14 +412,14 @@ impl Lobby {
                                 // Check if winner
                                 if pts >= self.max_points {
                                     let messages = vec![
-                                        format!("{} has chosen this THRUSTER as the chosen THRUST, bois:<br/>{}<br/>", name, chosen_thrust),
-                                        format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!",  self.list[index].borrow().name)
+                                        format!("{} has chosen this THRUSTER as the chosen THRUST, bois:<br/>{}<br/>", &name, &chosen_thrust),
+                                        format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!",  winner)
                                     ];
                                     self.send_messages(messages);
                                     self.end_game();
                                     return;
                                 }
-                                (pts, name)
+                                (pts, winner)
                             }
                             None => (0, String::from("THE GUY WHO LEFT (look imma be real it's easier right now for me to jam some placeholder text here than properly handle THRUSTERS who leave the game after THRUSTING yeah aite we're just gonna clear his points)"))
                         }

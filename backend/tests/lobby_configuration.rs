@@ -125,11 +125,11 @@ fn set_points_max() {
     client.read_all();
     assert!(client
         .last(1)
-        .contains("2 has chosen this THRUSTER as the chosen THRUST, bois:"));
+        .contains("1 has chosen this THRUSTER as the chosen THRUST, bois:"));
     assert!(client.last(1).contains("Congratulations, 2! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!"));
     assert!(client
         .last(2)
-        .contains("2 has chosen this THRUSTER as the chosen THRUST, bois:"));
+        .contains("1 has chosen this THRUSTER as the chosen THRUST, bois:"));
     assert!(client.last(2).contains("Congratulations, 2! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!"));
 }
 
