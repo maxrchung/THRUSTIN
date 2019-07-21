@@ -163,11 +163,11 @@ When you are the THRUSTEE choosing a THRUSTEE for THRUSTERS to THRUST into.
 ##### `.l(eave)`
 [See](#leave)
 
-##### `.p(oints)`
-Show who's got how many points in the lobby.
-
 ##### `.T(HRUST) 1`
 Choose the THRUSTEE at index 1 to use.
+
+##### `.w(ho)`
+Show who's got how many points in the lobby and also who's in this lobby yo.
 
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
@@ -187,8 +187,8 @@ When you are a THRUSTER waiting for THRUSTEE to be chosen.
 ##### `.l(eave)`
 [See](#leave)
 
-##### `.p(oints)`
-[See](#points)
+##### `.w(ho)`
+[See](#who-2)
 
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
@@ -208,11 +208,11 @@ When a THRUSTEE is chosen and you are a THRUSTER ready to THRUST one of your THR
 ##### `.l(eave)`
 [See](#leave)
 
-##### `.p(oints)`
-[See](#points)
-
 ##### `.T(HRUST) 1`
 Choose to use your THRUSTER at index 1 to THRUST into the chosen THRUSTEE. After THRUSTING, you cannot THRUST again. Note that for a THRUSTEE that requires multiple THRUSTERS, you can THRUST the same THRUSTER into it multiple times. I wanted to do this so that you can have more options in the digital era of video games where you are not reliant on physical cards and can have possibilities such as this one.
+
+##### `.w(ho)`
+[See](#who-2)
 
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
@@ -232,11 +232,11 @@ When you are the THRUSTEE and ready to pick your favorite THRUST.
 ##### `.l(eave)`
 [See](#leave)
 
-##### `.p(oints)`
-[See](#points)
-
 ##### `.T(HRUST) 1`
 Okay, you select the completed THRUST at index 1 as the best one.
+
+##### `.w(ho)`
+[See](#who-2)
 
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
