@@ -351,7 +351,7 @@ impl Default for Deck {
             "The secret to getting the best _____ is slavery.",
             "While I was on the way to school I ran into _____ and started slamming my dick.", 
             "The only thing worse than getting caught playing osu! is _____.", 
-            "<br/>The three steps to getting good at osu are:<br/>1. Buying a tablet<br/>2. Getting a good keyboard<br/>3. _____.",
+            "<br/>The three steps to getting good at osu are:<br/>1). Buying a tablet<br/>2). Getting a good keyboard<br/>3). _____.",
             "_____, the only thing better than programming in Rust.", 
             "Instead of paying for _____ I would rather slap Kenny on the ass.", 
             "I am _____ and I want to fucking die.",
