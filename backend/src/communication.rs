@@ -74,7 +74,7 @@ impl ChannelCommunication {
     // A modified version of read_all for commands that need more time
     // Introduced because of db and password hashing
     pub fn long_read_all(&mut self) {
-        thread::sleep(Duration::from_millis(2000));
+        thread::sleep(Duration::from_millis(5000));
         self.read_all();
     }
 
@@ -272,13 +272,7 @@ impl Communication for WebSocketCommunication {
                 }
                 // This block will run if connection has already been disconnected
                 else {
-                    println!(
-                        "{}|_|{}{}|{}",
-                        Local::now(),
-                        &token,
-                        ">",
-                        &message
-                    );
+                    println!("{}|_|{}{}|{}", Local::now(), &token, ">", &message);
                 }
                 (token, message)
             }
