@@ -188,9 +188,9 @@ impl Lobby {
         pl.send_message("You have been leaved from the lobby okay!");
     }
 
-    fn new(player: &Rc<RefCell<Player>>, id: i32, max_players: usize, max_points: u8) -> Lobby {
+    fn new(player: &Rc<RefCell<Player>>, id: i32, pass: &str, max_players: usize, max_points: u8) -> Lobby {
         Lobby {
-            pw: String::new(),
+            pw: String::from(pass),
             list: Vec::new(),
             max_players,
             id,
@@ -685,10 +685,20 @@ impl Lobby {
         pl.send_messages(&messages);
     }
 
-    pub fn make(pl_rc: Rc<RefCell<Player>>, lobby_id: &mut i32, lobbies: &mut HashMap<i32, Lobby>) {
-        let mut lobby = Lobby::new(&pl_rc, *lobby_id, 10, 7);
+    pub fn make(input: Vec<&str>, pl_rc: Rc<RefCell<Player>>, lobby_id: &mut i32, lobbies: &mut HashMap<i32, Lobby>) {
         let mut pl = pl_rc.borrow_mut();
+        if input.len() > 2 {
+            pl.send_message("Yo you gotta give the right parameters into .make bro!");
+            return;
+        }
 
+        let pass = if input.len() > 1 {
+            input[1]
+        } else {
+            ""
+        };
+
+        let mut lobby = Lobby::new(&pl_rc, *lobby_id, pass, 10, 7);
         pl.lobby = lobby_id.clone();
         pl.state = PlayerState::InLobby;
         lobby.list.push(pl_rc.clone());
@@ -703,7 +713,7 @@ impl Lobby {
         lobby_id: &mut i32,
         lobbies: &mut HashMap<i32, Lobby>,
     ) {
-        let mut new_lobby = Lobby::new(&pl_rc, 0, usize::MAX, u8::MAX);
+        let mut new_lobby = Lobby::new(&pl_rc, 0, "", usize::MAX, u8::MAX);
         new_lobby.start_endless();
 
         lobbies.insert(lobby_id.clone(), new_lobby.clone());

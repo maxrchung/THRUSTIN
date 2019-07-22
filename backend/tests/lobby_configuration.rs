@@ -163,3 +163,18 @@ fn default_lobby_configuration() {
     client.read_all();
     assert_eq!(client.last(1), "\\\\Lobby info//<br/>Name: 1<br/>***(Only chief [that\'s you!] may see this!) Password: <br/>Chief: 1<br/>Players: 1/10<br/>Max points? 7<br/>Use house THRUSTS? true<br/>THRUSTEES? 3<br/>THRUSTERS? 5");
 }
+
+#[test]
+fn make_new_lobby_with_password() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".m 1 1 1 1 1");
+    client.read_all();
+    assert_eq!(client.last(1), "Yo you gotta give the right parameters into .make bro!");
+
+    client.send(1, ".m TesT1N6!!!!!");
+    client.send(2, ".n 2");
+    client.send(2, ".j 1 TesT1N6!!!!!");
+    client.read_all();
+    assert_eq!(client.last(2), "Joined: 1");
+}

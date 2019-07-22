@@ -83,7 +83,7 @@ pub fn choose_name_commands(
 
 fn list_choose_name_commands(pl: &Player) {
     pl.send_messages(&vec![
-        String::from("Hey guys, Max here. I'm rewriting this section since it changed a bit with accounts. Basically, this first phase is the Choose Name phase to identify yourself. If you're lookin' for something basic, just enter something like `.name AWESOMEbruh` and continue forwards. If you register an account with `.register` and later login with `.login` though, you get some new features like saved THRUSTS and stats that go to our database. Cool, huh?"),
+        String::from("Hey guys, Max here. I'm rewriting this section since it changed a bit with the addition of saved accounts. So basically, this first phase is the Choose Name phase to identify yourself. If you're lookin' for something basic, just enter something like `.name AWESOMEbruh` and continue forwards. If you register an account with `.register` and later login with `.login` though, you get some new features like saved THRUSTS and stats that go to our database. Cool, huh?"),
         generate_table(vec![
             (".help", ".h", "this is it chief"),
             (".login AwesomeUser Pa$4WorD??", ".l AwesomeUser Pa$4WorD??", "Login to the AwesomeUser account with Pa$4WorD?? as password."),
@@ -109,7 +109,7 @@ pub fn out_of_lobby_commands(
         ".help" | ".h" => list_out_commands(&pl.borrow()),
         ".join" | ".j" => Lobby::join(split, pl, lobbies),
         ".list" | ".l" => Lobby::list(pl, lobbies),
-        ".make" | ".m" => Lobby::make(pl, lobby_id, lobbies),
+        ".make" | ".m" => Lobby::make(split, pl, lobby_id, lobbies),
         ".name" | ".n" => Player::name(split, pl, players),
         ".password" | ".pa" => pl.borrow_mut().password(split),
         ".play" | ".p" => Lobby::join(vec![".join", "0"], pl, lobbies),
