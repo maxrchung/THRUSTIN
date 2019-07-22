@@ -1,6 +1,6 @@
 [package]
 name = "thrustin"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Max Chung, Alex Liu, Royce Sato"]
 edition = "2018"
 description = "xperience epic adventures by THRUSTING some THRUSTERS into THRUSTEES https://THRUSTIN.rs. E"
