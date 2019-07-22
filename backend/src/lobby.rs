@@ -665,8 +665,13 @@ impl Lobby {
             };
             messages.push(
                 format!(
-                    "id: {} | {}/{} players | {}",
+                    "ID: {} | Password: {} | Players: {}/{} | Currently: {}",
                     lob.id,
+                    if lob.pw.is_empty() {
+                        "❌"
+                    } else {
+                        "✅"
+                    },
                     lob.list.len(),
                     lob.max_players,
                     state
@@ -675,9 +680,7 @@ impl Lobby {
             );
         }
 
-        if messages.is_empty() {
-            messages.push("No lobbies bro...".to_string());
-        }
+        messages.sort_unstable_by(|a, b| a.cmp(&b));
 
         pl.send_messages(&messages);
     }
