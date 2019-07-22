@@ -686,14 +686,14 @@ impl Lobby {
     }
 
     pub fn make(pl_rc: Rc<RefCell<Player>>, lobby_id: &mut i32, lobbies: &mut HashMap<i32, Lobby>) {
-        let mut new_lobby = Lobby::new(&pl_rc, *lobby_id, 10, 7);
+        let mut lobby = Lobby::new(&pl_rc, *lobby_id, 10, 7);
         let mut pl = pl_rc.borrow_mut();
 
         pl.lobby = lobby_id.clone();
         pl.state = PlayerState::InLobby;
-        new_lobby.list.push(pl_rc.clone());
+        lobby.list.push(pl_rc.clone());
 
-        lobbies.insert(lobby_id.clone(), new_lobby.clone());
+        lobbies.insert(lobby_id.clone(), lobby.clone());
         pl.send_message(&format!("Created lobby: {}", lobby_id));
         *lobby_id = *lobby_id + 1;
     }
