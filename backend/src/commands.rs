@@ -257,7 +257,11 @@ fn list_playing_commands(pl: &Player, host: bool) {
         ),
         (".leave", ".l", "Goodbye..."),
         (".THRUST 1", ".t 1", "THRUST your first THRUSTER in baby."),
-        (".who", ".w", "See who's got the points in the lobby and find out who you are."),
+        (
+            ".who",
+            ".w",
+            "See who's got the points in the lobby and find out who you are.",
+        ),
     ];
 
     if host {

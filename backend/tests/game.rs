@@ -189,7 +189,10 @@ fn cant_thrust_after_decide() {
     client.send(1, ".t 1");
     client.thrust(3);
     client.read_all();
-    assert_eq!(client.last(3), "Chill out homeboy... you needa w8 for THRUSTEE to choose...");
+    assert_eq!(
+        client.last(3),
+        "Chill out homeboy... you needa w8 for THRUSTEE to choose..."
+    );
 }
 
 // For THRUSTERS, sends which THRUSTEE is currently choosing, so you know who to annoy to pick faster
@@ -204,13 +207,19 @@ fn show_player_picking_thrustee() {
 
     // THRUSTER start
     client.read_all();
-    assert_eq!(client.last(2), "You are a THRUSTER. waiting for a good THRUSTEE from 1; mmm baby!");
+    assert_eq!(
+        client.last(2),
+        "You are a THRUSTER. waiting for a good THRUSTEE from 1; mmm baby!"
+    );
 
     // THRUSTER joins THRUSTEE is choosing
     client.send(3, ".n 3");
     client.send(3, ".j 1");
     client.read_all();
-    assert_eq!(client.last(3), "Joined: 1<br/>THRUSTEE 1 is currently CHOOSING next THRUSTEE. Hold on tight!");
+    assert_eq!(
+        client.last(3),
+        "Joined: 1<br/>THRUSTEE 1 is currently CHOOSING next THRUSTEE. Hold on tight!"
+    );
 
     // THRUSTER joins after THRUSTEE chooses
     client.send(1, ".t 1");
@@ -223,7 +232,13 @@ fn show_player_picking_thrustee() {
     // THRUSTER after THRUSTEE decides
     client.send(1, ".t 1");
     client.read_all();
-    assert!(client.last(1).contains("2 is choosing.... get rdy to THRUST....."));
-    assert!(client.last(3).contains("2 is choosing.... get rdy to THRUST....."));
-    assert!(client.last(4).contains("2 is choosing.... get rdy to THRUST....."));
+    assert!(client
+        .last(1)
+        .contains("2 is choosing.... get rdy to THRUST....."));
+    assert!(client
+        .last(3)
+        .contains("2 is choosing.... get rdy to THRUST....."));
+    assert!(client
+        .last(4)
+        .contains("2 is choosing.... get rdy to THRUST....."));
 }

@@ -91,15 +91,17 @@ impl Lobby {
         match thrustee.state {
             PlayerState::Choosing => {
                 *wait = true;
-                messages.push(
-                    format!("THRUSTEE {} is currently CHOOSING next THRUSTEE. Hold on tight!", &thrustee.name),
-                );
+                messages.push(format!(
+                    "THRUSTEE {} is currently CHOOSING next THRUSTEE. Hold on tight!",
+                    &thrustee.name
+                ));
             }
 
             PlayerState::Deciding => {
-                messages.push(
-                    format!("This is {}'s THRUSTEE for you: {}<br/>", &thrustee.name, &lob.game.current_thrustee),
-                );
+                messages.push(format!(
+                    "This is {}'s THRUSTEE for you: {}<br/>",
+                    &thrustee.name, &lob.game.current_thrustee
+                ));
                 messages.extend(Lobby::build_thrusters_messages(&pl.game.deck.thrusters));
             }
 
@@ -188,7 +190,13 @@ impl Lobby {
         pl.send_message("You have been leaved from the lobby okay!");
     }
 
-    fn new(player: &Rc<RefCell<Player>>, id: i32, pass: &str, max_players: usize, max_points: u8) -> Lobby {
+    fn new(
+        player: &Rc<RefCell<Player>>,
+        id: i32,
+        pass: &str,
+        max_players: usize,
+        max_points: u8,
+    ) -> Lobby {
         Lobby {
             pw: String::from(pass),
             list: Vec::new(),
@@ -456,7 +464,10 @@ impl Lobby {
                             let mut thruster_player = pl.borrow_mut();
                             // Set players to Waiting so they can't submit THRUSTER after THRUST is already chosen
                             thruster_player.state = PlayerState::Waiting;
-                            messages.push(format!("{} is choosing.... get rdy to THRUST.....", &thrustee_name));
+                            messages.push(format!(
+                                "{} is choosing.... get rdy to THRUST.....",
+                                &thrustee_name
+                            ));
                         }
                         pl.borrow().send_messages(&messages);
                     }
@@ -523,14 +534,13 @@ impl Lobby {
         info.push(format!("\\\\Lobby info//"));
         info.push(format!("Name: {}", self.id));
         if self.is_host(pl.token) {
-            info.push(format!("***(Only chief [that's you!] may see this!) Password: {}", self.pw));
+            info.push(format!(
+                "***(Only chief [that's you!] may see this!) Password: {}",
+                self.pw
+            ));
         }
         info.push(format!("Chief: {}", self.host.borrow().name));
-        info.push(format!(
-            "Players: {}/{}",
-            self.list.len(),
-            self.max_players
-        ));
+        info.push(format!("Players: {}/{}", self.list.len(), self.max_players));
         info.push(format!("Max points? {}", self.max_points));
         info.push(format!("Use house THRUSTS? {}", self.use_house));
         info.push(format!("THRUSTEES? {}", self.max_thrustee_choices));
@@ -667,11 +677,7 @@ impl Lobby {
                 format!(
                     "ID: {} | Password: {} | Players: {}/{} | Currently: {}",
                     lob.id,
-                    if lob.pw.is_empty() {
-                        "❌"
-                    } else {
-                        "✅"
-                    },
+                    if lob.pw.is_empty() { "❌" } else { "✅" },
                     lob.list.len(),
                     lob.max_players,
                     state
@@ -685,18 +691,19 @@ impl Lobby {
         pl.send_messages(&messages);
     }
 
-    pub fn make(input: Vec<&str>, pl_rc: Rc<RefCell<Player>>, lobby_id: &mut i32, lobbies: &mut HashMap<i32, Lobby>) {
+    pub fn make(
+        input: Vec<&str>,
+        pl_rc: Rc<RefCell<Player>>,
+        lobby_id: &mut i32,
+        lobbies: &mut HashMap<i32, Lobby>,
+    ) {
         let mut pl = pl_rc.borrow_mut();
         if input.len() > 2 {
             pl.send_message("Yo you gotta give the right parameters into .make bro!");
             return;
         }
 
-        let pass = if input.len() > 1 {
-            input[1]
-        } else {
-            ""
-        };
+        let pass = if input.len() > 1 { input[1] } else { "" };
 
         let mut lobby = Lobby::new(&pl_rc, *lobby_id, pass, 10, 7);
         pl.lobby = lobby_id.clone();
@@ -1009,7 +1016,10 @@ impl Lobby {
                 messages.extend(self.print_thrustee_choices());
                 pl.send_messages(&messages);
             } else {
-                pl.send_message(&format!("You are a THRUSTER. waiting for a good THRUSTEE from {}; mmm baby!", &thrustee_name));
+                pl.send_message(&format!(
+                    "You are a THRUSTER. waiting for a good THRUSTEE from {}; mmm baby!",
+                    &thrustee_name
+                ));
             }
         }
     }
@@ -1058,11 +1068,13 @@ impl Lobby {
             let player = rc.borrow();
             let you = if token == player.token {
                 " (Yourself)"
-            }
-            else {
+            } else {
                 ""
             };
-            messages.push(format!("{}/{} points: {}{}", player.game.points, self.max_points, player.name, you));
+            messages.push(format!(
+                "{}/{} points: {}{}",
+                player.game.points, self.max_points, player.name, you
+            ));
         }
 
         // Sort the messages so that they are ordered by highest points

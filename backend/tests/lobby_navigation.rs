@@ -217,7 +217,10 @@ fn out_of_lobby_list() {
     client.send(1, ".n 1");
     client.send(1, ".l");
     client.read_all();
-    assert_eq!(client.last(1), "ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing");
+    assert_eq!(
+        client.last(1),
+        "ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
+    );
 
     client.send(2, ".n 2");
     client.send(2, ".m");
@@ -229,7 +232,7 @@ fn out_of_lobby_list() {
     client.send(1, ".l");
     client.read_all();
     assert_eq!(client.last(1), "ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ✅ | Players: 1/10 | Currently: Waiting");
-    
+
     client.send(3, ".n 3");
     client.send(3, ".j 1 yolo");
     client.send(2, ".s");
