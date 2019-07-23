@@ -359,7 +359,7 @@ impl Default for Deck {
 			"mountain of testosterone and muscle",
 			"feminine dick",
 			"gay rights",
-			"Yakub the Scientist, a man of rippling muscle ",
+			"Yakub the Scientist, a man of rippling muscle",
 			"Jacob Graves",
 			"Chest Flattener",
 			"lolis",
