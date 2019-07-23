@@ -87,7 +87,7 @@ fn appoint_another_chief() {
     client.read_all();
     assert_eq!(
         client.last(2),
-        "You are a THRUSTER. waiting for a good THRUSTEE; mmm baby!"
+        "You are a THRUSTER. waiting for a good THRUSTEE from 1; mmm baby!"
     );
     assert!(client
         .last(1)
@@ -125,11 +125,11 @@ fn set_points_max() {
     client.read_all();
     assert!(client
         .last(1)
-        .contains("2 has chosen this THRUSTER as the chosen THRUST, bois:"));
+        .contains("1 has chosen this THRUSTER as the chosen THRUST, bois:"));
     assert!(client.last(1).contains("Congratulations, 2! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!"));
     assert!(client
         .last(2)
-        .contains("2 has chosen this THRUSTER as the chosen THRUST, bois:"));
+        .contains("1 has chosen this THRUSTER as the chosen THRUST, bois:"));
     assert!(client.last(2).contains("Congratulations, 2! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!"));
 }
 
@@ -151,5 +151,33 @@ fn set_password() {
     client.send(2, ".j 1 lololol");
     client.read_all();
     assert_eq!(client.last(1), "2 has joined the lobby.");
+    assert_eq!(client.last(2), "Joined: 1");
+}
+
+#[test]
+fn default_lobby_configuration() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".m");
+    client.send(1, ".i");
+    client.read_all();
+    assert_eq!(client.last(1), "\\\\Lobby info//<br/>Name: 1<br/>***(Only chief [that\'s you!] may see this!) Password: <br/>Chief: 1<br/>Players: 1/10<br/>Max points? 7<br/>Use house THRUSTS? true<br/>THRUSTEES? 3<br/>THRUSTERS? 5");
+}
+
+#[test]
+fn make_new_lobby_with_password() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".m 1 1 1 1 1");
+    client.read_all();
+    assert_eq!(
+        client.last(1),
+        "Yo you gotta give the right parameters into .make bro!"
+    );
+
+    client.send(1, ".m TesT1N6!!!!!");
+    client.send(2, ".n 2");
+    client.send(2, ".j 1 TesT1N6!!!!!");
+    client.read_all();
     assert_eq!(client.last(2), "Joined: 1");
 }
