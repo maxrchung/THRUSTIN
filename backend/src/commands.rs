@@ -69,9 +69,9 @@ pub fn choose_name_commands(
 ) {
     let com = get_command(&split);
     match &*com {
+        ".name" | ".n" => Player::name(split, pl, players),
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
         ".login" | ".l" => pl.borrow_mut().login(split),
-        ".name" | ".n" => Player::name(split, pl, players),
         ".register" | ".r" => pl.borrow_mut().register(split),
         ".disconnect" => disconnect(pl.borrow().token, players),
         _ => {
@@ -86,8 +86,8 @@ fn list_choose_name_commands(pl: &Player) {
         String::from("Hey guys, Max here. I'm rewriting this section since it changed a bit with the addition of saved accounts. So basically, this first phase is the Choose Name phase to identify yourself. If you're lookin' for something basic, just enter something like `.name AWESOMEbruh` and continue forwards. If you register an account with `.register` and later login with `.login` though, you get some new features like saved THRUSTS and stats that go to our database. Cool, huh?"),
         generate_table(vec![
             (".help", ".h", "this is it chief"),
-            (".login AwesomeUser Pa$4WorD??", ".l AwesomeUser Pa$4WorD??", "Login to the AwesomeUser account with Pa$4WorD?? as password."),
             (".name Y0LoSWAG4206669", ".n Y0LoSWAG4206669", "great this will change your name to Y0LoSWAG4206669"),
+            (".login AwesomeUser Pa$4WorD??", ".l AwesomeUser Pa$4WorD??", "Login to the AwesomeUser account with Pa$4WorD?? as password."),
             (".register AwesomeUser Pa$4WorD?? Pa$4WorD??", ".r AwesomeUser Pa$4WorD?? Pa$4WorD??", "Register an account and confirm the password."),
         ])
     ]);
@@ -131,6 +131,7 @@ fn list_out_commands(pl: &Player) {
         (".join 1", ".j 1", "Join the lobby with ID 1."),
         (".list", ".l", "Lists info for lobbies that are available"),
         (".make", ".m", "Make a new lobby"),
+        (".make passW0RD", ".m passW0RD", "Make a new lobby and give it a password set to passW0RD."),
         (".name xx69SWAGGER911xx", ".n xx69SWAGGER911xx", "If you must, do this to change your name to xx69SWAGGER911xx"),
         (".play", ".p", "Join an endless public lobby with some other big doggos."),
         (".THRUST", ".t", "This will list out your added THRUSTEES and THRUSTERS. (THRUSTERS are THRUSTED into the THRUSTEES's underscores.) Lobbies will combine and use everyone's awesome THRUSTS."),
