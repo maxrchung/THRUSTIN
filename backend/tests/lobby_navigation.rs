@@ -15,7 +15,7 @@ fn make_lobby() {
 fn join_lobby() {
     let mut client = common::setup();
     client.send(1, ".n 1");
-    client.send(1, ".m 1");
+    client.send(1, ".m");
     client.send(2, ".n 2");
     client.send(2, ".j 1");
     client.read_all();
@@ -27,7 +27,7 @@ fn join_lobby() {
 fn leave_lobby() {
     let mut client = common::setup();
     client.send(1, ".n 1");
-    client.send(1, ".m 1");
+    client.send(1, ".m");
     client.send(2, ".n 2");
     client.send(2, ".j 1");
     client.send(2, ".l");

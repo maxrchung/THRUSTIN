@@ -523,7 +523,7 @@ impl Default for Deck {
             "A perfect night out with _____ and _____.",
             "Rust is a multi-paradigm _____ focused on safety, especially safe concurrency.",
             "Rust is a reddish- or yellowish-brown flaky coating of iron oxide that is formed on iron or steel by oxidation, especially in the presence of _____.",
-            "<br/>Nobody:<br/>Me: _____",
+            "<br/>Nobody:<br/>Me: _____.",
             "Ah yeah, it feels good to _____.",
             "I know what you are saying, but what are you _____?",
             "_____ decided to _____.",
