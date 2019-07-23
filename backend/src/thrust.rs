@@ -99,9 +99,9 @@ impl Default for Deck {
             "digging up a mostly rotted corpse, hook it up with wires that connect to a source of electricity, puppeteer it and have people pay to have sex with it", 
             "gayme jam", 
             "who wrote these", 
-            "I gurgled a moist egg yolk and vomited from my jowls a chunky curd of phlegm that was dripping with roaches, maggots and mucus.",
+            "I gurgled a moist egg yolk and vomited from my jowls a chunky curd of phlegm that was dripping with roaches, maggots and mucus",
             "Slackjaws drooling on my dick",
-             "jacking off in a public restroom and accidentally cumming on the guy next to me", 
+            "jacking off in a public restroom and accidentally cumming on the guy next to me", 
             "secretly whacking your meat to hentai in class while the guy next to you tries to sleep", 
             "how old I was when my older sister made me her sex slave",
             "calling my teammates trash in League of Legends and getting fucking banned for it",
@@ -246,7 +246,7 @@ impl Default for Deck {
 			"your sister",
 			"trap cosplay",
 			"FREEDOM DiVE [FOUR DIMENSIONS]",
-			"From the deepest depths of my heart, Fuck you",
+			"from the deepest depths of my heart, Fuck You",
 			"choking a new top play, getting visibly upset, and throwing your XP-Pen G640 against the wall only to get a new one next week",
 			"blankly gaze at my ceiling while rhythmically concaving my head in with a hammer to my favorite osu! song",
 			"Fortnite",
@@ -262,7 +262,7 @@ impl Default for Deck {
 			"tripping while running away from the police, getting your dick stuck up your nose and accidentally cumming from nose penetration",
 			"THRUSTIN bugs",
 			"normies",
-			"Okay, retard",
+			"okay, retard",
 			"the revenge of Paxton",
 			"Paxton getting fired",
 			"FU🈵CK!!!! PL😵EASE H e 😖LP m EEE!! I’M SPE😜😜RGIN G OU T!!❗!!!!❗😨😫",
@@ -331,7 +331,7 @@ impl Default for Deck {
 			"achieving dependency from one's own consciousness and living life in 3rd person (Maybe this is the true identity of The Boy in the Mirror... The man staring back is the one controlling your body, and you are merely a simulation...)",
 			"the seething rage of a thousand burning suns",
 			"making an audible thump on your desk in voice call",
-			"i hate you with every fibre of my being",
+			"I hate you with every fibre of my being",
 			"mad and bad",
 			"you are literally a piece of shit",
 			"anime is not real and it will never be real",
@@ -341,7 +341,7 @@ impl Default for Deck {
 			"going to sleep and hoping that you dont wake up",
 			"being uncomfortable around dark-skinned people",
 			"no, I am not okay",
-			"God is not real but Yakub is real",
+			"God is not real, but Yakub is real",
 			"Matrix",
 			"Terry Davis",
 			"TempleOS",
@@ -373,7 +373,7 @@ impl Default for Deck {
 			"edit the values",
 			"licking a young boy's nipples",
 			"Malcolm X and Muhammad Ali believed in Yakub",
-			"the black man blaming white man for being evil even though Yakub, a black man, created the white race 6,000 years ago"
+			"the black man blaming white man for being evil even though Yakub, a black man, created the white race 6,000 years ago",
 			"achieving dependency from one's own consciousness and living life in 3rd person (Maybe this is the true identity of The Boy in the Mirror... The man staring back is the one controlling your body, you are merely a simulation...)",
             "_____",
             "chillin’ on the beach with my boyfriend sippin’ on some peñis colada",
@@ -405,7 +405,49 @@ impl Default for Deck {
             "The Irvine Company",
             "ah shit, here we go again",
             "living in a scripted 9 to 5 comedy",
-            "The Mona Lisa"
+            "The Mona Lisa",
+            "bro that’s lame as fuck bro c’mon bro",
+            "daddy spanking me",
+            "Jesus",
+            "free the slaves",
+            "don’t",
+            "yoinking my hog to that one",
+            "leaving a cold, starving dog shivering in the front yard, and you have it chained to a wooden post that has hella splinters, also it’s a winter night at around 4:20AM when it is like hella freezing, so I guess you could say it’s chilllin’ doggy",
+            "trap door",
+            "bottom fragging 4-20",
+            "spraying down Dust II mid with a Negev, reloading while a counter terrorist fires at you outside long, finishing reload and killing counter terrorist, returning back to spraying down Dust II mid with a Negev",
+            "when you ace the round but can’t defuse the bomb because you didn’t bind your defuse key",
+            "seeing what happens when you light your crockpot on fire and end up burning down your whole base",
+            "OOOOOOOOOOOOOOOOOOOOOOOHHH YEAHHHHHHHHHHHHH",
+            "I love you",
+            "I hate you",
+            "j)iU()@#JIpJSFioj9012u390J()_SD_J(AJD-j12j3ioj-SADJ_(_IAS_Dkpo J+_1=239-j9-AsDJ-129-3j-ASjD(_helpme(!@)JdSJA)!@#_!@J)_D@(S)ADJlnzxlkcnl.z,m.,m.m,.,.,.,.,..,.,...,,,.SDADoADpjp[p[p[p[p[p[p[p[p[pIASdJAISDpDAPSdja1290123123123123123123SA{Di{ASDi[",
+            "you’ve activated my trap card",
+            "fire in the hole",
+            "pull the trigger",
+            "b̷̧̧̧̧̨̢̢̧̡̢̢̧̛̛̛̛̛͇͔̼̮̩̣͎͙̫̥̭̺̲̤̲͎̮̪̻͕̭͓̼͓̬̩͉̺̥̱̬̥̤͕̺̪͉̻̻̲̭̙͖͕̙͕͖̪̗͎̮̭̤̥̯̹̭̰͖̗̫͙̰͇̦̭̫͈̙̰̲̜̺̮͔̱͖͇̩͇͇͙̘̠͔͙̟͖̤̯̯̹̺̻̭̲̼̮̜̰̺͈̩̜͔̥̤̤͈͖̰̱̲͔͚̟͍̲̬̠̖̣̰͉̩͛̿̂́̂́̀̌̌́̿͊̂̐͛̀̉̊͂͒̆̇̇̀̌̎̊͗́͊̆͂̽͊̏̄̀͑͐͗̔͊̆͋̓̾̅̈́͂̐͆̀̃̎͒̔̽̀̿̍̽̇̑̈́̿̋͒͋̇̄́̿̽͒̊̓̀̿̃̓̀͑̊͊͆̓̈́̂͌̍͆̽͊̊̂̏̄̂̏̾̈́̍̓̀̾͗̈́̔̋̉̆̇̍́́͗̿̿̀̆͂͋̈́̀̓́̑̊̐͛́̃̐̈́̑̈́̏͒͑͐́̍̇́̌̈͐̎̔̓̒̄̿͋̓̍̅̓̇̈̑̏͑̎̃̆̽͆͂̔̉͘̚̕̕̕̕̚̕̚͜͜͜͜͜͝͝͝͝͝͠͠͠͝͝͠ͅͅͅͅͅr̴̨̧̡̧̧̨̨̨̡̨̧̨̨̛̛̛̻͕̬̖̙̞̗̠̲̮̲͖͇̤͚̺̬̖̹̯̘͓͚̪̜̰̬͙̪̠͔͎̥̫͙̙̹̪͇̤̥͕̪̥̤͓̣̳̪̘̙̹̳̳̥̝̻͉̗̜̺̦͉͙͇̩͈̞̭̥̱̲͕͚̺̫̠̹̳̦̜̱̱͙̩̪͖̣̫̭̻̪̬͖̳̜͇̹̼̗̼̘̖̭̻̯̜͍͎̩̠̲͇̩̖͓̖̦̳͙̘̜̠̯̫͙̫͖̼̟̗͍̥̩̻̦̓̉̇̈́̊̿͑̽͐͂̈́̊͆̈̂̊̑̿͌̾͐͌̌̿̍̇̔͊̈͐̏̍̋̈́͒͌̏̃͌̂̀̅̓̎̀̔͒̈́̆͐̋́̽͊͂̈́̀̈́̉̋̿̽́̋̃͆͐̐́̊̂̀̋̉̎̒̄̋͑̍͘͘̚̚̚̕͘͜͜͠͝͝͝͠͠͝ͅͅą̸̡̧̨̨̧̢̢̨̡̨̧̡̢̨̢̧̛͇̩͖͉̤͍̳̤̦̻̹̗̘̼̥͚̲͎̺͕̫̫̬̦͙̼̼̱͉̣̺͙̼̹̱̟͈̲͖̹̰̭͎̫̖͕̹̰̲̖̠͈̖͎̜͉̼͍̖͙͇͍̺̪̖̫̖̭͇̱̤͉̯̩̮͖̙̲͓͓̙͍̰͇̝̬͍͍̦̤̖̭̙̬̥̜͉͕̯̲̥̬̝̹̩̩̦̘͇̮̺̞̤̜̠̭͚̣̼̙̯̱̱̻̙̤̺̗͖̰͎͉̲̙̻̙̣̎͛͑̅̃͗́͆̊̐̐́̊̆̾̍͂̀̈̓̐̓̀̽͆̂̉̈́̂͌̂͛̄̉̈́̈́͛̆̋̆̓̊̈͆̃̏̈́̿̓̓͌̉̾̄͑̒͂̆̈́͌̄͗͂͋͐̓̒̿̀̑̐̃̈́̔̏͂̌̅̀̀̍̔̿̓̓͋̍̅̀͒͛̒̃̅̓̅͛́́͐̎̉͗̏̒̀̀̄͂͛̾͛̈͗̍̾̽́̉̂̑̿̃͛͗̈́̍́̈̂̏̍̍͊̐͌͂̐͋̓͑̔̂̓̈́̒͒͛̌̐̑̑͂͘͘͘̕̚̕͘͘̚̚͘̕̚̚͜͜͜͠͠͝͝͠͠͝͠͝͝ͅͅͅͅͅͅi̴̡̧̡̧̧̨̡̡̢̧̨̢̡̢̧̨̛̛̛̛̛̛͙͉̻̲͍̩͈̣͕͚͕̻̝͎̤̭͈͈̝̟͉̱̙̺̩̭̲̰̺̻̫̙͎͖͇̫͍̲̣̰͍͙̱̳̰̬͖̻̻͚͙͇̜͎̮̗͓̣͚͎̞͇̱̙̪̺̗̙̟̻̖̳̦̬̣͈͇̯̲͕̙̬̣̣̠̭̻̫̱͓͇͇͚̪͔̹̹͚̤̟̼̯͍͚̝͔͚̜̖̪̝͓͙̯̘͉̟̮̱͈͓̦̬͚̪̝̹͈̹̦̦̥̿̒́̍̀̍̂͐̋͆̾̆̓̓́͆͂̓̈́́͐͗̃̂̑̋̿̇̂̿̾̈̾͐̄̏̈́̔̂̏̑̌̅̏̿̿̓͊͗̂̀̈͊̂̈́̀͋͒͌̈̐͛̈́̈́͋͑̅̉̈̇̊̃́̾̈́́̿͒̊̈́̏̉͆̉̌̊̓̐͋͆̌̅́̇̀͂̈́͑̀̈̍̆̒͗̆̏͊̽́͑̓͐̉̀̍͛̍̊͌̾͛̈͆́͂̐́̋̓̿̅̈́͂̄͌̇̂͛͂͛̈́̊̏͑̓́̆͑̑̅͌͊̅̂͑́̑̅͑͆̄̉͊͆͒̍́̃̈́̅̒̋̽̓̎͛͒̃̏̽̊̎̋̃͋̍̊̌̍̅̀͑̅͑̾̀̉̍̈́́̈̍̌̀̇̄͗̑̉̽͂̊͌̍͛̅̒́̇͑̂̇̅̔̍͂͛̿͊̅͑̂̓́͐̈̈́̓͐͐̎̿̓̉̆̄͐̋̈̆̈̏̉̅̈̌́̑̂̈͘̚̚͘͘̚̕̕̕̕̚̚͘̚̕̚͜͜͜͜͜͝͝͠͝͝͝͝͠͝͠͝͠͝͝͝ͅͅń̷̨̨̨̨̡̧̛̰͍̙̜̟͚͓͚͍̖̮̤͇̝̥̱̘̬͖̖͖̻̣͈̝̼̫̝̪͖͈̲̳̭͇̻͎̩̩̪̤̰̹̲͉̘̳͉̯̙̬̫͖̼̝̼͓̩̠͚̤̮͍̩̻̜͈͙̪̣̱̩͈͔̳̎͋͒̆͂̽̒͆̏̎͊̈́̒͛̈́̆́͌͗̿̆͌͊̐̚͜͜͠ͅͅͅ ̶̡̡̡̡̡̧̨̧̧̢̨̢̢̧̧̧̧̢̨̛̫͎̗̤̰̖̰̟̬͙͓̙̰̖̰̰̥̟̪̖͓̭̩̱̰͇͔͉͔͕̭̖̬̙̭̪̟̣̭̜͈͖̟̫̰̲̻̜͍̻͓̭̙̲̤͕̣̗̳̭̮͙̜͈͎̣̙̳̙̫̜̤̺̺͇͇͖̘̼̩̪̺̖̹̥̹̠̠͉͇̙̻̩̘̳̥̞̘͔͈̠͚͎͍͖̤̙̝̯͚̩̰̣̺̫̭̪̩͈̼̠̟̙͓͚̲̯̤̮̜͖̞̮̦͈͉̬̲̠̟̳͈̮̹̻͖̲͈͈͍͖͎̦̳̣̟̬̩̼̼̣̹͔͙̳̜̭͎̘͚̰̘̹̦̱̙̲̺͔̦͔̱̫͖̼̭͙͇̟͔̗̮̬̫̩͖̯̹͕̻̠̙͙͍͇̠͙̗͎͎̝̤͇̪̦̦̟̳̬̺͔̼͓̫̼̣̮̪̱̲̤̖̣̭͔̤͂͆̎̌̈́́͐́͑̿̀̊̈́̈́̌̇̿͑́̍̈̊̌̋̐̈́͊͒͒̔́̓̎͂͐̑̀̓̄͋͐̈͊͛͐̌͗͗̋̈́̀̑̐͋͒̒͗͆̑̒̉̓̍̄͆͛̆̑͐͊̑́̋̄̐͑́̉̉̓̓̈́͌̌͒͋̇͂̾͂̒̏̊͌͂́͐̎̈́̓̄͋̊̉͆͊̎̒̆̒̑̚̚̕͘͘̕͜͜͜͜͜͝͠͠͠͠͠͝͝͠͝͠ͅͅͅͅͅͅͅp̵̨̡̨̢̡̡̨̨̨̡̡̨̢̨̨̧̨̡̨̛̛̛̛̛͙̤͉̜̝̺̠̰̟̳͚̣̙̳̲͇̣̹̺̖͕̼̠̟̺̘̹̲̬̝̫̲̺̱̩̝̥͍̳̰͖͙͎̰̩̯͎̳͙̭̼͉̫̰̦̠̝̭͓̳̲͚̳̲̮̟͍͈̻̟̙͈̼͎̺͉̦̟͈̙̻͖͎̥͕̖͕͎̹̲͓̥̦̱̗͔̲̗̲̲̖̻̖͉̥̯̲̮͎̯̝̯̠̖̗̖̭͕̩͇͚̫͇̠̗͓̤̺͉̉̓͐͂͒͑̃̿̉̓̿̄̂̇̌̿͒̓͑̐̔̀̈́͂̈́́͗̈̽̔͂̂͆̆̿̇͗͆̌̈́́̂̊̏̈́͑͛̾͂́̌̒̋̏͋͋̈́͗͐̍̇̀́̾̇̓̄͗͆͊͗̑̒̌̿̈́̂̈́̎̀̃͆̏̌͛̇̔̈́͐̀̃͑̿́̓́̀͑̎̔́̀̂̀͑͗͆̇̔̃͋͋̽͋͗͋̉͋̽̃̏͛̌̄͒̈́̑̎̒̎̔́̀̇͗͂̿̇̂̄͊̐̆̅̎͑͛̿̿́̓̐́̐͑͗́̈́͛̈́́̂̔͐̀̒͋̽̀̀͊̓̾̈́͂̊̆̾̈́̅̍̓́̓͊͋̆̈́̔̐͛̓͒͆͐̍̂̂̇͒̈̀͊̽̓̎͐̃̍̀͐͆̀̋̀̃͑̌͂̊̀̈́̌͗̅͌̇̐̈́͒͛̓̐̓̒͋̌͋͋̄̑̅̕͘̕͘͘͘͘̕̕̕͘̚͘͘͘̕͘̕͘͜͜͜͜͜͝͝͝͠͠͝͠͠͠͝͠͝͝͠͝ͅͅó̷̧̧̨̢̢̢̨̡̧̡̧̢̧̧̡̡̧̨̧̨̢̨͇͓͔͇̪̗̦̫̟̞͎̳̟̗̯̣̬̦̳̹̝̰̹͎̣̗̠̲̖̗̟̣̠̣̠̜̖̪͚̘͓̥̤̫͇̘̲͕̪̫͎͇͎̩͎͓̗̫͙̗̲̼̺͚͓͇̤͎͇̻͔̟͖̮̜͖͖̠̠̭̲͇͉̟̥̦̦͙̥̘̝͚͈̱̥̼̠͚̩̹̭̩̱̮͉͇͇̭̹̱͔͈͙̞̫̠̯͍͔̹͚̰͔̘̱̙̪̬̥͓͖̘̘̦͎̣̤͍̰͓̭̣̬̳̥̝̭͉̺̗̳̤͕̣̭͚͙̣͇̪̩̞̟͕͕̰̪̥̺͈̥͇̫̹͙̳̫̥̦͇̗̥̱̩͎͉͕̣͎̮̬̹̟̦͔̠̦̺͙̹̞͔͉̣͓͔̩̜̥̣̣̼̠͇̰̦̜̫̪͕̺͖̰̱͚̻̟͔̥̤̎̏͜͜͜͜͜ͅͅͅͅͅͅͅw̷̧̧̡̡̨̡̡̧̧̡̡̨̡̨̢̡̢̧̧̧̢̧̢̛̛̛̛̥̱̫̫͓͓̺̦͓̣̬̯̣͚̟̠͉̟̖̼̮̺̩͎̤̯̙͕͉̖̻̺̤̝̗̙̲̻̥͉͚̹̩̥̥̣͙͖̲̰̺̜̣̫̼̣̼̩̙͙̻͖̱̙̺̪̗̪̲̗͔̭̼̟̮͉̻̰̲͈̟̜͕͎͈͚̥̩̤͔̫̫̗̥̙͇̳̣͔̼̥̺͍̖̺̘̦̟͍̻̖̠͍͓̭͍̮͈̬̺̖̯̣̗̞͕̫͇̗̞̬̬̲̦͍̝͎̞̞͙̮̤̺̯͕͓̭̲̰͍̮̫̫̺̯̻͙͙̳͎̖̣̥̠̜̗̥͙͖̘̪̭͓̿̿̆̃͒̈̾̓̆̉͊̈́͊͆̽̌̃͗̿̍̃̎̊̇͑̃̋͛̍̊͆͒̂̆͌̈̈́̋̾̐̈̂͗̌̑͆̃͆̑̿̋̈́͌̄̓̿̑̿̈́̓͌̅̈̂̀̊̋͛̇̌̾͆̇̆̆̌͛͂̂̔̃͐̉̔̎̀́͑̒̿̇̓̆̓̑̿͌̐̔͐̕̕͜͜͜͜͜͜͜͠͝͝͝͝͝͠͝͝͝͠͠͝͝ͅͅͅͅͅͅͅẻ̷̢̢̨̨̧̧̧̧̡̢̡̧̨̢̡̢̧̡̡̧̢̡̡̨̧̢̡̧̡̡̡̡̨̢̢̨̢̛̛̼͈̞̝̬̘̖̥̮͍͉̩̝̼̼̭̝̯̼̤̻̫̥͚̳̮͍͎̙̺̖͕͔͎̻͚̟̞͉̻̦̦̞͕̰̘̝̹̪̲̯̙͎̱̘̱͕͎͈̫̤͖̘̯͓̮͚̤̩̦̙̦̻͇̰̠̩̲̻̻̮̮̳̪͉̙̰̜̙̭͇̬͙̩̻͈̦̣͎̬͎̥̙͙̱̖̰̘̘̘͕̥͍͔͍̤̤͎̳̫̯͉̩̗͎͈̩̜͍̱̜̯̮͙͚͓͉̪̘͙͚̘̺̠̰̗̦̪͉̝̳̝͔͕̭̹̰͍͙̦͕̳̦͉̣̩̟̗̥̭̤̫̠̭̟̯̗̺̬̭̭̟̺̩͉̣͖̹̱͍͙̗͇̭̮̟͍͙̦͈̯̤͉̦̩̗̦̠̺̜̻̮̔̃̿́͛̊̇̋̈́͆̂̑͒̇͆͒̈́̀̒̉́͐̅̈́̽͛̎͐͋̂͐̓̂̽̀͐̾̇̈́̉̄̑̐̊̊̉̋͊̔̑͒͗̉̇̌͋̄͆́̾̊̿̒̓͒̒̂͋͌́͛̌̒͂̃̅́̇̋̿́̑̿̊̊̿̾͊͒͌̊́̓̏̔̀́̓͒̿͋̿̽̐̋̾͗̐̀̀̅̂͌̂̅̌́͌̽́̈͗̊̋̊́͌̈͆̏̽̑͒́̐̓̆͑̐̐̄̔̍̎̑̈̇̔̾͂͂̉̏̉̈́̈́͐̍̓̋̀̎̂̂̆̀͌̎̿̄̈̔̇̌̏̓́̐̏͗̄̌̎̾̃͆̌͋͛̅̓͂̊͗̋̒̐̋̾́̾̎̈̽͑͒̾̈́͆́͛̏̀̿͛̒̌̕͘̕͘̕̚̚̕̕͘̚̕͜͜͜͜͜͠͠͝͝͝͝͝͝͠͝͝͝ͅͅͅͅͅͅr̸̢̛̛̛̛̛̮̼̪̱̳͎̪͙̣͔͍̱̥̼͙̳̗͔͇͕̈̓̅͌͌͗̈́̉͛͆͆̆̓̒͒̈́̉͗͂̋̑̃́̉̂́̾̓͒́͒̐͂̔͂̋̊̌͑̈́̍̍̍̓̔̍̈́́̀̇͌̃̆̃͑̽̿̐͋͆̑̀̀̄̀̀͒͂̓̈͗̋̎͂͗͊́̋̅͒̆̂̈́̅́̀̌̔̋͒̈́̾͆̎͛́̏̎̓̓̅͒̒́̏̿̔̆̓̽̐̎̀͑̾͋͂̄̍͂̇͊̓̓̓̓̉͗̍̅̌̐͑́̇̀̆̐̾͐̃̈̓̐̉̂̄̍̑̾̇̄̒̐̀͂̏̋͌̊̌͑́̑̀̎̂̿̎͐̅̋͂̇͑͒̊͊̔̒̎̿̅̽̇̇͊͊̀̏̌̆̅̋̊̀̀͋́͆͗̀͛́̓̅̏̇̾̔̌́͑͐̋̀͆̓̓̊̍̋͑͗͐͋͛̆̃̐̇̽͛̀͂̄͛͗͒̍̍͌͗̿͊̿͘̕͘̕͘͘̚͘͘̕̚͘̕͘͘͘͘͘̚͘̚̚͘͘͝͝͝͝͝͝͝͝͠͝͝͠͝͝͠͝͠͝͝͝͠͝",
+            "🔫",
+            "🐒",
+            "😂",
+            "🤡",
+            "♿",
+            "panic!",
+            "micromeme",
+            "nanomeme",
+            "picomeme",
+            "when you let someone try a little bit of your food and they eat everything, what the fuck man",
+            "none of your beeswax",
+            "short woman",
+			"hata-tan covers",
+			"kneesocks",
+			"alright, retard. You've fucking done it. You're fucking dead, kiddo",
+			"empowered with the rage of a million oppressed slaves",
+			"yea same man",
+			"wanna fuck?",
+			"please suck my toes",
+			"gamer girl bathwater",
+			"amen",
+			"man you are full of shit don't ever talk to me again"
         ];
 
         let thrustees = vec![
@@ -434,7 +476,7 @@ impl Default for Deck {
             "Everytime I see a retard in a wheelchair I just get the urge to _____.",
             "_____ keeps me up at night.",
             "What to say to someone who is very sad: _____.",
-            "_____ would like a word with me",
+            "_____ would like a word with me.",
             "I'm so full of swag, my swag is full of _____.",
             "That feel when you get wet socks: _____.",
             "I would totally _____ if I had a loaded gun and I was alone.",
@@ -459,7 +501,7 @@ impl Default for Deck {
             "Hi, I'm a doctor with a PhD, and I'd like to tell you about the _____ epidemic.",
             "Children are _____ in the world, why are you wasting your time _____?",
             "Dead _____ give(s) me the weirdest boner?",
-            "When I die, make sure to _____",
+            "When I die, make sure to _____.",
             "I like _____, but I love _____.",
             "When I _____, I tend to _____.",
             "If _____ happens, you know shit’s about to _____.",
@@ -540,7 +582,7 @@ impl Default for Deck {
 			"You freeze yourself in a Cryogenic chamber and come out in the year 69420, only to be disappointed when met with _____.",
 			"I've been wrongly put into a psych ward for _____. No matter how much _____ I do I cannot convince the doctors that I am sane.",
 			"_____ is too overpowered in THRUSTIN. No matter what I do I cannot win when my opponents get that THRUST. Please come out with a balance patch, I am literally begging on my knees and sobbing.",
-			"After taking _____ on a long walk off a short pier, I kissed them on the lips",
+			"After taking _____ on a long walk off a short pier, I kissed them on the lips.",
 			"You still play ARAM, that outdated game? Come on man, play _____ with us.",
 			"I get an odd sense of sexual satisfaction by staring at _____ for long periods of time.",
 			"The date is 2072. The world is on fire from global warming but here I am _____.",
@@ -577,7 +619,7 @@ impl Default for Deck {
 			"Every fucking day my upstair neighbors make noise by _____. It's driving me insane.",
 			"Alright, fucker. Hand over the _____ before I fucking kill you.",
 			"Is it just me or does anyone get ____ and ____, mix it in with their fresh shit and mould it into a shit-ball that they cure, bake & harden, and keep on their desk for good luck?",
-			"<br/>Nick: _____<br/>Everyone else: Ok retard.",
+			"<br/>Nick: _____.<br/>Everyone else: Ok retard.",
 			"Bro stop _____ it's really pissing me off man.",
 			"10 years ago I made a wrong turn in life by _____. After that, I was never the same.",
 			"One day Yakub the Scientist blessed me with his presence. He told me the world is in danger and the only way to save it is to _____.",
@@ -588,7 +630,6 @@ impl Default for Deck {
             "When life gives you lemons, you make _____.",
             "Yo momma so fat, she _____.",
             "Yo momma so _____, she _____.",
-            "Guys, let’s take a 30 second break to stretch and break the monotony of our miserable lives.",
             "Professional _____ here, let me take care of it.",
             "I'm not going to say this again. For the last time, _____.",
             "<br/>&nbsp;&nbsp;.*/#%&&@@@@@@@@@@@@/*,,*/##*<br/>&nbsp;(@&@@@@@@@@@@@@@@@(.&nbsp;&nbsp;.,*,,,*(#&/<br/>&nbsp;%@@@@@@@@@&&@@&&/&nbsp;/&@&&&%#(***(%@&.<br/>&nbsp;(@*&nbsp;&nbsp;&nbsp;..,,..%@%(%&%&&@%###(/(%&&&.<br/>&nbsp;*&&@@@@@@@@&@@&(*#@%/*,.&nbsp;.**/((%&%&&..<br/>&nbsp;*@@@@@@@@(%@&*/(.(@%&nbsp;&nbsp;&nbsp;.*/(/(&&%%&%*<br/>..@@@&(*&nbsp;&nbsp;&nbsp;&nbsp;./@@**##(//(##(/((%&&%%&%*.<br/>&/#@@//%,..,/(@@#*(((######(#&&%%&(*.<br/>%%%@@@@@@@@@@@@@%((((((((((&&%&%&/(#,<br/>%%%%@@@@@@@@@@@@((((((((&&%&%&(((##<br/>%%%%&@@@@@@@@@@&&&(((((/#&&%&%&&((((###<br/>%%%%%@@@@@@@@@@&&&@%//(#&&&%%&&((((##((<br/>%%%%%&@@@@@@@@@@@@(,,,%&%&&&%(((((##(((<br/>%%%%%%@@@@@@@@&..(**/#&&&/(((((#(((((<br/>%%%%%%%@@@@@@@@@(/%#/#((#%#((((((((((((<br/>%%%%%%%%@@@@@@@#(/(%#######((((((((((#/<br/>%%%%%%%%%&@@@@#(%%/,,,,,*//#####(((#(..<br/>%%%%%%%%%%%&@&///(#%%##/*/########/..,*<br/>%%%%%%%%%%%%%&@%/**,,,/#&&&%((#(**//*,*<br/><br/>Shrackner<br/>_____, 2011<br/>Digital<br/>69 in × 69 in",
@@ -596,56 +637,8 @@ impl Default for Deck {
             "<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;____<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o8%8888,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;o88%8888888.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8'-&nbsp;&nbsp;&nbsp;&nbsp;-:8888b<br/>&nbsp;&nbsp;&nbsp;&nbsp;8'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8888<br/>&nbsp;&nbsp;&nbsp;d8.-=.&nbsp;,==-.:888b<br/>&nbsp;&nbsp;&nbsp;>8&nbsp;`~`&nbsp;:`~'&nbsp;d8888<br/>&nbsp;&nbsp;&nbsp;88&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,88888<br/>&nbsp;&nbsp;&nbsp;88b.&nbsp;`-~&nbsp;&nbsp;':88888<br/>&nbsp;&nbsp;&nbsp;888b&nbsp;~==~&nbsp;.:88888<br/>&nbsp;&nbsp;&nbsp;88888o--:':::8888<br/>&nbsp;&nbsp;&nbsp;`88888|&nbsp;:::'&nbsp;8888b<br/>&nbsp;&nbsp;&nbsp;8888^^'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8888b<br/>&nbsp;&nbsp;d888&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,%888b.<br/>&nbsp;d88%&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%%%8--'-.<br/>/88:.--&nbsp;,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-%-'&nbsp;---&nbsp;&nbsp;-<br/>&nbsp;&nbsp;&nbsp;&nbsp;'''::===..-'&nbsp;&nbsp;&nbsp;=&nbsp;&nbsp;--.<br/><br/>Leonardo da Vinci<br/>_____, 1503-1511<br/>Oil on canvas<br/>30¼ in × 21 in<br/>",
             "Guys, let’s take a 30 second break to stretch and break the monotony of our miserable lives.<br/>1…<br/>2…<br/>3…<br/>4…<br/>5…<br/>6…<br/>7…<br/>8…<br/>9…<br/>10…<br/>11…<br/>12…<br/>13…<br/>14…<br/>15…<br/>16…<br/>17…<br/>18…<br/>19…<br/>20…<br/>21…<br/>22…<br/>23…<br/>24…<br/>25…<br/>26…<br/>27…<br/>28…<br/>29…<br/>30…<br/>Okay awesome! Back to _____.",
             r#"<br/>&nbsp;○&nbsp;&nbsp;&nbsp;●&nbsp;<br/>/|\&nbsp;/|\<br/>/&nbsp;\&nbsp;/&nbsp;\<br/>&nbsp;_____"#,
-			"<br/>. ..... .. . .....  ...  .... . .. .... .............:=.................. .......
-			<br/>...... .. . . .. . . .    . ...  .,?I7I7777II7$I+??=$$I... . ...... . . .  .... 
-			<br/>......... ... .    .      ...7++IIIIIOIIII?II7777?ZI$$$$..... . ..    .         
-			<br/>......... ......   . .  ..Z~?IIIIII7=+?I?I++++7+OZ77$8D8...+=~,... .. .  .  ... 
-			<br/>...... ...... ....    .I:????I????+++I+I++++?+7Z77$7I7II$7DO7$?+.     .         
-			<br/>...... .....I~ ... ..+:=~====+II7~+++=+++++I=ZI777777IIII$7$ZI7==.    .     . . 
-			<br/>...........=I77,...?,,~:~~=+=?Z,==++++++++I+7II$??II+???I7$7$$ZO===...... ......
-			<br/>...... ....:8777=:,,,,,:~=~=I?,~=+=++++++?+IIIII7?+?~=??IIII$77$Z===............
-			<br/>.... .. ..,+IOO$Z=,,,,,~~~++I:::========?=IIII$I++7???????II+7I7Z=+==.... ......
-			<br/>......  ...=$$O888,,,,=~~+++,::========?=?I?=I+I=+?++????II$?7I=?O7=~...........
-			<br/>....... ..I$88DO8D+8$=~7$ND8Z$==~~====+=I?++?Z=+=+=+++???I?$?Z777$?I+?..........
-			<br/>...... . =$$Z8NND7$D~:O8DDNNNNZ:~======O?==??$===+=+=+=+?I?7?$I777Z$?=~.Z++=. ..
-			<br/>..=+.....?77ZO88N88ND8888888D8:~:~~~===?===++I===+======???7?7II77Z7$I=NDD+=.  .
-			<br/>....+777$77O888N$$NDN88888DND:~:::::~~?~====?+===========??I?7I777777IIDNDD=....
-			<br/>....ZII7DI88DNN==+NNOO888DN8:::::::~:I=~===+=?=++===+====+?I?III7I777II?DDD,....
-			<br/>...7I8888NNZ~==ON8888888O~:~::::~~:=::~==O=7=?+========+??????II77777+DDD.....
-			<br/>...ZO8888NO:===NND$8888D:=~:::::~:+~::~:?+=$=?==========+?????I?IZ7II??7O=....
-			<br/>.....I888O=~,~==D88D$$DDD8=:~~=~~=~:=:::::I:=?~===========I?I??????Z?I?+=D?+$. .
-			<br/>..... =,=:=,:~Z8888=I$DDN$========~+=~~=:7I:~=?=?~========7+I??????$?I??+7ND888O
-			<br/>.....?,::~,+~77O8$I~I=NN8=~=======~7==+=?II:~~I=?~=~~~====?=I??????7?II?++NDD888
-			<br/>. ..:,,,~=,Z?777$I~=++,+==~~~~~~~~~~~~~~I?I~=+?I+I~~~~=~=~=~???????I?II?===DDDDZ
-			<br/>....,,,~+,,~,+7I$:~O+=,:~~~~=~~~~~?~~?~????==++7=?++~~+~~~~?++?=??+??II?===DNN..
-			<br/>..,,,:~=+,~,~=+$,?7I+:,~~~~~~~~~~~+:=:=+~++~====???+++=~=I~O+==+?+++?I+===Z=D...
-			<br/>..,,::=+,,~~==I,Z77+:,~~~~~+~~~~~~~~+:+~:=+~=====++I=++++?=$+===I+++?I?===I+7...
-			<br/>,,,::==?,~,==7,7777~:,~~~~=~~~~~~?=7,+~~=+7I???+===?I===++Z7+7III++??$7I?+I+++ .
-			<br/>,:::==+,::~=II+7I7+:,~~~~~=~=~~~ZZI:?:::::+I~+=======+==I=Z7?III$I?I?$I77=+++?~.
-			<br/>::+=~~~,~:+=++77??,:,~~~~=~~:~~~7I:?==~::~~?~+~+==~=====?=?7?IIII7III7777+=,.:I?
-			<br/>:~~~~+,,:~=++ZI7?:~,~~~~~::~:::D8~DNN?O$O~==~I=~========+??7???8?7I7I77$I+=+. ..
-			<br/>=~~~=:,~:~=?$7+77+,,::::=:+:::$8?$Z8ZODNINND7I+:~~+~====+??7?+?$?II7I77$7+=?....
-			<br/>~~=~$,,~~=+$I7?7::,,:::=~=~~~~+7~~O77$$D?~~OI:+:::~~=~~I?~+I==$7+7?7?II77+=+. ..
-			<br/>~~~I,::~~=I?7I+:?,,~:~~~====:?~7~~$+=+I8,:~:~~++::::~:~==:+7~=7++$I$?II7I+==.  .
-			<br/>=~?7::~~=?I?7??=~,=~====?==~+~:7~::=::?,,,:::~~++::::::7::+I~=?=~$7Z??III+$=....
-			<br/>~+?,~:~~=87?Z?:?,=~====+===Z:~:7:~~~~:7:::::::~=+=::::=:::~?:$++~$7???III=8==. .
-			<br/>=?+:+,~=?$77Z~?~:~=====?==I=:~:?:~~~~~~~:::::::=~+:~::=INNO+~++I~$$??II$7=I=I...
-			<br/>+~:~=:~+Z?77?I?,~=====?==?~~:~:=::~~~~~~~~~::::::~=~:::ODDD+8DZ7=$Z?77$$7=.==...
-			<br/>=?~I~~=+???I?7,===+==?=++?~~::~::::~~~~~~~::::::::::~:8Z88O~~N?II7+?$7777+.+=...
-			<br/>.,+?~~+$?I77?,===+==?7+?+?=~::?=~::::::::::::::::::::~==I$I~~DIZ7O+7III?$?.?++..
-			<br/>:,?=~=++=77?7~?++=+?I=?$+?===:$?~:::::::::::::::::::::?:7~:~~=7I7=?IIIIII=.++I..
-			<br/>7,=~=~?~I77Z=??==??Z=Z77++=++~?:~::::::::::::::::::::~~~::::+=?=$?I?III$+~.,?? .
-			<br/>I:~==~+?7II+?I=??Z$=O7$+=+=++==,:::::::::::::::::::::~~~~::+???7=???I??7?~..??..
-			<br/>=:=~+~+??$?7+IZZZ7?Z77O?=++=++?,:::::::::=::::::::::::~~~~7?=?+~7I+??+?++:..7I..
-			<br/>~=?..+I++?++7IIZ7ZZZ777?I=+==+8~,:::::::=~+::::::::::::::???=~+I?++?+?7I+,..II..
-			<br/>~+..~+?===?7?+7$$77O77I$7==+~=$7=,:::::=:~=:::::::::::::=+?=+=I??++++=+?+,..:I..
-			<br/>=,::?+?++I7?II+77$7Z?$$I7====~?777:~~~+::::?+::~:::::::~++==I?I+===+=ZI.+~. .I .
-			<br/>..,,?=+?$7I++??I$$$+?7?==7++?~=7I77?:=::::::~==~=::::~I=++?==??=====?=,.:+ ..? .
-			<br/>I.,~+~$8==+..,:O$$.??+=+:.+++?=$II$,:7::::::::~~:~~O+===+==+++=====,,+...=...? .
-			<br/>$..??7===O==Z?,:,~=$+~.+,Z+?+I=+II$::~:::::::::?++??I+====?.======I.=.. ..=..+ .
-			<br/>7..?=+=I,,,,,~7,+,==7ZZZZZO+III=II$::,:::::::::I+++?++=+=?.=+====+ +:       :.  
-			<br/>,.++=~?.,,,,,,:7,?,+=+$ZZZZZ+III?I7,::::::::::~++++.+++=?.====I=+..?...    .:...
-			<br/>,.???7.....,,,,:?,?,????7ZZZ8+7IIII,::::::::::$++, .?++?.===?I+?=.+.       ,.   "
+			"<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,*,........***.                                <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,%%%%......,,./......,,,,,/                           <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp%%%%#(%**....,,....../%,/,,,...#,#(%                    <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.(#%%%#&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp%%%#((((/,...*.......**///(*,,,,,.......                  <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,((((%%%%,&nbsp&nbsp&nbsp%%####(((#*..,.......,**//*((/*,((///,....*                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(((#####%###%#####((#(.........,#*//*,,,,,,*,*/**/...../&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp*%%%%%%(. <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#((####%%###%%%###(#%*( ..,...*/**,,,.*./.,,,.,**#(.....#&nbsp&nbsp%%%##(((((#  <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%#(##%%%%###%%%###(#%,...,.../*,,.*..*.,.,,.....,/*,...,.%%#####(((((#  <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(#######%%%%%####(((....,...**,..*..*..*..*..../*,/(.....,#%%%##((((#   <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,#(((##%%**(%%##((,....,..,/**..(..,...,..,.....**,/,...*./.###%#(##    <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.#%((#%%#(*.###%%%,.,..,,../**.,(,.,(...,..,,..,../**/.,.,,,&nbsp&nbsp*##(##*    <br/>&nbsp;&nbsp;&nbsp;((((((#####/,.((((#*......,..***,,*,,.*,.../.,.*..,...*/*..,.*./&nbsp&nbsp&nbsp.#(%     <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*######(*,.((((%,...,..,..*(/,,*%,.*#,.*.,.*./,.,*.,*,**,,.*,,*&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp*,  <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*###*,,./((#,,,,,*...,.,(**,,#**,**,.*.,/.,/,./,.,,*//,,.,,,*/&nbsp&nbsp*&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.../,,*..,##,,,,*,,,..*,.**/,,(*,/*,,*./.,,*,/,.*,*,,(,(,,..*,,*%. .##    <br/>&nbsp;.(....,,*,.../,,,,**.,/...,..(*(,/.*,((,,(,/..,*/#*,**/,,**(,,,.*,,,/*%(&nbsp&nbsp#   <br/>*/***,.&nbsp/,*,,,,,/%(,,,,,..,,.*(///. ,//, .,**,.,,,#*,**(*,**(,,,.*,,,,**#(&nbsp&nbsp&nbsp. <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((**,*(*,,,*,(,,/,.,/,.*(*,%%&%#,,&nbsp&nbsp./,/,,/,(,*#,/,**(/*,,,*,,/,(***     <br/>&nbsp;&nbsp;&nbsp;**/......,,,,,,*(,,(,,,/,.**.%(%%( .(,, .//,,/,/./,,*,,*****,/*,,/,#/***    <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,.....,,,,,/,#/,,*,,,(,,/..#,**/%&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp./(,**/.,%%(/*(%%/*.#*,,*,/ /**    <br/>&nbsp;&nbsp;,.....,,,,,,,,,#,*,*,,,,/,**..&nbsp&nbsp.,.&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp,/(*,/###(%. */(*,,**,,/**,  **   <br/>,....,,,,**,,,,*(,,*,*,,,,/,,*,.&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp.. (/ ,,,( ...,%,*%**,,(**/   //  <br/>,,,,,,*%,,,,/,,/,,*(,//,,,//,(/.&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp.,&nbsp.,&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp.((,**#**,,*((*(   /  <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(,,,**,,,#,,*#,##,*,/%,*/.&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp*&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp.*(,*,##*,,(*(/**/     <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(,,,*/#,,,/,,*/*#(,,,,%#,*/&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp/##/,#(#*,***(*//**/   <br/>&nbsp;&nbsp;&nbsp;&nbsp;/,,*/ .,,,,*,***(#(#,*,%*/,##&nbsp&nbsp&nbsp&nbsp&nbsp,&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp#%*#,/*(#*,***//(,/(*   <br/>&nbsp;&nbsp;&nbsp;*,,/&nbsp&nbsp&nbsp/,,,*,,***/(((,,****(/(&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp,...&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp#%*/,/,*&(,(. /*     ./  <br/>&nbsp;&nbsp;/,.&nbsp&nbsp&nbsp&nbsp&nbsp/,,*#*,*/**#/(#,*((**(/,(&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp//****,*,,*****,&nbsp*&nbsp&nbsp,*.     <br/>&nbsp;,,&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp,,*(,%,*/**/*(#/,*/#**#(,,%. &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp(%#(/**,/(,,/*/(. .*. *&nbsp&nbsp*/ *   <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,,/ (/,*#**/***,/,#*%,,*,,,,/%. *&%#%,,,,,*./,,,(*/&,..,* /.&nbsp&nbsp,&nbsp&nbsp&nbsp&nbsp/ <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;,* ...,*%#*/*(,,**,*/,.,,,,,,,,(,,,,,,*,,,#,,...,*/#,,,,#.*/ *,(,.&nbsp&nbsp.<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*. .&nbsp&nbsp,*/,((*,..***#,,*.,,.,,,,,,,,(,,,*,,/***#%/***/*,,,#/#,(**,&nbsp&nbsp&nbsp,<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp&nbsp&nbsp&nbsp&nbsp//,.,(/(.,..,#/...*,,...,,,,,*,....,,* ./*..,*/#/**/.,*#,/.&nbsp&nbsp&nbsp/<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp/*,.,//*/.,*,//..&nbsp&nbsp**..........,**&nbsp&nbsp,,&nbsp&nbsp......,*,(*.,,*(,    .<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(*..,**/,*,..*(/.&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp. *.&nbsp&nbsp.&nbsp&nbsp.,. .,...,,/*(*...,/,     <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.. .,/,,*//**...,**..*...,...,*   /    *   .,#,,*,****,.,/.     <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*   .      ,/,.,.,/**.   ,/.   ,(*(.    /    ../..,/((/(,*##     <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp&nbsp&nbsp&nbsp. , ./.(*##(,*.,(.*/,&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp..*//&nbsp&nbsp&nbsp./&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp,,.,,,,/#*/**/(, <br/>Astolfo: Hey master! What do you want to do with me? <br/>Me: _____",
+			"Words cannot describe how much I resent Fujiwara Chika, her voice makes me lust for blood more than anything has in my entire life. Every time I hear her high pitched nonsense I just want to pummel her to the ground and completely wipe her off the planet. _____",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),

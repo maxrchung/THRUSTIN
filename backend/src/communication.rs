@@ -74,11 +74,7 @@ impl ChannelCommunication {
     // A modified version of read_all for commands that need more time
     // Introduced because of db and password hashing
     pub fn long_read_all(&mut self) {
-<<<<<<< HEAD
         thread::sleep(Duration::from_millis(10000));
-=======
-        thread::sleep(Duration::from_millis(5000));
->>>>>>> f8ea88b0e1d3f8b88ae3aa1c95c2d4c48871206e
         self.read_all();
     }
 
