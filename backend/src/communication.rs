@@ -60,7 +60,7 @@ impl ChannelCommunication {
     }
 
     pub fn read_all(&mut self) {
-        thread::sleep(Duration::from_millis(100));
+        thread::sleep(Duration::from_millis(10000));
 
         // Keep on reading while you can and add messages
         while let Ok((token, msg)) = self.read.try_recv() {
@@ -74,7 +74,7 @@ impl ChannelCommunication {
     // A modified version of read_all for commands that need more time
     // Introduced because of db and password hashing
     pub fn long_read_all(&mut self) {
-        thread::sleep(Duration::from_millis(2000));
+        thread::sleep(Duration::from_millis(10000));
         self.read_all();
     }
 
