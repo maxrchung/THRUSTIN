@@ -58,11 +58,11 @@ In this phase you're responsible for giving yourself a name. We want you to give
 ##### `.h(elp)`
 Get help explanation for this section.
 
-##### `.l(ogin) SecretUser SecretPassword!!!!`
-Login to a registered account. Yo you get some epic perks for logging in...
-
 ##### `.n(ame) SWAGGYSWAG`
 Give yourself the name SWAGGYSWAG. Note that you probably shouldn't put spaces in there I'm not sure what's gonna happen probably bad.
+
+##### `.l(ogin) SecretUser SecretPassword!!!!`
+Login to a registered account. Yo you get some epic perks for logging in...
 
 ##### `.r(egister) SecretUser SecretPassword!!!! SecretPassword!!!!`
 Register an account to get some sick as hell features like saved THRUSTS and stats (eventually).
@@ -79,8 +79,8 @@ Join lobby 1.
 ##### `.l(ist)`
 Show list of all lobies.
 
-##### `.m(ake)`
-Make a new lobby.
+##### `.m(ake) (super_________SECRET___________P@$$WoRD`
+Make a new lobby. Optionally, provide a password for your new lobby.
 
 ##### `.n(ame) LEETMAKERiamTHIS`
 Change your name to LEETMAKERiamTHIS.
@@ -169,11 +169,11 @@ Choose the THRUSTEE at index 1 to use.
 ##### `.w(ho)`
 Show who's got how many points in the lobby and also who's in this lobby yo.
 
-##### `.k(ick) YoloDWAG`
-[See](#kick-heyman)
-
 ##### `.e(nd)`
 (Chief-Only) End the game.
+
+##### `.k(ick) YoloDWAG`
+[See](#kick-heyman)
 
 ## In Game (Waiting for THRUSTEE)
 When you are a THRUSTER waiting for THRUSTEE to be chosen.
@@ -190,11 +190,11 @@ When you are a THRUSTER waiting for THRUSTEE to be chosen.
 ##### `.w(ho)`
 [See](#who-2)
 
-##### `.k(ick) YoloDWAG`
-[See](#kick-heyman)
-
 ##### `.e(nd)`
 [See](#end)
+
+##### `.k(ick) YoloDWAG`
+[See](#kick-heyman)
 
 ## In Game (THRUSTING into chosen THRUSTEE)
 When a THRUSTEE is chosen and you are a THRUSTER ready to THRUST one of your THRUSTERS into the THRUSTEE.
@@ -214,11 +214,11 @@ Choose to use your THRUSTER at index 1 to THRUST into the chosen THRUSTEE. After
 ##### `.w(ho)`
 [See](#who-2)
 
-##### `.k(ick) YoloDWAG`
-[See](#kick-heyman)
-
 ##### `.e(nd)`
 [See](#end)
+
+##### `.k(ick) YoloDWAG`
+[See](#kick-heyman)
 
 ## In Game (Deciding best THRUSTER)
 When you are the THRUSTEE and ready to pick your favorite THRUST.
@@ -238,8 +238,8 @@ Okay, you select the completed THRUST at index 1 as the best one.
 ##### `.w(ho)`
 [See](#who-2)
 
-##### `.k(ick) YoloDWAG`
-[See](#kick-heyman)
-
 ##### `.e(nd)`
 [See](#end)
+
+##### `.k(ick) YoloDWAG`
+[See](#kick-heyman)
