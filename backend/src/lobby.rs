@@ -938,13 +938,30 @@ impl Lobby {
             resulting_thrust
         };
 
+        let mut messages = vec![
+            format!(
+                "{}. {}",
+                // Use 1-indexing for showing result
+                &self.game.current_thrusts.len(),
+                &resulting_thrust
+            )
+        ];
+
+        // Check if everyone has thrusted
+        let mut did_everyone_thrust = true;
+        for (_, pl) in self.list.iter().enumerate() {
+            let pl = pl.borrow();
+            if pl.state != PlayerState::Deciding && !self.game.thrusted_players.contains(&pl.token) {
+                did_everyone_thrust = false;
+                break;
+            }
+        }
+        if did_everyone_thrust {
+            messages.push(String::from("<br/>Everyone has THRUSTED! By popular demand we are adding this message in to notify everyone that it's fine to choose a THRUST now. I didn't want it to have to come down to this, but I added it in due to pressure from our publishers."));
+        }
+
         // Notify message
-        self.send_message(&format!(
-            "{}. {}",
-            // Use 1-indexing for showing result
-            &self.game.current_thrusts.len(),
-            &resulting_thrust
-        ));
+        self.send_messages(messages);
     }
 
     pub fn start(&mut self, pl: Rc<RefCell<Player>>) {
