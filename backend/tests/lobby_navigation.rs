@@ -219,24 +219,43 @@ fn out_of_lobby_list() {
     client.read_all();
     assert_eq!(
         client.last(1),
-        "ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
+        "A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
     );
 
     client.send(2, ".n 2");
     client.send(2, ".m");
     client.send(1, ".l");
     client.read_all();
-    assert_eq!(client.last(1), "ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ❌ | Players: 1/10 | Currently: Waiting");
+    assert_eq!(client.last(1), "A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ❌ | Players: 1/10 | Currently: Waiting");
 
     client.send(2, ".pa yolo");
     client.send(1, ".l");
     client.read_all();
-    assert_eq!(client.last(1), "ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ✅ | Players: 1/10 | Currently: Waiting");
+    assert_eq!(client.last(1), "A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ✅ | Players: 1/10 | Currently: Waiting");
 
     client.send(3, ".n 3");
     client.send(3, ".j 1 yolo");
     client.send(2, ".s");
     client.send(1, ".l");
     client.read_all();
-    assert_eq!(client.last(1), "ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ✅ | Players: 2/10 | Currently: Playing");
+    assert_eq!(client.last(1), "A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ✅ | Players: 2/10 | Currently: Playing");
+}
+
+#[test]
+fn shows_updated_lobby_list_when_login() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.read_all();
+    assert_eq!(
+        client.last(1),
+        "Name set to: 1<br/>ok 1, now ur redy 2 THRUST, try \'.help\' for sum updated information<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
+    );
+
+    client.send(1, ".m");
+    client.send(2, ".n 2");
+    client.read_all();
+    assert_eq!(
+        client.last(2),
+        "Name set to: 2<br/>ok 2, now ur redy 2 THRUST, try \'.help\' for sum updated information<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ❌ | Players: 1/10 | Currently: Waiting"
+    );
 }

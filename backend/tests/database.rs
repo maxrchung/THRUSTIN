@@ -41,7 +41,7 @@ fn register() {
     let mut client = common::setup_with_db("register");
     client.send(1, ".r yo what what");
     client.long_read_all();
-    assert_eq!(client.last(1), "Lol ok nice you registered and good to go.");
+    assert_eq!(client.last(1), "Lol ok nice you registered and good to go.<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing");
 }
 
 #[test]
@@ -65,7 +65,7 @@ fn register_and_login() {
     client.long_read_all();
     assert_eq!(
         client.last(2),
-        "Welcome back ([USER] >>>\"yo\"<<< [USER]) to THRUSTIN."
+        "Welcome back ([USER] >>>\"yo\"<<< [USER]) to THRUSTIN.<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
     );
 }
 
@@ -126,6 +126,6 @@ fn change_user_and_pass() {
     client.long_read_all();
     assert_eq!(
         client.last(3),
-        "Welcome back ([USER] >>>\"1\"<<< [USER]) to THRUSTIN."
+        "Welcome back ([USER] >>>\"1\"<<< [USER]) to THRUSTIN.<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
     );
 }

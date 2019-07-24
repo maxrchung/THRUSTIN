@@ -1,9 +1,9 @@
 use crate::communication::Communication;
 use crate::database::MongoDB;
+use crate::lobby::Lobby;
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
 use std::collections::HashMap;
-
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -51,7 +51,7 @@ impl Player {
         self.send_messages(&messages);
     }
 
-    pub fn login(&mut self, split: Vec<&str>) {
+    pub fn login(&mut self, split: Vec<&str>, lobbies: &mut HashMap<i32, Lobby>) {
         if split.len() != 3 {
             self.send_message("You must provide USER and PASSWORD for your account.");
             return;
@@ -76,10 +76,13 @@ impl Player {
 
                 if let Ok(name) = doc.get_str("name") {
                     self.name = String::from(name);
-                    self.send_message(&format!(
+                    let mut messages = vec![format!(
                         "Welcome back ([USER] >>>\"{}\"<<< [USER]) to THRUSTIN.",
                         name
-                    ));
+                    )];
+                    messages.push(String::new());
+                    messages.append(&mut Lobby::list_messages(lobbies));
+                    self.send_messages(&messages);
                 }
                 self.state = PlayerState::OutOfLobby;
                 self.is_authenticated = true;
@@ -94,6 +97,7 @@ impl Player {
     pub fn name(
         split: Vec<&str>,
         pl: Rc<RefCell<Player>>,
+        lobbies: &mut HashMap<i32, Lobby>,
         players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     ) {
         let name = {
@@ -131,6 +135,8 @@ impl Player {
                 "ok {}, now ur redy 2 THRUST, try '.help' for sum updated information",
                 &pl.name
             ));
+            messages.push(String::new());
+            messages.append(&mut Lobby::list_messages(lobbies));
         }
 
         pl.send_messages(&messages);
@@ -194,7 +200,7 @@ impl Player {
         }
     }
 
-    pub fn register(&mut self, split: Vec<&str>) {
+    pub fn register(&mut self, split: Vec<&str>, lobbies: &mut HashMap<i32, Lobby>) {
         if split.len() != 4 {
             self.send_message("Ok you've got an invalid number of parameters for registration.");
             return;
@@ -210,9 +216,13 @@ impl Player {
         let user = split[1];
         if self.db.borrow().register(user, pass) {
             self.name = String::from(user);
-            self.send_message("Lol ok nice you registered and good to go.");
             self.is_authenticated = true;
             self.state = PlayerState::OutOfLobby;
+
+            let mut messages = vec![String::from("Lol ok nice you registered and good to go.")];
+            messages.push(String::new());
+            messages.append(&mut Lobby::list_messages(lobbies));
+            self.send_messages(&messages);
         } else {
             self.send_message("Registration has failed. Unable to add user to database. Maybe username isn't unique?");
         }

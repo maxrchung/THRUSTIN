@@ -65,14 +65,15 @@ fn disconnect_from_lobby(
 pub fn choose_name_commands(
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
+    lobbies: &mut HashMap<i32, Lobby>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
     let com = get_command(&split);
     match &*com {
-        ".name" | ".n" => Player::name(split, pl, players),
+        ".name" | ".n" => Player::name(split, pl, lobbies, players),
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
-        ".login" | ".l" => pl.borrow_mut().login(split),
-        ".register" | ".r" => pl.borrow_mut().register(split),
+        ".login" | ".l" => pl.borrow_mut().login(split, lobbies),
+        ".register" | ".r" => pl.borrow_mut().register(split, lobbies),
         ".disconnect" => disconnect(pl.borrow().token, players),
         _ => {
             pl.borrow()
@@ -110,7 +111,7 @@ pub fn out_of_lobby_commands(
         ".join" | ".j" => Lobby::join(split, pl, lobbies),
         ".list" | ".l" => Lobby::list(pl, lobbies),
         ".make" | ".m" => Lobby::make(split, pl, lobby_id, lobbies),
-        ".name" | ".n" => Player::name(split, pl, players),
+        ".name" | ".n" => Player::name(split, pl, lobbies, players),
         ".password" | ".pa" => pl.borrow_mut().password(split),
         ".play" | ".p" => Lobby::join(vec![".join", "0"], pl, lobbies),
         ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),

@@ -666,8 +666,13 @@ impl Lobby {
 
     pub fn list(pl: Rc<RefCell<Player>>, lobbies: &mut HashMap<i32, Lobby>) {
         let pl = pl.borrow();
-        let mut messages = Vec::new();
+        let messages = Lobby::list_messages(lobbies);
+        pl.send_messages(&messages);
+    }
 
+    // This function is extrapolated out so it can be used for all .login, .register, .name, .list commands
+    pub fn list_messages(lobbies: &mut HashMap<i32, Lobby>) -> Vec<String> {
+        let mut messages = vec![String::from("A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.")];
         for lob in lobbies.values() {
             let state = match &lob.state {
                 LobbyState::Playing => "Playing",
@@ -687,8 +692,7 @@ impl Lobby {
         }
 
         messages.sort_unstable_by(|a, b| a.cmp(&b));
-
-        pl.send_messages(&messages);
+        messages
     }
 
     pub fn make(

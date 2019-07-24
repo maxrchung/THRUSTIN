@@ -130,7 +130,7 @@ fn handle_input(
 
     match state {
         PlayerState::ChooseName => {
-            commands::choose_name_commands(split, pl, players);
+            commands::choose_name_commands(split, pl, lobbies, players);
         }
 
         PlayerState::OutOfLobby => {
