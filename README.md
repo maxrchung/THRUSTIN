@@ -97,6 +97,9 @@ Destroy all your personal THRUSTS lol.
 ##### `.w(ho)`
 Shows everyone out and in lobbies.
 
+##### `.a(ccount)`
+If logged in, view account information and game stats that are relevant to your account, of course.
+
 ##### `.us(ername) SomeOtherUserName__ SomeOtherUserName__`
 If logged in, changes your username to SomeOtherUserName__. It's kind of weird the more I think about it how Username and Name are so closely related. I could have done something to make them closer to the same, but in the end I decided not to. I personally find the use case of just logging in with a standard User/Pass account, then making up some random Name to troll with, quite appealing so yeah that's that.
 
@@ -151,6 +154,9 @@ Shows everyone in this lobby.
 ##### `.(THRUSTE)R(S) 3`
 (Chief-Only) Set the number of THRUSTERS you can have to 3.
 
+##### `.a(ccount)`
+[See](#account)
+
 ## In Game (Choosing THRUSTEE)
 When you are the THRUSTEE choosing a THRUSTEE for THRUSTERS to THRUST into.
 
@@ -175,6 +181,9 @@ Show who's got how many points in the lobby and also who's in this lobby yo.
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
 
+##### `.a(ccount)`
+[See](#account)
+
 ## In Game (Waiting for THRUSTEE)
 When you are a THRUSTER waiting for THRUSTEE to be chosen.
 
@@ -195,6 +204,9 @@ When you are a THRUSTER waiting for THRUSTEE to be chosen.
 
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
+
+##### `.a(ccount)`
+[See](#account)
 
 ## In Game (THRUSTING into chosen THRUSTEE)
 When a THRUSTEE is chosen and you are a THRUSTER ready to THRUST one of your THRUSTERS into the THRUSTEE.
@@ -220,6 +232,9 @@ Choose to use your THRUSTER at index 1 to THRUST into the chosen THRUSTEE. After
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
 
+##### `.a(ccount)`
+[See](#account)
+
 ## In Game (Deciding best THRUSTER)
 When you are the THRUSTEE and ready to pick your favorite THRUST.
 
@@ -243,3 +258,6 @@ Okay, you select the completed THRUST at index 1 as the best one.
 
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
+
+##### `.a(ccount)`
+[See](#account)
