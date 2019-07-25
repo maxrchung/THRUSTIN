@@ -453,6 +453,18 @@ impl Default for Deck {
             "don’t expect anyone here to actually give a fuck about you",
             "tied to a truck naked and dragged through the street until all your skin scrapes off against the asphalt",
             "lose the ability to meme",
+            "curling into fetal position while taking a shower so you can drown in your misery",
+            "Never Give Up!!!",
+            "reality is subjective",
+            "😹😹😹😹😹",
+            "I’m at a crossroads in my life where there’s just too many things I need to do. So many responsibilities, projects, relationships, goals, empty dreams that I’m not living up to. God, it’s a little much. Sometimes it’s a little too much. SOmetimeS IT’S Too mUCh. SOmETImETS ITjSUt jA  lITTle oBVErBeARing Andx I CNA”t HAndlE iT. I CAN’TY HANLE iT. I CAN’T HANDL iet. I can’T HAndle iT. God WHy iSlIFE SO hARd liVing",
+            "Yakult, Yacub, and cult, coincidence? I think not",
+            "nice",
+            "Epicman",
+            "( . Y . )",
+            "8=D~~~~~~~~~~",
+            "This THRUSTER is no longer available due to a copyright claim by Viacum Inc.",
+            "Squirtle squirting like a geyser",
         ];
 
         let thrustees = vec![
@@ -651,6 +663,13 @@ impl Default for Deck {
             "On your marks, get set, _____.",
             "When I die, I want _____ to lower me into my grave, so I can be let down one last time.",
             "Hey Google, _____.",
+            "<br/>👀<br/>👃<br/>👄<br/>It is me, Epicboy… One day I’ll be as cool as Epicman, but until then, _____.",
+            "Jesus Christ, that’s ______.",
+            "Rock, paper, _____.",
+            "🇳 _____.",
+            "I wouldn’t mind trying out _____ for once.",
+            "Damn, it’d be hella dope if I got _____ for Christmas.",
+            "I cocked my gun and _____.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
