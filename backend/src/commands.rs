@@ -107,6 +107,7 @@ pub fn out_of_lobby_commands(
 ) {
     let com = get_command(&split);
     match &*com {
+        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_out_commands(&pl.borrow()),
         ".join" | ".j" => Lobby::join(split, pl, lobbies),
         ".list" | ".l" => Lobby::list(pl, lobbies),
@@ -143,6 +144,7 @@ fn list_out_commands(pl: &Player) {
 
     if pl.is_authenticated {
         commands.append(&mut vec![
+            (".account", ".a", "Retrieve some statistical information regarding the state of your account."),
             (".password D1Ff3rentP@$$420 D1Ff3rentP@$$420", ".pa D1Ff3rentP@$$420 D1Ff3rentP@$$420", "Change your account password, maybe to D1Ff3rentP@$$420? lmao, also you gotta confirm it."),
             (".username NewMeNewUser NewMeNewUser", ".us NewMeNewUser NewMeNewUser", "Change your account username and confirmation applied thereafter."),
         ]);
@@ -170,6 +172,7 @@ pub fn in_lobby_commands(
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
 
     match &*com {
+        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_in_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -217,6 +220,12 @@ fn list_in_commands(pl: &Player, host: bool) {
         ]);
     }
 
+    if pl.is_authenticated {
+        commands.append(&mut vec![
+            (".account", ".a", "Observe the settings related to your account and see what's up with that whack."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Hey cool so now you're in the lobby and now you've got some more commands. If you're the chief, you've got access to some special options to configure the lobby's game experience. Otherwise, normal non-chiefs, yall can chill out and wait for the game to start."),
         generate_table(commands)
@@ -237,6 +246,7 @@ pub fn playing_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
+        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_playing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -281,6 +291,12 @@ fn list_playing_commands(pl: &Player, host: bool) {
         ]);
     }
 
+    if pl.is_authenticated {
+        commands.append(&mut vec![
+            (".account", ".a", "This shows your account configurations and stats."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Great. Now you're in the phase where you are a THRUSTER. In this state, you can THRUST one of your THRUSTER options into the THRUSTEE. Make sure it's a good one!"),
         generate_table(commands)
@@ -301,6 +317,7 @@ pub fn choosing_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
+        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_choosing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -338,6 +355,12 @@ fn list_choosing_commands(pl: &Player, host: bool) {
         )]);
     }
 
+    if pl.is_authenticated {
+        commands.append(&mut vec![
+            (".account", ".a", "Account related information for your display view."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Okay you're a THRUSTEE now. First thing you've gotta do is choose a great THRUSTEE that other THRUSTERS can THRUST into. Make sure it's a juicy one!"),
         generate_table(commands)
@@ -358,6 +381,7 @@ pub fn deciding_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
+        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_deciding_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -389,6 +413,12 @@ fn list_deciding_commands(pl: &Player, host: bool) {
         )]);
     }
 
+    if pl.is_authenticated {
+        commands.append(&mut vec![
+            (".account", ".a", "Visibility to how your account data is becoming awoke."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Yeah guy it's time for you to decide on the best THRUSTER. Pick the one that you like the best. Trust your head and your gut. You can do it. I believe in you."),
         generate_table(commands)
@@ -409,6 +439,7 @@ pub fn waiting_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
+        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_waiting_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -446,6 +477,12 @@ fn list_waiting_commands(pl: &Player, host: bool) {
                 ".k SAMPLE_USER_000666",
                 "(chief-only) Eliminate SAMPLE_USER_000666 from your lobby...",
             ),
+        ]);
+    }
+
+    if pl.is_authenticated {
+        commands.append(&mut vec![
+            (".account", ".a", "Let's say you want to see what your Username, Name, Games Played, Games Won, Points Gained are..."),
         ]);
     }
 

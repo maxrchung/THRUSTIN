@@ -413,11 +413,13 @@ impl Lobby {
                                 let (pts, winner) = {
                                     let mut chosen_thruster = self.list[index].borrow_mut();
                                     chosen_thruster.game.points += 1;
+                                    chosen_thruster.up_points_gained();
                                     (chosen_thruster.game.points.clone(), chosen_thruster.name.clone())
                                 };
 
                                 // Check if winner
                                 if pts >= self.max_points {
+                                    self.list[index].borrow().up_games_won();
                                     let messages = vec![
                                         format!("{} has chosen this THRUSTER as the chosen THRUST, bois:<br/>{}<br/>", &name, &chosen_thrust),
                                         format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!",  winner)
@@ -619,7 +621,6 @@ impl Lobby {
                             return;
                         }
                     }
-
                     messages.push(format!("Joined: {:#?}", &lobby_id));
 
                     // Reset player game settings on join
@@ -639,6 +640,7 @@ impl Lobby {
                     lob.send_message(&format!("{} has joined the lobby.", pl_mut.name));
                     // adding the new player to lobby
                     pl_mut.lobby = lob.id;
+                    pl_mut.up_games_played();
                     lob.list.push(pl.clone());
                     pl_mut.send_messages(&messages);
                 } else {
@@ -1000,13 +1002,13 @@ impl Lobby {
             }
         }
 
-        // Validate THRUSTEES
+        // Validate THRUSTEES (need 1 THRUSTEE)
         if self.game.deck.thrustees.is_empty() {
             pl.borrow().send_message("Dude, I can't start the game for you because yall don't got enough THRUSTEES. Here's a lil bit of mathematics:<br/>Total THRUSTEES HAS to BE GREATER THAN 0");
             return;
         }
 
-        // Validate THRUSTERS
+        // Validate THRUSTERS (need 1 THRUSTER)
         if self.game.deck.thrusters.is_empty() {
             pl.borrow().send_message("Yo... got an issue boss, we don't go enough THRUSTERS. Let me calculate to tell you why:<br/>Total THRUSTERS HAS to BE GREATER THAN 0");
             return;
@@ -1029,6 +1031,7 @@ impl Lobby {
         for (i, pl) in self.list.iter().enumerate() {
             let mut pl = pl.borrow_mut();
             pl.state = PlayerState::Waiting;
+            pl.up_games_played();
 
             if i == self.game.thrustee {
                 pl.state = PlayerState::Choosing;

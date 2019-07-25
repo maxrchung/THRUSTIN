@@ -3,6 +3,7 @@ use crate::database::MongoDB;
 use crate::lobby::Lobby;
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
+use mongodb::Bson;
 use std::collections::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -35,6 +36,43 @@ pub struct Player {
 }
 
 impl Player {
+    pub fn account(&self) {
+        if !self.is_authenticated {
+            self.send_message("You cannot do this. You must be fully authenticated and logged in in order to get your account info with a registered account.");
+            return;
+        }
+
+        match self.db.borrow().find_name_doc(&self.name) {
+            Some(doc) => {
+                let mut messages = vec![String::from("A display of your account information and statistical information. Please enjoy THRUSTIN!")];
+                if let Some(Bson::String(user)) = doc.get("user") {
+                    messages.push(format!("Username - {}", user));
+                }
+                messages.push(format!("Name - {}", self.name));
+                messages.push(String::from("Password - [ENCRYPTED_CONTENT__UNVIEWABLE]"));
+                if let Some(points) = doc.get("points_gained") {
+                    messages.push(format!("Pointed Earned So Far - {}", points));
+                } else {
+                    messages.push(String::from("Pointed Earned - 0"));
+                }
+                if let Some(games) = doc.get("games_played") {
+                    messages.push(format!("Games Played So Far - {}", games));
+                } else {
+                    messages.push(String::from("Games Played So Far - 0"));
+                }
+                if let Some(games) = doc.get("games_won") {
+                    messages.push(format!("Games Won So Far - {}", games));
+                } else {
+                    messages.push(String::from("Games Won So Far - 0"));
+                }
+                self.send_messages(&messages);
+            }
+            None => {
+                self.send_message("Yo there's a bit of an epic problem. We couldn't find your account data lmao. What is going on.");
+            }
+        }
+    }
+
     pub fn display_deck(&self) {
         let mut messages = Vec::new();
 
@@ -327,6 +365,24 @@ impl Player {
             self.send_message("Congrats, your username was changed. Don't forget that the next time you login. Duh.");
         } else {
             self.send_message("Man I don't know what to say. There was an error saving the username to database MongoDB.");
+        }
+    }
+
+    pub fn up_games_played(&self) {
+        if self.is_authenticated {
+            self.db.borrow().up_games_played(&self.name);
+        }
+    }
+
+    pub fn up_games_won(&self) {
+        if self.is_authenticated {
+            self.db.borrow().up_games_won(&self.name);
+        }
+    }
+
+    pub fn up_points_gained(&self) {
+        if self.is_authenticated {
+            self.db.borrow().up_points_gained(&self.name);
         }
     }
 

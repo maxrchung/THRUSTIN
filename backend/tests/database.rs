@@ -129,3 +129,44 @@ fn change_user_and_pass() {
         "Welcome back ([USER] >>>\"1\"<<< [USER]) to THRUSTIN.<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
     );
 }
+
+#[test]
+fn view_account() {
+    let mut client = common::setup_with_db("view_account");
+    client.send(1, ".n 1");
+    client.send(1, ".a");
+    client.read_all(); 
+    assert_eq!(client.last(1), "You cannot do this. You must be fully authenticated and logged in in order to get your account info with a registered account.");
+
+    client.send(2, ".r user2 2 2");
+    client.send(2, ".a");
+    client.long_read_all(); 
+    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - user2<br/>Name - user2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 0<br/>Games Won So Far - 0");
+}
+
+#[test]
+fn update_account_stats() {
+    let mut client = common::setup_with_db("update_account_stats");
+    client.send(1, ".r 1 1 1");
+    client.send(1, ".m");
+    client.send(1, ".po 1");
+    client.send(1, ".s");
+    client.send(1, ".a");
+    client.long_read_all();
+    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
+
+    client.send(2, ".r 2 2 2");
+    client.send(2, ".j 1");
+    client.send(2, ".a");
+    client.long_read_all(); 
+    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
+
+    client.send(1, ".t 1");
+    client.thrust(2);
+    client.send(1, ".t 1");
+    client.send(1, ".a");
+    client.send(2, ".a");
+    client.long_read_all(); 
+    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
+    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 1<br/>Games Played So Far - 1<br/>Games Won So Far - 1");
+}

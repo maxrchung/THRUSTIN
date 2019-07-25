@@ -19,7 +19,7 @@ impl MongoDB {
             .users
             .find(Some(doc.clone()), None)
             .ok()
-            .expect("Failed to find login");
+            .expect("Failed to find user");
         // Return doc if found, otherwise None
         match cursor.next() {
             Some(Ok(doc)) => Some(doc),
@@ -78,6 +78,23 @@ impl MongoDB {
         }
     }
 
+    pub fn find_name_doc(&self, name: &str) -> Option<Document> {
+        let doc = doc! {
+            "name": name
+        };
+        let mut cursor = self
+            .users
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find name");
+        // Return doc if found, otherwise None
+        match cursor.next() {
+            Some(Ok(doc)) => Some(doc),
+            Some(Err(_)) => None,
+            None => None,
+        }
+    }
+
     pub fn login(&self, user: &str, pass: &str) -> Option<Document> {
         let doc = doc! {
             "user": user,
@@ -130,6 +147,57 @@ impl MongoDB {
         }
     }
 
+    // Whenever user joins or starts game
+    pub fn up_games_played(&self, name: &str) {
+        if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::I32(games)) = doc.get("games_played") {
+                let filter = doc! {
+                    "name": name
+                };
+                let update = doc! {
+                    "$set": {
+                        "games_played": games + 1
+                    }
+                };
+                self.users.update_one(filter, update, None).expect("Failed to update games played");
+            }
+        }
+    }
+
+    // Whenever user wins game
+    pub fn up_games_won(&self, name: &str) {
+        if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::I32(games)) = doc.get("games_won") {
+                let filter = doc! {
+                    "name": name
+                };
+                let update = doc! {
+                    "$set": {
+                        "games_won": games + 1
+                    }
+                };
+                self.users.update_one(filter, update, None).expect("Failed to update games won");
+            }
+        }
+    }
+
+    // When user gets a point
+    pub fn up_points_gained(&self, name: &str) {
+        if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::I32(points)) = doc.get("points_gained") {
+                let filter = doc! {
+                    "name": name
+                };
+                let update = doc! {
+                    "$set": {
+                        "points_gained": points + 1
+                    }
+                };
+                self.users.update_one(filter, update, None).expect("Failed to update points gained");
+            }
+        }
+    }
+
     pub fn register(&self, user: &str, pass: &str) -> bool {
         if self.find_user_doc(user).is_some() {
             return false;
@@ -139,6 +207,9 @@ impl MongoDB {
             "user": user,
             "pass": &hash,
             "name": user,
+            "points_gained": 0,
+            "games_played": 0,
+            "games_won": 0,
         };
         match self.users.insert_one(doc.clone(), None) {
             Ok(_) => true,
