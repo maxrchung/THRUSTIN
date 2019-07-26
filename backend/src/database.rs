@@ -11,6 +11,23 @@ pub struct MongoDB {
 }
 
 impl MongoDB {
+    fn find_name_doc(&self, name: &str) -> Option<Document> {
+        let doc = doc! {
+            "name": name
+        };
+        let mut cursor = self
+            .users
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find name");
+        // Return doc if found, otherwise None
+        match cursor.next() {
+            Some(Ok(doc)) => Some(doc),
+            Some(Err(_)) => None,
+            None => None,
+        }
+    }
+
     fn find_user_doc(&self, user: &str) -> Option<Document> {
         let doc = doc! {
             "user": user
@@ -51,6 +68,39 @@ impl MongoDB {
         array
     }
 
+    pub fn account(&self, name: &str) -> Vec<String> {
+        let mut messages = Vec::new();
+        match self.find_name_doc(&name) {
+            Some(doc) => {
+                messages.push(String::from("A display of your account information and statistical information. Please enjoy THRUSTIN!"));
+                if let Some(Bson::String(user)) = doc.get("user") {
+                    messages.push(format!("Username - {}", user));
+                }
+                messages.push(format!("Name - {}", name));
+                messages.push(String::from("Password - [ENCRYPTED_CONTENT__UNVIEWABLE]"));
+                if let Some(points) = doc.get("points_gained") {
+                    messages.push(format!("Pointed Earned So Far - {}", points));
+                } else {
+                    messages.push(String::from("Pointed Earned - 0"));
+                }
+                if let Some(games) = doc.get("games_played") {
+                    messages.push(format!("Games Played So Far - {}", games));
+                } else {
+                    messages.push(String::from("Games Played So Far - 0"));
+                }
+                if let Some(games) = doc.get("games_won") {
+                    messages.push(format!("Games Won So Far - {}", games));
+                } else {
+                    messages.push(String::from("Games Won So Far - 0"));
+                }
+            }
+            None => {
+                messages.push(String::from("Yo there's a bit of an epic problem. We couldn't find your account data lmao. What is going on."));
+            }
+        }
+        messages
+    }
+
     pub fn bson_array_to_strings(array: Array) -> Vec<String> {
         let mut strings = Vec::new();
         for bson in array {
@@ -59,6 +109,51 @@ impl MongoDB {
             }
         }
         strings
+    }
+
+    // Shows a list of chieftains
+    pub fn chieftains(&self) -> Vec<String> {
+        let mut messages = Vec::new();
+        let doc = doc! {
+            "is_chieftain": true
+        };
+        let cursor = self
+            .users
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find chieftains");
+
+        messages.push(String::from("A LIST OF CHIEFTAINS RESPONSIBLE FOR MANAGEMENT OF THIS THRUSTIN SERVER IS AS FOLLOWS."));
+        let mut chieftains = Vec::new();
+        for doc in cursor {
+            if let Ok(doc) = doc {
+                if let Some(&Bson::String(ref name)) = doc.get("name") {
+                    chieftains.push(name.clone());
+                }
+            }
+        }
+        chieftains.sort_unstable_by(|a, b| a.cmp(&b));
+        messages.append(&mut chieftains);
+        messages
+    }
+
+    // lol, this appoints a chieftain
+    pub fn chieftain(&self, name: &str) -> bool {
+        // Only set chieftain if it's an actual database bro
+        if let Some(_) = self.find_name_doc(&name) {
+            let filter = doc! {
+                "name": name
+            };
+            let update = doc! {
+                "$set": {
+                    "is_chieftain": true
+                }
+            };
+            self.users.update_one(filter, update, None).expect("Failed to update chieftain");
+            true
+        } else {
+            false
+        }
     }
 
     pub fn does_name_exist(&self, name: &str) -> bool {
@@ -78,20 +173,15 @@ impl MongoDB {
         }
     }
 
-    pub fn find_name_doc(&self, name: &str) -> Option<Document> {
-        let doc = doc! {
-            "name": name
-        };
-        let mut cursor = self
-            .users
-            .find(Some(doc.clone()), None)
-            .ok()
-            .expect("Failed to find name");
-        // Return doc if found, otherwise None
-        match cursor.next() {
-            Some(Ok(doc)) => Some(doc),
-            Some(Err(_)) => None,
-            None => None,
+    pub fn is_chieftain(&self, name: &str) -> bool {
+        if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::Boolean(is_chieftain)) = doc.get("is_chieftain") {
+                is_chieftain
+            } else {
+                false
+            }
+        } else {
+            false
         }
     }
 
@@ -210,6 +300,25 @@ impl MongoDB {
             "points_gained": 0,
             "games_played": 0,
             "games_won": 0,
+            "is_chieftain": false
+        };
+        match self.users.insert_one(doc.clone(), None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
+    // For testing purposes
+    pub fn register_chieftain(&self) -> bool {
+        let hash = self.hash_password("chieftain");
+        let doc = doc! {
+            "user": "chieftain",
+            "pass": &hash,
+            "name": "chieftain",
+            "points_gained": 0,
+            "games_played": 0,
+            "games_won": 0,
+            "is_chieftain": true
         };
         match self.users.insert_one(doc.clone(), None) {
             Ok(_) => true,

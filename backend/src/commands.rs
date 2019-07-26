@@ -107,18 +107,20 @@ pub fn out_of_lobby_commands(
 ) {
     let com = get_command(&split);
     match &*com {
-        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_out_commands(&pl.borrow()),
         ".join" | ".j" => Lobby::join(split, pl, lobbies),
         ".list" | ".l" => Lobby::list(pl, lobbies),
         ".make" | ".m" => Lobby::make(split, pl, lobby_id, lobbies),
         ".name" | ".n" => Player::name(split, pl, lobbies, players),
-        ".password" | ".pa" => pl.borrow_mut().password(split),
         ".play" | ".p" => Lobby::join(vec![".join", "0"], pl, lobbies),
         ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
         ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
-        ".username" | ".us" => pl.borrow_mut().username(split),
         ".who" | ".w" => Player::who(pl, players),
+        ".account" | ".a" => pl.borrow().account(),
+        ".username" | ".us" => pl.borrow_mut().username(split),
+        ".password" | ".pa" => pl.borrow_mut().password(split),
+        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect(pl.borrow().token, players),
         _ => {
             pl.borrow()
@@ -150,6 +152,14 @@ fn list_out_commands(pl: &Player) {
         ]);
     }
 
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains."),
+            (".chieftain An0THerSoul", ".ch An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain."),
+            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Alright so now you're in like a waiting zone outside of all the lobbies. Here you can browse lobbies, organize your THRUSTS, and (eventually by milestone 5.3) chat with other people in like general chat. Have fun playing THRUSTIN, brought to you by WAXCHUG&daGWADS."),
         generate_table(commands)
@@ -172,7 +182,6 @@ pub fn in_lobby_commands(
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
 
     match &*com {
-        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_in_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -188,6 +197,9 @@ pub fn in_lobby_commands(
         ".start" | ".s" => lobby.start(pl),
         ".thrustees" | ".e" => lobby.thrustees(split, pl),
         ".thrusters" | ".r" => lobby.thrusters(split, pl),
+        ".account" | ".a" => pl.borrow().account(),
+        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl
             .borrow()
@@ -226,6 +238,14 @@ fn list_in_commands(pl: &Player, host: bool) {
         ]);
     }
 
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains. I'm sorry we added the `t`..."),
+            (".chieftain An0THerSoul", ".ch An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain. I'm really sorry we added the `t`..."),
+            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Hey cool so now you're in the lobby and now you've got some more commands. If you're the chief, you've got access to some special options to configure the lobby's game experience. Otherwise, normal non-chiefs, yall can chill out and wait for the game to start."),
         generate_table(commands)
@@ -246,7 +266,6 @@ pub fn playing_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_playing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -254,6 +273,9 @@ pub fn playing_commands(
         ".kick" | ".k" => lobby.kick(split, pl),
         ".end" | ".e" => lobby.end(pl),
         ".who" | ".w" => lobby.who_in_game(pl),
+        ".account" | ".a" => pl.borrow().account(),
+        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl.borrow().send_message("Bruh that's an invalid command."),
     }
@@ -297,6 +319,14 @@ fn list_playing_commands(pl: &Player, host: bool) {
         ]);
     }
 
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Great. Now you're in the phase where you are a THRUSTER. In this state, you can THRUST one of your THRUSTER options into the THRUSTEE. Make sure it's a good one!"),
         generate_table(commands)
@@ -317,7 +347,6 @@ pub fn choosing_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_choosing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -325,6 +354,9 @@ pub fn choosing_commands(
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
         ".who" | ".w" => lobby.who_in_game(pl),
+        ".account" | ".a" => pl.borrow().account(),
+        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl
             .borrow()
@@ -361,6 +393,14 @@ fn list_choosing_commands(pl: &Player, host: bool) {
         ]);
     }
 
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Okay you're a THRUSTEE now. First thing you've gotta do is choose a great THRUSTEE that other THRUSTERS can THRUST into. Make sure it's a juicy one!"),
         generate_table(commands)
@@ -381,7 +421,6 @@ pub fn deciding_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_deciding_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -389,6 +428,9 @@ pub fn deciding_commands(
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
         ".who" | ".w" => lobby.who_in_game(pl),
+        ".account" | ".a" => pl.borrow().account(),
+        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl.borrow().send_message("Bro! That's an invalid command."),
     }
@@ -419,6 +461,14 @@ fn list_deciding_commands(pl: &Player, host: bool) {
         ]);
     }
 
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Yeah guy it's time for you to decide on the best THRUSTER. Pick the one that you like the best. Trust your head and your gut. You can do it. I believe in you."),
         generate_table(commands)
@@ -439,7 +489,6 @@ pub fn waiting_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".account" | ".a" => pl.borrow().account(),
         ".help" | ".h" => list_waiting_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
@@ -449,6 +498,9 @@ pub fn waiting_commands(
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
         ".who" | ".w" => lobby.who_in_game(pl),
+        ".account" | ".a" => pl.borrow().account(),
+        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl
             .borrow()
@@ -483,6 +535,14 @@ fn list_waiting_commands(pl: &Player, host: bool) {
     if pl.is_authenticated {
         commands.append(&mut vec![
             (".account", ".a", "Let's say you want to see what your Username, Name, Games Played, Games Won, Points Gained are..."),
+        ]);
+    }
+
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 

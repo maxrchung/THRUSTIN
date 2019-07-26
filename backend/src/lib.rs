@@ -38,6 +38,8 @@ pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
         .users
         .drop()
         .expect(&format!("Unable to drop test db: {}", db_name));
+    // Register a default chieftain
+    db.borrow().register_chieftain();
     run(chan_comm, db);
 }
 

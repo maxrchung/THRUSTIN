@@ -3,7 +3,6 @@ use crate::database::MongoDB;
 use crate::lobby::Lobby;
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
-use mongodb::Bson;
 use std::collections::HashMap;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -42,33 +41,30 @@ impl Player {
             return;
         }
 
-        match self.db.borrow().find_name_doc(&self.name) {
-            Some(doc) => {
-                let mut messages = vec![String::from("A display of your account information and statistical information. Please enjoy THRUSTIN!")];
-                if let Some(Bson::String(user)) = doc.get("user") {
-                    messages.push(format!("Username - {}", user));
-                }
-                messages.push(format!("Name - {}", self.name));
-                messages.push(String::from("Password - [ENCRYPTED_CONTENT__UNVIEWABLE]"));
-                if let Some(points) = doc.get("points_gained") {
-                    messages.push(format!("Pointed Earned So Far - {}", points));
-                } else {
-                    messages.push(String::from("Pointed Earned - 0"));
-                }
-                if let Some(games) = doc.get("games_played") {
-                    messages.push(format!("Games Played So Far - {}", games));
-                } else {
-                    messages.push(String::from("Games Played So Far - 0"));
-                }
-                if let Some(games) = doc.get("games_won") {
-                    messages.push(format!("Games Won So Far - {}", games));
-                } else {
-                    messages.push(String::from("Games Won So Far - 0"));
-                }
-                self.send_messages(&messages);
-            }
-            None => {
-                self.send_message("Yo there's a bit of an epic problem. We couldn't find your account data lmao. What is going on.");
+        let messages = self.db.borrow().account(&self.name);
+        self.send_messages(&messages);
+    }
+
+    pub fn chieftain(&self, split: Vec<&str>) {
+        if !self.is_chieftain() {
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.")
+        }
+
+        if split.len() > 2 {
+            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.")
+        }
+
+        // Retrieve chieftains
+        if split.len() == 1 {
+            let messages = self.db.borrow().chieftains();
+            self.send_messages(&messages);
+        // Appoint chieftain
+        } else {
+            let name = split[1];
+            if self.db.borrow().chieftain(&name) {
+                self.send_message(&format!("A NEW CHIEFTAIN HAS BEEN APPOINTED: {}", name));
+            } else {
+                self.send_message(&format!("FAILED TO APPOINT CHIEFTAIN: {}", name));
             }
         }
     }
@@ -186,15 +182,15 @@ impl Player {
         db: Rc<RefCell<MongoDB>>,
     ) -> Player {
         Player {
-            token: token,
-            name: String::new(),
-            state: PlayerState::ChooseName,
-            lobby: -1,
-            personal_deck: Deck::new(),
             comm,
-            game: PlayerGame::new(),
             db,
+            game: PlayerGame::new(),
             is_authenticated: false,
+            lobby: -1,
+            name: String::new(),
+            personal_deck: Deck::new(),
+            state: PlayerState::ChooseName,
+            token: token,
         }
     }
 
@@ -203,16 +199,21 @@ impl Player {
         db: Rc<RefCell<MongoDB>>,
     ) -> Player {
         Player {
-            token: 0,
-            name: "EndlessLobbyHostDoggo".to_string(),
-            state: PlayerState::Playing,
-            lobby: 0,
-            personal_deck: Deck::new(),
             comm,
-            game: PlayerGame::new(),
             db,
+            game: PlayerGame::new(),
             is_authenticated: false,
+            lobby: 0,
+            name: "EndlessLobbyHostDoggo".to_string(),
+            personal_deck: Deck::new(),
+            state: PlayerState::Playing,
+            token: 0,
         }
+    }
+
+    pub fn is_chieftain(&self) -> bool {
+        // I think it's most straightforward to let db handle calls if possible
+        self.db.borrow().is_chieftain(&self.name)
     }
 
     pub fn password(&mut self, split: Vec<&str>) {
@@ -333,6 +334,21 @@ impl Player {
         self.send_messages(&messages);
     }
 
+    pub fn unchieftain(&self, split: Vec<&str>) {
+        if !self.is_chieftain() {
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.")
+        }
+
+        if split.len() != 2 {
+            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.")
+        }
+
+        let name = split[1];
+        if self.db.borrow().unchieftain(&name) {
+        } else {
+        }
+    }
+
     pub fn unthrust(&mut self) {
         self.personal_deck = Deck::new();
         if self.is_authenticated {
@@ -410,7 +426,7 @@ impl Player {
             messages.push(message);
         }
 
-        messages.sort_unstable_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+        messages.sort_unstable_by(|a, b| a.cmp(&b));
         pl.send_messages(&messages);
     }
 }

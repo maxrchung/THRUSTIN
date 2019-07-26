@@ -551,7 +551,12 @@ impl Lobby {
     }
 
     pub fn is_host(&self, player: u32) -> bool {
-        self.host.borrow().token == player
+        if self.host.borrow().token == player {
+            return true;
+        } else if let Some(ind) = self.search_token(player) {
+            return self.list[ind].borrow().is_chieftain();
+        }
+        false
     }
 
     pub fn kick(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
@@ -1079,7 +1084,7 @@ impl Lobby {
             messages.push(message);
         }
 
-        messages.sort_unstable_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+        messages.sort_unstable_by(|a, b| a.cmp(&b));
 
         pl.send_messages(&messages);
     }
