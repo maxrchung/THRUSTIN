@@ -165,6 +165,12 @@ Shows everyone in this lobby.
 ##### `.a(ccount)`
 [See](#account)
 
+##### `.ch(ieftain) (NewAdministratorHere)`
+[See](#chieftain-newadministratorhere)
+
+##### `.un(chieftain) NewAdministratorNoLonger`
+[See](#unchieftain-newadministratornolonger)
+
 ## In Game (Choosing THRUSTEE)
 When you are the THRUSTEE choosing a THRUSTEE for THRUSTERS to THRUST into.
 
@@ -223,10 +229,10 @@ When you are a THRUSTER waiting for THRUSTEE to be chosen.
 [See](#account)
 
 ##### `.ch(ieftain) (NewAdministratorHere)`
-[See](#chieftain)
+[See](#chieftain-newadministratorhere)
 
 ##### `.un(chieftain) NewAdministratorNoLonger`
-[See](#unchieftain)
+[See](#unchieftain-newadministratornolonger)
 
 ## In Game (THRUSTING into chosen THRUSTEE)
 When a THRUSTEE is chosen and you are a THRUSTER ready to THRUST one of your THRUSTERS into the THRUSTEE.
@@ -256,10 +262,10 @@ Choose to use your THRUSTER at index 1 to THRUST into the chosen THRUSTEE. After
 [See](#account)
 
 ##### `.ch(ieftain) (NewAdministratorHere)`
-[See](#chieftain)
+[See](#chieftain-newadministratorhere)
 
 ##### `.un(chieftain) NewAdministratorNoLonger`
-[See](#unchieftain)
+[See](#unchieftain-newadministratornolonger)
 
 ## In Game (Deciding best THRUSTER)
 When you are the THRUSTEE and ready to pick your favorite THRUST.
@@ -289,7 +295,7 @@ Okay, you select the completed THRUST at index 1 as the best one.
 [See](#account)
 
 ##### `.ch(ieftain) (NewAdministratorHere)`
-[See](#chieftain)
+[See](#chieftain-newadministratorhere)
 
 ##### `.un(chieftain) NewAdministratorNoLonger`
-[See](#unchieftain)
+[See](#unchieftain-newadministratornolonger)
