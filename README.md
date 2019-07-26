@@ -31,8 +31,10 @@ Oh yeah here's a point to keep note. Aliases can be used to shorten commands, as
 ## Overloading
 Some commands are overloaded, meaning putting 0, 1, 2 arguments for a command could lead to different things. I'll try and show this too using (parentheses). There are gonna be repeated commands too since some commands are the same across different phases. I guess I'll just copy paste something for that.
 
-## Chief
-Chief is the host of the lobby. We have a micromeme where we say "Chief is callin'" periodically, and this is an attempt to link our life into this game so we took the chance and replaced references of host with Chief. Respect.
+## Chief(tain)
+Chief is the host of a lobby. We have a micromeme where we say "Chief is callin'" periodically, and this is an attempt to link our life into this game so we took the chance and replaced references of lobby host with Chief. Respect.
+
+We also have Chieftains. Yeah, I realize this is a bit confusing, but I think it's kind of cool. Chieftains are global admins of the server and can do Chief commands on top of a few other things.
 
 ## Endless Lobby
 We have a thing called an endless lobby that anyone can more easily join and play in. This lobby kind of hangs around mostly forever, until someone gets 256 points, and anyone is pretty much free to join and play unless 2 billion people join.
@@ -105,6 +107,12 @@ If logged in, changes your username to SomeOtherUserName__. It's kind of weird t
 
 ##### `.pa(ssword) Y0L0Ep1C420420420 Y0L0Ep1C420420420`
 If logged in, changes your password to Y0L0Ep1C420420420, so you know, if you're a hacker you can screw the hacked guys' account over lol.
+
+##### `.ch(ieftain) (NewAdministratorHere)`
+(Chieftain-only) By itself, `.chieftain` shall show a list of all chieftains in the server. With an argument, you will attempt to appoint the targetted Name as a Chieftain. Note that we use `.ch` because `.c` is for `.chief` and damn I'm no so sure if I want to make these too closely related anymore, but whatever.
+
+##### `.un(chieftain) NewAdministratorNoLonger`
+(Chieftain-only) Removes the selected Chieftain as a chieftain.
 
 ## In Lobby
 Commands when you are in a lobby. Note that now you'll see some (Chief-Only) commands that only chiefs may do.
@@ -184,6 +192,12 @@ Show who's got how many points in the lobby and also who's in this lobby yo.
 ##### `.a(ccount)`
 [See](#account)
 
+##### `.ch(ieftain) (NewAdministratorHere)`
+[See](#chieftain)
+
+##### `.un(chieftain) NewAdministratorNoLonger`
+[See](#unchieftain)
+
 ## In Game (Waiting for THRUSTEE)
 When you are a THRUSTER waiting for THRUSTEE to be chosen.
 
@@ -207,6 +221,12 @@ When you are a THRUSTER waiting for THRUSTEE to be chosen.
 
 ##### `.a(ccount)`
 [See](#account)
+
+##### `.ch(ieftain) (NewAdministratorHere)`
+[See](#chieftain)
+
+##### `.un(chieftain) NewAdministratorNoLonger`
+[See](#unchieftain)
 
 ## In Game (THRUSTING into chosen THRUSTEE)
 When a THRUSTEE is chosen and you are a THRUSTER ready to THRUST one of your THRUSTERS into the THRUSTEE.
@@ -235,6 +255,12 @@ Choose to use your THRUSTER at index 1 to THRUST into the chosen THRUSTEE. After
 ##### `.a(ccount)`
 [See](#account)
 
+##### `.ch(ieftain) (NewAdministratorHere)`
+[See](#chieftain)
+
+##### `.un(chieftain) NewAdministratorNoLonger`
+[See](#unchieftain)
+
 ## In Game (Deciding best THRUSTER)
 When you are the THRUSTEE and ready to pick your favorite THRUST.
 
@@ -261,3 +287,9 @@ Okay, you select the completed THRUST at index 1 as the best one.
 
 ##### `.a(ccount)`
 [See](#account)
+
+##### `.ch(ieftain) (NewAdministratorHere)`
+[See](#chieftain)
+
+##### `.un(chieftain) NewAdministratorNoLonger`
+[See](#unchieftain)
