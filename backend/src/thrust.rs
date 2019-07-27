@@ -465,6 +465,12 @@ impl Default for Deck {
             "8=D~~~~~~~~~~",
             "This THRUSTER is no longer available due to a copyright claim by Viacum Inc.",
             "Squirtle squirting like a geyser",
+            "no homo",
+            "giga homo",
+            "MAN HAS NO CONTROL OVER ITS DESTINY",
+            "[REDACTED]",
+            "gunning down kids with a Negev",
+            "definitely don't do that",
         ];
 
         let thrustees = vec![
@@ -666,10 +672,14 @@ impl Default for Deck {
             "<br/>👀<br/>👃<br/>👄<br/>It is me, Epicboy… One day I’ll be as cool as Epicman, but until then, _____.",
             "Jesus Christ, that’s ______.",
             "Rock, paper, _____.",
-            "🇳 _____.",
+            "🇳_____.",
             "I wouldn’t mind trying out _____ for once.",
             "Damn, it’d be hella dope if I got _____ for Christmas.",
             "I cocked my gun and _____.",
+            "I can’t believe they’re using quantum synthesizers to wire up the phase simulations between argon sites. Nephrobolic hemaphrodomes have been around for ages, and that's not even digitally commutable, so why bother synthesizing quantums? If anything, I think it's time to switch to pomute-tetraconucleus retroactive WX-II dimulators, a mouthful, I know. It's a newer technology (WX-10 hyper dimulators released last year), but from initial tests seem to outperform biological necrophilia by a factor of several trillion. Oh yeah, and if you’re crazy there's _____ too, laugh my artifice off.",
+            "Welcome home to [REDACTED]. You must [ACTION:TAKE] the [OBJECT:MEDICINE]. [LOCATION:OUTSIDE] cannot be [REDACTED]. [LOCATION:ROOM] has been decided. You must [ACTION:TAKE] the [OBJECT:MEDICINE]. [ACTION:TAKE] the [OBJECT:MEDICINE]. See the [REDACTED:COLORS]. See the [OBJECT:LIGHT]. [EMOTION:SAD] has been [ACTION:RELIEVED]. [EMOTION:HAPPY] is [ACTION:ADMINISTERED]. [ACTION:TAKE] the [OBJECT:MEDICINE]. [ACTION:OBSERVE] _____.",
+            "Showing up to school and _____.",
+            "A new law was recently passed to _____.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
