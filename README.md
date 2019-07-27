@@ -108,10 +108,16 @@ If logged in, changes your username to SomeOtherUserName__. It's kind of weird t
 ##### `.pa(ssword) Y0L0Ep1C420420420 Y0L0Ep1C420420420`
 If logged in, changes your password to Y0L0Ep1C420420420, so you know, if you're a hacker you can screw the hacked guys' account over lol.
 
+##### `.b(an) (69.69.69.69)`
+(Chieftain-only) Bans an IP address from a server. If no argument is provided, a list of banned IP addresses will become listed to the chieftain that produced this command.
+
+##### `.u(n)b(an) (69.69.69.69)`
+(Chieftain-only) Unbans the given IP address from the THRUSTIN server.
+
 ##### `.ch(ieftain) (NewAdministratorHere)`
 (Chieftain-only) By itself, `.chieftain` shall show a list of all chieftains in the server. With an argument, you will attempt to appoint the targetted Name as a Chieftain. Note that we use `.ch` because `.c` is for `.chief` and damn I'm no so sure if I want to make these too closely related anymore, but whatever.
 
-##### `.un(chieftain) NewAdministratorNoLonger`
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
 (Chieftain-only) Removes the selected Chieftain as a chieftain.
 
 ## In Lobby
@@ -165,10 +171,16 @@ Shows everyone in this lobby.
 ##### `.a(ccount)`
 [See](#account)
 
+##### `.b(an) (69.69.69.69)`
+[See](#ban-69696969)
+
+##### `.u(n)b(an) (69.69.69.69)`
+[See](#unban-69696969)
+
 ##### `.ch(ieftain) (NewAdministratorHere)`
 [See](#chieftain-newadministratorhere)
 
-##### `.un(chieftain) NewAdministratorNoLonger`
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
 [See](#unchieftain-newadministratornolonger)
 
 ## In Game (Choosing THRUSTEE)
@@ -201,7 +213,7 @@ Show who's got how many points in the lobby and also who's in this lobby yo.
 ##### `.ch(ieftain) (NewAdministratorHere)`
 [See](#chieftain)
 
-##### `.un(chieftain) NewAdministratorNoLonger`
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
 [See](#unchieftain)
 
 ## In Game (Waiting for THRUSTEE)
@@ -228,10 +240,16 @@ When you are a THRUSTER waiting for THRUSTEE to be chosen.
 ##### `.a(ccount)`
 [See](#account)
 
+##### `.b(an) (69.69.69.69)`
+[See](#ban-69696969)
+
+##### `.u(n)b(an) (69.69.69.69)`
+[See](#unban-69696969)
+
 ##### `.ch(ieftain) (NewAdministratorHere)`
 [See](#chieftain-newadministratorhere)
 
-##### `.un(chieftain) NewAdministratorNoLonger`
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
 [See](#unchieftain-newadministratornolonger)
 
 ## In Game (THRUSTING into chosen THRUSTEE)
@@ -261,10 +279,16 @@ Choose to use your THRUSTER at index 1 to THRUST into the chosen THRUSTEE. After
 ##### `.a(ccount)`
 [See](#account)
 
+##### `.b(an) (69.69.69.69)`
+[See](#ban-69696969)
+
+##### `.u(n)b(an) (69.69.69.69)`
+[See](#unban-69696969)
+
 ##### `.ch(ieftain) (NewAdministratorHere)`
 [See](#chieftain-newadministratorhere)
 
-##### `.un(chieftain) NewAdministratorNoLonger`
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
 [See](#unchieftain-newadministratornolonger)
 
 ## In Game (Deciding best THRUSTER)
@@ -294,8 +318,14 @@ Okay, you select the completed THRUST at index 1 as the best one.
 ##### `.a(ccount)`
 [See](#account)
 
+##### `.b(an) (69.69.69.69)`
+[See](#ban-69696969)
+
+##### `.u(n)b(an) (69.69.69.69)`
+[See](#unban-69696969)
+
 ##### `.ch(ieftain) (NewAdministratorHere)`
 [See](#chieftain-newadministratorhere)
 
-##### `.un(chieftain) NewAdministratorNoLonger`
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
 [See](#unchieftain-newadministratornolonger)
