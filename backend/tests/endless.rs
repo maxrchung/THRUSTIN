@@ -2,9 +2,6 @@
 
 mod common;
 
-use std::u8;
-use std::usize;
-
 #[test]
 fn join_endless() {
     let mut client = common::setup();

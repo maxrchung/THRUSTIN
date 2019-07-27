@@ -47,11 +47,13 @@ impl Player {
 
     pub fn chieftain(&self, split: Vec<&str>) {
         if !self.is_chieftain() {
-            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.")
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+            return;
         }
 
         if split.len() > 2 {
-            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.")
+            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+            return;
         }
 
         // Retrieve chieftains
@@ -336,16 +338,20 @@ impl Player {
 
     pub fn unchieftain(&self, split: Vec<&str>) {
         if !self.is_chieftain() {
-            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.")
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+            return;
         }
 
         if split.len() != 2 {
-            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.")
+            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+            return;
         }
 
         let name = split[1];
         if self.db.borrow().unchieftain(&name) {
+            self.send_message(&format!("Congratulations, you have unchieftained {}.", &name));
         } else {
+            self.send_message(&format!("It looks like something went wrong with unchieftaining. Maybe {} isn't real?", &name));
         }
     }
 

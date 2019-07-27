@@ -326,6 +326,25 @@ impl MongoDB {
         }
     }
 
+    pub fn unchieftain(&self, name: &str) -> bool {
+        // Return false if user doesn't exist
+        if self.find_name_doc(name).is_none() {
+            return false;
+        }
+        let filter = doc! {
+            "name": name
+        };
+        let update = doc! {
+            "$set": {
+                "is_chieftain": false
+            }
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
     pub fn unthrust(&self, name: &str) -> bool {
         let filter = doc! {
             "name": name

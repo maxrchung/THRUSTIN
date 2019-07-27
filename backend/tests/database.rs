@@ -170,3 +170,61 @@ fn update_account_stats() {
     assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
     assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 1<br/>Games Played So Far - 1<br/>Games Won So Far - 1");
 }
+
+#[test]
+fn chieftain() {
+    let mut client = common::setup_with_db("chieftain");
+    client.send(1, ".l chieftain chieftain");
+    client.send(1, ".ch");
+    client.long_read_all();
+    assert_eq!(client.last(1), "A LIST OF CHIEFTAINS RESPONSIBLE FOR MANAGEMENT OF THIS THRUSTIN SERVER IS AS FOLLOWS.<br/>chieftain");
+
+    client.send(2, ".n 2");
+    client.send(2, ".ch");
+    client.read_all();
+    assert_eq!(client.last(2), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+
+    client.send(1, ".ch 2 2");
+    client.read_all();
+    assert_eq!(client.last(1), "Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+
+    // Can't appoint someone who doesn't exist
+    client.send(1, ".ch 3");
+    client.long_read_all();
+    assert_eq!(client.last(1), "FAILED TO APPOINT CHIEFTAIN: 3");
+
+    // Can't appoint someone who isn't in database
+    client.send(1, ".ch 2");
+    client.long_read_all();
+    assert_eq!(client.last(1), "FAILED TO APPOINT CHIEFTAIN: 2");
+
+    client.send(3, ".r 3 3 3");
+    client.send(1, ".ch 3");
+    client.long_read_all();
+    assert_eq!(client.last(1), "A NEW CHIEFTAIN HAS BEEN APPOINTED: 3");
+
+    client.send(3, ".ch");
+    client.long_read_all();
+    assert_eq!(client.last(3), "A LIST OF CHIEFTAINS RESPONSIBLE FOR MANAGEMENT OF THIS THRUSTIN SERVER IS AS FOLLOWS.<br/>3<br/>chieftain");
+
+    client.send(4, ".n 4");
+    client.send(4, ".un");
+    client.read_all();
+    assert_eq!(client.last(4), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+
+    client.send(3, ".un");
+    client.read_all();
+    assert_eq!(client.last(3), "Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+
+    client.send(3, ".un blah");
+    client.long_read_all();
+    assert_eq!(client.last(3), "It looks like something went wrong with unchieftaining. Maybe blah isn't real?");
+
+    client.send(3, ".un chieftain");
+    client.long_read_all();
+    assert_eq!(client.last(3), "Congratulations, you have unchieftained chieftain.");
+
+    client.send(1, ".ch");
+    client.read_all();
+    assert_eq!(client.last(1), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+}
