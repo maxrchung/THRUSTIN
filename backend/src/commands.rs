@@ -119,8 +119,10 @@ pub fn out_of_lobby_commands(
         ".account" | ".a" => pl.borrow().account(),
         ".username" | ".us" => pl.borrow_mut().username(split),
         ".password" | ".pa" => pl.borrow_mut().password(split),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
-        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect(pl.borrow().token, players),
         _ => {
             pl.borrow()
@@ -154,9 +156,12 @@ fn list_out_commands(pl: &Player) {
 
     if pl.is_chieftain() {
         commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
             (".chieftain", ".ch", "(chieftain-only) View the list of chieftains."),
             (".chieftain An0THerSoul", ".ch An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain."),
-            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 
@@ -198,8 +203,10 @@ pub fn in_lobby_commands(
         ".thrustees" | ".e" => lobby.thrustees(split, pl),
         ".thrusters" | ".r" => lobby.thrusters(split, pl),
         ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
-        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl
             .borrow()
@@ -240,9 +247,12 @@ fn list_in_commands(pl: &Player, host: bool) {
 
     if pl.is_chieftain() {
         commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
             (".chieftain", ".ch", "(chieftain-only) View the list of chieftains. I'm sorry we added the `t`..."),
             (".chieftain An0THerSoul", ".ch An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain. I'm really sorry we added the `t`..."),
-            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 
@@ -274,8 +284,10 @@ pub fn playing_commands(
         ".end" | ".e" => lobby.end(pl),
         ".who" | ".w" => lobby.who_in_game(pl),
         ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
-        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl.borrow().send_message("Bruh that's an invalid command."),
     }
@@ -321,9 +333,12 @@ fn list_playing_commands(pl: &Player, host: bool) {
 
     if pl.is_chieftain() {
         commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
             (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
             (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
-            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 
@@ -355,8 +370,10 @@ pub fn choosing_commands(
         ".kick" | ".k" => lobby.kick(split, pl),
         ".who" | ".w" => lobby.who_in_game(pl),
         ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
-        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl
             .borrow()
@@ -395,9 +412,12 @@ fn list_choosing_commands(pl: &Player, host: bool) {
 
     if pl.is_chieftain() {
         commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
             (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
             (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
-            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 
@@ -429,8 +449,10 @@ pub fn deciding_commands(
         ".kick" | ".k" => lobby.kick(split, pl),
         ".who" | ".w" => lobby.who_in_game(pl),
         ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
-        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl.borrow().send_message("Bro! That's an invalid command."),
     }
@@ -463,9 +485,12 @@ fn list_deciding_commands(pl: &Player, host: bool) {
 
     if pl.is_chieftain() {
         commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
             (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
             (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
-            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 
@@ -499,8 +524,10 @@ pub fn waiting_commands(
         ".kick" | ".k" => lobby.kick(split, pl),
         ".who" | ".w" => lobby.who_in_game(pl),
         ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
-        ".unchieftain" | ".un" => pl.borrow().unchieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
         _ => pl
             .borrow()
@@ -540,9 +567,12 @@ fn list_waiting_commands(pl: &Player, host: bool) {
 
     if pl.is_chieftain() {
         commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
             (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
             (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
-            (".unchieftain ThisGuy", ".un ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 

@@ -45,6 +45,32 @@ impl Player {
         self.send_messages(&messages);
     }
 
+    pub fn ban(&self, split: Vec<&str>) {
+        if !self.is_chieftain() {
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+            return;
+        }
+
+        if split.len() > 2 {
+            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+            return;
+        }
+
+        // Get bans
+        if split.len() == 1 {
+            let messages = self.db.borrow().bans();
+            self.send_messages(&messages);
+        // Appoint chieftain
+        } else {
+            let ip_addr = split[1];
+            if self.db.borrow().ban(&ip_addr) {
+                self.send_message(&format!("IP address {} has been banned.", ip_addr));
+            } else {
+                self.send_message(&format!("Failed to ban IP address {}", ip_addr));
+            }
+        }
+    }
+
     pub fn chieftain(&self, split: Vec<&str>) {
         if !self.is_chieftain() {
             self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.");
@@ -334,6 +360,25 @@ impl Player {
         }
 
         self.send_messages(&messages);
+    }
+
+    pub fn unban(&self, split: Vec<&str>) {
+        if !self.is_chieftain() {
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+            return;
+        }
+
+        if split.len() != 2 {
+            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+            return;
+        }
+
+        let ip_addr = split[1];
+        if self.db.borrow().unban(&ip_addr) {
+            self.send_message(&format!("The target {} has been unbanned.", &ip_addr));
+        } else {
+            self.send_message(&format!("Failed to unban {}. Something went wrong. Unexpected error.", &ip_addr));
+        }
     }
 
     pub fn unchieftain(&self, split: Vec<&str>) {

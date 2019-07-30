@@ -208,23 +208,66 @@ fn chieftain() {
     assert_eq!(client.last(3), "A LIST OF CHIEFTAINS RESPONSIBLE FOR MANAGEMENT OF THIS THRUSTIN SERVER IS AS FOLLOWS.<br/>3<br/>chieftain");
 
     client.send(4, ".n 4");
-    client.send(4, ".un");
+    client.send(4, ".uc");
     client.read_all();
     assert_eq!(client.last(4), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
 
-    client.send(3, ".un");
+    client.send(3, ".uc");
     client.read_all();
     assert_eq!(client.last(3), "Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
 
-    client.send(3, ".un blah");
+    client.send(3, ".uc blah");
     client.long_read_all();
     assert_eq!(client.last(3), "It looks like something went wrong with unchieftaining. Maybe blah isn't real?");
 
-    client.send(3, ".un chieftain");
+    client.send(3, ".uc chieftain");
     client.long_read_all();
     assert_eq!(client.last(3), "Congratulations, you have unchieftained chieftain.");
 
     client.send(1, ".ch");
     client.read_all();
     assert_eq!(client.last(1), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+}
+
+#[test]
+fn ban() {
+    let mut client = common::setup_with_db("chieftain");
+    client.send(1, ".n a");
+    client.send(1, ".b");
+    client.read_all();
+    assert_eq!(client.last(1), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+
+    client.send(2, ".l chieftain chieftain");
+    client.send(2, ".b yep yep");
+    client.read_all();
+    assert_eq!(client.last(2), "Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+
+    client.send(2, ".b");
+    client.long_read_all();
+    assert_eq!(client.last(2), "Banned fellows from this server. Kill'em.");
+
+    client.send(2, ".b 123.123.123.123");
+    client.long_read_all();
+    assert_eq!(client.last(2), "IP address 123.123.123.123 has been banned.");
+
+    client.send(2, ".b");
+    client.long_read_all();
+    assert!(client.last(2).contains("Banned fellows from this server. Kill'em."));
+    assert!(client.last(2).contains("123.123.123.123"));
+
+    client.send(1, ".ub");
+    client.read_all();
+    assert_eq!(client.last(1), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+
+    client.send(2, ".ub");
+    client.read_all();
+    assert_eq!(client.last(2), "Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+
+    client.send(2, ".ub 1.1.1.1");
+    client.long_read_all();
+    assert_eq!(client.last(2), "Failed to unban 1.1.1.1. Something went wrong. Unexpected error.");
+
+    client.send(2, ".ub 123.123.123.123");
+    client.long_read_all();
+    assert_eq!(client.last(2), "The target 123.123.123.123 has been unbanned.");
 }

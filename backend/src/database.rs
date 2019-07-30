@@ -1,4 +1,5 @@
 use argon2;
+use chrono::{Duration, TimeZone, Utc};
 use mongodb::coll::Collection;
 use mongodb::db::ThreadedDatabase;
 use mongodb::{bson, doc, Array, Bson, Client, Document, ThreadedClient};
@@ -6,11 +7,29 @@ use rand::Rng;
 
 #[derive(Debug)]
 pub struct MongoDB {
+    pub bans: Collection,
     pub users: Collection,
     config: argon2::Config<'static>,
 }
 
 impl MongoDB {
+    fn find_ban_doc(&self, ip_addr: &str) -> Option<Document> {
+        let doc = doc! {
+            "ip_addr": ip_addr
+        };
+        let mut cursor = self
+            .bans
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find ban");
+        // Return doc if found, otherwise None
+        match cursor.next() {
+            Some(Ok(doc)) => Some(doc),
+            Some(Err(_)) => None,
+            None => None,
+        }
+    }
+
     fn find_name_doc(&self, name: &str) -> Option<Document> {
         let doc = doc! {
             "name": name
@@ -101,6 +120,84 @@ impl MongoDB {
         messages
     }
 
+    pub fn ban(&self, ip_addr: &str) -> bool {
+        let doc = self.find_ban_doc(&ip_addr);
+        match doc {
+            // If ban exists, update time
+            Some(doc) => {
+                let duration = if let Some(&Bson::I64(ref duration)) = doc.get("ip_addr") {
+                    duration.clone()
+                } else {
+                    3600
+                };
+                let end = Utc::now() + Duration::seconds(duration);
+                let update = doc! {
+                    "$set": {
+                        "duration": duration,
+                        "end": end,
+                    }
+                };
+                match self.bans.update_one(doc, update, None) {
+                    Ok(_) => true,
+                    _ => false
+                }
+            },
+            // If ban doesn't exist, add new ban
+            None => {
+                // in seconds, starting at 1 hour
+                let duration = 3600;
+                let end = Utc::now() + Duration::seconds(duration);
+                let doc = doc! {
+                    "ip_addr": ip_addr,
+                    "duration": duration, 
+                    "end": end,
+                };
+                match self.bans.insert_one(doc.clone(), None) {
+                    Ok(_) => true,
+                    _ => false,
+                }
+            }
+        }
+    }
+
+    pub fn bans(&self) -> Vec<String> {
+        let mut messages = Vec::new();
+        let cursor = self
+            .bans
+            .find(Some(doc!{}), None)
+            .ok()
+            .expect("Failed to list bans");
+
+        messages.push(String::from("Banned fellows from this server. Kill'em."));
+        let mut bans = Vec::new();
+        for doc in cursor {
+            if let Ok(doc) = doc {
+                let ip_addr = if let Some(&Bson::String(ref ip_addr)) = doc.get("ip_addr") {
+                    ip_addr.clone()
+                } else {
+                    String::new()
+                };
+
+                let duration = if let Some(&Bson::I64(ref duration)) = doc.get("duration") {
+                    duration.clone()
+                } else {
+                    0
+                };
+
+                let end = if let Some(&Bson::UtcDatetime(ref end)) = doc.get("end") {
+                    end.clone()
+                } else {
+                    Utc.timestamp(0, 0)
+                };
+
+                bans.push(format!("{} {} {}", ip_addr, duration, end));
+            }
+        }
+        bans.sort_unstable_by(|a, b| a.cmp(&b));
+        messages.append(&mut bans);
+        messages
+    }
+
     pub fn bson_array_to_strings(array: Array) -> Vec<String> {
         let mut strings = Vec::new();
         for bson in array {
@@ -109,6 +206,25 @@ impl MongoDB {
             }
         }
         strings
+    }
+
+    // lol, this appoints a chieftain
+    pub fn chieftain(&self, name: &str) -> bool {
+        // Only set chieftain if it's an actual database bro
+        if let Some(_) = self.find_name_doc(&name) {
+            let filter = doc! {
+                "name": name
+            };
+            let update = doc! {
+                "$set": {
+                    "is_chieftain": true
+                }
+            };
+            self.users.update_one(filter, update, None).expect("Failed to update chieftain");
+            true
+        } else {
+            false
+        }
     }
 
     // Shows a list of chieftains
@@ -135,25 +251,6 @@ impl MongoDB {
         chieftains.sort_unstable_by(|a, b| a.cmp(&b));
         messages.append(&mut chieftains);
         messages
-    }
-
-    // lol, this appoints a chieftain
-    pub fn chieftain(&self, name: &str) -> bool {
-        // Only set chieftain if it's an actual database bro
-        if let Some(_) = self.find_name_doc(&name) {
-            let filter = doc! {
-                "name": name
-            };
-            let update = doc! {
-                "$set": {
-                    "is_chieftain": true
-                }
-            };
-            self.users.update_one(filter, update, None).expect("Failed to update chieftain");
-            true
-        } else {
-            false
-        }
     }
 
     pub fn does_name_exist(&self, name: &str) -> bool {
@@ -216,9 +313,10 @@ impl MongoDB {
         let client =
             Client::connect("localhost", 27017).expect("Failed to initialize database client");
         let db = client.db(db_name);
+        let bans = db.collection("bans");
         let users = db.collection("users");
         let config = argon2::Config::default();
-        MongoDB { users, config }
+        MongoDB { bans, users, config }
     }
 
     pub fn password(&self, name: &str, pass: &str) -> bool {
@@ -323,6 +421,28 @@ impl MongoDB {
         match self.users.insert_one(doc.clone(), None) {
             Ok(_) => true,
             Err(_) => false,
+        }
+    }
+
+    pub fn unban(&self, ip_addr: &str) -> bool {
+        let doc = self.find_ban_doc(&ip_addr);
+        match doc {
+            // Set ban time to now if found
+            Some(doc) => {
+                let end = Utc::now();
+                let update = doc! {
+                    "$set": {
+                        "end": end,
+                    }
+                };
+                match self.bans.update_one(doc, update, None) {
+                    Ok(_) => true,
+                    _ => false
+                }
+            },
+            None => {
+                false
+            }
         }
     }
 
