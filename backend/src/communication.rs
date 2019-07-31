@@ -31,6 +31,10 @@ pub struct ChannelCommunication {
     read: mpsc::Receiver<(u32, String)>,
     to_send: Option<mpsc::Sender<(u32, String)>>,
     messages: HashMap<u32, Vec<String>>,
+    // expected is a counter that is incremented when a message is sent and decremented when a message is read
+    // This is to help manage messages that could take a long time to process, e.g. DB inducing commands
+    // It isn't perfect, as there are numerous examples of asynchronous messages that can be received, but it helps!!!
+    expected: i32,
     can_log: bool,
 }
 
@@ -43,6 +47,7 @@ impl ChannelCommunication {
             to_send: None,
             messages: HashMap::new(),
             can_log,
+            expected: 0,
         }
     }
 
@@ -60,22 +65,22 @@ impl ChannelCommunication {
     }
 
     pub fn read_all(&mut self) {
-        thread::sleep(Duration::from_millis(10000));
+        while self.expected > 0 {
+            // Pause for more messages
+            thread::sleep(Duration::from_millis(500));
 
-        // Keep on reading while you can and add messages
-        while let Ok((token, msg)) = self.read.try_recv() {
-            self.add_message(token.clone(), msg.clone());
-            if self.can_log {
-                println!("{}|{}{}|{}", Local::now(), &token, ">", &msg);
+            // Keep on reading while you can and add messages
+            while let Ok((token, msg)) = self.read.try_recv() {
+                self.add_message(token.clone(), msg.clone());
+                if self.can_log {
+                    println!("client|{}|{}{}|{}", Local::now(), ">", &token, &msg);
+                }
+                self.expected -= 1;
             }
-        }
-    }
 
-    // A modified version of read_all for commands that need more time
-    // Introduced because of db and password hashing
-    pub fn long_read_all(&mut self) {
-        thread::sleep(Duration::from_millis(10000));
-        self.read_all();
+            println!("\nEXPECTED-: {}\n", self.expected);
+        }
+
     }
 
     pub fn last(&self, token: u32) -> String {
@@ -89,7 +94,7 @@ impl ChannelCommunication {
 
     // Since THRUSTS are randomized, we aren't really sure how many THRUSTS we need
     // This will take care of default possibilities...
-    pub fn thrust(&self, token: u32) {
+    pub fn thrust(&mut self, token: u32) {
         self.send(token.clone(), ".t 1");
         self.send(token.clone(), ".t 1 1");
         self.send(token.clone(), ".t 1 1 1");
@@ -97,11 +102,17 @@ impl ChannelCommunication {
         self.send(token.clone(), ".t 1 1 1 1 1");
     }
 
-    pub fn send(&self, token: u32, msg: &str) {
+    pub fn send(&mut self, token: u32, msg: &str) {
         self.send_message(&token, msg);
         if self.can_log {
-            println!("{}|{}{}|{}", Local::now(), ">", &token, &msg);
+            println!("client|{}|{}{}|{}", Local::now(), &token, ">", &msg);
         }
+        // read_all() may be more than send
+        // this can occur if messages have been asynchronously sent to the client
+        if self.expected < 0 {
+            self.expected = 0;
+        }
+        self.expected += 1;
     }
 }
 

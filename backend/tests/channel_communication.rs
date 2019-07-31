@@ -9,7 +9,7 @@ fn setup_channels() {
 
 #[test]
 fn send() {
-    let client = common::setup();
+    let mut client = common::setup();
     client.send(1, "now this is an epic omegalul");
 }
 
