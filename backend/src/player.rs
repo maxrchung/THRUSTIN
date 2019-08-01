@@ -218,7 +218,7 @@ impl Player {
             name: String::new(),
             personal_deck: Deck::new(),
             state: PlayerState::ChooseName,
-            token: token,
+            token,
         }
     }
 

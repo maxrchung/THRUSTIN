@@ -78,7 +78,6 @@ impl ChannelCommunication {
                 self.expected -= 1;
             }
         }
-
     }
 
     pub fn last(&self, token: u32) -> String {
