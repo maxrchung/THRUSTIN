@@ -468,13 +468,12 @@ impl Player {
                 person = " (You)";
             }
 
-            let message = if pl.state == PlayerState::InLobby || pl.state == PlayerState::Playing {
-                format!("{} in {}{}", pl.name, pl.lobby, person).to_string()
-            } else {
-                format!("{}{}", pl.name, person).to_string()
-            };
+            if pl.state == PlayerState::InLobby || pl.state == PlayerState::Playing {
+                messages.push(format!("{} in {}{}", pl.name, pl.lobby, person).to_string());
+            } else if !pl.name.is_empty() {
+                messages.push(format!("{}{}", pl.name, person).to_string());
+            }
 
-            messages.push(message);
         }
 
         messages.sort_unstable_by(|a, b| a.cmp(&b));
