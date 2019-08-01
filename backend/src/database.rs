@@ -1,16 +1,17 @@
 use argon2;
-use chrono::{Duration, TimeZone, Utc};
+use chrono::{DateTime, Duration, TimeZone, Utc};
 use mongodb::coll::Collection;
 use mongodb::db::ThreadedDatabase;
 use mongodb::{bson, doc, Array, Bson, Client, Document, ThreadedClient};
 use rand::Rng;
+use std::collections::HashMap;
 
 #[derive(Debug)]
 pub struct MongoDB {
     pub bans: Collection,
-    // Cache bans so we don't have to constantly load from database for each call
-    pub bans_cache: Vec<String>,
     pub users: Collection,
+    // Cache bans so we don't have to constantly load from database for each call
+    bans_cache: HashMap<String, (i64, DateTime<Utc>)>,
     config: argon2::Config<'static>,
 }
 
@@ -82,8 +83,7 @@ impl MongoDB {
             .ok()
             .expect("Failed to load bans");
 
-        self.bans_cache = vec![String::from("Banned fellows from this server. Kill'em.")];
-        let mut bans = Vec::new();
+        self.bans_cache = HashMap::new();
         for doc in cursor {
             if let Ok(doc) = doc {
                 let ip_addr = if let Ok(ip_addr) = doc.get_str("ip_addr") {
@@ -104,11 +104,20 @@ impl MongoDB {
                     Utc.timestamp(0, 0)
                 };
 
-                bans.push(format!("{} {} {}", ip_addr, duration, end));
+                self.bans_cache.insert(String::from(ip_addr), (duration, end));
             }
         }
+    }
+
+    pub fn bans(&self) -> Vec<String> {
+        let mut messages = vec![String::from("Banned fellows from this server. Kill'em.")];
+        let mut bans = Vec::new();
+        for (ip_addr, (duration, end)) in self.bans_cache.clone() {
+            bans.push(format!("{} {} {}", ip_addr, duration, end));
+        }
         bans.sort_unstable_by(|a, b| a.cmp(&b));
-        self.bans_cache.append(&mut bans);
+        messages.append(&mut bans);
+        messages
     }
 
     fn verify_password(&self, hash: &str, pass: &str) -> bool {
@@ -288,11 +297,11 @@ impl MongoDB {
         }
     }
 
-    pub fn is_banned(&self, ip_addr: &str) -> bool {
-        if self.bans_cache.contains(&String::from(ip_addr)) {
-            true
+    pub fn is_banned(&self, ip_addr: &str) -> Option<&(i64, DateTime<Utc>)> {
+        if self.bans_cache.contains_key(&String::from(ip_addr)) {
+            self.bans_cache.get(&String::from(ip_addr))
         } else {
-            false
+            None
         }
     }
 
@@ -335,7 +344,7 @@ impl MongoDB {
             bans, 
             users, 
             config, 
-            bans_cache: Vec::new() 
+            bans_cache: HashMap::new()
         };
         db.load_bans();
         db

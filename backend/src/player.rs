@@ -58,7 +58,7 @@ impl Player {
 
         // Get bans
         if split.len() == 1 {
-            let messages = self.db.borrow().bans_cache.clone();
+            let messages = self.db.borrow().bans();
             self.send_messages(&messages);
         // Appoint chieftain
         } else {
