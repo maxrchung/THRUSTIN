@@ -58,12 +58,12 @@ impl Player {
 
         // Get bans
         if split.len() == 1 {
-            let messages = self.db.borrow().bans();
+            let messages = self.db.borrow().bans_cache.clone();
             self.send_messages(&messages);
         // Appoint chieftain
         } else {
             let ip_addr = split[1];
-            if self.db.borrow().ban(&ip_addr) {
+            if self.db.borrow_mut().ban(&ip_addr) {
                 self.send_message(&format!("IP address {} has been banned.", ip_addr));
             } else {
                 self.send_message(&format!("Failed to ban IP address {}", ip_addr));
@@ -374,7 +374,7 @@ impl Player {
         }
 
         let ip_addr = split[1];
-        if self.db.borrow().unban(&ip_addr) {
+        if self.db.borrow_mut().unban(&ip_addr) {
             self.send_message(&format!("The target {} has been unbanned.", &ip_addr));
         } else {
             self.send_message(&format!("Failed to unban {}. Something went wrong. Unexpected error.", &ip_addr));

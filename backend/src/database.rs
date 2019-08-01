@@ -8,6 +8,8 @@ use rand::Rng;
 #[derive(Debug)]
 pub struct MongoDB {
     pub bans: Collection,
+    // Cache bans so we don't have to constantly load from database for each call
+    pub bans_cache: Vec<String>,
     pub users: Collection,
     config: argon2::Config<'static>,
 }
@@ -73,6 +75,42 @@ impl MongoDB {
         String::from(hash)
     }
 
+    fn load_bans(&mut self) {
+        let cursor = self
+            .bans
+            .find(Some(doc!{}), None)
+            .ok()
+            .expect("Failed to load bans");
+
+        self.bans_cache = vec![String::from("Banned fellows from this server. Kill'em.")];
+        let mut bans = Vec::new();
+        for doc in cursor {
+            if let Ok(doc) = doc {
+                let ip_addr = if let Ok(ip_addr) = doc.get_str("ip_addr") {
+                    ip_addr.clone()
+                } else {
+                    ""
+                };
+
+                let duration = if let Ok(duration) = doc.get_i64("duration") {
+                    duration.clone()
+                } else {
+                    0
+                };
+
+                let end = if let Ok(end) = doc.get_utc_datetime("end") {
+                    end.clone()
+                } else {
+                    Utc.timestamp(0, 0)
+                };
+
+                bans.push(format!("{} {} {}", ip_addr, duration, end));
+            }
+        }
+        bans.sort_unstable_by(|a, b| a.cmp(&b));
+        self.bans_cache.append(&mut bans);
+    }
+
     fn verify_password(&self, hash: &str, pass: &str) -> bool {
         let matches =
             argon2::verify_encoded(hash, pass.as_bytes()).expect("Failed to verify password");
@@ -120,12 +158,12 @@ impl MongoDB {
         messages
     }
 
-    pub fn ban(&self, ip_addr: &str) -> bool {
+    pub fn ban(&mut self, ip_addr: &str) -> bool {
         let doc = self.find_ban_doc(&ip_addr);
         match doc {
             // If ban exists, update time
             Some(doc) => {
-                let duration = if let Some(&Bson::I64(ref duration)) = doc.get("ip_addr") {
+                let duration = if let Ok(duration) = doc.get_i64("ip_addr") {
                     duration.clone()
                 } else {
                     3600
@@ -138,7 +176,10 @@ impl MongoDB {
                     }
                 };
                 match self.bans.update_one(doc, update, None) {
-                    Ok(_) => true,
+                    Ok(_) => {
+                        self.load_bans();
+                        true
+                    }
                     _ => false
                 }
             },
@@ -153,49 +194,14 @@ impl MongoDB {
                     "end": end,
                 };
                 match self.bans.insert_one(doc.clone(), None) {
-                    Ok(_) => true,
+                    Ok(_) => {
+                        self.load_bans();
+                        true
+                    }
                     _ => false,
                 }
             }
         }
-    }
-
-    pub fn bans(&self) -> Vec<String> {
-        let mut messages = Vec::new();
-        let cursor = self
-            .bans
-            .find(Some(doc!{}), None)
-            .ok()
-            .expect("Failed to list bans");
-
-        messages.push(String::from("Banned fellows from this server. Kill'em."));
-        let mut bans = Vec::new();
-        for doc in cursor {
-            if let Ok(doc) = doc {
-                let ip_addr = if let Some(&Bson::String(ref ip_addr)) = doc.get("ip_addr") {
-                    ip_addr.clone()
-                } else {
-                    String::new()
-                };
-
-                let duration = if let Some(&Bson::I64(ref duration)) = doc.get("duration") {
-                    duration.clone()
-                } else {
-                    0
-                };
-
-                let end = if let Some(&Bson::UtcDatetime(ref end)) = doc.get("end") {
-                    end.clone()
-                } else {
-                    Utc.timestamp(0, 0)
-                };
-
-                bans.push(format!("{} {} {}", ip_addr, duration, end));
-            }
-        }
-        bans.sort_unstable_by(|a, b| a.cmp(&b));
-        messages.append(&mut bans);
-        messages
     }
 
     pub fn bson_array_to_strings(array: Array) -> Vec<String> {
@@ -243,8 +249,8 @@ impl MongoDB {
         let mut chieftains = Vec::new();
         for doc in cursor {
             if let Ok(doc) = doc {
-                if let Some(&Bson::String(ref name)) = doc.get("name") {
-                    chieftains.push(name.clone());
+                if let Ok(name) = doc.get_str("name") {
+                    chieftains.push(String::from(name));
                 }
             }
         }
@@ -282,6 +288,14 @@ impl MongoDB {
         }
     }
 
+    pub fn is_banned(&self, ip_addr: &str) -> bool {
+        if self.bans_cache.contains(&String::from(ip_addr)) {
+            true
+        } else {
+            false
+        }
+    }
+
     pub fn login(&self, user: &str, pass: &str) -> Option<Document> {
         let doc = doc! {
             "user": user,
@@ -294,8 +308,8 @@ impl MongoDB {
         let item = cursor.next();
         // Return doc if found, otherwise None
         match item {
-            Some(Ok(doc)) => match doc.get("pass") {
-                Some(&Bson::String(ref hash)) => {
+            Some(Ok(doc)) => match doc.get_str("pass") {
+                Ok(hash) => {
                     if self.verify_password(hash, pass) {
                         Some(doc)
                     } else {
@@ -316,7 +330,15 @@ impl MongoDB {
         let bans = db.collection("bans");
         let users = db.collection("users");
         let config = argon2::Config::default();
-        MongoDB { bans, users, config }
+
+        let mut db = MongoDB { 
+            bans, 
+            users, 
+            config, 
+            bans_cache: Vec::new() 
+        };
+        db.load_bans();
+        db
     }
 
     pub fn password(&self, name: &str, pass: &str) -> bool {
@@ -424,7 +446,7 @@ impl MongoDB {
         }
     }
 
-    pub fn unban(&self, ip_addr: &str) -> bool {
+    pub fn unban(&mut self, ip_addr: &str) -> bool {
         let doc = self.find_ban_doc(&ip_addr);
         match doc {
             // Set ban time to now if found
@@ -436,7 +458,10 @@ impl MongoDB {
                     }
                 };
                 match self.bans.update_one(doc, update, None) {
-                    Ok(_) => true,
+                    Ok(_) => {
+                        self.load_bans();
+                        true
+                    }
                     _ => false
                 }
             },
