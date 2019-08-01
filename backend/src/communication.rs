@@ -77,8 +77,6 @@ impl ChannelCommunication {
                 }
                 self.expected -= 1;
             }
-
-            println!("\nEXPECTED-: {}\n", self.expected);
         }
 
     }
