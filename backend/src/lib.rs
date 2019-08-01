@@ -17,7 +17,7 @@ mod player_game;
 mod thrust;
 
 use communication::{ChannelCommunication, Communication, WebSocketCommunication};
-use database::MongoDB;
+use database::Database;
 use lobby::Lobby;
 use player::{Player, PlayerState};
 use std::cell::RefCell;
@@ -26,13 +26,13 @@ use std::rc::Rc;
 
 pub fn run_test_server(comm: ChannelCommunication) {
     let chan_comm = Rc::new(RefCell::new(comm));
-    let db = Rc::new(RefCell::new(MongoDB::new("thrustin_test")));
+    let db = Rc::new(RefCell::new(Database::new("thrustin_test")));
     run(chan_comm, db);
 }
 
 pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
     let chan_comm = Rc::new(RefCell::new(comm));
-    let db = Rc::new(RefCell::new(MongoDB::new(db_name)));
+    let db = Rc::new(RefCell::new(Database::new(db_name)));
     // When testing db, drop the users store on load
     db.borrow()
         .users
@@ -43,7 +43,7 @@ pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
         .drop()
         .expect(&format!("Unable to drop bans collection: {}", db_name));
     // Reinitialize db so cache is recached ok this is a lil wucky ducky
-    let db = Rc::new(RefCell::new(MongoDB::new(db_name)));
+    let db = Rc::new(RefCell::new(Database::new(db_name)));
     // Register a default chieftain
     db.borrow().register_chieftain();
     run(chan_comm, db);
@@ -51,12 +51,12 @@ pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
 
 pub fn run_ws_server() {
     let ws_comm = Rc::new(RefCell::new(WebSocketCommunication::new()));
-    let db = Rc::new(RefCell::new(MongoDB::new("thrustin")));
+    let db = Rc::new(RefCell::new(Database::new("thrustin")));
     run(ws_comm, db);
 }
 
 const MAX_INPUT: usize = 6669;
-fn run(communication: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<MongoDB>>) {
+fn run(communication: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<Database>>) {
     let mut lobby_id = 1;
     let mut lobbies: HashMap<i32, Lobby> = HashMap::new();
     let mut players: HashMap<u32, Rc<RefCell<Player>>> = HashMap::new();

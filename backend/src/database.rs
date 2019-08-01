@@ -7,7 +7,7 @@ use rand::Rng;
 use std::collections::HashMap;
 
 #[derive(Debug)]
-pub struct MongoDB {
+pub struct Database {
     pub bans: Collection,
     pub users: Collection,
     // Cache bans so we don't have to constantly load from database for each call
@@ -15,7 +15,7 @@ pub struct MongoDB {
     config: argon2::Config<'static>,
 }
 
-impl MongoDB {
+impl Database {
     fn find_ban_doc(&self, ip_addr: &str) -> Option<Document> {
         let doc = doc! {
             "ip_addr": ip_addr
@@ -332,7 +332,7 @@ impl MongoDB {
         }
     }
 
-    pub fn new(db_name: &str) -> MongoDB {
+    pub fn new(db_name: &str) -> Database {
         let client =
             Client::connect("localhost", 27017).expect("Failed to initialize database client");
         let db = client.db(db_name);
@@ -340,7 +340,7 @@ impl MongoDB {
         let users = db.collection("users");
         let config = argon2::Config::default();
 
-        let mut db = MongoDB { 
+        let mut db = Database { 
             bans, 
             users, 
             config, 
@@ -535,7 +535,7 @@ impl MongoDB {
         let filter = doc! {
             "name": name
         };
-        let array = MongoDB::strings_to_bson_array(thrustees);
+        let array = Database::strings_to_bson_array(thrustees);
         let update = doc! {
             "$set": {
                 "thrustees": array
@@ -549,7 +549,7 @@ impl MongoDB {
 
     pub fn thrusters(&self, name: &str, thrusters: Vec<String>) -> bool {
         let filter = doc! { "name": name };
-        let array = MongoDB::strings_to_bson_array(thrusters);
+        let array = Database::strings_to_bson_array(thrusters);
         let update = doc! {
             "$set": {
                 "thrusters": array

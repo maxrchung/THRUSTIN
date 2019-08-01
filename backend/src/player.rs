@@ -1,5 +1,5 @@
 use crate::communication::Communication;
-use crate::database::MongoDB;
+use crate::database::Database;
 use crate::lobby::Lobby;
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
@@ -21,7 +21,7 @@ pub enum PlayerState {
 #[derive(Clone, Debug)]
 pub struct Player {
     comm: Rc<RefCell<dyn Communication>>,
-    db: Rc<RefCell<MongoDB>>,
+    db: Rc<RefCell<Database>>,
     pub game: PlayerGame,
     // Whether or not user is logged in through DB
     pub is_authenticated: bool,
@@ -128,12 +128,12 @@ impl Player {
             Some(doc) => {
                 if let Ok(thrustees) = doc.get_array("thrustees") {
                     self.personal_deck.thrustees =
-                        MongoDB::bson_array_to_strings(thrustees.to_vec());
+                        Database::bson_array_to_strings(thrustees.to_vec());
                 }
 
                 if let Ok(thrusters) = doc.get_array("thrusters") {
                     self.personal_deck.thrusters =
-                        MongoDB::bson_array_to_strings(thrusters.to_vec());
+                        Database::bson_array_to_strings(thrusters.to_vec());
                 }
 
                 if let Ok(name) = doc.get_str("name") {
@@ -207,7 +207,7 @@ impl Player {
     pub fn new(
         token: u32,
         comm: Rc<RefCell<dyn Communication>>,
-        db: Rc<RefCell<MongoDB>>,
+        db: Rc<RefCell<Database>>,
     ) -> Player {
         Player {
             comm,
@@ -224,7 +224,7 @@ impl Player {
 
     pub fn new_endless_host(
         comm: Rc<RefCell<dyn Communication>>,
-        db: Rc<RefCell<MongoDB>>,
+        db: Rc<RefCell<Database>>,
     ) -> Player {
         Player {
             comm,
