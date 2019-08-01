@@ -42,6 +42,8 @@ pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
         .bans
         .drop()
         .expect(&format!("Unable to drop bans collection: {}", db_name));
+    // Reinitialize db so cache is recached ok this is a lil wucky ducky
+    let db = Rc::new(RefCell::new(MongoDB::new(db_name)));
     // Register a default chieftain
     db.borrow().register_chieftain();
     run(chan_comm, db);
