@@ -44,18 +44,12 @@ fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
     return table_html;
 }
 
-fn disconnect(token: u32, players: &mut HashMap<u32, Rc<RefCell<Player>>>) {
-    players
-        .remove(&token)
-        .expect("what the heck how did you disconnect someone who didn't exist bro BIG ASS BUG!!");
-}
-
-fn disconnect_from_lobby(
+fn disconnect(
     pl: Rc<RefCell<Player>>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
-    disconnect(pl.borrow().token, players);
+    players.remove(&pl.borrow().token);
     Lobby::leave_and_delete(pl, lobbies);
 }
 
@@ -74,7 +68,7 @@ pub fn choose_name_commands(
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
         ".login" | ".l" => pl.borrow_mut().login(split, lobbies),
         ".register" | ".r" => pl.borrow_mut().register(split, lobbies),
-        ".disconnect" => disconnect(pl.borrow().token, players),
+        ".disconnect" => disconnect(pl, players, lobbies),
         _ => {
             pl.borrow()
                 .send_message("u gotta pick a name bro, try '.name URNAMeHERE'");
@@ -123,7 +117,7 @@ pub fn out_of_lobby_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        ".disconnect" => disconnect(pl.borrow().token, players),
+        ".disconnect" => disconnect(pl, players, lobbies),
         _ => {
             pl.borrow()
                 .send_message("Bruh that's an invalid command...!.    try .help");
@@ -207,7 +201,7 @@ pub fn in_lobby_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
+        ".disconnect" => disconnect(pl, players, lobbies),
         _ => pl
             .borrow()
             .send_message("Broski that shall be an invalid command. enter .help"),
@@ -288,7 +282,7 @@ pub fn playing_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
+        ".disconnect" => disconnect(pl, players, lobbies),
         _ => pl.borrow().send_message("Bruh that's an invalid command."),
     }
 }
@@ -374,7 +368,7 @@ pub fn choosing_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
+        ".disconnect" => disconnect(pl, players, lobbies),
         _ => pl
             .borrow()
             .send_message("Brother that is an invalid command."),
@@ -453,7 +447,7 @@ pub fn deciding_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
+        ".disconnect" => disconnect(pl, players, lobbies),
         _ => pl.borrow().send_message("Bro! That's an invalid command."),
     }
 }
@@ -528,7 +522,7 @@ pub fn waiting_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
+        ".disconnect" => disconnect(pl, players, lobbies),
         _ => pl
             .borrow()
             .send_message("Bruh... that's an invalid command."),

@@ -662,12 +662,14 @@ impl Lobby {
     // This feeds into leave()
     // This function is separate from leave() because this also manages removing the lobby if it is empty
     pub fn leave_and_delete(pl: Rc<RefCell<Player>>, lobbies: &mut HashMap<i32, Lobby>) {
-        let lobby = lobbies.get_mut(&pl.borrow().lobby).unwrap();
-        lobby.leave(pl);
-        // Don't delete lobby if it is endless
-        if lobby.list.len() == 0 && lobby.id != 0 {
-            let id = lobby.id;
-            lobbies.remove(&id);
+        let lobby = pl.borrow().lobby.clone();
+        if let Some(lobby) = lobbies.get_mut(&lobby) {
+            lobby.leave(pl);
+            // Don't delete lobby if it is endless
+            if lobby.list.len() == 0 && lobby.id != 0 {
+                let id = lobby.id;
+                lobbies.remove(&id);
+            }
         }
     }
 
