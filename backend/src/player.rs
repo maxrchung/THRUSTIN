@@ -97,6 +97,10 @@ impl Player {
         }
     }
 
+    pub fn disconnect(&self) {
+        self.comm.borrow_mut().disconnect(&self.token);
+    }
+
     pub fn display_deck(&self) {
         let mut messages = Vec::new();
 

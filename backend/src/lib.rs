@@ -16,6 +16,7 @@ mod player;
 mod player_game;
 mod thrust;
 
+use chrono::Utc;
 use communication::{ChannelCommunication, Communication, WebSocketCommunication};
 use database::Database;
 use lobby::Lobby;
@@ -41,6 +42,7 @@ pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
     db.borrow()
         .bans
         .drop()
+        
         .expect(&format!("Unable to drop bans collection: {}", db_name));
     // Reinitialize db so cache is recached ok this is a lil wucky ducky
     let db = Rc::new(RefCell::new(Database::new(db_name)));
@@ -82,6 +84,7 @@ fn run(communication: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<Database>>)
 
     loop {
         let (token, message) = read.borrow_mut().read_message();
+
         // Add to players list if not already
         if let None = players.get(&token) {
             players.insert(
@@ -92,6 +95,19 @@ fn run(communication: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<Database>>)
                     db.clone(),
                 ))),
             );
+        }
+
+        let ip_addr = read.borrow().get_identifier(&token);
+        if let Some((_duration, end)) = db.borrow().is_banned(&ip_addr) {
+            let now = Utc::now();
+            // User is banned
+            if now < *end {
+                let message = format!("You cannot exist. You are banned until {}.", end);
+                communication.borrow().send_message(&token, &message);
+                if let Some(pl) = players.get(&token) {
+                    disconnect(pl.clone(), &mut players, &mut lobbies);
+                }
+            }
         }
 
         // Ignore empty messages
@@ -136,6 +152,11 @@ fn handle_input(
             .clone()
     };
 
+    if split.len() > 0 && split[0] == ".disconnect" {
+        disconnect(pl, players, lobbies);
+        return;
+    }
+
     match state {
         PlayerState::ChooseName => {
             commands::choose_name_commands(split, pl, lobbies, players);
@@ -165,4 +186,14 @@ fn handle_input(
             commands::waiting_commands(split, pl, players, lobbies);
         }
     }
+}
+
+fn disconnect(
+    pl: Rc<RefCell<Player>>,
+    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
+    lobbies: &mut HashMap<i32, Lobby>,
+) {
+    pl.borrow().disconnect();
+    players.remove(&pl.borrow().token);
+    Lobby::leave_and_delete(pl, lobbies);
 }

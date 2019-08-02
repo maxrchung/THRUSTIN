@@ -18,6 +18,10 @@ pub trait Communication {
     fn read_message(&mut self) -> (u32, String);
     fn send_message(&self, token: &u32, message: &str);
     fn send_messages(&self, token: &u32, messages: &Vec<String>);
+    fn disconnect(&mut self, token: &u32);
+
+    // Yeah this is the only way I could easily get ip_address, not sure if I want to invest time into some generic route
+    fn get_identifier(&self, token: &u32) -> String;
 }
 
 impl Debug for dyn Communication {
@@ -131,6 +135,14 @@ impl Communication for ChannelCommunication {
     fn send_messages(&self, token: &u32, messages: &Vec<String>) {
         let message = messages.join("<br/>");
         self.send_message(token, &message);
+    }
+
+    fn get_identifier(&self, token: &u32) -> String {
+        token.to_string()
+    }
+
+    fn disconnect(&mut self, token: &u32) {
+        self.to_send = None;
     }
 }
 
@@ -305,5 +317,21 @@ impl Communication for WebSocketCommunication {
     fn send_messages(&self, token: &u32, messages: &Vec<String>) {
         let message = messages.join("<br/>");
         self.send_message(token, &message);
+    }
+
+    fn get_identifier(&self, token: &u32) -> String {
+        let connections_lock = self.connections.lock().unwrap();
+        if let Some((ip_addr, _)) = connections_lock.get(&token) {
+            ip_addr.clone()
+        } else {
+            String::new()
+        }
+    }
+
+    fn disconnect(&mut self, token: &u32) {
+        let connections_lock = self.connections.lock().unwrap();
+        if let Some((_ip_addr, sender)) = connections_lock.get(&token) {
+            sender.close(CloseCode::Normal);
+        }
     }
 }

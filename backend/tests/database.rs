@@ -231,8 +231,8 @@ fn chieftain() {
 }
 
 #[test]
-fn ban() {
-    let mut client = common::setup_with_db("ban");
+fn ban_update() {
+    let mut client = common::setup_with_db("ban_update");
     client.send(1, ".n a");
     client.send(1, ".b");
     client.read_all();
@@ -271,4 +271,19 @@ fn ban() {
     client.send(2, ".ub 123.123.123.123");
     client.read_all();
     assert_eq!(client.last(2), "The target 123.123.123.123 has been unbanned.");
+}
+
+// Not really too reliable since this is only with ChannelCommunication
+// WebSocketCommunication probably has many more possible closing cases that I hope will be fine
+#[test]
+fn ban() {
+    let mut client = common::setup_with_db("ban");
+    client.send(1, ".n 1");
+    client.send(1, ".m");
+    client.send(1, ".s");
+    client.send(2, ".l chieftain chieftain");
+    client.send(2, ".b 1");
+    client.send(1, "What's up my dudes?");
+    client.read_all();
+    assert!(client.last(1).contains("You cannot exist. You are banned until "));
 }
