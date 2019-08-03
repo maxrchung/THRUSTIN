@@ -100,7 +100,6 @@ class Client extends React.Component {
 
     setMessage = (json) => {
         let message = JSON.parse(json);
-        console.log(message);
         this.handleMessageMax();
         this.setState({
             messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from={message.from} content={message.message} />)
