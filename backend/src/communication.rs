@@ -1,5 +1,6 @@
 use chrono::Local;
 use rocket::response::NamedFile;
+use serde_json::json;
 use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::fmt;
@@ -305,12 +306,16 @@ impl Communication for WebSocketCommunication {
 
     // Send message to client with the corresponding token
     fn send_message(&self, token: &u32, message: &str) {
+        let msg = json!({
+            "from": "THRUSTY",
+            "message": message,
+        }).to_string();
         let connections_lock = self.connections.lock().unwrap();
         // Handle case for missing connection - This is possible for disconnects
         if let Some((ip_addr, sender)) = connections_lock.get(&token) {
             // Log server response for troubleshooting and FBI-ing
-            sender.send(message).unwrap();
-            println!("{}|{}|{}{}|{}", Local::now(), ip_addr, ">", token, message);
+            sender.send(&*msg).unwrap();
+            println!("{}|{}|{}{}|{}", Local::now(), ip_addr, ">", token, msg);
         }
     }
 
