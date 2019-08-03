@@ -1,13 +1,13 @@
-const path = require("path");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin"); 
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CompressionPlugin = require('compression-webpack-plugin');
-const TerserJSPlugin = require("terser-webpack-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const CopyPlugin = require('copy-webpack-plugin');
+import CleanWebpackPlugin from "clean-webpack-plugin";
+import CompressionPlugin from 'compression-webpack-plugin';
+import CopyPlugin from "copy-webpack-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import OptimizeCSSAssetsPlugin from "optimize-css-assets-webpack-plugin";
+import path from "path";
+import TerserJSPlugin from "terser-webpack-plugin";
 
-module.exports = {
+export default {
   entry: "./src/main.jsx",
   module: {
     rules: [
