@@ -14,3 +14,9 @@ Cargo.lock
 node_modules/
 
 dist/
+
+# Ignore the built out files
+frontend/build/*
+
+# I have a test section for just testing things that I want to ignore lol
+test/*
