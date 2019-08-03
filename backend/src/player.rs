@@ -3,8 +3,8 @@ use crate::database::Database;
 use crate::lobby::Lobby;
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
-use std::collections::HashMap;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -52,7 +52,9 @@ impl Player {
         }
 
         if split.len() > 2 {
-            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+            self.send_message(
+                "Hey Chieftain, you should know what you're doing. Invalid indexes bro.",
+            );
             return;
         }
 
@@ -78,7 +80,9 @@ impl Player {
         }
 
         if split.len() > 2 {
-            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+            self.send_message(
+                "Hey Chieftain, you should know what you're doing. Invalid indexes bro.",
+            );
             return;
         }
 
@@ -373,7 +377,9 @@ impl Player {
         }
 
         if split.len() != 2 {
-            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+            self.send_message(
+                "Hey Chieftain, you should know what you're doing. Invalid indexes bro.",
+            );
             return;
         }
 
@@ -381,7 +387,10 @@ impl Player {
         if self.db.borrow_mut().unban(&ip_addr) {
             self.send_message(&format!("The target {} has been unbanned.", &ip_addr));
         } else {
-            self.send_message(&format!("Failed to unban {}. Something went wrong. Unexpected error.", &ip_addr));
+            self.send_message(&format!(
+                "Failed to unban {}. Something went wrong. Unexpected error.",
+                &ip_addr
+            ));
         }
     }
 
@@ -392,15 +401,23 @@ impl Player {
         }
 
         if split.len() != 2 {
-            self.send_message("Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+            self.send_message(
+                "Hey Chieftain, you should know what you're doing. Invalid indexes bro.",
+            );
             return;
         }
 
         let name = split[1];
         if self.db.borrow().unchieftain(&name) {
-            self.send_message(&format!("Congratulations, you have unchieftained {}.", &name));
+            self.send_message(&format!(
+                "Congratulations, you have unchieftained {}.",
+                &name
+            ));
         } else {
-            self.send_message(&format!("It looks like something went wrong with unchieftaining. Maybe {} isn't real?", &name));
+            self.send_message(&format!(
+                "It looks like something went wrong with unchieftaining. Maybe {} isn't real?",
+                &name
+            ));
         }
     }
 
@@ -477,7 +494,6 @@ impl Player {
             } else if !pl.name.is_empty() {
                 messages.push(format!("{}{}", pl.name, person).to_string());
             }
-
         }
 
         messages.sort_unstable_by(|a, b| a.cmp(&b));

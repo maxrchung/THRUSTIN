@@ -163,7 +163,6 @@ pub fn in_lobby_commands(
     input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);
@@ -222,9 +221,11 @@ fn list_in_commands(pl: &Player, host: bool) {
     }
 
     if pl.is_authenticated {
-        commands.append(&mut vec![
-            (".account", ".a", "Observe the settings related to your account and see what's up with that whack."),
-        ]);
+        commands.append(&mut vec![(
+            ".account",
+            ".a",
+            "Observe the settings related to your account and see what's up with that whack.",
+        )]);
     }
 
     if pl.is_chieftain() {
@@ -252,7 +253,6 @@ fn list_in_commands(pl: &Player, host: bool) {
 pub fn playing_commands(
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);
@@ -307,9 +307,11 @@ fn list_playing_commands(pl: &Player, host: bool) {
     }
 
     if pl.is_authenticated {
-        commands.append(&mut vec![
-            (".account", ".a", "This shows your account configurations and stats."),
-        ]);
+        commands.append(&mut vec![(
+            ".account",
+            ".a",
+            "This shows your account configurations and stats.",
+        )]);
     }
 
     if pl.is_chieftain() {
@@ -337,7 +339,6 @@ fn list_playing_commands(pl: &Player, host: bool) {
 pub fn choosing_commands(
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);
@@ -385,9 +386,11 @@ fn list_choosing_commands(pl: &Player, host: bool) {
     }
 
     if pl.is_authenticated {
-        commands.append(&mut vec![
-            (".account", ".a", "Account related information for your display view."),
-        ]);
+        commands.append(&mut vec![(
+            ".account",
+            ".a",
+            "Account related information for your display view.",
+        )]);
     }
 
     if pl.is_chieftain() {
@@ -415,7 +418,6 @@ fn list_choosing_commands(pl: &Player, host: bool) {
 pub fn deciding_commands(
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);
@@ -457,9 +459,11 @@ fn list_deciding_commands(pl: &Player, host: bool) {
     }
 
     if pl.is_authenticated {
-        commands.append(&mut vec![
-            (".account", ".a", "Visibility to how your account data is becoming awoke."),
-        ]);
+        commands.append(&mut vec![(
+            ".account",
+            ".a",
+            "Visibility to how your account data is becoming awoke.",
+        )]);
     }
 
     if pl.is_chieftain() {
@@ -487,7 +491,6 @@ fn list_deciding_commands(pl: &Player, host: bool) {
 pub fn waiting_commands(
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);

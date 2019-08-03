@@ -134,12 +134,12 @@ fn view_account() {
     let mut client = common::setup_with_db("view_account");
     client.send(1, ".n 1");
     client.send(1, ".a");
-    client.read_all(); 
+    client.read_all();
     assert_eq!(client.last(1), "You cannot do this. You must be fully authenticated and logged in in order to get your account info with a registered account.");
 
     client.send(2, ".r user2 2 2");
     client.send(2, ".a");
-    client.read_all(); 
+    client.read_all();
     assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - user2<br/>Name - user2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 0<br/>Games Won So Far - 0");
 }
 
@@ -157,7 +157,7 @@ fn update_account_stats() {
     client.send(2, ".r 2 2 2");
     client.send(2, ".j 1");
     client.send(2, ".a");
-    client.read_all(); 
+    client.read_all();
     assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
 
     client.send(1, ".t 1");
@@ -167,7 +167,7 @@ fn update_account_stats() {
 
     client.send(1, ".a");
     client.send(2, ".a");
-    client.read_all(); 
+    client.read_all();
     assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
     assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 1<br/>Games Played So Far - 1<br/>Games Won So Far - 1");
 }
@@ -183,11 +183,17 @@ fn chieftain() {
     client.send(2, ".n 2");
     client.send(2, ".ch");
     client.read_all();
-    assert_eq!(client.last(2), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+    assert_eq!(
+        client.last(2),
+        "Yo dawg, this command can only be used by chieftains of THRUSTIN."
+    );
 
     client.send(1, ".ch 2 2");
     client.read_all();
-    assert_eq!(client.last(1), "Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+    assert_eq!(
+        client.last(1),
+        "Hey Chieftain, you should know what you're doing. Invalid indexes bro."
+    );
 
     // Can't appoint someone who doesn't exist
     client.send(1, ".ch 3");
@@ -211,23 +217,38 @@ fn chieftain() {
     client.send(4, ".n 4");
     client.send(4, ".uc");
     client.read_all();
-    assert_eq!(client.last(4), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+    assert_eq!(
+        client.last(4),
+        "Yo dawg, this command can only be used by chieftains of THRUSTIN."
+    );
 
     client.send(3, ".uc");
     client.read_all();
-    assert_eq!(client.last(3), "Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+    assert_eq!(
+        client.last(3),
+        "Hey Chieftain, you should know what you're doing. Invalid indexes bro."
+    );
 
     client.send(3, ".uc blah");
     client.read_all();
-    assert_eq!(client.last(3), "It looks like something went wrong with unchieftaining. Maybe blah isn't real?");
+    assert_eq!(
+        client.last(3),
+        "It looks like something went wrong with unchieftaining. Maybe blah isn't real?"
+    );
 
     client.send(3, ".uc chieftain");
     client.read_all();
-    assert_eq!(client.last(3), "Congratulations, you have unchieftained chieftain.");
+    assert_eq!(
+        client.last(3),
+        "Congratulations, you have unchieftained chieftain."
+    );
 
     client.send(1, ".ch");
     client.read_all();
-    assert_eq!(client.last(1), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+    assert_eq!(
+        client.last(1),
+        "Yo dawg, this command can only be used by chieftains of THRUSTIN."
+    );
 }
 
 #[test]
@@ -236,12 +257,18 @@ fn ban_update() {
     client.send(1, ".n a");
     client.send(1, ".b");
     client.read_all();
-    assert_eq!(client.last(1), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+    assert_eq!(
+        client.last(1),
+        "Yo dawg, this command can only be used by chieftains of THRUSTIN."
+    );
 
     client.send(2, ".l chieftain chieftain");
     client.send(2, ".b yep yep");
     client.read_all();
-    assert_eq!(client.last(2), "Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+    assert_eq!(
+        client.last(2),
+        "Hey Chieftain, you should know what you're doing. Invalid indexes bro."
+    );
 
     client.send(2, ".b");
     client.read_all();
@@ -249,28 +276,45 @@ fn ban_update() {
 
     client.send(2, ".b 123.123.123.123");
     client.read_all();
-    assert_eq!(client.last(2), "IP address 123.123.123.123 has been banned.");
+    assert_eq!(
+        client.last(2),
+        "IP address 123.123.123.123 has been banned."
+    );
 
     client.send(2, ".b");
     client.read_all();
-    assert!(client.last(2).contains("Banned fellows from this server. Kill'em."));
+    assert!(client
+        .last(2)
+        .contains("Banned fellows from this server. Kill'em."));
     assert!(client.last(2).contains("123.123.123.123"));
 
     client.send(1, ".ub");
     client.read_all();
-    assert_eq!(client.last(1), "Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+    assert_eq!(
+        client.last(1),
+        "Yo dawg, this command can only be used by chieftains of THRUSTIN."
+    );
 
     client.send(2, ".ub");
     client.read_all();
-    assert_eq!(client.last(2), "Hey Chieftain, you should know what you're doing. Invalid indexes bro.");
+    assert_eq!(
+        client.last(2),
+        "Hey Chieftain, you should know what you're doing. Invalid indexes bro."
+    );
 
     client.send(2, ".ub 1.1.1.1");
     client.read_all();
-    assert_eq!(client.last(2), "Failed to unban 1.1.1.1. Something went wrong. Unexpected error.");
+    assert_eq!(
+        client.last(2),
+        "Failed to unban 1.1.1.1. Something went wrong. Unexpected error."
+    );
 
     client.send(2, ".ub 123.123.123.123");
     client.read_all();
-    assert_eq!(client.last(2), "The target 123.123.123.123 has been unbanned.");
+    assert_eq!(
+        client.last(2),
+        "The target 123.123.123.123 has been unbanned."
+    );
 }
 
 // Not really too reliable since this is only with ChannelCommunication
@@ -285,5 +329,7 @@ fn ban() {
     client.send(2, ".b 1");
     client.send(1, "What's up my dudes?");
     client.read_all();
-    assert!(client.last(1).contains("You cannot exist. You are banned until "));
+    assert!(client
+        .last(1)
+        .contains("You cannot exist. You are banned until "));
 }

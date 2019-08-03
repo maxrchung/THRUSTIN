@@ -951,20 +951,19 @@ impl Lobby {
             resulting_thrust
         };
 
-        let mut messages = vec![
-            format!(
-                "{}. {}",
-                // Use 1-indexing for showing result
-                &self.game.current_thrusts.len(),
-                &resulting_thrust
-            )
-        ];
+        let mut messages = vec![format!(
+            "{}. {}",
+            // Use 1-indexing for showing result
+            &self.game.current_thrusts.len(),
+            &resulting_thrust
+        )];
 
         // Check if everyone has thrusted
         let mut did_everyone_thrust = true;
         for (_, pl) in self.list.iter().enumerate() {
             let pl = pl.borrow();
-            if pl.state != PlayerState::Deciding && !self.game.thrusted_players.contains(&pl.token) {
+            if pl.state != PlayerState::Deciding && !self.game.thrusted_players.contains(&pl.token)
+            {
                 did_everyone_thrust = false;
                 break;
             }

@@ -79,7 +79,7 @@ impl Database {
     fn load_bans(&mut self) {
         let cursor = self
             .bans
-            .find(Some(doc!{}), None)
+            .find(Some(doc! {}), None)
             .ok()
             .expect("Failed to load bans");
 
@@ -104,7 +104,8 @@ impl Database {
                     Utc.timestamp(0, 0)
                 };
 
-                self.bans_cache.insert(String::from(ip_addr), (duration, end));
+                self.bans_cache
+                    .insert(String::from(ip_addr), (duration, end));
             }
         }
     }
@@ -189,9 +190,9 @@ impl Database {
                         self.load_bans();
                         true
                     }
-                    _ => false
+                    _ => false,
                 }
-            },
+            }
             // If ban doesn't exist, add new ban
             None => {
                 // in seconds, starting at 1 hour
@@ -199,7 +200,7 @@ impl Database {
                 let end = Utc::now() + Duration::seconds(duration);
                 let doc = doc! {
                     "ip_addr": ip_addr,
-                    "duration": duration, 
+                    "duration": duration,
                     "end": end,
                 };
                 match self.bans.insert_one(doc.clone(), None) {
@@ -235,7 +236,9 @@ impl Database {
                     "is_chieftain": true
                 }
             };
-            self.users.update_one(filter, update, None).expect("Failed to update chieftain");
+            self.users
+                .update_one(filter, update, None)
+                .expect("Failed to update chieftain");
             true
         } else {
             false
@@ -340,11 +343,11 @@ impl Database {
         let users = db.collection("users");
         let config = argon2::Config::default();
 
-        let mut db = Database { 
-            bans, 
-            users, 
-            config, 
-            bans_cache: HashMap::new()
+        let mut db = Database {
+            bans,
+            users,
+            config,
+            bans_cache: HashMap::new(),
         };
         db.load_bans();
         db
@@ -378,7 +381,9 @@ impl Database {
                         "games_played": games + 1
                     }
                 };
-                self.users.update_one(filter, update, None).expect("Failed to update games played");
+                self.users
+                    .update_one(filter, update, None)
+                    .expect("Failed to update games played");
             }
         }
     }
@@ -395,7 +400,9 @@ impl Database {
                         "games_won": games + 1
                     }
                 };
-                self.users.update_one(filter, update, None).expect("Failed to update games won");
+                self.users
+                    .update_one(filter, update, None)
+                    .expect("Failed to update games won");
             }
         }
     }
@@ -412,7 +419,9 @@ impl Database {
                         "points_gained": points + 1
                     }
                 };
-                self.users.update_one(filter, update, None).expect("Failed to update points gained");
+                self.users
+                    .update_one(filter, update, None)
+                    .expect("Failed to update points gained");
             }
         }
     }
@@ -471,12 +480,10 @@ impl Database {
                         self.load_bans();
                         true
                     }
-                    _ => false
+                    _ => false,
                 }
-            },
-            None => {
-                false
             }
+            None => false,
         }
     }
 
