@@ -174,7 +174,7 @@ fn update_account_stats() {
 
 #[test]
 fn chieftain() {
-    let mut client = common::setup_with_db("chieftain");
+    let mut client = common::setup_with_db_and_logging("chieftain");
     client.send(1, ".l chieftain chieftain");
     client.send(1, ".ch");
     client.read_all();

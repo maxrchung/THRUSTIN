@@ -1,10 +1,9 @@
 use chrono::Local;
 use rocket::response::NamedFile;
-use serde_json::json;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::collections::VecDeque;
-use std::fmt;
-use std::fmt::{Debug, Formatter};
+use std::fmt::{self, Debug, Formatter};
 use std::path::{Path, PathBuf};
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
@@ -86,12 +85,18 @@ impl ChannelCommunication {
     }
 
     pub fn last(&self, token: u32) -> String {
-        self.messages
+        let msg = self.messages
             .get(&token)
             .expect("Token does not exist for last")
             .last()
-            .expect("Messages does not have last element")
-            .to_string()
+            .expect("Messages does not have last element");
+        let json: Value = serde_json::from_str(&*msg)
+            .expect("Not valid JSON");
+        let msg = json["message"]
+            .as_str()
+            .expect("Message is not string")
+            .to_string();
+        msg
     }
 
     // Since THRUSTS are randomized, we aren't really sure how many THRUSTS we need
@@ -121,15 +126,24 @@ impl ChannelCommunication {
 impl Communication for ChannelCommunication {
     fn read_message(&mut self) -> (u32, String) {
         let (token, msg) = self.read.recv().expect("Failed to send message.");
-        self.add_message(token.clone(), msg.clone());
+        let json: Value = serde_json::from_str(&*msg)
+            .expect("Not valid JSON");
+        let msg = json["message"]
+            .as_str()
+            .expect("Received message is not string")
+            .to_string();
         (token, msg)
     }
 
     fn send_message(&self, token: &u32, message: &str) {
+        let msg = json!({
+            "from": "THRUSTY",
+            "message": message,
+        }).to_string();
         self.to_send
             .as_ref()
             .expect("to_send not set")
-            .send((token.clone(), String::from(message)))
+            .send((token.clone(), msg))
             .expect("Failed to send message.");
     }
 
@@ -298,6 +312,7 @@ impl Communication for WebSocketCommunication {
                 (token, message)
             }
             Err(_) => {
+                println!("{}|_|_|{}|_", Local::now(), ">");
                 println!("Catastrophic failure if this fails probably.");
                 (0, "".to_string())
             }
