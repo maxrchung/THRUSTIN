@@ -2,29 +2,11 @@ import "./main.scss";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Container from 'react-bootstrap/Container';
-import SanitizedHTML from "react-sanitized-html";
-import CommandBar from './commandBar';
+import CommandBar from "./CommandBar";
+import Message from "./Message";
 
 const MAX_INPUT = 6669;
 const MAX_MSGS = 696;
-
-function Message(props) {
-    return (
-        <div>
-            <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
-            <SanitizedHTML
-             allowedTags={["br","u","table","tr","th","td","a","img"]} 
-             allowedAttributes={
-                { 
-                    "table": ["class"],
-                    "a": ["href"],
-                    "img": ["src"]
-                }}
-             html={props.content} />
-            <hr/>
-        </div>
-    );
-}
 
 class Client extends React.Component {
     constructor(props) {
@@ -50,6 +32,14 @@ class Client extends React.Component {
         document.addEventListener("keydown", this.handleKeyDown);
     }
 
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
+    
+    getHintVal() {
+		return document.getElementsByClassName('rbt-input-hint')[0].value;
+	}
+	
     handleClose = () => {
         this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
     };
@@ -93,19 +83,6 @@ class Client extends React.Component {
         this.setMessage(e.data);
     }
 
-    setMessage = (message) => {
-        this.handleMessageMax();
-        this.setState({
-            messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={message} />)
-        });
-
-        this.scrollToDummy();
-    }
-
-    scrollToDummy = () => {
-        this.dummy.scrollIntoView();
-    }
-
     handleMessageMax = () => {
         if (this.state.messageCounter + 1 > MAX_MSGS) {
             var newMsg = this.state.messages.slice(0);
@@ -117,33 +94,32 @@ class Client extends React.Component {
         }
     }
 
-    updateMessageCounter = () => {
-        const counter = this.state.messageCounter;
-        this.setState({
-            messageCounter: this.state.messageCounter + 1
-        });
-        return counter;
+    scrollToDummy = () => {
+        this.dummy.scrollIntoView();
     }
 
-    componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
-	}
-	
-	getHintVal() {
-		return document.getElementsByClassName('rbt-input-hint')[0].value;
-	}
+    setMessage = (json) => {
+        let message = JSON.parse(json);
+        console.log(message);
+        this.handleMessageMax();
+        this.setState({
+            messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from={message.from} content={message.message} />)
+        });
+
+        this.scrollToDummy();
+    }
 
     renderTop() {
         if (this.state.messageCounter > MAX_MSGS) {
             return <div id="ellipsis" className="py-2">...</div>;
         }
         return (
-            <React.Fragment>
+            <>
                 <img src="favicon-96.png"/>
                 <div className="mb-3 mr-3">
                     <hr/>
                 </div>
-            </React.Fragment>
+            </>
         );
 	}
 
@@ -166,6 +142,15 @@ class Client extends React.Component {
             </Container>
         );
     }
+
+    updateMessageCounter = () => {
+        const counter = this.state.messageCounter;
+        this.setState({
+            messageCounter: this.state.messageCounter + 1
+        });
+        return counter;
+    }
+
 }
 
 ReactDOM.render(
