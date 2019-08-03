@@ -141,7 +141,7 @@ impl Communication for ChannelCommunication {
         token.to_string()
     }
 
-    fn disconnect(&mut self, token: &u32) {
+    fn disconnect(&mut self, _token: &u32) {
         self.to_send = None;
     }
 }
@@ -331,7 +331,10 @@ impl Communication for WebSocketCommunication {
     fn disconnect(&mut self, token: &u32) {
         let connections_lock = self.connections.lock().unwrap();
         if let Some((_ip_addr, sender)) = connections_lock.get(&token) {
-            sender.close(CloseCode::Normal);
+            // Don't do anything if close succeeds or fails
+            match sender.close(CloseCode::Normal) {
+                _ => {}
+            };
         }
     }
 }

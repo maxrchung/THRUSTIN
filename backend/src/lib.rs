@@ -42,7 +42,6 @@ pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
     db.borrow()
         .bans
         .drop()
-        
         .expect(&format!("Unable to drop bans collection: {}", db_name));
     // Reinitialize db so cache is recached ok this is a lil wucky ducky
     let db = Rc::new(RefCell::new(Database::new(db_name)));
@@ -167,23 +166,23 @@ fn handle_input(
         }
 
         PlayerState::InLobby => {
-            commands::in_lobby_commands(input, split, pl, players, lobbies);
+            commands::in_lobby_commands(input, split, pl, lobbies);
         }
 
         PlayerState::Playing => {
-            commands::playing_commands(split, pl, players, lobbies);
+            commands::playing_commands(split, pl, lobbies);
         }
 
         PlayerState::Choosing => {
-            commands::choosing_commands(split, pl, players, lobbies);
+            commands::choosing_commands(split, pl, lobbies);
         }
 
         PlayerState::Deciding => {
-            commands::deciding_commands(split, pl, players, lobbies);
+            commands::deciding_commands(split, pl, lobbies);
         }
 
         PlayerState::Waiting => {
-            commands::waiting_commands(split, pl, players, lobbies);
+            commands::waiting_commands(split, pl, lobbies);
         }
     }
 }
