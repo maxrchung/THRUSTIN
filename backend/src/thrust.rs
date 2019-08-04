@@ -471,6 +471,11 @@ impl Default for Deck {
             "[REDACTED]",
             "gunning down kids with a Negev",
             "definitely don't do that",
+            "entropy",
+            "gonna go pee in my mouth",
+            "gonna prop myself against a wall upside down so I can pee on my face and waterboard myself",
+            "zxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzxzx",
+            "now this is what I’m talking about right here",
         ];
 
         let thrustees = vec![
@@ -646,7 +651,7 @@ impl Default for Deck {
 			"Bro stop _____ it's really pissing me off man.",
 			"10 years ago I made a wrong turn in life by _____. After that, I was never the same.",
 			"One day Yakub the Scientist blessed me with his presence. He told me the world is in danger and the only way to save it is to _____.",
-			"The one thing Jacob wants in life: _____",
+			"The one thing Jacob wants in life: _____.",
 			"_____ is so fucking unintelligble and incomprehensible I literally can't understand it.",
 			"<br/>pub fn thrust(thruster: &String, thrustee: &String) -> String {<br/>&nbsp;&nbsp;&nbsp;&nbsplazy＿static! {<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbspstatic ref RE: Regex = Regex::new(\"_____\").unwrap();<br/>&nbsp;&nbsp;&nbsp;&nbsp}<br/>&nbsp;&nbsp&nbsp;&nbsplet result = RE.replace(&thrustee, &(thruster)[..]);<br/>&nbsp;&nbsp;&nbsp;&nbspresult.to＿string()<br/>}",
             "What’s your favorite type of music? _____.",
@@ -680,6 +685,8 @@ impl Default for Deck {
             "Welcome home to [REDACTED]. You must [ACTION:TAKE] the [OBJECT:MEDICINE]. [LOCATION:OUTSIDE] cannot be [REDACTED]. [LOCATION:ROOM] has been decided. You must [ACTION:TAKE] the [OBJECT:MEDICINE]. [ACTION:TAKE] the [OBJECT:MEDICINE]. See the [REDACTED:COLORS]. See the [OBJECT:LIGHT]. [EMOTION:SAD] has been [ACTION:RELIEVED]. [EMOTION:HAPPY] is [ACTION:ADMINISTERED]. [ACTION:TAKE] the [OBJECT:MEDICINE]. [ACTION:OBSERVE] _____.",
             "Showing up to school and _____.",
             "A new law was recently passed to _____.",
+            "That one guy that you know that’s on your team: _____. He works really hard. He tries really hard, and you know it. He really does it give it his all to try and do some good in the world. But damn he not only fails, he fails and creates a gigantic cancer mess in its place. Like what the fuck, and you don’t know what you can do about it but just take over and do his work for him. I mean, how is this possible? This situation is worse than if he just didn’t do anything at all. Now you have to do everything over for him and get all passive aggressive about what a shit job he’s done. And he doesn’t do anything back. He just kind of sits there and nods and haha’s and just waits for things to boil over. Fuck off mate. Take some responsibility and try not being a waste of space for once.",
+            "Human beings are programmed to discover patterns. That’s why they take notice of _____.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
