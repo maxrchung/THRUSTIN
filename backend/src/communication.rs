@@ -16,7 +16,10 @@ pub trait Communication {
     // mut required for updating  FileSystemCommunication
     // WebSocketCommunication doesn't have mutability issue since everything is behind Arc Mutex
     fn read_message(&mut self) -> (u32, String);
+    // Send message as THRUSTY
     fn send_message(&self, token: &u32, message: &str);
+    // Send message from a user
+    fn send_message_from(&self, token: &u32, from: &str, message: &str);
     fn send_messages(&self, token: &u32, messages: &Vec<String>);
     fn disconnect(&mut self, token: &u32);
 
@@ -99,6 +102,21 @@ impl ChannelCommunication {
         msg
     }
 
+    pub fn last_from(&self, token: u32) -> String {
+        let msg = self.messages
+            .get(&token)
+            .expect("Token does not exist for last")
+            .last()
+            .expect("Messages does not have last element");
+        let json: Value = serde_json::from_str(&*msg)
+            .expect("Not valid JSON");
+        let from = json["from"]
+            .as_str()
+            .expect("Message is not string")
+            .to_string();
+        from
+    }
+
     // Since THRUSTS are randomized, we aren't really sure how many THRUSTS we need
     // This will take care of default possibilities...
     pub fn thrust(&mut self, token: u32) {
@@ -138,6 +156,18 @@ impl Communication for ChannelCommunication {
     fn send_message(&self, token: &u32, message: &str) {
         let msg = json!({
             "from": "THRUSTY",
+            "message": message,
+        }).to_string();
+        self.to_send
+            .as_ref()
+            .expect("to_send not set")
+            .send((token.clone(), msg))
+            .expect("Failed to send message.");
+    }
+
+    fn send_message_from(&self, token: &u32, from: &str, message: &str) {
+        let msg = json!({
+            "from": from,
             "message": message,
         }).to_string();
         self.to_send
@@ -323,6 +353,21 @@ impl Communication for WebSocketCommunication {
     fn send_message(&self, token: &u32, message: &str) {
         let msg = json!({
             "from": "THRUSTY",
+            "message": message,
+        }).to_string();
+        let connections_lock = self.connections.lock().unwrap();
+        // Handle case for missing connection - This is possible for disconnects
+        if let Some((ip_addr, sender)) = connections_lock.get(&token) {
+            // Log server response for troubleshooting and FBI-ing
+            sender.send(&*msg).unwrap();
+            println!("{}|{}|{}{}|{}", Local::now(), ip_addr, ">", token, msg);
+        }
+    }
+
+    // Send message with from
+    fn send_message_from(&self, token: &u32, from: &str, message: &str) {
+        let msg = json!({
+            "from": from,
             "message": message,
         }).to_string();
         let connections_lock = self.connections.lock().unwrap();

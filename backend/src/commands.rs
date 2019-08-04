@@ -108,8 +108,11 @@ pub fn out_of_lobby_commands(
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
-            pl.borrow()
-                .send_message("Bruh that's an invalid command...!.    try .help");
+            if com.starts_with(".") {
+                pl.borrow().send_message("Bruh that's an invalid command...!.    try .help");
+            } else {
+                Player::send_message_out_of_lobby(&pl.borrow().name, input, players);
+            }
         }
     }
 }
@@ -189,9 +192,13 @@ pub fn in_lobby_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        _ => pl
-            .borrow()
-            .send_message("Broski that shall be an invalid command. enter .help"),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow().send_message("Broski that shall be an invalid command. enter .help")
+            } else {
+                lobby.send_message_from(&pl.borrow().name, input);
+            }
+        }
     }
 }
 

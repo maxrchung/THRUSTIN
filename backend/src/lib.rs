@@ -135,6 +135,8 @@ fn handle_input(
     lobbies: &mut HashMap<i32, Lobby>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
+    // Think there are a lot of cases of bad spaces, so this should reduce some
+    let input = input.trim();
     let split: Vec<&str> = input.split(' ').collect();
     let state = {
         let player = players

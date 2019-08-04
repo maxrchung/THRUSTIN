@@ -816,6 +816,12 @@ impl Lobby {
         }
     }
 
+    pub fn send_message_lobby(&self, from: &str, message: &str) {
+        for pl in &self.list {
+            pl.borrow().send_message_from(from, message);
+        }
+    }
+
     pub fn thrustees(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
         let pl = pl.borrow();
         if !self.is_host(pl.token) {
