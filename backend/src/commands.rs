@@ -109,7 +109,8 @@ pub fn out_of_lobby_commands(
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
-                pl.borrow().send_message("Bruh that's an invalid command...!.    try .help");
+                pl.borrow()
+                    .send_message("Bruh that's an invalid command...!.    try .help");
             } else {
                 Player::send_message_out_of_lobby(&pl.borrow().name, input, players);
             }
@@ -194,7 +195,8 @@ pub fn in_lobby_commands(
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
-                pl.borrow().send_message("Broski that shall be an invalid command. enter .help")
+                pl.borrow()
+                    .send_message("Broski that shall be an invalid command. enter .help")
             } else {
                 lobby.send_message_from(&pl.borrow().name, input);
             }
@@ -373,7 +375,8 @@ pub fn choosing_commands(
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
-                pl.borrow().send_message("Brother that is an invalid command.");
+                pl.borrow()
+                    .send_message("Brother that is an invalid command.");
             } else {
                 lobby.send_message_from(&pl.borrow().name, input);
             }
@@ -539,7 +542,8 @@ pub fn waiting_commands(
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
-                pl.borrow().send_message("Bruh... that's an invalid command.");
+                pl.borrow()
+                    .send_message("Bruh... that's an invalid command.");
             } else {
                 lobby.send_message_from(&pl.borrow().name, input);
             }

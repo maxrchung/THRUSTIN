@@ -88,13 +88,13 @@ impl ChannelCommunication {
     }
 
     pub fn last(&self, token: u32) -> String {
-        let msg = self.messages
+        let msg = self
+            .messages
             .get(&token)
             .expect("Token does not exist for last")
             .last()
             .expect("Messages does not have last element");
-        let json: Value = serde_json::from_str(&*msg)
-            .expect("Not valid JSON");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
         let msg = json["message"]
             .as_str()
             .expect("Message is not string")
@@ -103,13 +103,13 @@ impl ChannelCommunication {
     }
 
     pub fn last_from(&self, token: u32) -> String {
-        let msg = self.messages
+        let msg = self
+            .messages
             .get(&token)
             .expect("Token does not exist for last")
             .last()
             .expect("Messages does not have last element");
-        let json: Value = serde_json::from_str(&*msg)
-            .expect("Not valid JSON");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
         let from = json["from"]
             .as_str()
             .expect("Message is not string")
@@ -144,8 +144,7 @@ impl ChannelCommunication {
 impl Communication for ChannelCommunication {
     fn read_message(&mut self) -> (u32, String) {
         let (token, msg) = self.read.recv().expect("Failed to send message.");
-        let json: Value = serde_json::from_str(&*msg)
-            .expect("Not valid JSON");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
         let msg = json["message"]
             .as_str()
             .expect("Received message is not string")
@@ -157,7 +156,8 @@ impl Communication for ChannelCommunication {
         let msg = json!({
             "from": "THRUSTY",
             "message": message,
-        }).to_string();
+        })
+        .to_string();
         self.to_send
             .as_ref()
             .expect("to_send not set")
@@ -169,7 +169,8 @@ impl Communication for ChannelCommunication {
         let msg = json!({
             "from": from,
             "message": message,
-        }).to_string();
+        })
+        .to_string();
         self.to_send
             .as_ref()
             .expect("to_send not set")
@@ -354,7 +355,8 @@ impl Communication for WebSocketCommunication {
         let msg = json!({
             "from": "THRUSTY",
             "message": message,
-        }).to_string();
+        })
+        .to_string();
         let connections_lock = self.connections.lock().unwrap();
         // Handle case for missing connection - This is possible for disconnects
         if let Some((ip_addr, sender)) = connections_lock.get(&token) {
@@ -369,7 +371,8 @@ impl Communication for WebSocketCommunication {
         let msg = json!({
             "from": from,
             "message": message,
-        }).to_string();
+        })
+        .to_string();
         let connections_lock = self.connections.lock().unwrap();
         // Handle case for missing connection - This is possible for disconnects
         if let Some((ip_addr, sender)) = connections_lock.get(&token) {

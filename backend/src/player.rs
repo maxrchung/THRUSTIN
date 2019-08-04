@@ -308,13 +308,16 @@ impl Player {
     }
 
     pub fn send_message_from(&self, from: &str, message: &str) {
-        self.comm.borrow().send_message_from(&self.token, from, message);
+        self.comm
+            .borrow()
+            .send_message_from(&self.token, from, message);
     }
 
     pub fn send_message_out_of_lobby(
-        from: &str, 
-        message: &str, 
-        players: &mut HashMap<u32, Rc<RefCell<Player>>>) {
+        from: &str,
+        message: &str,
+        players: &mut HashMap<u32, Rc<RefCell<Player>>>,
+    ) {
         for pl_rc in players.values() {
             let pl = pl_rc.borrow();
             if pl.state == PlayerState::OutOfLobby {

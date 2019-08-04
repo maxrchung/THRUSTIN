@@ -266,59 +266,38 @@ fn chat() {
     client.send(1, "omegalul");
     client.read_all();
     assert_eq!(
-        client.last(1), 
+        client.last(1),
         "u gotta pick a name bro, try '.name URNAMeHERE'"
     );
 
     client.send(1, ".n 1");
     client.send(1, "omegalul!");
     client.read_all();
-    assert_eq!(
-        client.last(1), 
-        "omegalul!"
-    );
+    assert_eq!(client.last(1), "omegalul!");
 
     client.send(2, ".n 2");
     client.send(1, "omegalul!!!");
     client.read_all();
-    assert_eq!(
-        client.last(1), 
-        "omegalul!!!"
-    );
-    assert_eq!(
-        client.last(2), 
-        "omegalul!!!"
-    );
+    assert_eq!(client.last(1), "omegalul!!!");
+    assert_eq!(client.last(2), "omegalul!!!");
 
     client.send(3, ".n 3");
     client.send(3, ".m");
     client.send(3, "dude bro...");
     client.read_all();
-    assert_eq!(
-        client.last(1), 
-        "omegalul!!!"
-    );
-    assert_eq!(
-        client.last(3), 
-        "dude bro..."
-    );
+    assert_eq!(client.last(1), "omegalul!!!");
+    assert_eq!(client.last(3), "dude bro...");
 
     client.send(2, ".j 1");
     client.send(3, "Now this is it!");
     client.read_all();
-    assert_eq!(
-        client.last(2), 
-        "Now this is it!"
-    );
-    assert_eq!(
-        client.last(2), 
-        "Now this is it!"
-    );
+    assert_eq!(client.last(2), "Now this is it!");
+    assert_eq!(client.last(2), "Now this is it!");
 
     client.send(3, "...");
     client.read_all();
     assert_eq!(
-        client.last(3), 
+        client.last(3),
         "Broski that shall be an invalid command. enter .help"
     );
 }
