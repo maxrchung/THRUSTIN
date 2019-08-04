@@ -54,17 +54,11 @@ class Client extends React.Component {
 			const hintVal = this.getHintVal(); // Autocomplete check
 
 			if (hintVal) {
-				this.setState({
-					messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={hintVal} />)
-				})
 				this.connection.send(hintVal);
 			}
 			else {
 				this.handleMessageMax();
 				const command = this.inputBar.value;
-				this.setState({
-					messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
-				})
 				if (command.length <= MAX_INPUT) { 
 					this.connection.send(command);
 				}
@@ -102,7 +96,12 @@ class Client extends React.Component {
         let message = JSON.parse(json);
         this.handleMessageMax();
         this.setState({
-            messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from={message.from} content={message.message} />)
+            messages: this.state.messages.concat(
+                <Message 
+                    key={this.updateMessageCounter()} 
+                    from={message.from} 
+                    content={message.message} 
+                />)
         });
 
         this.scrollToDummy();
@@ -114,9 +113,11 @@ class Client extends React.Component {
         }
         return (
             <>
-                <img src="favicon-96.png"/>
-                <div className="mb-3 mr-3">
-                    <hr/>
+                <div className="mr-3">
+                    <div className="py-3 px-3">
+                        <img src="favicon-96.png"/>
+                    </div>
+                    <hr className="msg-border-primary m-0" />
                 </div>
             </>
         );
