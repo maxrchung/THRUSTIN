@@ -258,6 +258,7 @@ fn list_in_commands(pl: &Player, host: bool) {
 //playing commands//
 ////////////////////
 pub fn playing_commands(
+    input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>,
@@ -277,7 +278,13 @@ pub fn playing_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        _ => pl.borrow().send_message("Bruh that's an invalid command."),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow().send_message("Bruh that's an invalid command.");
+            } else {
+                lobby.send_message_from(&pl.borrow().name, input);
+            }
+        }
     }
 }
 
@@ -344,6 +351,7 @@ fn list_playing_commands(pl: &Player, host: bool) {
 //choosing//
 ////////////
 pub fn choosing_commands(
+    input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>,
@@ -363,9 +371,13 @@ pub fn choosing_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        _ => pl
-            .borrow()
-            .send_message("Brother that is an invalid command."),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow().send_message("Brother that is an invalid command.");
+            } else {
+                lobby.send_message_from(&pl.borrow().name, input);
+            }
+        }
     }
 }
 
@@ -423,6 +435,7 @@ fn list_choosing_commands(pl: &Player, host: bool) {
 //deciding//
 ////////////
 pub fn deciding_commands(
+    input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>,
@@ -442,7 +455,13 @@ pub fn deciding_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        _ => pl.borrow().send_message("Bro! That's an invalid command."),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow().send_message("Bro! That's an invalid command.");
+            } else {
+                lobby.send_message_from(&pl.borrow().name, input);
+            }
+        }
     }
 }
 
@@ -496,6 +515,7 @@ fn list_deciding_commands(pl: &Player, host: bool) {
 //waiting//
 ///////////
 pub fn waiting_commands(
+    input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
     lobbies: &mut HashMap<i32, Lobby>,
@@ -517,9 +537,13 @@ pub fn waiting_commands(
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ch" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
-        _ => pl
-            .borrow()
-            .send_message("Bruh... that's an invalid command."),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow().send_message("Bruh... that's an invalid command.");
+            } else {
+                lobby.send_message_from(&pl.borrow().name, input);
+            }
+        }
     }
 }
 

@@ -259,3 +259,66 @@ fn shows_updated_lobby_list_when_login() {
         "Name set to: 2<br/>ok 2, now ur redy 2 THRUST, try \'.help\' for sum updated information<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ❌ | Players: 1/10 | Currently: Waiting"
     );
 }
+
+#[test]
+fn chat() {
+    let mut client = common::setup();
+    client.send(1, "omegalul");
+    client.read_all();
+    assert_eq!(
+        client.last(1), 
+        "u gotta pick a name bro, try '.name URNAMeHERE'"
+    );
+
+    client.send(1, ".n 1");
+    client.send(1, "omegalul!");
+    client.read_all();
+    assert_eq!(
+        client.last(1), 
+        "omegalul!"
+    );
+
+    client.send(2, ".n 2");
+    client.send(1, "omegalul!!!");
+    client.read_all();
+    assert_eq!(
+        client.last(1), 
+        "omegalul!!!"
+    );
+    assert_eq!(
+        client.last(2), 
+        "omegalul!!!"
+    );
+
+    client.send(3, ".n 3");
+    client.send(3, ".m");
+    client.send(3, "dude bro...");
+    client.read_all();
+    assert_eq!(
+        client.last(1), 
+        "omegalul!!!"
+    );
+    assert_eq!(
+        client.last(3), 
+        "dude bro..."
+    );
+
+    client.send(2, ".j 1");
+    client.send(3, "Now this is it!");
+    client.read_all();
+    assert_eq!(
+        client.last(2), 
+        "Now this is it!"
+    );
+    assert_eq!(
+        client.last(2), 
+        "Now this is it!"
+    );
+
+    client.send(3, "...");
+    client.read_all();
+    assert_eq!(
+        client.last(3), 
+        "Broski that shall be an invalid command. enter .help"
+    );
+}
