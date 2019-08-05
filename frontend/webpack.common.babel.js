@@ -37,7 +37,10 @@ export default {
     filename: "[name].[contenthash].js"
   },
   plugins: [
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({
+      // Thank you https://github.com/webpack-contrib/copy-webpack-plugin/issues/385#issuecomment-508914721
+      cleanStaleWebpackAssets: false,
+    }),
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash].css"
     }),
