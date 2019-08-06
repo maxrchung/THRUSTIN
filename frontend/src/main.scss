@@ -8,6 +8,7 @@ $border-opacity: 0.4;
 @import "../node_modules/bootstrap-material-design/scss/variables";
 @import "../node_modules/bootstrap-material-design/scss/mixins";
 
+// Apply colors after bootstrap-material-design so teal color stays
 $theme-colors: (
   "primary": $primary,
   "secondary": $secondary
