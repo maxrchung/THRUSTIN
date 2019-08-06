@@ -6,14 +6,16 @@ function Message(props) {
         <>
             <strong>{props.from}</strong> {(new Date).toLocaleTimeString()} <br/>
             <SanitizedHTML
-            allowedTags={["br","u","table","tr","th","td","a","img"]} 
-            allowedAttributes={
-                { 
-                    "table": ["class"],
-                    "a": ["href"],
-                    "img": ["src"]
-                }}
-            html={props.content} />
+                allowedTags={["br","u","table","tr","th","td","a","img"]} 
+                allowedAttributes={
+                    { 
+                        "table": ["class"],
+                        "a": ["href"],
+                        "img": ["src"]
+                    }}
+                className="text-break"
+                html={props.content} 
+            />
         </>
     );
 }
