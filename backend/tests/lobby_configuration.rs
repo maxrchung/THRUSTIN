@@ -14,7 +14,7 @@ fn only_chief_commands() {
         ".c 2",
         ".ho",
         ".k 1",
-        ".pa yoloswag",
+        ".pw yoloswag",
         ".po 420",
         ".s",
         ".e 10",
@@ -138,7 +138,7 @@ fn set_password() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".m");
-    client.send(1, ".pa lololol");
+    client.send(1, ".pw lololol");
     client.read_all();
     assert_eq!(
         client.last(1),

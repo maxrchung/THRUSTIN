@@ -228,7 +228,7 @@ fn out_of_lobby_list() {
     client.read_all();
     assert_eq!(client.last(1), "A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ❌ | Players: 1/10 | Currently: Waiting");
 
-    client.send(2, ".pa yolo");
+    client.send(2, ".pw yolo");
     client.send(1, ".l");
     client.read_all();
     assert_eq!(client.last(1), "A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing<br/>ID: 1 | Password: ✅ | Players: 1/10 | Currently: Waiting");

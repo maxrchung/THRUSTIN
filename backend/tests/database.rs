@@ -107,8 +107,8 @@ fn change_user_and_pass() {
     let mut client = common::setup_with_db("change_user_and_pass");
     client.send(1, ".r 1 1 1");
     client.send(2, ".l 1 1");
-    client.send(2, ".us 1.5 1.5");
-    client.send(2, ".pa 1.5 1.5");
+    client.send(2, ".un 1.5 1.5");
+    client.send(2, ".pw 1.5 1.5");
     client.send(3, ".l 1.5 1");
     client.read_all();
     assert_eq!(
@@ -176,19 +176,19 @@ fn update_account_stats() {
 fn chieftain() {
     let mut client = common::setup_with_db_and_logging("chieftain");
     client.send(1, ".l chieftain chieftain");
-    client.send(1, ".ch");
+    client.send(1, ".ct");
     client.read_all();
     assert_eq!(client.last(1), "A LIST OF CHIEFTAINS RESPONSIBLE FOR MANAGEMENT OF THIS THRUSTIN SERVER IS AS FOLLOWS.<br/>chieftain");
 
     client.send(2, ".n 2");
-    client.send(2, ".ch");
+    client.send(2, ".ct");
     client.read_all();
     assert_eq!(
         client.last(2),
         "Yo dawg, this command can only be used by chieftains of THRUSTIN."
     );
 
-    client.send(1, ".ch 2 2");
+    client.send(1, ".ct 2 2");
     client.read_all();
     assert_eq!(
         client.last(1),
@@ -196,21 +196,21 @@ fn chieftain() {
     );
 
     // Can't appoint someone who doesn't exist
-    client.send(1, ".ch 3");
+    client.send(1, ".ct 3");
     client.read_all();
     assert_eq!(client.last(1), "FAILED TO APPOINT CHIEFTAIN: 3");
 
     // Can't appoint someone who isn't in database
-    client.send(1, ".ch 2");
+    client.send(1, ".ct 2");
     client.read_all();
     assert_eq!(client.last(1), "FAILED TO APPOINT CHIEFTAIN: 2");
 
     client.send(3, ".r 3 3 3");
-    client.send(1, ".ch 3");
+    client.send(1, ".ct 3");
     client.read_all();
     assert_eq!(client.last(1), "A NEW CHIEFTAIN HAS BEEN APPOINTED: 3");
 
-    client.send(3, ".ch");
+    client.send(3, ".ct");
     client.read_all();
     assert_eq!(client.last(3), "A LIST OF CHIEFTAINS RESPONSIBLE FOR MANAGEMENT OF THIS THRUSTIN SERVER IS AS FOLLOWS.<br/>3<br/>chieftain");
 
@@ -243,7 +243,7 @@ fn chieftain() {
         "Congratulations, you have unchieftained chieftain."
     );
 
-    client.send(1, ".ch");
+    client.send(1, ".ct");
     client.read_all();
     assert_eq!(
         client.last(1),

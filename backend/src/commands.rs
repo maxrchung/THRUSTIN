@@ -55,8 +55,8 @@ pub fn choose_name_commands(
 ) {
     let com = get_command(&split);
     match &*com {
-        ".name" | ".n" => Player::name(split, pl, lobbies, players),
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
+        ".name" | ".n" => Player::name(split, pl, lobbies, players),
         ".login" | ".l" => pl.borrow_mut().login(split, lobbies),
         ".register" | ".r" => pl.borrow_mut().register(split, lobbies),
         _ => {
@@ -101,11 +101,11 @@ pub fn out_of_lobby_commands(
         ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".who" | ".w" => Player::who(pl, players),
         ".account" | ".a" => pl.borrow().account(),
-        ".username" | ".us" => pl.borrow_mut().username(split),
-        ".password" | ".pa" => pl.borrow_mut().password(split),
+        ".username" | ".un" => pl.borrow_mut().username(split),
+        ".password" | ".pw" => pl.borrow_mut().password(split),
         ".ban" | ".b" => pl.borrow().ban(split),
         ".unban" | ".ub" => pl.borrow().unban(split),
-        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
@@ -136,8 +136,8 @@ fn list_out_commands(pl: &Player) {
     if pl.is_authenticated {
         commands.append(&mut vec![
             (".account", ".a", "Retrieve some statistical information regarding the state of your account."),
-            (".password D1Ff3rentP@$$420 D1Ff3rentP@$$420", ".pa D1Ff3rentP@$$420 D1Ff3rentP@$$420", "Change your account password, maybe to D1Ff3rentP@$$420? lmao, also you gotta confirm it."),
-            (".username NewMeNewUser NewMeNewUser", ".us NewMeNewUser NewMeNewUser", "Change your account username and confirmation applied thereafter."),
+            (".username NewMeNewUser NewMeNewUser", ".un NewMeNewUser NewMeNewUser", "Change your account username and confirmation applied thereafter."),
+            (".password D1Ff3rentP@$$420 D1Ff3rentP@$$420", ".pw D1Ff3rentP@$$420 D1Ff3rentP@$$420", "Change your account password, maybe to D1Ff3rentP@$$420? lmao, also you gotta confirm it."),
         ]);
     }
 
@@ -146,8 +146,8 @@ fn list_out_commands(pl: &Player) {
             (".ban", ".b", "(chieftain-only) View ban list."),
             (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
             (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
-            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains."),
-            (".chieftain An0THerSoul", ".ch An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains."),
+            (".chieftain An0THerSoul", ".ct An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain."),
             (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
@@ -182,7 +182,7 @@ pub fn in_lobby_commands(
         ".chief" | ".c" => lobby.host(split, pl),
         ".house" | ".ho" => lobby.house(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
-        ".password" | ".pa" => lobby.password(split, pl),
+        ".password" | ".pw" => lobby.password(split, pl),
         ".players" | ".pl" => lobby.players(split, pl),
         ".points" | ".po" => lobby.points(split, pl),
         ".start" | ".s" => lobby.start(pl),
@@ -191,7 +191,7 @@ pub fn in_lobby_commands(
         ".account" | ".a" => pl.borrow().account(),
         ".ban" | ".b" => pl.borrow().ban(split),
         ".unban" | ".ub" => pl.borrow().unban(split),
-        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
@@ -220,7 +220,7 @@ fn list_in_commands(pl: &Player, host: bool) {
             (".chief xxXAzn1994", ".c  xxXAzn1994", "(chief-only) Make xxXAzn1994 the chief of the lobby"),
             (".house", ".ho", "(chief-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
             (".kick YOLOSWAGGER69", ".k YOLOSWAGGER69", "(chief-only) Someone causing you trouble? Toxicity got you down? Well if you are a chief you can kick YOLOSWAGGER69 out of your lobby using this command."),
-            (".password passwordspelledbackwards123420", ".pa passwordspelledbackwards123420", "(chief-only) Sometimes you want to protect your lobby's privacy by setting your lobby's password to passwordspelledbackwards123420"),
+            (".password passwordspelledbackwards123420", ".pw passwordspelledbackwards123420", "(chief-only) Sometimes you want to protect your lobby's privacy by setting your lobby's password to passwordspelledbackwards123420"),
             (".players 420", ".pl 420", "(chief-only) Okay, how many players do you want to allow in your lobby? 420?"),
             (".points 1", ".po 1", "(chief-only) Okay, how many points do you want to go to? 1? Don't do 1... cause then the game will end really fast."),
             (".start", ".s", "(chief-only) Yup, naturally as the chief you can start up the game."),
@@ -242,8 +242,8 @@ fn list_in_commands(pl: &Player, host: bool) {
             (".ban", ".b", "(chieftain-only) View ban list."),
             (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
             (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
-            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains. I'm sorry we added the `t`..."),
-            (".chieftain An0THerSoul", ".ch An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain. I'm really sorry we added the `t`..."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains. I'm sorry we added the `t`..."),
+            (".chieftain An0THerSoul", ".ct An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain. I'm really sorry we added the `t`..."),
             (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
@@ -278,7 +278,7 @@ pub fn playing_commands(
         ".account" | ".a" => pl.borrow().account(),
         ".ban" | ".b" => pl.borrow().ban(split),
         ".unban" | ".ub" => pl.borrow().unban(split),
-        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
@@ -335,8 +335,8 @@ fn list_playing_commands(pl: &Player, host: bool) {
             (".ban", ".b", "(chieftain-only) View ban list."),
             (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
             (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
-            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
-            (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ct Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
             (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
@@ -371,7 +371,7 @@ pub fn choosing_commands(
         ".account" | ".a" => pl.borrow().account(),
         ".ban" | ".b" => pl.borrow().ban(split),
         ".unban" | ".ub" => pl.borrow().unban(split),
-        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
@@ -421,7 +421,7 @@ fn list_choosing_commands(pl: &Player, host: bool) {
             (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
             (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
             (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
-            (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".chieftain Another_Soul", ".ct Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
             (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
@@ -456,7 +456,7 @@ pub fn deciding_commands(
         ".account" | ".a" => pl.borrow().account(),
         ".ban" | ".b" => pl.borrow().ban(split),
         ".unban" | ".ub" => pl.borrow().unban(split),
-        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
@@ -500,8 +500,8 @@ fn list_deciding_commands(pl: &Player, host: bool) {
             (".ban", ".b", "(chieftain-only) View ban list."),
             (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
             (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
-            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
-            (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ct Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
             (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
@@ -538,7 +538,7 @@ pub fn waiting_commands(
         ".account" | ".a" => pl.borrow().account(),
         ".ban" | ".b" => pl.borrow().ban(split),
         ".unban" | ".ub" => pl.borrow().unban(split),
-        ".chieftain" | ".ch" => pl.borrow().chieftain(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
         ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
             if com.starts_with(".") {
@@ -586,8 +586,8 @@ fn list_waiting_commands(pl: &Player, host: bool) {
             (".ban", ".b", "(chieftain-only) View ban list."),
             (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
             (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
-            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
-            (".chieftain Another_Soul", ".ch Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ct Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
             (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
