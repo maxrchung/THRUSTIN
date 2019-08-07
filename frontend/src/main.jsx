@@ -80,7 +80,7 @@ class Client extends React.Component {
     }
 
     handleMessage = (e) => {
-        this.setMessage(e.data);
+        this.setJSON(e.data);
     }
 
     handleMessageMax = () => {
@@ -98,8 +98,16 @@ class Client extends React.Component {
         this.dummy.scrollIntoView();
     }
 
-    setMessage = (json) => {
-        let message = JSON.parse(json);
+    setMessage = (message) => {
+        const data = JSON.stringify({
+            from: "THRUSTY",
+            message: message
+        });
+       this.setJSON(data);
+    }
+
+    setJSON = (data) => {
+        const message = JSON.parse(data);
         this.handleMessageMax();
         this.setState({
             messages: this.state.messages.concat(
