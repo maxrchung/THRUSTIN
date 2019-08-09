@@ -1,40 +1,36 @@
 #!/bin/bash
 
+# Remove existing log
+rm /home/THRUSTIN/production/THRUST.log
+
+# Set log location
+exec 1>/home/THRUSTIN/production/THRUST.log 2>&1
+
+# Show commands for clarity
+set -x
+
 # Kill existing server
-echo ____ killall thrustin
 sudo killall thrustin
 
 # Undo any existing changes, possible through webpack bundle hashing
-echo ____ cd /home/THRUSTIN
 cd /home/THRUSTIN
-echo ____ git checkout .
 git checkout .
 
 # Get new updates
-echo ____ git pull
 git pull
     
 # Build frontend files in production
-echo ____ cd /home/THRUSTIN/frontend
 cd /home/THRUSTIN/frontend
 # Install packages if needed
-echo ____ npm install
 npm install
 # Build in production mode
-echo ____ npm run build-prod
 npm run build-prod
 
-# Run server in release
-echo ____ cd /home/THRUSTIN/backend
 cd /home/THRUSTIN/backend
+# Run server in release
 # Build first so we can see progress in console output
-echo ____ cargo build --release
-cargo build --release
-
-# Delete existing nohup
-echo ____ rm nohup.out
-rm nohup.out
+# Need to specify full cargo path for some reason, probably can't set path correctly on reboot
+/root/.cargo/bin/cargo build --release
 
 # Run
-echo ____ nohup cargo run --release &
-nohup cargo run --release &
+nohup /root/.cargo/bin/cargo run --release &
