@@ -52,7 +52,7 @@ export default {
     new CopyPlugin([
       { from: "src/favicon" },
     ]),
-    new SitemapPlugin("https://THRUSTIN.rs", [])
+    new SitemapPlugin("https://THRUSTIN.rs", ["/"])
   ],
   resolve: { extensions: ["*", ".js", ".jsx"] }
 };
