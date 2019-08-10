@@ -8,12 +8,14 @@ class CommandBar extends React.Component {
 
 	render() {
 		const {options} = this.state;
-
 		return (
 			<Typeahead
 				autoFocus={true}
 				id="commandBar"
 				onChange={(selected) => this.setState({selected})}
+				inputProps={{
+					type: this.props.type
+				}}
 				onKeyDown={this.handleKeyDown}
 				options={options}
 				placeholder="Enter command..."

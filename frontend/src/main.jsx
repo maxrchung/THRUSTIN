@@ -14,6 +14,7 @@ class Client extends React.Component {
         super(props);
 
         this.state = {
+            inputType: "text",
             messageCounter: 1,
             messages: [
                 <Message from="THRUSTY" key={0}>
@@ -24,6 +25,27 @@ class Client extends React.Component {
                 </Message>
 			],
         };
+    }
+
+    // (key) number of nputs to trigger: (value) commands
+    passwordCommands = {
+        2: [".m", ".make", ".p", ".password"],
+        3: [".l", ".login", ".r", ".register"]
+    }
+
+    checkPasswordType(value) {
+        const split = value.split(" ");
+        for (let numInputs in this.passwordCommands) {
+            if (split.length >= numInputs) {
+                const command = split[0];
+                for (let passwordCommand of this.passwordCommands[numInputs]) {
+                    if (command === passwordCommand) {
+                        return "password";
+                    }
+                }
+            }
+        }
+        return "text";
     }
 
     componentDidMount() {
@@ -55,6 +77,7 @@ class Client extends React.Component {
         if (document.activeElement !== this.typeahead && !isWhitedModifier) {
             this.typeahead.focus();
         }
+
         const value = this.typeahead.getInput().value;
 		if (e.key == "Enter" && value !== "") {
 			const hintVal = this.getHintVal(); // Autocomplete check
@@ -71,12 +94,18 @@ class Client extends React.Component {
 				else {
 					this.setMessage("BRO CHILLOUT that message is too long my man.");
 				}
-				
 			}
 
 			this.typeahead.clear();
 			this.scrollToDummy();
-		}
+        }
+
+        const inputType = this.checkPasswordType(value);
+        if (this.state.inputType != inputType) {
+            this.setState({
+                inputType
+            });
+        }
     }
 
     handleMessage = (e) => {
@@ -98,14 +127,6 @@ class Client extends React.Component {
         this.dummy.scrollIntoView();
     }
 
-    setMessage = (message) => {
-        const data = JSON.stringify({
-            from: "THRUSTY",
-            message: message
-        });
-       this.setJSON(data);
-    }
-
     setJSON = (data) => {
         const message = JSON.parse(data);
         this.handleMessageMax();
@@ -120,16 +141,30 @@ class Client extends React.Component {
         this.scrollToDummy();
     }
 
+    setMessage = (message) => {
+        const data = JSON.stringify({
+            from: "THRUSTY",
+            message: message
+        });
+       this.setJSON(data);
+    }
+
+    updateMessageCounter = () => {
+        const counter = this.state.messageCounter;
+        this.setState({
+            messageCounter: this.state.messageCounter + 1
+        });
+        return counter;
+    }
+
     renderTop() {
         if (this.state.messageCounter > MAX_MSGS) {
             return <div id="ellipsis" className="py-2">...</div>;
         }
         return (
-            <>
-                <Message from="THRUSTY">
-                    <img src="favicon-96.png"/>
-                </Message>
-            </>
+            <Message from="THRUSTY">
+                <img src="favicon-96.png"/>
+            </Message>
         );
 	}
 
@@ -141,22 +176,14 @@ class Client extends React.Component {
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>
-				<CommandBar ref={commandBar => {
-                    if (commandBar) {
-                        this.typeahead = commandBar.typeahead
-                    }}} />
+                
+                <CommandBar
+                    ref={commandBar => {if (commandBar) this.typeahead = commandBar.typeahead}} 
+                    type={this.state.inputType}
+                />
             </Container>
         );
     }
-
-    updateMessageCounter = () => {
-        const counter = this.state.messageCounter;
-        this.setState({
-            messageCounter: this.state.messageCounter + 1
-        });
-        return counter;
-    }
-
 }
 
 ReactDOM.render(
