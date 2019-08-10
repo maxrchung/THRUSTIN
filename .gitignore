@@ -18,5 +18,9 @@ dist/
 # Ignore the built out files
 frontend/build/
 
+# Ignore stats files
+frontend/stats-dev.json
+frontend/stats-prod.json
+
 # I have a test section for just testing things that I want to ignore lol
 test/*
