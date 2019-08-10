@@ -7,6 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-dev": "webpack --config webpack.dev.babel.js",
     "build-prod": "webpack --config webpack.prod.babel.js",
+    "stats-dev": "webpack --config webpack.dev.babel.js --profile --json > stats-dev.json && webpack-bundle-analyzer stats-dev.json",
+    "stats-prod": "webpack --config webpack.prod.babel.js --profile --json > stats-prod.json && webpack-bundle-analyzer stats-prod.json",
     "start-dev": "webpack-dev-server --config webpack.dev.babel.js --open",
     "watch-dev": "webpack --config webpack.dev.babel.js --watch"
   },
@@ -48,6 +50,7 @@
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "webpack": "^4.29.6",
+    "webpack-bundle-analyzer": "^3.4.1",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.2.1",
     "webpack-merge": "^4.2.1"
