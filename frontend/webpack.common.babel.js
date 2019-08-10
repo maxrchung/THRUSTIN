@@ -3,10 +3,7 @@ import CompressionPlugin from 'compression-webpack-plugin';
 import CopyPlugin from "copy-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
-import OptimizeCSSAssetsPlugin from "optimize-css-assets-webpack-plugin";
 import path from "path";
-import SitemapPlugin from 'sitemap-webpack-plugin';
-import TerserJSPlugin from "terser-webpack-plugin";
 
 export default {
   entry: "./src/main.jsx",
@@ -27,12 +24,6 @@ export default {
       }
     ]
   },
-  optimization: {
-    minimizer: [
-      new TerserJSPlugin({}),
-      new OptimizeCSSAssetsPlugin({})
-    ]
-  },
   output: {
     path: path.resolve(__dirname, "./build/"),
     filename: "[name].[contenthash].js"
@@ -48,11 +39,9 @@ export default {
     new HtmlWebpackPlugin({
       template: "src/index.ejs"
     }),
-    new CompressionPlugin(),
     new CopyPlugin([
       { from: "src/favicon" },
-    ]),
-    new SitemapPlugin("https://THRUSTIN.rs", ["/"])
+    ])
   ],
   resolve: { extensions: ["*", ".js", ".jsx"] }
 };
