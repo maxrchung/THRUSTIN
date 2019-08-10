@@ -5,6 +5,9 @@ import Container from 'react-bootstrap/Container';
 import CommandBar from "./CommandBar";
 import Message from "./Message";
 import MessageText from "./MessageText";
+// Don't really need a super secure hash
+// Using a fast hash just so we don't "accidentally" see passwords in log
+import SHA1 from "crypto-js/sha1";
 
 const MAX_INPUT = 6669;
 const MAX_MSGS = 696;
@@ -24,8 +27,15 @@ class Client extends React.Component {
     }
 
     // Regex if string is password
-    // Capture groups indicate areas that should be hashed
+    // Capture groups separate command from password sections
+    // Only check for account related passwords
     isPasswordRegex = [
+        /^(.p )(\w+) (\w+)$/, // account password, not lobby password
+        /^(.password )(\w+) (\w+)$/,
+        /^(.l \w+ )(\w+)$/,
+        /^(.login \w+ )(\w+)$/,
+        /^(.r \w+ )(\w+) (\w+)$/,
+        /^(.register \w+ )(\w+) (\w+)$/,
     ]
 
     // Regex if you should use type="password"
@@ -39,15 +49,6 @@ class Client extends React.Component {
         /^.r \w+ \w+/,
         /^.register \w+ \w+/,
     ]
-
-    checkPasswordType = (value) => {
-        for (let regex of this.isPasswordTypeRegex) {
-            if (regex.test(value)) {
-                return "password";
-            }
-        }
-        return "text";
-    }
 
     componentDidMount() {
         if (process.env.NODE_ENV === "production") {
@@ -79,7 +80,7 @@ class Client extends React.Component {
             this.typeahead.focus();
         }
 
-        const value = this.typeahead.getInput().value;
+        let value = this.typeahead.getInput().value;
 		if (e.key == "Enter" && value !== "") {
 			const hintVal = this.getHintVal(); // Autocomplete check
 
@@ -88,9 +89,10 @@ class Client extends React.Component {
 			}
 			else {
 				this.handleMessageMax();
-				const command = value;
-				if (command.length <= MAX_INPUT) { 
-					this.connection.send(command);
+				if (value.length <= MAX_INPUT) {
+                    // Hash passwords if detected
+                    value = this.matchPassword(value);
+					this.connection.send(value);
 				}
 				else {
 					this.setMessage("BRO CHILLOUT that message is too long my man.");
@@ -104,7 +106,7 @@ class Client extends React.Component {
 
     // Validation stuff to execute when input has been changed, can't be done in keydown
     handleInputChange = value => {
-        const inputType = this.checkPasswordType(value);
+        const inputType = this.testPasswordType(value);
         if (this.state.inputType != inputType) {
             this.setState({
                 inputType
@@ -125,6 +127,28 @@ class Client extends React.Component {
             });
             this.scrollToDummy();
         }
+    }
+
+    matchPassword = value => {
+        for (let regex of this.isPasswordRegex) {
+            let match = value.match(regex);
+            if (match) {
+                // (.l user )(pass)
+                if (match.length == 3) {
+                    const pass = SHA1(match[2]);
+                    const join = match[1] + pass;
+                    return join;
+                }
+                // (.r user)(pass) (confirmation) 
+                else { //if (match.length == 4)
+                    const pass = SHA1(match[2]);
+                    const confirmation = SHA1(match[3]);
+                    const join = match[1] + pass + " " + confirmation;
+                    return join;
+                }
+            }
+        }
+        return value;
     }
 
     scrollToDummy = () => {
@@ -151,6 +175,15 @@ class Client extends React.Component {
             message: message
         });
        this.setJSON(data);
+    }
+
+    testPasswordType = value => {
+        for (let regex of this.isPasswordTypeRegex) {
+            if (regex.test(value)) {
+                return "password";
+            }
+        }
+        return "text";
     }
 
     updateMessageCounter = () => {
