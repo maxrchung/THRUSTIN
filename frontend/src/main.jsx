@@ -10,39 +10,40 @@ const MAX_INPUT = 6669;
 const MAX_MSGS = 696;
 
 class Client extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            inputType: "text",
-            messageCounter: 1,
-            messages: [
-                <Message from="THRUSTY" key={0}>
-                    <MessageText 
-                        content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously). If you wanta keep up with our development check us out on <a href=&quot;https://github.com/maxrchung/THRUSTIN/&quot;>GitHub.com</a> and <a href=&quot;https://twitter.com/THRUSTIN_rs?iloveducks&quot;>Twitter.com</a>."
-                        from="THRUSTY" 
-                    />
-                </Message>
-			],
-        };
+    state = {
+        inputType: "text",
+        messageCounter: 1,
+        messages: [
+            <Message from="THRUSTY" key={0}>
+                <MessageText 
+                    content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously). If you wanta keep up with our development check us out on <a href=&quot;https://github.com/maxrchung/THRUSTIN/&quot;>GitHub.com</a> and <a href=&quot;https://twitter.com/THRUSTIN_rs?iloveducks&quot;>Twitter.com</a>."
+                    from="THRUSTY" 
+                />
+            </Message>
+        ],
     }
 
-    // (key) number of nputs to trigger: (value) commands
-    passwordCommands = {
-        2: [".m", ".make", ".p", ".password"],
-        3: [".l", ".login", ".r", ".register"]
-    }
+    // Regex if string is password
+    // Capture groups indicate areas that should be hashed
+    isPasswordRegex = [
+    ]
 
-    checkPasswordType(value) {
-        const split = value.split(" ");
-        for (let numInputs in this.passwordCommands) {
-            if (split.length >= numInputs) {
-                const command = split[0];
-                for (let passwordCommand of this.passwordCommands[numInputs]) {
-                    if (command === passwordCommand) {
-                        return "password";
-                    }
-                }
+    // Regex if you should use type="password"
+    isPasswordTypeRegex = [
+        /^.m \w+/,
+        /^.make \w+/,
+        /^.p \w+/,
+        /^.password \w+/,
+        /^.l \w+ \w+/,
+        /^.login \w+ \w+/,
+        /^.r \w+ \w+/,
+        /^.register \w+ \w+/,
+    ]
+
+    checkPasswordType = (value) => {
+        for (let regex of this.isPasswordTypeRegex) {
+            if (regex.test(value)) {
+                return "password";
             }
         }
         return "text";
@@ -64,7 +65,7 @@ class Client extends React.Component {
         document.removeEventListener("keydown", this.handleKeyDown);
     }
     
-    getHintVal() {
+    getHintVal = () => {
 		return document.getElementsByClassName('rbt-input-hint')[0].value;
 	}
 	
@@ -72,7 +73,7 @@ class Client extends React.Component {
         this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
     };
 
-    handleKeyDown = (e) => {
+    handleKeyDown = e => {
         const isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
         if (document.activeElement !== this.typeahead && !isWhitedModifier) {
             this.typeahead.focus();
@@ -99,7 +100,10 @@ class Client extends React.Component {
 			this.typeahead.clear();
 			this.scrollToDummy();
         }
+    }
 
+    // Validation stuff to execute when input has been changed, can't be done in keydown
+    handleInputChange = value => {
         const inputType = this.checkPasswordType(value);
         if (this.state.inputType != inputType) {
             this.setState({
@@ -108,7 +112,7 @@ class Client extends React.Component {
         }
     }
 
-    handleMessage = (e) => {
+    handleMessage = e => {
         this.setJSON(e.data);
     }
 
@@ -127,7 +131,7 @@ class Client extends React.Component {
         this.dummy.scrollIntoView();
     }
 
-    setJSON = (data) => {
+    setJSON = data => {
         const message = JSON.parse(data);
         this.handleMessageMax();
         this.setState({
@@ -141,7 +145,7 @@ class Client extends React.Component {
         this.scrollToDummy();
     }
 
-    setMessage = (message) => {
+    setMessage = message => {
         const data = JSON.stringify({
             from: "THRUSTY",
             message: message
@@ -178,6 +182,7 @@ class Client extends React.Component {
                 </div>
                 
                 <CommandBar
+                    onInputChange={this.handleInputChange}
                     ref={commandBar => {if (commandBar) this.typeahead = commandBar.typeahead}} 
                     type={this.state.inputType}
                 />

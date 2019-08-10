@@ -3,7 +3,7 @@ import { Typeahead } from 'react-bootstrap-typeahead';
 
 class CommandBar extends React.Component {
     state = {
-		options: ["Okay", "Epic"],
+		options: [],
 	};
 
 	render() {
@@ -16,6 +16,7 @@ class CommandBar extends React.Component {
 				inputProps={{
 					type: this.props.type
 				}}
+				onInputChange={this.props.onInputChange}
 				onKeyDown={this.handleKeyDown}
 				options={options}
 				placeholder="Enter command..."
