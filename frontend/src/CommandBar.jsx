@@ -1,5 +1,5 @@
 import React from 'react';
-import {Typeahead} from 'react-bootstrap-typeahead';
+import { Typeahead } from 'react-bootstrap-typeahead';
 
 class CommandBar extends React.Component {
     state = {
@@ -10,17 +10,15 @@ class CommandBar extends React.Component {
 		const {options} = this.state;
 
 		return (
-			<React.Fragment>
-				<Typeahead
-					id="commandBar"
-					autoFocus={true}
-					ref={(input) => {this.wrappedTypeahead = input}}
-					options={options}
-					onChange={(selected) => this.setState({selected})}
-					onKeyDown={this.handleKeyDown}
-					placeholder="Enter command..."
-				/>
-			</React.Fragment>
+			<Typeahead
+				autoFocus={true}
+				id="commandBar"
+				onChange={(selected) => this.setState({selected})}
+				onKeyDown={this.handleKeyDown}
+				options={options}
+				placeholder="Enter command..."
+				ref={typeahead => this.typeahead = typeahead}
+			/>
 		);
 	}
 }

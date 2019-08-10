@@ -51,12 +51,12 @@ class Client extends React.Component {
     };
 
     handleKeyDown = (e) => {
-        var isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
-
+        const isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
         if (document.activeElement !== this.typeahead && !isWhitedModifier) {
             this.typeahead.focus();
         }
-		if (e.key == "Enter" && this.inputBar.value !== "") {
+        const value = this.typeahead.getInput().value;
+		if (e.key == "Enter" && value !== "") {
 			const hintVal = this.getHintVal(); // Autocomplete check
 
 			if (hintVal) {
@@ -64,7 +64,7 @@ class Client extends React.Component {
 			}
 			else {
 				this.handleMessageMax();
-				const command = this.inputBar.value;
+				const command = value;
 				if (command.length <= MAX_INPUT) { 
 					this.connection.send(command);
 				}
@@ -141,14 +141,10 @@ class Client extends React.Component {
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>
-				<CommandBar 
-					ref={(comBar) => {
-						if(comBar) {
-							this.typeahead = comBar.wrappedTypeahead;
-							this.inputBar = comBar.wrappedTypeahead.getInput();
-						}
-					}}
-				/>
+				<CommandBar ref={commandBar => {
+                    if (commandBar) {
+                        this.typeahead = commandBar.typeahead
+                    }}} />
             </Container>
         );
     }
