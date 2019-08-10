@@ -9,14 +9,18 @@ export default merge(common, {
     mode: "production",
     optimization: {
         minimizer: [
-          new TerserJSPlugin({}),
-          new OptimizeCSSAssetsPlugin({})
-        ]
+            new TerserJSPlugin({
+                cache: true,
+                parallel: true,
+            }),
+            new OptimizeCSSAssetsPlugin()
+        ],
     },
     plugins: [
         new CompressionPlugin({
+            cache: true,
             // Try and compress all files, probably better for NGINX serving this
-            minRatio: 1 
+            minRatio: 1
         }),
         new SitemapPlugin("https://THRUSTIN.rs", ["/"])
     ],
