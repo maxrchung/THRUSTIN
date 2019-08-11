@@ -14,7 +14,7 @@ export default merge(common, {
                 parallel: true,
             }),
             new OptimizeCSSAssetsPlugin()
-        ],
+        ]
     },
     plugins: [
         new CompressionPlugin({

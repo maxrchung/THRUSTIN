@@ -1,23 +1,13 @@
-import SanitizedHTML from "react-sanitized-html";
-import React from 'react';
+import DOMPurify from "dompurify";
+import React from "react";
 
-function Message(props) {
+function MessageText(props) {
     return (
         <>
             <strong>{props.from}</strong> {(new Date).toLocaleTimeString()} <br/>
-            <SanitizedHTML
-                allowedTags={["br","u","table","tr","th","td","a","img"]} 
-                allowedAttributes={
-                    { 
-                        "table": ["class"],
-                        "a": ["href"],
-                        "img": ["src"]
-                    }}
-                className="text-break"
-                html={props.content} 
-            />
+            <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(props.content)}} />
         </>
     );
 }
 
-export default Message;
+export default MessageText;
