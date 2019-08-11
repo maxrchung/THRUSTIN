@@ -1,7 +1,7 @@
 import "./main.scss";
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Container from 'react-bootstrap/Container';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Container } from "reactstrap";
 import CommandBar from "./CommandBar";
 import Message from "./Message";
 import MessageText from "./MessageText";
@@ -30,24 +30,24 @@ class Client extends React.Component {
     // Capture groups separate command from password sections
     // Only check for account related passwords
     isPasswordRegex = [
-        /^(.p )(\w+) (\w+)$/, // account password, not lobby password
-        /^(.password )(\w+) (\w+)$/,
-        /^(.l \w+ )(\w+)$/,
-        /^(.login \w+ )(\w+)$/,
-        /^(.r \w+ )(\w+) (\w+)$/,
-        /^(.register \w+ )(\w+) (\w+)$/,
+        /^(\.p )(\w+) (\w+)$/, // account password, not lobby password
+        /^(\.password )(\w+) (\w+)$/,
+        /^(\.l \w+ )(\w+)$/,
+        /^(\.login \w+ )(\w+)$/,
+        /^(\.r \w+ )(\w+) (\w+)$/,
+        /^(\.register \w+ )(\w+) (\w+)$/,
     ]
 
     // Regex if you should use type="password"
     isPasswordTypeRegex = [
-        /^.m \w+/,
-        /^.make \w+/,
-        /^.p \w+/,
-        /^.password \w+/,
-        /^.l \w+ \w+/,
-        /^.login \w+ \w+/,
-        /^.r \w+ \w+/,
-        /^.register \w+ \w+/,
+        /^\.m \w+/,
+        /^\.make \w+/,
+        /^\.p \w+/,
+        /^\.password \w+/,
+        /^\.l \w+ \w+/,
+        /^\.login \w+ \w+/,
+        /^\.r \w+ \w+/,
+        /^\.register \w+ \w+/,
     ]
 
     componentDidMount() {
@@ -207,7 +207,7 @@ class Client extends React.Component {
 
     render() {
         return (
-            <Container fluid={true}>
+            <Container fluid>
                 <div id="messages">
                     {this.renderTop()}
                     {this.state.messages}
