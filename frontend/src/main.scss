@@ -4,10 +4,10 @@ $primary: #B7410E;
 $secondary: #000;
 // Boostrap material design's primary color seen on links
 $tertiary: #009688;
-$font-family-base: 'Cousine', monospace;
+$font-family-base: "Cousine", monospace;
 $body-bg: $secondary;
 $body-color: $primary;
-$border-opacity: 0.4;
+$border-opacity: 0.5;
 // bootstrap-material-design imports
 @import "../node_modules/bootstrap-material-design/scss/variables";
 @import "../node_modules/bootstrap-material-design/scss/mixins";
