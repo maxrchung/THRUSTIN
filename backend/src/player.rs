@@ -173,7 +173,7 @@ impl Player {
         let name = {
             let pl = pl.borrow();
             if split.len() != 2 {
-                pl.send_message("You need to provide the correct arguments to the name command. Please, try again. By the way spaces are probably not allowed in game I think.");
+                pl.send_message("You need to provide the correct arguments to the name command. Please, try again.");
                 return;
             }
             split[1].to_string()
