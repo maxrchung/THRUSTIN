@@ -1,5 +1,5 @@
-import React from 'react';
-import { Typeahead } from 'react-bootstrap-typeahead';
+import React from "react";
+import { Typeahead } from "react-bootstrap-typeahead";
 
 class CommandBar extends React.Component {
     state = {
