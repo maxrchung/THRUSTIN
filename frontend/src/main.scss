@@ -8,6 +8,8 @@ $font-family-base: "Cousine", monospace;
 $body-bg: $secondary;
 $body-color: $primary;
 $border-opacity: 0.5;
+// Lower font-size so it's better for mobile
+$font-size-base: 0.9rem;
 // bootstrap-material-design imports
 @import "../node_modules/bootstrap-material-design/scss/variables";
 @import "../node_modules/bootstrap-material-design/scss/mixins";
