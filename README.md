@@ -49,7 +49,7 @@ We're gonna start using the database for some nice things. Once you register an 
 
 ## Technological Stack
 
-What technologies are we using? HTML, CSS, SASS, JavaScript, Bootstrap, React, webpack, web sockets, Rust, MongoDB, NGINX, Let's Encrypt, Git, TortoiseGit, SourceTree, GitHub, VSCode, emacs, Trello, **_brain_**
+Some technologies we using? HTML, CSS, SASS, JavaScript, Bootstrap, React, webpack, web sockets, Rust, MongoDB, NGINX, Let's Encrypt, Git, TortoiseGit, SourceTree, GitHub, VSCode, emacs, Trello, brain
 
 # Phases
 Now let us dive into all the commands you can use. We shall divide each section up by the respective phase they can be used in then go from there. I don't know how much detail I'm going to put into explaining each command's usage. This might be pretty long so I'm not sure. I'm not sure man.
