@@ -751,6 +751,17 @@ impl Deck {
         thrusts
     }
 
+    pub fn limit(&mut self, limit: usize) {
+        let half = limit / 2;
+        if self.thrustees.len() > half {
+            self.thrustees.resize(half, String::new());
+        }
+        
+        if self.thrusters.len() > half {
+            self.thrustees.resize(half, String::new());
+        }
+    }
+
     pub fn new() -> Deck {
         Deck {
             thrusters: Vec::new(),

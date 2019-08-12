@@ -180,7 +180,7 @@ pub fn in_lobby_commands(
         ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".who" | ".w" => lobby.who(pl),
         ".chief" | ".c" => lobby.host(split, pl),
-        ".house" | ".ho" => lobby.house(pl),
+        ".house" | ".ho" => lobby.house(split, pl),
         ".kick" | ".k" => lobby.kick(split, pl),
         ".password" | ".pw" => lobby.password(split, pl),
         ".players" | ".pl" => lobby.players(split, pl),
@@ -218,7 +218,7 @@ fn list_in_commands(pl: &Player, host: bool) {
     if host {
         commands.append(&mut vec![
             (".chief xxXAzn1994", ".c  xxXAzn1994", "(chief-only) Make xxXAzn1994 the chief of the lobby"),
-            (".house", ".ho", "(chief-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
+            (".house", ".ho 69", "(chief-only) Hey, change the number of house cards you're using to 69, split in half for THRUSTEES and THRUSTERS. Do 0 for zero house THRUSTS. Default value, it's 420."),
             (".kick YOLOSWAGGER69", ".k YOLOSWAGGER69", "(chief-only) Someone causing you trouble? Toxicity got you down? Well if you are a chief you can kick YOLOSWAGGER69 out of your lobby using this command."),
             (".password passwordspelledbackwards123420", ".pw passwordspelledbackwards123420", "(chief-only) Sometimes you want to protect your lobby's privacy by setting your lobby's password to passwordspelledbackwards123420"),
             (".players 420", ".pl 420", "(chief-only) Okay, how many players do you want to allow in your lobby? 420?"),

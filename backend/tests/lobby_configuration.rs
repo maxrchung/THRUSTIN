@@ -12,7 +12,7 @@ fn only_chief_commands() {
 
     let only_chief = vec![
         ".c 2",
-        ".ho",
+        ".ho 69",
         ".k 1",
         ".pw yoloswag",
         ".po 420",
@@ -47,7 +47,7 @@ fn fail_thrustee_validation() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".m");
-    client.send(1, ".ho");
+    client.send(1, ".ho 0");
     client.send(1, ".s");
     client.read_all();
     assert_eq!(client.last(1), "Dude, I can't start the game for you because yall don't got enough THRUSTEES. Here's a lil bit of mathematics:<br/>Total THRUSTEES HAS to BE GREATER THAN 0");
@@ -58,7 +58,7 @@ fn fail_thruster_validation() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.send(1, ".m");
-    client.send(1, ".ho");
+    client.send(1, ".ho 0");
     client.send(1, ".t \"Now this is _____\"");
     client.send(
         1,
@@ -161,7 +161,7 @@ fn default_lobby_configuration() {
     client.send(1, ".m");
     client.send(1, ".i");
     client.read_all();
-    assert_eq!(client.last(1), "\\\\Lobby info//<br/>Name: 1<br/>***(Only chief [that\'s you!] may see this!) Password: <br/>Chief: 1<br/>Players: 1/10<br/>Max points? 7<br/>Use house THRUSTS? true<br/>THRUSTEES? 3<br/>THRUSTERS? 5");
+    assert_eq!(client.last(1), "\\\\Lobby info//<br/>Name: 1<br/>***(Only chief [that\'s you!] may see this!) Password: <br/>Chief: 1<br/>Players: 1/10<br/>Max points? 7<br/>House THRUSTS? 420<br/>THRUSTEES? 3<br/>THRUSTERS? 5");
 }
 
 #[test]

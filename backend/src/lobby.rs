@@ -21,6 +21,8 @@ pub struct Lobby {
     hand_size: u8,
     //host of lobby
     host: Rc<RefCell<Player>>,
+    // How many house THRUSTS are being used
+    house: usize,
     //list of players
     list: Vec<Rc<RefCell<Player>>>,
     //lobby id
@@ -34,7 +36,6 @@ pub struct Lobby {
     pw: String,
     //lobby state
     state: LobbyState,
-    use_house: bool,
 }
 
 impl Lobby {
@@ -196,19 +197,20 @@ impl Lobby {
         pass: &str,
         max_players: usize,
         max_points: u8,
+        house: usize,
     ) -> Lobby {
         Lobby {
-            pw: String::from(pass),
+            hand_size: 5,
+            id,
+            max_points,
+            game: LobbyGame::new(),
+            host: player.clone(),
+            house,
             list: Vec::new(),
             max_players,
-            id,
-            state: LobbyState::Waiting,
-            hand_size: 5,
-            max_points,
-            host: player.clone(),
             max_thrustee_choices: 3,
-            use_house: true,
-            game: LobbyGame::new(),
+            pw: String::from(pass),
+            state: LobbyState::Waiting,
         }
     }
 
@@ -515,18 +517,25 @@ impl Lobby {
         pl.send_message("Player not in lobby.");
     }
 
-    pub fn house(&mut self, pl: Rc<RefCell<Player>>) {
+    pub fn house(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
         let pl = pl.borrow();
         if !self.is_host(pl.token) {
-            pl.send_message(&format!("Only chief can decide whether or not toggle the house (default provided) THRUSTS for THRUSTING!"));
+            pl.send_message(&format!("Only chief can decide whether or not to use the house (default provided) THRUSTS for THRUSTING!"));
             return;
         }
 
-        self.use_house = !self.use_house;
-        if self.use_house {
-            pl.send_message(&"Now using house cards!");
-        } else {
-            pl.send_message(&"No longer using house cards!...");
+        if input.len() != 2 {
+            pl.send_message("Hello, you need to provide a value to the ~.house~ command.");
+            return;
+        }
+
+        match input[1].to_string().parse::<usize>() {
+            Ok(house) => {
+                self.house = house;
+                pl.send_message(&format!("House THRUSTS usage set to: {}", self.house));
+            }
+
+            _ => pl.send_message(&"Failed house command... only positive numbers dude!!!"),
         }
     }
 
@@ -544,7 +553,7 @@ impl Lobby {
         info.push(format!("Chief: {}", self.host.borrow().name));
         info.push(format!("Players: {}/{}", self.list.len(), self.max_players));
         info.push(format!("Max points? {}", self.max_points));
-        info.push(format!("Use house THRUSTS? {}", self.use_house));
+        info.push(format!("House THRUSTS? {}", self.house));
         info.push(format!("THRUSTEES? {}", self.max_thrustee_choices));
         info.push(format!("THRUSTERS? {}", self.hand_size));
         pl.send_messages(&info);
@@ -718,7 +727,7 @@ impl Lobby {
 
         let pass = if input.len() > 1 { input[1] } else { "" };
 
-        let mut lobby = Lobby::new(&pl_rc, *lobby_id, pass, 10, 7);
+        let mut lobby = Lobby::new(&pl_rc, *lobby_id, pass, 10, 7, 420);
         pl.lobby = lobby_id.clone();
         pl.state = PlayerState::InLobby;
         lobby.list.push(pl_rc.clone());
@@ -733,7 +742,7 @@ impl Lobby {
         lobby_id: &mut i32,
         lobbies: &mut HashMap<i32, Lobby>,
     ) {
-        let mut new_lobby = Lobby::new(&pl_rc, 0, "", usize::MAX, u8::MAX);
+        let mut new_lobby = Lobby::new(&pl_rc, 0, "", usize::MAX, u8::MAX, usize::MAX);
         new_lobby.start_endless();
 
         lobbies.insert(lobby_id.clone(), new_lobby.clone());
@@ -996,8 +1005,11 @@ impl Lobby {
         self.game = LobbyGame::new();
         self.game.deck.clear();
         // Add in house cards to lobby deck if bool is true
-        if self.use_house {
-            let default_deck = Deck::default();
+        if self.house > 0 {
+            let mut default_deck = Deck::default();
+            default_deck.shuffle_deck();
+            // Truncate to house limit
+            default_deck.limit(self.house);
             self.game.deck = default_deck;
         }
 
