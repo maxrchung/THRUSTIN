@@ -707,6 +707,7 @@ impl Default for Deck {
             "_____ or _____.",
             "I got a thousand upvotes for _____.",
             "You can either die or _____. wait wtf? just fucking kill me right this moment holy shit I’m never gonna do that",
+            "_____________________________________________________________________",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
