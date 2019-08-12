@@ -115,7 +115,7 @@ If logged in, changes your password to Y0L0Ep1C420420420, so you know, if you're
 (Chieftain-only) Unbans the given IP address from the THRUSTIN server.
 
 ##### `.c(hief)t(ain) (NewAdministratorHere)`
-(Chieftain-only) By itself, `.chieftain` shall show a list of all chieftains in the server. With an argument, you will attempt to appoint the targetted Name as a Chieftain. Note that we use `.ch` because `.c` is for `.chief` and damn I'm no so sure if I want to make these too closely related anymore, but whatever.
+(Chieftain-only) By itself, `.chieftain` shall show a list of all chieftains in the server. With an argument, you will attempt to appoint the targetted Name as a Chieftain. Note that we use `.ct` because `.c` is for `.chief` and damn I'm no so sure if I want to make these too closely related anymore, but whatever.
 
 ##### `.u(n)c(hieftain) NewAdministratorNoLonger`
 (Chieftain-only) Removes the selected Chieftain as a chieftain.
