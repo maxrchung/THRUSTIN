@@ -144,8 +144,8 @@ Shows everyone in this lobby.
 ##### `.c(hief) TheOtherSwagger`
 (Chief-Only) Set TheOtherSwagger as the chief.
 
-##### `.ho(use)`
-(Chief-Only) Toggle whether to use the house cards.
+##### `.ho(use) 69`
+(Chief-Only) Set how many house THRUSTS to use. We divide the number in half to split for THRUSTEES and THRUSTERS. Do `.ho 0` for zero house THRUSTS.
 
 ##### `.k(ick) HeyMan`
 (Chief-Only) Kick HeyMan from the lobby.
