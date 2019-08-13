@@ -358,7 +358,7 @@ impl Player {
     pub fn send_message_from(&self, from: &str, message: &str) {
         self.comm
             .borrow()
-            .send_message_from(&self.token, from, message);
+            .send_message_from(&self.token, from, &self.bg, &self.fg, message);
     }
 
     pub fn send_message_out_of_lobby(

@@ -19,7 +19,7 @@ pub trait Communication {
     // Send message as THRUSTY
     fn send_message(&self, token: &u32, message: &str);
     // Send message from a user
-    fn send_message_from(&self, token: &u32, from: &str, message: &str);
+    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str);
     fn send_messages(&self, token: &u32, messages: &Vec<String>);
     fn disconnect(&mut self, token: &u32);
 
@@ -102,6 +102,36 @@ impl ChannelCommunication {
         msg
     }
 
+    pub fn last_bg(&self, token: u32) -> String {
+        let msg = self
+            .messages
+            .get(&token)
+            .expect("Token does not exist for last")
+            .last()
+            .expect("Messages does not have last element");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
+        let bg = json["bg"]
+            .as_str()
+            .expect("Message is not string")
+            .to_string();
+        bg
+    }
+
+    pub fn last_fg(&self, token: u32) -> String {
+        let msg = self
+            .messages
+            .get(&token)
+            .expect("Token does not exist for last")
+            .last()
+            .expect("Messages does not have last element");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
+        let fg = json["fg"]
+            .as_str()
+            .expect("Message is not string")
+            .to_string();
+        fg
+    }
+
     pub fn last_from(&self, token: u32) -> String {
         let msg = self
             .messages
@@ -154,6 +184,8 @@ impl Communication for ChannelCommunication {
 
     fn send_message(&self, token: &u32, message: &str) {
         let msg = json!({
+            "bg": "000",
+            "fg": "b7410e",
             "from": "THRUSTY",
             "message": message,
         })
@@ -165,8 +197,10 @@ impl Communication for ChannelCommunication {
             .expect("Failed to send message.");
     }
 
-    fn send_message_from(&self, token: &u32, from: &str, message: &str) {
+    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str) {
         let msg = json!({
+            "bg": bg,
+            "fg": fg,
             "from": from,
             "message": message,
         })
@@ -353,6 +387,8 @@ impl Communication for WebSocketCommunication {
     // Send message to client with the corresponding token
     fn send_message(&self, token: &u32, message: &str) {
         let msg = json!({
+            "bg": "000",
+            "fg": "b7410e",
             "from": "THRUSTY",
             "message": message,
         })
@@ -367,8 +403,10 @@ impl Communication for WebSocketCommunication {
     }
 
     // Send message with from
-    fn send_message_from(&self, token: &u32, from: &str, message: &str) {
+    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str) {
         let msg = json!({
+            "bg": bg,
+            "fg": fg,
             "from": from,
             "message": message,
         })
