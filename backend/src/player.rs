@@ -110,7 +110,10 @@ impl Player {
         }
 
         if split.len() == 1 {
-            self.send_message(&format!("Yo here's your current: background color (#{}) and foreground color (#{}).", self.bg, self.fg));
+            self.send_message(&format!(
+                "Yo here's your current: background color (#{}) and foreground color (#{}).",
+                self.bg, self.fg
+            ));
         } else {
             // Ok I reversed it
             let bg = split[1];
@@ -130,7 +133,10 @@ impl Player {
             self.fg = String::from(fg);
 
             if !self.is_authenticated || self.db.borrow().color(&self.name, bg, fg) {
-                self.send_message(&format!("Awesome, we successfully set your chat colors to {} (bg) and {} (fg).", bg, fg));
+                self.send_message(&format!(
+                    "Awesome, we successfully set your chat colors to {} (bg) and {} (fg).",
+                    bg, fg
+                ));
             } else {
                 self.send_message("Failed to set your colors. Something wrong clearly happened.");
             }
