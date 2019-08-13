@@ -333,3 +333,47 @@ fn ban() {
         .last(1)
         .contains("You cannot exist. You are banned until "));
 }
+
+#[test]
+fn color() {
+    let mut client = common::setup_with_db("color");
+    client.send(1, ".n 1");
+    client.send(1, ".co");
+    client.read_all();
+    assert_eq!(client.last(1), "Yo here's your current: background color (#000) and foreground color (#b7410e).");
+
+    client.send(1, ".co 000");
+    client.read_all();
+    assert_eq!(client.last(1), "Invalid parameters to color.");
+
+    client.send(1, ".co 000 111 222");
+    client.read_all();
+    assert_eq!(client.last(1), "Invalid parameters to color.");
+
+    client.send(1, ".co 000 000");
+    client.read_all();
+    assert_eq!(client.last(1), "Excuse me, you can't assign your colors to the same one, that makes it too hard to see.");
+
+    client.send(1, ".co 000 b7410e");
+    client.read_all();
+    assert_eq!(client.last(1), "Um, I'm gonna disallow you from choosing this color combination. It's mine, and I feel my identity being threatened if you choose this.");
+
+    client.send(1, ".co 000 111");
+    client.read_all();
+    assert_eq!(client.last(1), "Awesome, we successfully set your chat colors to 000 (bg) and 111 (fg).");
+
+    client.send(2, ".r 2 2 2");
+    client.send(2, ".co");
+    client.read_all();
+    assert_eq!(client.last(2), "Yo here's your current: background color (#000) and foreground color (#b7410e).");
+
+    client.send(2, ".co 000 111");
+    client.read_all();
+    assert_eq!(client.last(2), "Awesome, we successfully set your chat colors to 000 (bg) and 111 (fg).");
+
+    client.send(3, ".l 2 2");
+    client.send(3, ".co");
+    client.read_all();
+    assert_eq!(client.last(3), "Yo here's your current: background color (#000) and foreground color (#111).");
+
+}

@@ -22,6 +22,8 @@ pub enum PlayerState {
 pub struct Player {
     comm: Rc<RefCell<dyn Communication>>,
     db: Rc<RefCell<Database>>,
+    pub bg: String,
+    pub fg: String,
     pub game: PlayerGame,
     // Whether or not user is logged in through DB
     pub is_authenticated: bool,
@@ -101,6 +103,40 @@ impl Player {
         }
     }
 
+    pub fn color(&mut self, split: Vec<&str>) {
+        if split.len() != 1 && split.len() != 3 {
+            self.send_message("Invalid parameters to color.");
+            return;
+        }
+
+        if split.len() == 1 {
+            self.send_message(&format!("Yo here's your current: background color (#{}) and foreground color (#{}).", self.bg, self.fg));
+        } else {
+            // Ok I reversed it
+            let bg = split[1];
+            let fg = split[2];
+
+            if bg == fg {
+                self.send_message("Excuse me, you can't assign your colors to the same one, that makes it too hard to see.");
+                return;
+            }
+
+            if bg == "000" && fg == "b7410e" {
+                self.send_message("Um, I'm gonna disallow you from choosing this color combination. It's mine, and I feel my identity being threatened if you choose this.");
+                return;
+            }
+
+            self.bg = String::from(bg);
+            self.fg = String::from(fg);
+
+            if !self.is_authenticated || self.db.borrow().color(&self.name, bg, fg) {
+                self.send_message(&format!("Awesome, we successfully set your chat colors to {} (bg) and {} (fg).", bg, fg));
+            } else {
+                self.send_message("Failed to set your colors. Something wrong clearly happened.");
+            }
+        }
+    }
+
     pub fn disconnect(&self) {
         self.comm.borrow_mut().disconnect(&self.token);
     }
@@ -134,6 +170,14 @@ impl Player {
             // You get hacked u lose lmao
             // You login in from another device you chillin
             Some(doc) => {
+                if let Ok(bg) = doc.get_str("bg") {
+                    self.bg = String::from(bg);
+                }
+
+                if let Ok(fg) = doc.get_str("fg") {
+                    self.fg = String::from(fg);
+                }
+
                 if let Ok(thrustees) = doc.get_array("thrustees") {
                     self.personal_deck.thrustees =
                         Database::bson_array_to_strings(thrustees.to_vec());
@@ -218,8 +262,10 @@ impl Player {
         db: Rc<RefCell<Database>>,
     ) -> Player {
         Player {
+            bg: String::from("000"),
             comm,
             db,
+            fg: String::from("b7410e"),
             game: PlayerGame::new(),
             is_authenticated: false,
             lobby: -1,
@@ -235,8 +281,10 @@ impl Player {
         db: Rc<RefCell<Database>>,
     ) -> Player {
         Player {
+            bg: String::from("b7410e"),
             comm,
             db,
+            fg: String::from("000"),
             game: PlayerGame::new(),
             is_authenticated: false,
             lobby: 0,

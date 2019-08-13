@@ -101,6 +101,7 @@ pub fn out_of_lobby_commands(
         ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".who" | ".w" => Player::who(pl, players),
         ".account" | ".a" => pl.borrow().account(),
+        ".color" | ".co" => pl.borrow_mut().color(split),
         ".username" | ".un" => pl.borrow_mut().username(split),
         ".password" | ".pw" => pl.borrow_mut().password(split),
         ".ban" | ".b" => pl.borrow().ban(split),
@@ -120,6 +121,8 @@ pub fn out_of_lobby_commands(
 
 fn list_out_commands(pl: &Player) {
     let mut commands = vec![
+        (".color", ".co", "Chat colors you have configured for yourself in hexadecimal."),
+        (".color ffd1dc ff5b82", ".co ffd1dc ff5b82", "You assign background and foreground chat colors for yourself in hexidecimal. They must be different. They cannot be THRUSTY's colors."),
         (".help", ".h", "this is it chief"),
         (".join 1", ".j 1", "Join the lobby with ID 1."),
         (".list", ".l", "Lists info for lobbies that are available"),

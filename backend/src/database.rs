@@ -271,6 +271,22 @@ impl Database {
         messages
     }
 
+    pub fn color(&self, name: &str, bg: &str, fg: &str) -> bool {
+        let filter = doc! {
+            "name": name
+        };
+        let update = doc! {
+            "$set": {
+                "bg": bg,
+                "fg": fg,
+            }
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
     pub fn does_name_exist(&self, name: &str) -> bool {
         let doc = doc! {
             "name": name
@@ -432,6 +448,8 @@ impl Database {
         }
         let hash = self.hash_password(pass);
         let doc = doc! {
+            "bg": "000",
+            "fg": "b7410e",
             "user": user,
             "pass": &hash,
             "name": user,
