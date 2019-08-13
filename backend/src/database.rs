@@ -448,8 +448,8 @@ impl Database {
         }
         let hash = self.hash_password(pass);
         let doc = doc! {
-            "bg": "000",
-            "fg": "b7410e",
+            "bg": "b7410e",
+            "fg": "000",
             "user": user,
             "pass": &hash,
             "name": user,

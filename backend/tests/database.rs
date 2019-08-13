@@ -340,7 +340,7 @@ fn color() {
     client.send(1, ".n 1");
     client.send(1, ".co");
     client.read_all();
-    assert_eq!(client.last(1), "Yo here's your current: background color (#000) and foreground color (#b7410e).");
+    assert_eq!(client.last(1), "Yo here's your current: background color (#b7410e) and foreground color (#000).");
 
     client.send(1, ".co 000");
     client.read_all();
@@ -365,7 +365,7 @@ fn color() {
     client.send(2, ".r 2 2 2");
     client.send(2, ".co");
     client.read_all();
-    assert_eq!(client.last(2), "Yo here's your current: background color (#000) and foreground color (#b7410e).");
+    assert_eq!(client.last(2), "Yo here's your current: background color (#b7410e) and foreground color (#000).");
 
     client.send(2, ".co 000 111");
     client.read_all();

@@ -262,10 +262,10 @@ impl Player {
         db: Rc<RefCell<Database>>,
     ) -> Player {
         Player {
-            bg: String::from("000"),
+            bg: String::from("b7410e"),
             comm,
             db,
-            fg: String::from("b7410e"),
+            fg: String::from("000"),
             game: PlayerGame::new(),
             is_authenticated: false,
             lobby: -1,
@@ -281,10 +281,10 @@ impl Player {
         db: Rc<RefCell<Database>>,
     ) -> Player {
         Player {
-            bg: String::from("b7410e"),
+            bg: String::from("000"),
             comm,
             db,
-            fg: String::from("000"),
+            fg: String::from("b7410e"),
             game: PlayerGame::new(),
             is_authenticated: false,
             lobby: 0,

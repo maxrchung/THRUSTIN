@@ -28,8 +28,8 @@ fn last() {
     client.read_all();
     assert_eq!(client.last(1), "omegalul");
     assert_eq!(client.last_from(1), "1");
-    assert_eq!(client.last_bg(1), "000");
-    assert_eq!(client.last_fg(1), "b7410e");
+    assert_eq!(client.last_bg(1), "b7410e");
+    assert_eq!(client.last_fg(1), "000");
 }
 
 #[test]
