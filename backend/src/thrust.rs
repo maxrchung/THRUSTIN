@@ -484,7 +484,11 @@ impl Default for Deck {
             "GunZ 2: The Second Duel",
             "make sure to like, comment, and subscribe",
             "?",
-            "!"
+            "!",
+            "shit my brains out",
+            "NSFW",
+            "mommy",
+            "daddy",
         ];
 
         let thrustees = vec![
@@ -708,6 +712,8 @@ impl Default for Deck {
             "I got a thousand upvotes for _____.",
             "You can either die or _____. wait wtf? just fucking kill me right this moment holy shit I’m never gonna do that",
             "_____________________________________________________________________",
+            "I was gonna let out a small fart, but then I _____.",
+            "<br/>[[[WARNING]]]<br/>DO NOT MIX _____ and _____ TOGETHER. THIS ACIDIC COMBINATION IS HIGHLY CORROSIVE AND WILL INSTANTLY MELT YOUR BONES IF BREATHED IN. ADDITIONALLY, YOUR BRAIN WILL SPONTANEOUSLY CUMBUST. YOU WILL DIE.<br/>[[[WARNING]]]"
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
