@@ -489,6 +489,11 @@ impl Default for Deck {
             "NSFW",
             "mommy",
             "daddy",
+            "<h1>hey what’s up</h1>",
+            "<h1>yep</h1>",
+            "damn, that last THRUST was something else",
+            "doot doot 🎺💀",
+            "self asphyxiation",
         ];
 
         let thrustees = vec![
@@ -713,7 +718,10 @@ impl Default for Deck {
             "You can either die or _____. wait wtf? just fucking kill me right this moment holy shit I’m never gonna do that",
             "_____________________________________________________________________",
             "I was gonna let out a small fart, but then I _____.",
-            "<br/>[[[WARNING]]]<br/>DO NOT MIX _____ and _____ TOGETHER. THIS ACIDIC COMBINATION IS HIGHLY CORROSIVE AND WILL INSTANTLY MELT YOUR BONES IF BREATHED IN. ADDITIONALLY, YOUR BRAIN WILL SPONTANEOUSLY CUMBUST. YOU WILL DIE.<br/>[[[WARNING]]]"
+            "<br/>[[[WARNING]]]<br/>DO NOT MIX _____ and _____ TOGETHER. THIS ACIDIC COMBINATION IS HIGHLY CORROSIVE AND WILL INSTANTLY MELT YOUR BONES IF BREATHED IN. ADDITIONALLY, YOUR BRAIN WILL SPONTANEOUSLY CUMBUST. YOU WILL DIE.<br/>[[[WARNING]]]",
+            "I literally have _____ at gunpoint. I am pointing a gun to her head right now, and if you don’t share this message with at least 10 people in 10 hours, I am going to blow her noggins out.  💀💀 #FFDEAD in the chat bois",
+            "🎺💀<br/>you have been visited by trumpet skelton of the abyss<br/>good bones and calcium will come to you but only if you comment _____",
+            "🚨FBI! OPEN UP! PUT YOUR HANDS IN THE AIR! PUT YOUR HANDS BEHIND YOUR HEAD AND GET DOWN ON THE GROUND! YOU ARE UNDER ARREST FOR _____! YOU HAVE THE RIGHT TO REMAIN SILENT! ANYTHING YOU SAY CAN AND WILL BE USED AGAINST YOU IN THE COURT OF LAW!🚨",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
