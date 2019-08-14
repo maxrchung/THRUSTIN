@@ -361,21 +361,21 @@ impl Player {
         self.comm.borrow().send_message(&self.token, message);
     }
 
-    pub fn send_message_from(&self, from: &str, message: &str) {
+    pub fn send_message_from(&self, from: &str, bg: &str, fg: &str, message: &str) {
         self.comm
             .borrow()
-            .send_message_from(&self.token, from, &self.bg, &self.fg, message);
+            .send_message_from(&self.token, from, bg, fg, message);
     }
 
     pub fn send_message_out_of_lobby(
-        from: &str,
+        from: &Player,
         message: &str,
         players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     ) {
-        for pl_rc in players.values() {
-            let pl = pl_rc.borrow();
+        for pl in players.values() {
+            let pl = pl.borrow();
             if pl.state == PlayerState::OutOfLobby {
-                pl_rc.borrow().send_message_from(from, message);
+                pl.send_message_from(&from.name, &from.bg, &from.fg, message);
             }
         }
     }

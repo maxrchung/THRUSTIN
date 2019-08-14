@@ -394,3 +394,33 @@ fn color() {
         "Yo here's your current: background color (#000) and foreground color (#111)."
     );
 }
+
+#[test]
+fn multiplayer_color() {
+    let mut client = common::setup_with_db("color");
+    client.send(1, ".n 1");
+    client.send(1, ".co 000 111");
+    client.send(2, ".n 2");
+    client.send(2, ".co 111 000");
+    client.send(1, "yo");
+    client.read_all();
+    assert_eq!(
+        client.last_bg(1),
+        "000"
+    );
+        assert_eq!(
+        client.last_fg(2),
+        "111"
+    );
+
+    client.send(2, "yo");
+    client.read_all();
+    assert_eq!(
+        client.last_bg(1),
+        "111"
+    );
+    assert_eq!(
+        client.last_fg(2),
+        "000"
+    );
+}
