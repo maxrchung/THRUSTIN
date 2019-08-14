@@ -152,7 +152,14 @@ class Client extends React.Component {
     }
 
     scrollToDummy = () => {
-        this.dummy.scrollIntoView();
+        const scrollHeight = this.messages.scrollHeight;
+        const clientHeight = this.messages.clientHeight;
+        const scrollTop = this.messages.scrollTop;
+        const distFromBottom = scrollHeight - clientHeight - scrollTop;
+        // Only scroll to bottom if we are 100 pixels away from the bottom
+        if (distFromBottom < 100) {
+            this.dummy.scrollIntoView();
+        }
     }
 
     setJSON = data => {
@@ -207,7 +214,7 @@ class Client extends React.Component {
     render() {
         return (
             <Container fluid>
-                <div id="messages">
+                <div id="messages" ref={el => this.messages = el}>
                     {this.renderTop()}
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
