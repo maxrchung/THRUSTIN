@@ -64,7 +64,7 @@ fn register_and_login() {
     client.read_all();
     assert_eq!(
         client.last(2),
-        "Welcome back ([USER] >>>\"yo\"<<< [USER]) to THRUSTIN.<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
+        "Welcome back ([]>>>\"yo\"<<<[]) to THRUSTIN.<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
     );
 }
 
@@ -125,7 +125,7 @@ fn change_user_and_pass() {
     client.read_all();
     assert_eq!(
         client.last(3),
-        "Welcome back ([USER] >>>\"1\"<<< [USER]) to THRUSTIN.<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
+        "Welcome back ([]>>>\"1\"<<<[]) to THRUSTIN.<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"
     );
 }
 
@@ -140,7 +140,7 @@ fn view_account() {
     client.send(2, ".r user2 2 2");
     client.send(2, ".a");
     client.read_all();
-    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - user2<br/>Name - user2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 0<br/>Games Won So Far - 0");
+    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - user2<br/>Name - user2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 0<br/>Games Won So Far - 0");
 }
 
 #[test]
@@ -152,13 +152,13 @@ fn update_account_stats() {
     client.send(1, ".s");
     client.send(1, ".a");
     client.read_all();
-    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
+    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
 
     client.send(2, ".r 2 2 2");
     client.send(2, ".j 1");
     client.send(2, ".a");
     client.read_all();
-    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
+    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
 
     client.send(1, ".t 1");
     client.thrust(2);
@@ -168,8 +168,8 @@ fn update_account_stats() {
     client.send(1, ".a");
     client.send(2, ".a");
     client.read_all();
-    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
-    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Pointed Earned So Far - 1<br/>Games Played So Far - 1<br/>Games Won So Far - 1");
+    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
+    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 1<br/>Games Played So Far - 1<br/>Games Won So Far - 1");
 }
 
 #[test]
