@@ -424,3 +424,23 @@ fn multiplayer_color() {
         "000"
     );
 }
+
+#[test]
+fn login_after_rename() {
+    let mut client = common::setup_with_db("login_after_rename");
+    client.send(1, ".l chieftain chieftain");
+    client.send(2, ".n 2");
+    client.send(1, "hola at yo boi");
+    client.read_all();
+    assert_eq!(client.last_from(2), "chieftain");
+
+    client.send(1, ".n chieftain2");
+    client.send(1, "holla at yo boi");
+    client.read_all();
+    assert_eq!(client.last_from(2), "chieftain2");
+
+    client.send(3, ".l chieftain chieftain");
+    client.send(3, "Holler at your male.");
+    client.read_all();
+    assert_eq!(client.last_from(2), "chieftain2");
+}

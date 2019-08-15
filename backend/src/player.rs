@@ -246,8 +246,16 @@ impl Player {
         }
 
         let mut pl = pl.borrow_mut();
+        if pl.is_authenticated {
+            if !pl.db.borrow().name(&pl.name, &name) {
+                pl.send_message("Catostrophic error saving name into database occurred. But it should be okay still.");
+            }
+        }
+
         pl.name = name.clone();
         let mut messages = vec![format!("Name set to: {}", &pl.name)];
+
+
 
         if pl.state == PlayerState::ChooseName {
             pl.state = PlayerState::OutOfLobby;

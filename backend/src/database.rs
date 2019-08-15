@@ -110,17 +110,6 @@ impl Database {
         }
     }
 
-    pub fn bans(&self) -> Vec<String> {
-        let mut messages = vec![String::from("Banned fellows from this server. Kill'em.")];
-        let mut bans = Vec::new();
-        for (ip_addr, (duration, end)) in self.bans_cache.clone() {
-            bans.push(format!("{} {} {}", ip_addr, duration, end));
-        }
-        bans.sort_unstable_by(|a, b| a.cmp(&b));
-        messages.append(&mut bans);
-        messages
-    }
-
     fn verify_password(&self, hash: &str, pass: &str) -> bool {
         let matches =
             argon2::verify_encoded(hash, pass.as_bytes()).expect("Failed to verify password");
@@ -212,6 +201,17 @@ impl Database {
                 }
             }
         }
+    }
+
+    pub fn bans(&self) -> Vec<String> {
+        let mut messages = vec![String::from("Banned fellows from this server. Kill'em.")];
+        let mut bans = Vec::new();
+        for (ip_addr, (duration, end)) in self.bans_cache.clone() {
+            bans.push(format!("{} {} {}", ip_addr, duration, end));
+        }
+        bans.sort_unstable_by(|a, b| a.cmp(&b));
+        messages.append(&mut bans);
+        messages
     }
 
     pub fn bson_array_to_strings(array: Array) -> Vec<String> {
@@ -348,6 +348,21 @@ impl Database {
             },
             Some(Err(_)) => None,
             None => None,
+        }
+    }
+
+    pub fn name(&self, old_name: &str, new_name: &str) -> bool {
+        let filter = doc! {
+            "name": old_name
+        };
+        let update = doc! {
+            "$set": {
+                "name": new_name
+            }
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
         }
     }
 
