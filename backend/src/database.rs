@@ -135,7 +135,7 @@ impl Database {
                 messages.push(format!("Name - {}", name));
                 messages.push(String::from("Password - [ENCRYPTED_CONTENT__UNVIEWABLE]"));
                 if let Some(points) = doc.get("points_gained") {
-                    messages.push(format!("Pointed Earned So Far - {}", points));
+                    messages.push(format!("Points Earned So Far - {}", points));
                 } else {
                     messages.push(String::from("Pointed Earned - 0"));
                 }
