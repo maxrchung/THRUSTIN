@@ -104,42 +104,34 @@ impl Player {
     }
 
     pub fn color(&mut self, split: Vec<&str>) {
-        if split.len() != 1 && split.len() != 3 {
+        if split.len() != 3 {
             self.send_message("Invalid parameters to color.");
             return;
         }
 
-        if split.len() == 1 {
+        let bg = split[1];
+        let fg = split[2];
+
+        if bg == fg {
+            self.send_message("Excuse me, you can't assign your colors to the same one, that makes it too hard to see.");
+            return;
+        }
+
+        if bg == "000" && fg == "b7410e" {
+            self.send_message("Um, I'm gonna disallow you from choosing this color combination. It's mine, and I feel my identity being threatened if you choose this.");
+            return;
+        }
+
+        self.bg = String::from(bg);
+        self.fg = String::from(fg);
+
+        if !self.is_authenticated || self.db.borrow().color(&self.name, bg, fg) {
             self.send_message(&format!(
-                "Yo here's your current: background color (#{}) and foreground color (#{}).",
-                self.bg, self.fg
+                "Awesome, we successfully set your chat colors to {} (bg) and {} (fg).",
+                bg, fg
             ));
         } else {
-            // Ok I reversed it
-            let bg = split[1];
-            let fg = split[2];
-
-            if bg == fg {
-                self.send_message("Excuse me, you can't assign your colors to the same one, that makes it too hard to see.");
-                return;
-            }
-
-            if bg == "000" && fg == "b7410e" {
-                self.send_message("Um, I'm gonna disallow you from choosing this color combination. It's mine, and I feel my identity being threatened if you choose this.");
-                return;
-            }
-
-            self.bg = String::from(bg);
-            self.fg = String::from(fg);
-
-            if !self.is_authenticated || self.db.borrow().color(&self.name, bg, fg) {
-                self.send_message(&format!(
-                    "Awesome, we successfully set your chat colors to {} (bg) and {} (fg).",
-                    bg, fg
-                ));
-            } else {
-                self.send_message("Failed to set your colors. Something wrong clearly happened.");
-            }
+            self.send_message("Failed to set your colors. Something wrong clearly happened.");
         }
     }
 

@@ -125,7 +125,6 @@ pub fn out_of_lobby_commands(
 
 fn list_out_commands(pl: &Player) {
     let mut commands = vec![
-        (".color", ".co", "Chat colors you have configured for yourself in hexadecimal."),
         (".color ffd1dc ff5b82", ".co ffd1dc ff5b82", "You assign background and foreground chat colors for yourself in hexidecimal. They must be different. They cannot be THRUSTY's colors."),
         (".help", ".h", "this is it chief"),
         (".join 1", ".j 1", "Join the lobby with ID 1."),

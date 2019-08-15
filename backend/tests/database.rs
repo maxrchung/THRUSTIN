@@ -338,13 +338,6 @@ fn ban() {
 fn color() {
     let mut client = common::setup_with_db("color");
     client.send(1, ".n 1");
-    client.send(1, ".co");
-    client.read_all();
-    assert_eq!(
-        client.last(1),
-        "Yo here's your current: background color (#b7410e) and foreground color (#000)."
-    );
-
     client.send(1, ".co 000");
     client.read_all();
     assert_eq!(client.last(1), "Invalid parameters to color.");
@@ -372,13 +365,6 @@ fn color() {
     );
 
     client.send(2, ".r 2 2 2");
-    client.send(2, ".co");
-    client.read_all();
-    assert_eq!(
-        client.last(2),
-        "Yo here's your current: background color (#b7410e) and foreground color (#000)."
-    );
-
     client.send(2, ".co 000 111");
     client.read_all();
     assert_eq!(
@@ -387,11 +373,15 @@ fn color() {
     );
 
     client.send(3, ".l 2 2");
-    client.send(3, ".co");
+    client.send(3, "hey what is up my studs");
     client.read_all();
     assert_eq!(
-        client.last(3),
-        "Yo here's your current: background color (#000) and foreground color (#111)."
+        client.last_bg(1),
+        "000",
+    );
+    assert_eq!(
+        client.last_fg(1),
+        "111",
     );
 }
 
