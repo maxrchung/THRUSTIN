@@ -189,7 +189,7 @@ impl Player {
                 if let Ok(name) = doc.get_str("name") {
                     self.name = String::from(name);
                     let mut messages = vec![format!(
-                        "Welcome back ([USER] >>>\"{}\"<<< [USER]) to THRUSTIN.",
+                        "Welcome back ([]>>>\"{}\"<<<[]) to THRUSTIN.",
                         name
                     )];
                     messages.push(String::new());
