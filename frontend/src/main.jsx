@@ -209,7 +209,7 @@ class Client extends React.Component {
         }
         return (
             <Message>
-                <img src="favicon-96.png"/>
+                <h1 className="mb-0"><img alt="THRUSTIN" src="favicon-96.png"/></h1>
             </Message>
         );
 	}
