@@ -494,6 +494,14 @@ impl Default for Deck {
             "damn, that last THRUST was something else",
             "doot doot 🎺💀",
             "self asphyxiation",
+            "Nick’s insane 1000AP Veigar play",
+            "madlad",
+            "when the teacher went over announcements and mentioned that another teacher was away in Taiwan, I raised my hand and asked, \"Did he die?\"",
+            "the core of the sun",
+            "skydiving without a parachute",
+            "bungee jumping without a bungee cord",
+            "stuffing five sticks of dynamite into her mouth then blowing her head off",
+            "skydiving without a plane",
         ];
 
         let thrustees = vec![
@@ -722,6 +730,13 @@ impl Default for Deck {
             "I literally have _____ at gunpoint. I am pointing a gun to her head right now, and if you don’t share this message with at least 10 people in 10 hours, I am going to blow her noggins out.  💀💀 #FFDEAD in the chat bois",
             "🎺💀<br/>you have been visited by trumpet skelton of the abyss<br/>good bones and calcium will come to you but only if you comment _____",
             "🚨FBI! OPEN UP! PUT YOUR HANDS IN THE AIR! PUT YOUR HANDS BEHIND YOUR HEAD AND GET DOWN ON THE GROUND! YOU ARE UNDER ARREST FOR _____! YOU HAVE THE RIGHT TO REMAIN SILENT! ANYTHING YOU SAY CAN AND WILL BE USED AGAINST YOU IN THE COURT OF LAW!🚨",
+            "You can’t fuck up _____ even if you’re braindead.",
+            "Yeah, _____ is pretty hot.",
+            "Yeah, _____ is pretty cool.",
+            "_____: _____.",
+            "You know it’s good when you got a girl over and then _____.",
+            "Kenny&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_",
+            "_____ cucked me and I’m strangely okay with it.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
