@@ -98,9 +98,7 @@ class Client extends React.Component {
 					this.setMessage("BRO CHILLOUT that message is too long my man.");
 				}
 			}
-
 			this.typeahead.clear();
-			this.scrollToDummy();
         }
     }
 
@@ -125,7 +123,6 @@ class Client extends React.Component {
             this.setState({
                 messages: newMsg
             });
-            this.scrollToDummy();
         }
     }
 
@@ -152,17 +149,11 @@ class Client extends React.Component {
     }
 
     scrollToDummy = () => {
-        const scrollHeight = this.messages.scrollHeight;
-        const clientHeight = this.messages.clientHeight;
-        const scrollTop = this.messages.scrollTop;
-        const distFromBottom = scrollHeight - clientHeight - scrollTop;
-        // Only scroll to bottom if we are 100 pixels away from the bottom
-        if (distFromBottom < 100) {
-            this.dummy.scrollIntoView();
-        }
+        this.dummy.scrollIntoView();
     }
 
     setJSON = data => {
+        const shouldScroll = this.shouldScroll();
         const message = JSON.parse(data);
         this.handleMessageMax();
         this.setState({
@@ -173,7 +164,9 @@ class Client extends React.Component {
             )
         });
 
-        this.scrollToDummy();
+        if (shouldScroll) {
+            this.scrollToDummy();
+        }
     }
 
     setMessage = message => {
@@ -181,6 +174,16 @@ class Client extends React.Component {
             message: message
         });
        this.setJSON(data);
+    }
+
+    shouldScroll = () => {
+        const scrollHeight = this.messages.scrollHeight;
+        const clientHeight = this.messages.clientHeight;
+        const scrollTop = this.messages.scrollTop;
+        const distFromBottom = scrollHeight - clientHeight - scrollTop;
+        // Only scroll to bottom if we are 100 pixels away from the bottom
+        const shouldScroll = distFromBottom < 100;
+        return shouldScroll;
     }
 
     testPasswordType = value => {
