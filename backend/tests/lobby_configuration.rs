@@ -161,7 +161,7 @@ fn default_lobby_configuration() {
     client.send(1, ".m");
     client.send(1, ".i");
     client.read_all();
-    assert_eq!(client.last(1), "\\\\Lobby info//<br/>Name: 1<br/>***(Only chief [that\'s you!] may see this!) Password: <br/>Chief: 1<br/>Players: 1/10<br/>Max points? 7<br/>House THRUSTS? 420<br/>THRUSTEES? 3<br/>THRUSTERS? 5");
+    assert_eq!(client.last(1), "\\\\Lobby info//<br/>ID: 1<br/>***(Only chief [that\'s you!] may see this!) Password: <br/>Chief: 1<br/>Players: 1/10<br/>Max points? 7<br/>House THRUSTS? 420<br/>THRUSTEES? 3<br/>THRUSTERS? 5");
 }
 
 #[test]

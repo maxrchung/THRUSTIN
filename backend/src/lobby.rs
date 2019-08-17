@@ -543,7 +543,7 @@ impl Lobby {
         let pl = pl.borrow();
         let mut info = Vec::new();
         info.push(format!("\\\\Lobby info//"));
-        info.push(format!("Name: {}", self.id));
+        info.push(format!("ID: {}", self.id));
         if self.is_host(pl.token) {
             info.push(format!(
                 "***(Only chief [that's you!] may see this!) Password: {}",
