@@ -24,6 +24,9 @@ export default merge(common, {
             minRatio: 1
         }),
         new SitemapPlugin("https://THRUSTIN.rs", ["/"]),
-        new RobotstxtPlugin()
+        new RobotstxtPlugin({
+            sitemap: "https://THRUSTIN.rs/sitemap.xml",
+            host: "https://THRUSTIN.rs"
+        })
     ],
 });
