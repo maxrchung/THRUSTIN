@@ -502,6 +502,14 @@ impl Default for Deck {
             "bungee jumping without a bungee cord",
             "stuffing five sticks of dynamite into her mouth then blowing her head off",
             "skydiving without a plane",
+            "broski…",
+            "Walmart",
+            "XD",
+            ":)",
+            ":(",
+            ":’(",
+            ":P",
+            "esketit",
         ];
 
         let thrustees = vec![
@@ -737,6 +745,7 @@ impl Default for Deck {
             "You know it’s good when you got a girl over and then _____.",
             "Kenny&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_",
             "_____ cucked me and I’m strangely okay with it.",
+            "Insert _____ into _____.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
