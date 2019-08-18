@@ -860,7 +860,7 @@ impl Deck {
         }
 
         if self.thrusters.len() > half {
-            self.thrustees.resize(half, String::new());
+            self.thrusters.resize(half, String::new());
         }
     }
 
