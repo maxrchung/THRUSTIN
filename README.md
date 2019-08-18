@@ -72,7 +72,7 @@ Register an account to get some sick as hell features like saved THRUSTS and sta
 ## Out of Lobby
 The zone outside of lobbies where you can chill and organize yourself.
 
-##### `.co(lor) 000 ffd1dc`
+##### `.c(olor) 000 ffd1dc`
 Set your chat colors. Must be hexadecimal colors. Here, 000 (black) is set to the background color and ffd1dc (pastel faded out dull pinkish color) is set to the text/foreground color.
 
 ##### `.h(elp)`
