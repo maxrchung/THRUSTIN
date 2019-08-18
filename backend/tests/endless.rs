@@ -2,9 +2,6 @@
 
 mod common;
 
-use std::u8;
-use std::usize;
-
 #[test]
 fn join_endless() {
     let mut client = common::setup();
@@ -30,7 +27,7 @@ fn endless_configurations() {
     client.send(1, ".p");
     client.send(1, ".i");
     client.read_all();
-    assert_eq!(client.last(1), "\\\\Lobby info//<br/>Name: 0<br/>Chief: EndlessLobbyHostDoggo<br/>Players: 1/18446744073709551615<br/>Max points? 255<br/>Use house THRUSTS? true<br/>THRUSTEES? 3<br/>THRUSTERS? 5");
+    assert_eq!(client.last(1), "\\\\Lobby info//<br/>ID: 0<br/>Chief: EndlessLobbyHostDoggo<br/>Players: 1/18446744073709551615<br/>Max points? 255<br/>House THRUSTS? 18446744073709551615<br/>THRUSTEES? 3<br/>THRUSTERS? 5");
 }
 
 // Bug: Panic occurrs when trying to join endless after leaving

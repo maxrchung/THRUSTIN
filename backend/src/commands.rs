@@ -44,36 +44,21 @@ fn generate_table(commands: Vec<(&str, &str, &str)>) -> String {
     return table_html;
 }
 
-fn disconnect(token: u32, players: &mut HashMap<u32, Rc<RefCell<Player>>>) {
-    players
-        .remove(&token)
-        .expect("what the heck how did you disconnect someone who didn't exist bro BIG ASS BUG!!");
-}
-
-fn disconnect_from_lobby(
-    pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
-    lobbies: &mut HashMap<i32, Lobby>,
-) {
-    disconnect(pl.borrow().token, players);
-    Lobby::leave_and_delete(pl, lobbies);
-}
-
 ///////////////
 //choose name//
 ///////////////
 pub fn choose_name_commands(
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
+    lobbies: &mut HashMap<i32, Lobby>,
     players: &mut HashMap<u32, Rc<RefCell<Player>>>,
 ) {
     let com = get_command(&split);
     match &*com {
-        ".name" | ".n" => Player::name(split, pl, players),
         ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
-        ".login" | ".l" => pl.borrow_mut().login(split),
-        ".register" | ".r" => pl.borrow_mut().register(split),
-        ".disconnect" => disconnect(pl.borrow().token, players),
+        ".name" | ".n" => Player::name(split, pl, lobbies, players),
+        ".login" | ".l" => pl.borrow_mut().login(split, lobbies),
+        ".register" | ".r" => pl.borrow_mut().register(split, lobbies),
         _ => {
             pl.borrow()
                 .send_message("u gotta pick a name bro, try '.name URNAMeHERE'");
@@ -110,23 +95,37 @@ pub fn out_of_lobby_commands(
         ".join" | ".j" => Lobby::join(split, pl, lobbies),
         ".list" | ".l" => Lobby::list(pl, lobbies),
         ".make" | ".m" => Lobby::make(split, pl, lobby_id, lobbies),
-        ".name" | ".n" => Player::name(split, pl, players),
-        ".password" | ".pa" => pl.borrow_mut().password(split),
+        ".name" | ".n" => Player::name(split, pl, lobbies, players),
         ".play" | ".p" => Lobby::join(vec![".join", "0"], pl, lobbies),
         ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
         ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
-        ".username" | ".us" => pl.borrow_mut().username(split),
         ".who" | ".w" => Player::who(pl, players),
-        ".disconnect" => disconnect(pl.borrow().token, players),
+        ".account" | ".a" => pl.borrow().account(),
+        ".color" | ".co" => pl.borrow_mut().color(split),
+        ".username" | ".un" => pl.borrow_mut().username(split),
+        ".password" | ".pw" => pl.borrow_mut().password(split),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
         _ => {
-            pl.borrow()
-                .send_message("Bruh that's an invalid command...!.    try .help");
+            if com.starts_with(".") {
+                pl.borrow()
+                    .send_message("Bruh that's an invalid command...!.    try .help");
+            } else {
+                Player::send_message_out_of_lobby(
+                    &pl.borrow(),
+                    input,
+                    players,
+                );
+            }
         }
     }
 }
 
 fn list_out_commands(pl: &Player) {
     let mut commands = vec![
+        (".color ffd1dc ff5b82", ".co ffd1dc ff5b82", "You assign background and foreground chat colors for yourself in hexidecimal. They must be different. They cannot be THRUSTY's colors."),
         (".help", ".h", "this is it chief"),
         (".join 1", ".j 1", "Join the lobby with ID 1."),
         (".list", ".l", "Lists info for lobbies that are available"),
@@ -142,8 +141,20 @@ fn list_out_commands(pl: &Player) {
 
     if pl.is_authenticated {
         commands.append(&mut vec![
-            (".password D1Ff3rentP@$$420 D1Ff3rentP@$$420", ".pa D1Ff3rentP@$$420 D1Ff3rentP@$$420", "Change your account password, maybe to D1Ff3rentP@$$420? lmao, also you gotta confirm it."),
-            (".username NewMeNewUser NewMeNewUser", ".us NewMeNewUser NewMeNewUser", "Change your account username and confirmation applied thereafter."),
+            (".account", ".a", "Retrieve some statistical information regarding the state of your account."),
+            (".username NewMeNewUser NewMeNewUser", ".un NewMeNewUser NewMeNewUser", "Change your account username and confirmation applied thereafter."),
+            (".password D1Ff3rentP@$$420 D1Ff3rentP@$$420", ".pw D1Ff3rentP@$$420 D1Ff3rentP@$$420", "Change your account password, maybe to D1Ff3rentP@$$420? lmao, also you gotta confirm it."),
+        ]);
+    }
+
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains."),
+            (".chieftain An0THerSoul", ".ct An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 
@@ -162,7 +173,6 @@ pub fn in_lobby_commands(
     input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);
@@ -176,18 +186,27 @@ pub fn in_lobby_commands(
         ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".who" | ".w" => lobby.who(pl),
         ".chief" | ".c" => lobby.host(split, pl),
-        ".house" | ".ho" => lobby.house(pl),
+        ".house" | ".ho" => lobby.house(split, pl),
         ".kick" | ".k" => lobby.kick(split, pl),
-        ".password" | ".pa" => lobby.password(split, pl),
+        ".password" | ".pw" => lobby.password(split, pl),
         ".players" | ".pl" => lobby.players(split, pl),
         ".points" | ".po" => lobby.points(split, pl),
         ".start" | ".s" => lobby.start(pl),
         ".thrustees" | ".e" => lobby.thrustees(split, pl),
         ".thrusters" | ".r" => lobby.thrusters(split, pl),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-        _ => pl
-            .borrow()
-            .send_message("Broski that shall be an invalid command. enter .help"),
+        ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow()
+                    .send_message("Broski that shall be an invalid command. enter .help")
+            } else {
+                lobby.send_message_from(&pl.borrow(), input);
+            }
+        }
     }
 }
 
@@ -205,14 +224,33 @@ fn list_in_commands(pl: &Player, host: bool) {
     if host {
         commands.append(&mut vec![
             (".chief xxXAzn1994", ".c  xxXAzn1994", "(chief-only) Make xxXAzn1994 the chief of the lobby"),
-            (".house", ".ho", "(chief-only) This toggles whether to additionally use our default provided cards - I mean THRUSTS --- Anyways don't worry, your own THRUSTS are always added."),
+            (".house", ".ho 69", "(chief-only) Hey, change the number of house cards you're using to 69, split in half for THRUSTEES and THRUSTERS. Do 0 for zero house THRUSTS. Default value, it's 420."),
             (".kick YOLOSWAGGER69", ".k YOLOSWAGGER69", "(chief-only) Someone causing you trouble? Toxicity got you down? Well if you are a chief you can kick YOLOSWAGGER69 out of your lobby using this command."),
-            (".password passwordspelledbackwards123420", ".pa passwordspelledbackwards123420", "(chief-only) Sometimes you want to protect your lobby's privacy by setting your lobby's password to passwordspelledbackwards123420"),
+            (".password passwordspelledbackwards123420", ".pw passwordspelledbackwards123420", "(chief-only) Sometimes you want to protect your lobby's privacy by setting your lobby's password to passwordspelledbackwards123420"),
             (".players 420", ".pl 420", "(chief-only) Okay, how many players do you want to allow in your lobby? 420?"),
             (".points 1", ".po 1", "(chief-only) Okay, how many points do you want to go to? 1? Don't do 1... cause then the game will end really fast."),
             (".start", ".s", "(chief-only) Yup, naturally as the chief you can start up the game."),
             (".THRUSTEES", ".e", "(chief-only) Hey there, this command will allow you to configure how many choices a THRUSTEE may choose from."),
             (".THRUSTERS", ".r", "(chief-only) This little command here will allow you to configure how many THRUSTERS one may hold onto at one time."),
+        ]);
+    }
+
+    if pl.is_authenticated {
+        commands.append(&mut vec![(
+            ".account",
+            ".a",
+            "Observe the settings related to your account and see what's up with that whack.",
+        )]);
+    }
+
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains. I'm sorry we added the `t`..."),
+            (".chieftain An0THerSoul", ".ct An0THerSoul", "(chieftain-only) Grant An0THerSoul the privilege to be an administrative chieftain. I'm really sorry we added the `t`..."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 
@@ -228,9 +266,9 @@ fn list_in_commands(pl: &Player, host: bool) {
 //playing commands//
 ////////////////////
 pub fn playing_commands(
+    input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);
@@ -243,8 +281,18 @@ pub fn playing_commands(
         ".kick" | ".k" => lobby.kick(split, pl),
         ".end" | ".e" => lobby.end(pl),
         ".who" | ".w" => lobby.who_in_game(pl),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-        _ => pl.borrow().send_message("Bruh that's an invalid command."),
+        ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow().send_message("Bruh that's an invalid command.");
+            } else {
+                lobby.send_message_from(&pl.borrow(), input);
+            }
+        }
     }
 }
 
@@ -280,6 +328,25 @@ fn list_playing_commands(pl: &Player, host: bool) {
         ]);
     }
 
+    if pl.is_authenticated {
+        commands.append(&mut vec![(
+            ".account",
+            ".a",
+            "This shows your account configurations and stats.",
+        )]);
+    }
+
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ct Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Great. Now you're in the phase where you are a THRUSTER. In this state, you can THRUST one of your THRUSTER options into the THRUSTEE. Make sure it's a good one!"),
         generate_table(commands)
@@ -292,9 +359,9 @@ fn list_playing_commands(pl: &Player, host: bool) {
 //choosing//
 ////////////
 pub fn choosing_commands(
+    input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);
@@ -307,10 +374,19 @@ pub fn choosing_commands(
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
         ".who" | ".w" => lobby.who_in_game(pl),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-        _ => pl
-            .borrow()
-            .send_message("Brother that is an invalid command."),
+        ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow()
+                    .send_message("Brother that is an invalid command.");
+            } else {
+                lobby.send_message_from(&pl.borrow(), input);
+            }
+        }
     }
 }
 
@@ -337,6 +413,25 @@ fn list_choosing_commands(pl: &Player, host: bool) {
         )]);
     }
 
+    if pl.is_authenticated {
+        commands.append(&mut vec![(
+            ".account",
+            ".a",
+            "Account related information for your display view.",
+        )]);
+    }
+
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
+            (".chieftain", ".ch", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ct Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Okay you're a THRUSTEE now. First thing you've gotta do is choose a great THRUSTEE that other THRUSTERS can THRUST into. Make sure it's a juicy one!"),
         generate_table(commands)
@@ -349,9 +444,9 @@ fn list_choosing_commands(pl: &Player, host: bool) {
 //deciding//
 ////////////
 pub fn deciding_commands(
+    input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);
@@ -364,8 +459,18 @@ pub fn deciding_commands(
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
         ".who" | ".w" => lobby.who_in_game(pl),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-        _ => pl.borrow().send_message("Bro! That's an invalid command."),
+        ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow().send_message("Bro! That's an invalid command.");
+            } else {
+                lobby.send_message_from(&pl.borrow(), input);
+            }
+        }
     }
 }
 
@@ -388,6 +493,25 @@ fn list_deciding_commands(pl: &Player, host: bool) {
         )]);
     }
 
+    if pl.is_authenticated {
+        commands.append(&mut vec![(
+            ".account",
+            ".a",
+            "Visibility to how your account data is becoming awoke.",
+        )]);
+    }
+
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ct Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
+        ]);
+    }
+
     let messages = &vec![
         String::from("Yeah guy it's time for you to decide on the best THRUSTER. Pick the one that you like the best. Trust your head and your gut. You can do it. I believe in you."),
         generate_table(commands)
@@ -400,9 +524,9 @@ fn list_deciding_commands(pl: &Player, host: bool) {
 //waiting//
 ///////////
 pub fn waiting_commands(
+    input: &str,
     split: Vec<&str>,
     pl: Rc<RefCell<Player>>,
-    players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     lobbies: &mut HashMap<i32, Lobby>,
 ) {
     let com = get_command(&split);
@@ -417,10 +541,19 @@ pub fn waiting_commands(
         ".end" | ".e" => lobby.end(pl),
         ".kick" | ".k" => lobby.kick(split, pl),
         ".who" | ".w" => lobby.who_in_game(pl),
-        ".disconnect" => disconnect_from_lobby(pl, players, lobbies),
-        _ => pl
-            .borrow()
-            .send_message("Bruh... that's an invalid command."),
+        ".account" | ".a" => pl.borrow().account(),
+        ".ban" | ".b" => pl.borrow().ban(split),
+        ".unban" | ".ub" => pl.borrow().unban(split),
+        ".chieftain" | ".ct" => pl.borrow().chieftain(split),
+        ".unchieftain" | ".uc" => pl.borrow().unchieftain(split),
+        _ => {
+            if com.starts_with(".") {
+                pl.borrow()
+                    .send_message("Bruh... that's an invalid command.");
+            } else {
+                lobby.send_message_from(&pl.borrow(), input);
+            }
+        }
     }
 }
 
@@ -445,6 +578,23 @@ fn list_waiting_commands(pl: &Player, host: bool) {
                 ".k SAMPLE_USER_000666",
                 "(chief-only) Eliminate SAMPLE_USER_000666 from your lobby...",
             ),
+        ]);
+    }
+
+    if pl.is_authenticated {
+        commands.append(&mut vec![
+            (".account", ".a", "Let's say you want to see what your Username, Name, Games Played, Games Won, Points Gained are..."),
+        ]);
+    }
+
+    if pl.is_chieftain() {
+        commands.append(&mut vec![
+            (".ban", ".b", "(chieftain-only) View ban list."),
+            (".ban 69.69.69.69", ".b 69.69.69.69", "(chieftain-only) Ban 69.69.69.69 to the shadow realms."),
+            (".unban 69.69.69.69", ".ub 69.69.69.69", "(chieftain-only) Unban 69.69.69.69 from the shadow realm."),
+            (".chieftain", ".ct", "(chieftain-only) View the list of chieftains there are."),
+            (".chieftain Another_Soul", ".ct Another_Soul", "(chieftain-only) Grant Another_Soul the privilege to be an administrator (Chieftain) of THRUSTIN."),
+            (".unchieftain ThisGuy", ".uc ThisGuy", "(chieftain-only) Remove Chieftain privileges from this dude."),
         ]);
     }
 

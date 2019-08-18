@@ -1,11 +1,23 @@
-$rust: #B7410E;
-$font-family-base: 'Cousine', monospace;
-$body-bg: black;
-$body-color: $rust;
-
+// Rust color
+$primary: #B7410E;
+// Black
+$secondary: #000;
+// Boostrap material design's primary color seen on links
+$tertiary: #009688;
+$font-family-base: "Cousine", monospace;
+$body-bg: $secondary;
+$body-color: $primary;
+// Lower font-size so it's better for mobile
+$font-size-base: 0.9rem;
 // bootstrap-material-design imports
 @import "../node_modules/bootstrap-material-design/scss/variables";
 @import "../node_modules/bootstrap-material-design/scss/mixins";
+
+// Apply colors after bootstrap-material-design so teal color stays
+$theme-colors: (
+  "primary": $primary,
+  "secondary": $secondary
+);
 
 // bootstrap imports
 @import "../node_modules/bootstrap/scss/variables";
@@ -74,20 +86,21 @@ $body-color: $rust;
 // @import "../node_modules/bootstrap-material-design/scss/extensions";
 
 // Additional custom styling
+// Message structure
 html {
     height: 100%;
     // Firefox scroll bar
-    scrollbar-color: $rust black;
+    scrollbar-color: $primary $secondary;
 }
-
+// Message structure
 body {
     height: 100%;
 }
-
+// Message structure
 #root {
     height: 100%;
 }
-
+// Message structure
 .container-fluid {
     display: flex;
     height: 100%;
@@ -95,22 +108,14 @@ body {
     justify-content: flex-end;
     padding-right: 0;
 }
-
+// Message structure
 #messages {
     max-height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-#messages div {
-	margin-right: 1rem !important;
-	margin-bottom: 1rem !important;
-}
-
-hr {
-    border-top: 1px solid rgba($rust, .4);
-}
-
+// For top when messages go over max
 #ellipsis {
     font-family: "Arial Rounded MT Bold";
     font-size: 35px;
@@ -118,10 +123,10 @@ hr {
 
 // Webkit scroll bar
 ::-webkit-scrollbar {
-	width: 1rem;
+    width: 1rem;
 }
 ::-webkit-scrollbar-thumb {
-	background-color: $rust;
+	background-color: $primary;
 }
 
 // Prevent resize animation of input
@@ -131,7 +136,7 @@ hr {
 }
 // Change input bottom bar to be rust colored
 .form-control, .is-focused .form-control {
-    background-image: linear-gradient(to top, $rust 2px, rgba(0, 150, 136, 0) 2px), linear-gradient(to top, rgba(0, 0, 0, 0.26) 1px, rgba(0, 0, 0, 0) 1px);
+    background-image: linear-gradient(to top, $primary 2px, rgba(0, 150, 136, 0) 2px), linear-gradient(to top, rgba(0, 0, 0, 0.26) 1px, rgba(0, 0, 0, 0) 1px);
 }
 // Make sure Mozzarella Fox input text aligns
 .form-control::placeholder {
@@ -139,7 +144,6 @@ hr {
 }
 
 // Typeahead styling
-
 .rbt {
 	&-input-hint {
 		line-height: 1.725 !important;

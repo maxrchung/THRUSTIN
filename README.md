@@ -31,8 +31,10 @@ Oh yeah here's a point to keep note. Aliases can be used to shorten commands, as
 ## Overloading
 Some commands are overloaded, meaning putting 0, 1, 2 arguments for a command could lead to different things. I'll try and show this too using (parentheses). There are gonna be repeated commands too since some commands are the same across different phases. I guess I'll just copy paste something for that.
 
-## Chief
-Chief is the host of the lobby. We have a micromeme where we say "Chief is callin'" periodically, and this is an attempt to link our life into this game so we took the chance and replaced references of host with Chief. Respect.
+## Chief(tain)
+Chief is the host of a lobby. We have a micromeme where we say "Chief is callin'" periodically, and this is an attempt to link our life into this game so we took the chance and replaced references of lobby host with Chief. Respect.
+
+We also have Chieftains. Yeah, I realize this is a bit confusing, but I think it's kind of cool. Chieftains are global admins of the server and can do Chief commands on top of a few other things.
 
 ## Endless Lobby
 We have a thing called an endless lobby that anyone can more easily join and play in. This lobby kind of hangs around mostly forever, until someone gets 256 points, and anyone is pretty much free to join and play unless 2 billion people join.
@@ -47,7 +49,7 @@ We're gonna start using the database for some nice things. Once you register an 
 
 ## Technological Stack
 
-What technologies are we using? HTML, CSS, SASS, JavaScript, Bootstrap, React, webpack, web sockets, Rust, MongoDB, NGINX, Let's Encrypt, Git, TortoiseGit, SourceTree, GitHub, VSCode, emacs, Trello, **_brain_**
+Some technologies we using? HTML, CSS, SASS, JavaScript, Bootstrap, React, webpack, web sockets, Rust, MongoDB, NGINX, Let's Encrypt, Git, TortoiseGit, SourceTree, GitHub, VSCode, emacs, Trello, brain
 
 # Phases
 Now let us dive into all the commands you can use. We shall divide each section up by the respective phase they can be used in then go from there. I don't know how much detail I'm going to put into explaining each command's usage. This might be pretty long so I'm not sure. I'm not sure man.
@@ -69,6 +71,9 @@ Register an account to get some sick as hell features like saved THRUSTS and sta
 
 ## Out of Lobby
 The zone outside of lobbies where you can chill and organize yourself.
+
+##### `.co(lor) 000 ffd1dc`
+Set your chat colors. Must be hexadecimal colors. Here, 000 (black) is set to the background color and ffd1dc (pastel faded out dull pinkish color) is set to the text/foreground color.
 
 ##### `.h(elp)`
 [See](#help)
@@ -97,11 +102,26 @@ Destroy all your personal THRUSTS lol.
 ##### `.w(ho)`
 Shows everyone out and in lobbies.
 
-##### `.us(ername) SomeOtherUserName__ SomeOtherUserName__`
+##### `.a(ccount)`
+If logged in, view account information and game stats that are relevant to your account, of course.
+
+##### `.u(ser)n(ame) SomeOtherUserName__ SomeOtherUserName__`
 If logged in, changes your username to SomeOtherUserName__. It's kind of weird the more I think about it how Username and Name are so closely related. I could have done something to make them closer to the same, but in the end I decided not to. I personally find the use case of just logging in with a standard User/Pass account, then making up some random Name to troll with, quite appealing so yeah that's that.
 
-##### `.pa(ssword) Y0L0Ep1C420420420 Y0L0Ep1C420420420`
+##### `.p(ass)w(ord) Y0L0Ep1C420420420 Y0L0Ep1C420420420`
 If logged in, changes your password to Y0L0Ep1C420420420, so you know, if you're a hacker you can screw the hacked guys' account over lol.
+
+##### `.b(an) (69.69.69.69)`
+(Chieftain-only) Bans an IP address from a server. If no argument is provided, a list of banned IP addresses will become listed to the chieftain that produced this command.
+
+##### `.u(n)b(an) (69.69.69.69)`
+(Chieftain-only) Unbans the given IP address from the THRUSTIN server.
+
+##### `.c(hief)t(ain) (NewAdministratorHere)`
+(Chieftain-only) By itself, `.chieftain` shall show a list of all chieftains in the server. With an argument, you will attempt to appoint the targetted Name as a Chieftain. Note that we use `.ct` because `.c` is for `.chief` and damn I'm no so sure if I want to make these too closely related anymore, but whatever.
+
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
+(Chieftain-only) Removes the selected Chieftain as a chieftain.
 
 ## In Lobby
 Commands when you are in a lobby. Note that now you'll see some (Chief-Only) commands that only chiefs may do.
@@ -127,13 +147,13 @@ Shows everyone in this lobby.
 ##### `.c(hief) TheOtherSwagger`
 (Chief-Only) Set TheOtherSwagger as the chief.
 
-##### `.ho(use)`
-(Chief-Only) Toggle whether to use the house cards.
+##### `.ho(use) 69`
+(Chief-Only) Set how many house THRUSTS to use. We divide the number in half to split for THRUSTEES and THRUSTERS. Do `.ho 0` for zero house THRUSTS.
 
 ##### `.k(ick) HeyMan`
 (Chief-Only) Kick HeyMan from the lobby.
 
-##### `.pa(ssword) YOOOOoooo0000`
+##### `.p(ass)w(ord) YOOOOoooo0000`
 (Chief-Only) Set YOOOOoooo0000 as the password for the lobby.
 
 ##### `.pl(ayers) 3`
@@ -150,6 +170,21 @@ Shows everyone in this lobby.
 
 ##### `.(THRUSTE)R(S) 3`
 (Chief-Only) Set the number of THRUSTERS you can have to 3.
+
+##### `.a(ccount)`
+[See](#account)
+
+##### `.b(an) (69.69.69.69)`
+[See](#ban-69696969)
+
+##### `.u(n)b(an) (69.69.69.69)`
+[See](#unban-69696969)
+
+##### `.c(hief)t(ain) (NewAdministratorHere)`
+[See](#chieftain-newadministratorhere)
+
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
+[See](#unchieftain-newadministratornolonger)
 
 ## In Game (Choosing THRUSTEE)
 When you are the THRUSTEE choosing a THRUSTEE for THRUSTERS to THRUST into.
@@ -175,6 +210,15 @@ Show who's got how many points in the lobby and also who's in this lobby yo.
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
 
+##### `.a(ccount)`
+[See](#account)
+
+##### `.c(hief)t(ain)(NewAdministratorHere)`
+[See](#chieftain)
+
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
+[See](#unchieftain)
+
 ## In Game (Waiting for THRUSTEE)
 When you are a THRUSTER waiting for THRUSTEE to be chosen.
 
@@ -195,6 +239,21 @@ When you are a THRUSTER waiting for THRUSTEE to be chosen.
 
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
+
+##### `.a(ccount)`
+[See](#account)
+
+##### `.b(an) (69.69.69.69)`
+[See](#ban-69696969)
+
+##### `.u(n)b(an) (69.69.69.69)`
+[See](#unban-69696969)
+
+##### `.c(hief)t(ain) (NewAdministratorHere)`
+[See](#chieftain-newadministratorhere)
+
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
+[See](#unchieftain-newadministratornolonger)
 
 ## In Game (THRUSTING into chosen THRUSTEE)
 When a THRUSTEE is chosen and you are a THRUSTER ready to THRUST one of your THRUSTERS into the THRUSTEE.
@@ -220,6 +279,21 @@ Choose to use your THRUSTER at index 1 to THRUST into the chosen THRUSTEE. After
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
 
+##### `.a(ccount)`
+[See](#account)
+
+##### `.b(an) (69.69.69.69)`
+[See](#ban-69696969)
+
+##### `.u(n)b(an) (69.69.69.69)`
+[See](#unban-69696969)
+
+##### `.c(hief)t(ain) (NewAdministratorHere)`
+[See](#chieftain-newadministratorhere)
+
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
+[See](#unchieftain-newadministratornolonger)
+
 ## In Game (Deciding best THRUSTER)
 When you are the THRUSTEE and ready to pick your favorite THRUST.
 
@@ -243,3 +317,18 @@ Okay, you select the completed THRUST at index 1 as the best one.
 
 ##### `.k(ick) YoloDWAG`
 [See](#kick-heyman)
+
+##### `.a(ccount)`
+[See](#account)
+
+##### `.b(an) (69.69.69.69)`
+[See](#ban-69696969)
+
+##### `.u(n)b(an) (69.69.69.69)`
+[See](#unban-69696969)
+
+##### `.c(hief)t(ain) (NewAdministratorHere)`
+[See](#chieftain-newadministratorhere)
+
+##### `.u(n)c(hieftain) NewAdministratorNoLonger`
+[See](#unchieftain-newadministratornolonger)

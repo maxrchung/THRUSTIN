@@ -1,9 +1,9 @@
 use chrono::Local;
 use rocket::response::NamedFile;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::collections::VecDeque;
-use std::fmt;
-use std::fmt::{Debug, Formatter};
+use std::fmt::{self, Debug, Formatter};
 use std::path::{Path, PathBuf};
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
@@ -16,8 +16,15 @@ pub trait Communication {
     // mut required for updating  FileSystemCommunication
     // WebSocketCommunication doesn't have mutability issue since everything is behind Arc Mutex
     fn read_message(&mut self) -> (u32, String);
+    // Send message as THRUSTY
     fn send_message(&self, token: &u32, message: &str);
+    // Send message from a user
+    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str);
     fn send_messages(&self, token: &u32, messages: &Vec<String>);
+    fn disconnect(&mut self, token: &u32);
+
+    // Yeah this is the only way I could easily get ip_address, not sure if I want to invest time into some generic route
+    fn get_identifier(&self, token: &u32) -> String;
 }
 
 impl Debug for dyn Communication {
@@ -31,6 +38,10 @@ pub struct ChannelCommunication {
     read: mpsc::Receiver<(u32, String)>,
     to_send: Option<mpsc::Sender<(u32, String)>>,
     messages: HashMap<u32, Vec<String>>,
+    // expected is a counter that is incremented when a message is sent and decremented when a message is read
+    // This is to help manage messages that could take a long time to process, e.g. DB inducing commands
+    // It isn't perfect, as there are numerous examples of asynchronous messages that can be received, but it helps!!!
+    expected: i32,
     can_log: bool,
 }
 
@@ -43,6 +54,7 @@ impl ChannelCommunication {
             to_send: None,
             messages: HashMap::new(),
             can_log,
+            expected: 0,
         }
     }
 
@@ -60,36 +72,84 @@ impl ChannelCommunication {
     }
 
     pub fn read_all(&mut self) {
-        thread::sleep(Duration::from_millis(10000));
+        while self.expected > 0 {
+            // Pause for more messages
+            thread::sleep(Duration::from_millis(500));
 
-        // Keep on reading while you can and add messages
-        while let Ok((token, msg)) = self.read.try_recv() {
-            self.add_message(token.clone(), msg.clone());
-            if self.can_log {
-                println!("{}|{}{}|{}", Local::now(), &token, ">", &msg);
+            // Keep on reading while you can and add messages
+            while let Ok((token, msg)) = self.read.try_recv() {
+                self.add_message(token.clone(), msg.clone());
+                if self.can_log {
+                    println!("client|{}|{}{}|{}", Local::now(), ">", &token, &msg);
+                }
+                self.expected -= 1;
             }
         }
     }
 
-    // A modified version of read_all for commands that need more time
-    // Introduced because of db and password hashing
-    pub fn long_read_all(&mut self) {
-        thread::sleep(Duration::from_millis(10000));
-        self.read_all();
-    }
-
     pub fn last(&self, token: u32) -> String {
-        self.messages
+        let msg = self
+            .messages
             .get(&token)
             .expect("Token does not exist for last")
             .last()
-            .expect("Messages does not have last element")
-            .to_string()
+            .expect("Messages does not have last element");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
+        let msg = json["message"]
+            .as_str()
+            .expect("Message is not string")
+            .to_string();
+        msg
+    }
+
+    pub fn last_bg(&self, token: u32) -> String {
+        let msg = self
+            .messages
+            .get(&token)
+            .expect("Token does not exist for last")
+            .last()
+            .expect("Messages does not have last element");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
+        let bg = json["bg"]
+            .as_str()
+            .expect("Message is not string")
+            .to_string();
+        bg
+    }
+
+    pub fn last_fg(&self, token: u32) -> String {
+        let msg = self
+            .messages
+            .get(&token)
+            .expect("Token does not exist for last")
+            .last()
+            .expect("Messages does not have last element");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
+        let fg = json["fg"]
+            .as_str()
+            .expect("Message is not string")
+            .to_string();
+        fg
+    }
+
+    pub fn last_from(&self, token: u32) -> String {
+        let msg = self
+            .messages
+            .get(&token)
+            .expect("Token does not exist for last")
+            .last()
+            .expect("Messages does not have last element");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
+        let from = json["from"]
+            .as_str()
+            .expect("Message is not string")
+            .to_string();
+        from
     }
 
     // Since THRUSTS are randomized, we aren't really sure how many THRUSTS we need
     // This will take care of default possibilities...
-    pub fn thrust(&self, token: u32) {
+    pub fn thrust(&mut self, token: u32) {
         self.send(token.clone(), ".t 1");
         self.send(token.clone(), ".t 1 1");
         self.send(token.clone(), ".t 1 1 1");
@@ -97,32 +157,72 @@ impl ChannelCommunication {
         self.send(token.clone(), ".t 1 1 1 1 1");
     }
 
-    pub fn send(&self, token: u32, msg: &str) {
+    pub fn send(&mut self, token: u32, msg: &str) {
         self.send_message(&token, msg);
         if self.can_log {
-            println!("{}|{}{}|{}", Local::now(), ">", &token, &msg);
+            println!("client|{}|{}{}|{}", Local::now(), &token, ">", &msg);
         }
+        // read_all() may be more than send
+        // this can occur if messages have been asynchronously sent to the client
+        if self.expected < 0 {
+            self.expected = 0;
+        }
+        self.expected += 1;
     }
 }
 
 impl Communication for ChannelCommunication {
     fn read_message(&mut self) -> (u32, String) {
         let (token, msg) = self.read.recv().expect("Failed to send message.");
-        self.add_message(token.clone(), msg.clone());
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
+        let msg = json["message"]
+            .as_str()
+            .expect("Received message is not string")
+            .to_string();
         (token, msg)
     }
 
     fn send_message(&self, token: &u32, message: &str) {
+        let msg = json!({
+            "bg": "000",
+            "fg": "b7410e",
+            "from": "THRUSTY",
+            "message": message,
+        })
+        .to_string();
         self.to_send
             .as_ref()
             .expect("to_send not set")
-            .send((token.clone(), String::from(message)))
+            .send((token.clone(), msg))
+            .expect("Failed to send message.");
+    }
+
+    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str) {
+        let msg = json!({
+            "bg": bg,
+            "fg": fg,
+            "from": from,
+            "message": message,
+        })
+        .to_string();
+        self.to_send
+            .as_ref()
+            .expect("to_send not set")
+            .send((token.clone(), msg))
             .expect("Failed to send message.");
     }
 
     fn send_messages(&self, token: &u32, messages: &Vec<String>) {
         let message = messages.join("<br/>");
         self.send_message(token, &message);
+    }
+
+    fn get_identifier(&self, token: &u32) -> String {
+        token.to_string()
+    }
+
+    fn disconnect(&mut self, _token: &u32) {
+        self.to_send = None;
     }
 }
 
@@ -277,6 +377,7 @@ impl Communication for WebSocketCommunication {
                 (token, message)
             }
             Err(_) => {
+                println!("{}|_|_|{}|_", Local::now(), ">");
                 println!("Catastrophic failure if this fails probably.");
                 (0, "".to_string())
             }
@@ -285,17 +386,61 @@ impl Communication for WebSocketCommunication {
 
     // Send message to client with the corresponding token
     fn send_message(&self, token: &u32, message: &str) {
+        let msg = json!({
+            "bg": "000",
+            "fg": "b7410e",
+            "from": "THRUSTY",
+            "message": message,
+        })
+        .to_string();
         let connections_lock = self.connections.lock().unwrap();
         // Handle case for missing connection - This is possible for disconnects
         if let Some((ip_addr, sender)) = connections_lock.get(&token) {
             // Log server response for troubleshooting and FBI-ing
-            sender.send(message).unwrap();
-            println!("{}|{}|{}{}|{}", Local::now(), ip_addr, ">", token, message);
+            sender.send(&*msg).unwrap();
+            println!("{}|{}|{}{}|{}", Local::now(), ip_addr, ">", token, msg);
+        }
+    }
+
+    // Send message with from
+    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str) {
+        let msg = json!({
+            "bg": bg,
+            "fg": fg,
+            "from": from,
+            "message": message,
+        })
+        .to_string();
+        let connections_lock = self.connections.lock().unwrap();
+        // Handle case for missing connection - This is possible for disconnects
+        if let Some((ip_addr, sender)) = connections_lock.get(&token) {
+            // Log server response for troubleshooting and FBI-ing
+            sender.send(&*msg).unwrap();
+            println!("{}|{}|{}{}|{}", Local::now(), ip_addr, ">", token, msg);
         }
     }
 
     fn send_messages(&self, token: &u32, messages: &Vec<String>) {
         let message = messages.join("<br/>");
         self.send_message(token, &message);
+    }
+
+    fn get_identifier(&self, token: &u32) -> String {
+        let connections_lock = self.connections.lock().unwrap();
+        if let Some((ip_addr, _)) = connections_lock.get(&token) {
+            ip_addr.clone()
+        } else {
+            String::new()
+        }
+    }
+
+    fn disconnect(&mut self, token: &u32) {
+        let connections_lock = self.connections.lock().unwrap();
+        if let Some((_ip_addr, sender)) = connections_lock.get(&token) {
+            // Don't do anything if close succeeds or fails
+            match sender.close(CloseCode::Normal) {
+                _ => {}
+            };
+        }
     }
 }

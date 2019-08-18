@@ -1,42 +1,54 @@
 import "./main.scss";
-import React from 'react';
-import ReactDOM from 'react-dom';
-import Container from 'react-bootstrap/Container';
-import SanitizedHTML from "react-sanitized-html";
-import CommandBar from './commandBar';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Container } from "reactstrap";
+import CommandBar from "./CommandBar";
+import Message from "./Message";
+import MessageText from "./MessageText";
+// Don't really need a super secure hash
+// Using a fast hash just so we don't "accidentally" see passwords in log
+import SHA1 from "crypto-js/sha1";
 
 const MAX_INPUT = 6669;
 const MAX_MSGS = 696;
 
-function Message(props) {
-    return (
-        <div>
-            <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}<br />
-            <SanitizedHTML
-             allowedTags={["br","u","table","tr","th","td","a","img"]} 
-             allowedAttributes={
-                { 
-                    "table": ["class"],
-                    "a": ["href"],
-                    "img": ["src"]
-                }}
-             html={props.content} />
-            <hr/>
-        </div>
-    );
-}
-
 class Client extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            messageCounter: 1,
-            messages: [
-                <Message key={0} from="THRUSTY" content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously). If you wanta keep up with our development check us out on <a href=&quot;https://github.com/maxrchung/THRUSTIN/&quot;>GitHub.com</a> and <a href=&quot;https://twitter.com/THRUSTIN_rs?iloveducks&quot;>Twitter.com</a>."/>,
-			],
-        };
+    state = {
+        inputType: "text",
+        messageCounter: 1,
+        messages: [
+            <Message key={0}>
+                <MessageText 
+                    content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game similar to Cards Against Humanity and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously). If you wanta keep up with our development check us out on <a href=&quot;https://github.com/maxrchung/THRUSTIN/&quot;>GitHub.com</a> and <a href=&quot;https://twitter.com/THRUSTIN_rs?iloveducks&quot;>Twitter.com</a>."
+                    from="THRUSTY" 
+                />
+            </Message>
+        ],
     }
+
+    // Regex if string is password
+    // Capture groups separate command from password sections
+    // Only check for account related passwords
+    isPasswordRegex = [
+        /^(\.p )(\w+) (\w+)$/, // account password, not lobby password
+        /^(\.password )(\w+) (\w+)$/,
+        /^(\.l \w+ )(\w+)$/,
+        /^(\.login \w+ )(\w+)$/,
+        /^(\.r \w+ )(\w+) (\w+)$/,
+        /^(\.register \w+ )(\w+) (\w+)$/,
+    ]
+
+    // Regex if you should use type="password"
+    isPasswordTypeRegex = [
+        /^\.m \w+/,
+        /^\.make \w+/,
+        /^\.p \w+/,
+        /^\.password \w+/,
+        /^\.l \w+ \w+/,
+        /^\.login \w+ \w+/,
+        /^\.r \w+ \w+/,
+        /^\.register \w+ \w+/,
+    ]
 
     componentDidMount() {
         if (process.env.NODE_ENV === "production") {
@@ -50,60 +62,58 @@ class Client extends React.Component {
         document.addEventListener("keydown", this.handleKeyDown);
     }
 
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
+    
+    getHintVal = () => {
+		return document.getElementsByClassName('rbt-input-hint')[0].value;
+	}
+	
     handleClose = () => {
         this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
     };
 
-    handleKeyDown = (e) => {
-        var isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
-
+    handleKeyDown = e => {
+        const isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
         if (document.activeElement !== this.typeahead && !isWhitedModifier) {
             this.typeahead.focus();
         }
-		if (e.key == "Enter" && this.inputBar.value !== "") {
+
+        let value = this.typeahead.getInput().value;
+		if (e.key == "Enter" && value !== "") {
 			const hintVal = this.getHintVal(); // Autocomplete check
 
 			if (hintVal) {
-				this.setState({
-					messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={hintVal} />)
-				})
 				this.connection.send(hintVal);
 			}
 			else {
 				this.handleMessageMax();
-				const command = this.inputBar.value;
-				this.setState({
-					messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="You" content={command} />)
-				})
-				if (command.length <= MAX_INPUT) { 
-					this.connection.send(command);
+				if (value.length <= MAX_INPUT) {
+                    // Hash passwords if detected
+                    value = this.matchPassword(value);
+					this.connection.send(value);
 				}
 				else {
 					this.setMessage("BRO CHILLOUT that message is too long my man.");
 				}
-				
 			}
-
 			this.typeahead.clear();
-			this.scrollToDummy();
-		}
+        }
     }
 
-    handleMessage = (e) => {
-        this.setMessage(e.data);
+    // Validation stuff to execute when input has been changed, can't be done in keydown
+    handleInputChange = value => {
+        const inputType = this.testPasswordType(value);
+        if (this.state.inputType != inputType) {
+            this.setState({
+                inputType
+            });
+        }
     }
 
-    setMessage = (message) => {
-        this.handleMessageMax();
-        this.setState({
-            messages: this.state.messages.concat(<Message key={this.updateMessageCounter()} from="THRUSTY" content={message} />)
-        });
-
-        this.scrollToDummy();
-    }
-
-    scrollToDummy = () => {
-        this.dummy.scrollIntoView();
+    handleMessage = e => {
+        this.setJSON(e.data);
     }
 
     handleMessageMax = () => {
@@ -113,8 +123,76 @@ class Client extends React.Component {
             this.setState({
                 messages: newMsg
             });
+        }
+    }
+
+    matchPassword = value => {
+        for (let regex of this.isPasswordRegex) {
+            let match = value.match(regex);
+            if (match) {
+                // (.l user )(pass)
+                if (match.length == 3) {
+                    const pass = SHA1(match[2]);
+                    const join = match[1] + pass;
+                    return join;
+                }
+                // (.r user)(pass) (confirmation) 
+                else { //if (match.length == 4)
+                    const pass = SHA1(match[2]);
+                    const confirmation = SHA1(match[3]);
+                    const join = match[1] + pass + " " + confirmation;
+                    return join;
+                }
+            }
+        }
+        return value;
+    }
+
+    scrollToDummy = () => {
+        this.dummy.scrollIntoView();
+    }
+
+    setJSON = data => {
+        const shouldScroll = this.shouldScroll();
+        const message = JSON.parse(data);
+        this.handleMessageMax();
+        this.setState({
+            messages: this.state.messages.concat(
+                <Message bg={message.bg} fg={message.fg} from={message.from} key={this.updateMessageCounter()}>
+                    <MessageText content={message.message} from={message.from} />
+                </Message>
+            )
+        });
+
+        if (shouldScroll) {
             this.scrollToDummy();
         }
+    }
+
+    setMessage = message => {
+        const data = JSON.stringify({
+            message: message
+        });
+       this.setJSON(data);
+    }
+
+    shouldScroll = () => {
+        const scrollHeight = this.messages.scrollHeight;
+        const clientHeight = this.messages.clientHeight;
+        const scrollTop = this.messages.scrollTop;
+        const distFromBottom = scrollHeight - clientHeight - scrollTop;
+        // Only scroll to bottom if we are 100 pixels away from the bottom
+        const shouldScroll = distFromBottom < 100;
+        return shouldScroll;
+    }
+
+    testPasswordType = value => {
+        for (let regex of this.isPasswordTypeRegex) {
+            if (regex.test(value)) {
+                return "password";
+            }
+        }
+        return "text";
     }
 
     updateMessageCounter = () => {
@@ -125,44 +203,31 @@ class Client extends React.Component {
         return counter;
     }
 
-    componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
-	}
-	
-	getHintVal() {
-		return document.getElementsByClassName('rbt-input-hint')[0].value;
-	}
-
     renderTop() {
         if (this.state.messageCounter > MAX_MSGS) {
             return <div id="ellipsis" className="py-2">...</div>;
         }
         return (
-            <React.Fragment>
-                <img src="favicon-96.png"/>
-                <div className="mb-3 mr-3">
-                    <hr/>
-                </div>
-            </React.Fragment>
+            <Message>
+                <h1 className="mb-0"><img alt="THRUSTIN" src="favicon-96.png"/></h1>
+            </Message>
         );
 	}
 
     render() {
         return (
-            <Container fluid={true}>
-                <div id="messages">
+            <Container fluid>
+                <div id="messages" ref={el => this.messages = el}>
                     {this.renderTop()}
                     {this.state.messages}
                     <div ref={el => this.dummy = el} />
                 </div>
-				<CommandBar 
-					ref={(comBar) => {
-						if(comBar) {
-							this.typeahead = comBar.wrappedTypeahead;
-							this.inputBar = comBar.wrappedTypeahead.getInput();
-						}
-					}}
-				/>
+                
+                <CommandBar
+                    onInputChange={this.handleInputChange}
+                    ref={commandBar => {if (commandBar) this.typeahead = commandBar.typeahead}} 
+                    type={this.state.inputType}
+                />
             </Container>
         );
     }

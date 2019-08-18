@@ -7,7 +7,7 @@ fn set_name() {
     let mut client = common::setup();
     client.send(1, ".n 1");
     client.read_all();
-    assert_eq!(client.last(1), String::from("Name set to: 1<br/>ok 1, now ur redy 2 THRUST, try \'.help\' for sum updated information"));
+    assert_eq!(client.last(1), String::from("Name set to: 1<br/>ok 1, now ur redy 2 THRUST, try \'.help\' for sum updated information<br/><br/>A current exploration of lobbies that are available to be joined into is as follows below. Simply `.join [ID]` to enter. Lobby 0 is an endless lobby. It's always gonna be there.<br/>ID: 0 | Password: ❌ | Players: 0/18446744073709551615 | Currently: Playing"));
 }
 
 #[test]

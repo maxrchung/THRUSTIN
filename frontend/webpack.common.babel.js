@@ -1,13 +1,10 @@
-const path = require("path");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin"); 
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CompressionPlugin = require('compression-webpack-plugin');
-const TerserJSPlugin = require("terser-webpack-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const CopyPlugin = require('copy-webpack-plugin');
+import CleanWebpackPlugin from "clean-webpack-plugin";
+import CopyPlugin from "copy-webpack-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import path from "path";
 
-module.exports = {
+export default {
   entry: "./src/main.jsx",
   module: {
     rules: [
@@ -26,28 +23,24 @@ module.exports = {
       }
     ]
   },
-  optimization: {
-    minimizer: [
-      new TerserJSPlugin({}),
-      new OptimizeCSSAssetsPlugin({})
-    ]
-  },
   output: {
     path: path.resolve(__dirname, "./build/"),
     filename: "[name].[contenthash].js"
   },
   plugins: [
-    new CleanWebpackPlugin(),
+    new CleanWebpackPlugin({
+      // Thank you https://github.com/webpack-contrib/copy-webpack-plugin/issues/385#issuecomment-508914721
+      cleanStaleWebpackAssets: false,
+    }),
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash].css"
     }),
     new HtmlWebpackPlugin({
       template: "src/index.ejs"
     }),
-    new CompressionPlugin(),
     new CopyPlugin([
       { from: "src/favicon" },
-    ]),
+    ])
   ],
   resolve: { extensions: ["*", ".js", ".jsx"] }
 };

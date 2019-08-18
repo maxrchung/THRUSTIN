@@ -1,16 +1,55 @@
 use argon2;
+use chrono::{DateTime, Duration, TimeZone, Utc};
 use mongodb::coll::Collection;
 use mongodb::db::ThreadedDatabase;
 use mongodb::{bson, doc, Array, Bson, Client, Document, ThreadedClient};
 use rand::Rng;
+use std::collections::HashMap;
 
 #[derive(Debug)]
-pub struct MongoDB {
+pub struct Database {
+    pub bans: Collection,
     pub users: Collection,
+    // Cache bans so we don't have to constantly load from database for each call
+    bans_cache: HashMap<String, (i64, DateTime<Utc>)>,
     config: argon2::Config<'static>,
 }
 
-impl MongoDB {
+impl Database {
+    fn find_ban_doc(&self, ip_addr: &str) -> Option<Document> {
+        let doc = doc! {
+            "ip_addr": ip_addr
+        };
+        let mut cursor = self
+            .bans
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find ban");
+        // Return doc if found, otherwise None
+        match cursor.next() {
+            Some(Ok(doc)) => Some(doc),
+            Some(Err(_)) => None,
+            None => None,
+        }
+    }
+
+    fn find_name_doc(&self, name: &str) -> Option<Document> {
+        let doc = doc! {
+            "name": name
+        };
+        let mut cursor = self
+            .users
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find name");
+        // Return doc if found, otherwise None
+        match cursor.next() {
+            Some(Ok(doc)) => Some(doc),
+            Some(Err(_)) => None,
+            None => None,
+        }
+    }
+
     fn find_user_doc(&self, user: &str) -> Option<Document> {
         let doc = doc! {
             "user": user
@@ -19,7 +58,7 @@ impl MongoDB {
             .users
             .find(Some(doc.clone()), None)
             .ok()
-            .expect("Failed to find login");
+            .expect("Failed to find user");
         // Return doc if found, otherwise None
         match cursor.next() {
             Some(Ok(doc)) => Some(doc),
@@ -37,6 +76,40 @@ impl MongoDB {
         String::from(hash)
     }
 
+    fn load_bans(&mut self) {
+        let cursor = self
+            .bans
+            .find(Some(doc! {}), None)
+            .ok()
+            .expect("Failed to load bans");
+
+        self.bans_cache = HashMap::new();
+        for doc in cursor {
+            if let Ok(doc) = doc {
+                let ip_addr = if let Ok(ip_addr) = doc.get_str("ip_addr") {
+                    ip_addr.clone()
+                } else {
+                    ""
+                };
+
+                let duration = if let Ok(duration) = doc.get_i64("duration") {
+                    duration.clone()
+                } else {
+                    0
+                };
+
+                let end = if let Ok(end) = doc.get_utc_datetime("end") {
+                    end.clone()
+                } else {
+                    Utc.timestamp(0, 0)
+                };
+
+                self.bans_cache
+                    .insert(String::from(ip_addr), (duration, end));
+            }
+        }
+    }
+
     fn verify_password(&self, hash: &str, pass: &str) -> bool {
         let matches =
             argon2::verify_encoded(hash, pass.as_bytes()).expect("Failed to verify password");
@@ -51,6 +124,96 @@ impl MongoDB {
         array
     }
 
+    pub fn account(&self, name: &str) -> Vec<String> {
+        let mut messages = Vec::new();
+        match self.find_name_doc(&name) {
+            Some(doc) => {
+                messages.push(String::from("A display of your account information and statistical information. Please enjoy THRUSTIN!"));
+                if let Some(Bson::String(user)) = doc.get("user") {
+                    messages.push(format!("Username - {}", user));
+                }
+                messages.push(format!("Name - {}", name));
+                messages.push(String::from("Password - [ENCRYPTED_CONTENT__UNVIEWABLE]"));
+                if let Some(points) = doc.get("points_gained") {
+                    messages.push(format!("Points Earned So Far - {}", points));
+                } else {
+                    messages.push(String::from("Pointed Earned - 0"));
+                }
+                if let Some(games) = doc.get("games_played") {
+                    messages.push(format!("Games Played So Far - {}", games));
+                } else {
+                    messages.push(String::from("Games Played So Far - 0"));
+                }
+                if let Some(games) = doc.get("games_won") {
+                    messages.push(format!("Games Won So Far - {}", games));
+                } else {
+                    messages.push(String::from("Games Won So Far - 0"));
+                }
+            }
+            None => {
+                messages.push(String::from("Yo there's a bit of an epic problem. We couldn't find your account data lmao. What is going on."));
+            }
+        }
+        messages
+    }
+
+    pub fn ban(&mut self, ip_addr: &str) -> bool {
+        let doc = self.find_ban_doc(&ip_addr);
+        match doc {
+            // If ban exists, update time
+            Some(doc) => {
+                let duration = if let Ok(duration) = doc.get_i64("ip_addr") {
+                    duration.clone()
+                } else {
+                    3600
+                };
+                let end = Utc::now() + Duration::seconds(duration);
+                let update = doc! {
+                    "$set": {
+                        "duration": duration,
+                        "end": end,
+                    }
+                };
+                match self.bans.update_one(doc, update, None) {
+                    Ok(_) => {
+                        self.load_bans();
+                        true
+                    }
+                    _ => false,
+                }
+            }
+            // If ban doesn't exist, add new ban
+            None => {
+                // in seconds, starting at 1 hour
+                let duration = 3600;
+                let end = Utc::now() + Duration::seconds(duration);
+                let doc = doc! {
+                    "ip_addr": ip_addr,
+                    "duration": duration,
+                    "end": end,
+                };
+                match self.bans.insert_one(doc.clone(), None) {
+                    Ok(_) => {
+                        self.load_bans();
+                        true
+                    }
+                    _ => false,
+                }
+            }
+        }
+    }
+
+    pub fn bans(&self) -> Vec<String> {
+        let mut messages = vec![String::from("Banned fellows from this server. Kill'em.")];
+        let mut bans = Vec::new();
+        for (ip_addr, (duration, end)) in self.bans_cache.clone() {
+            bans.push(format!("{} {} {}", ip_addr, duration, end));
+        }
+        bans.sort_unstable_by(|a, b| a.cmp(&b));
+        messages.append(&mut bans);
+        messages
+    }
+
     pub fn bson_array_to_strings(array: Array) -> Vec<String> {
         let mut strings = Vec::new();
         for bson in array {
@@ -59,6 +222,69 @@ impl MongoDB {
             }
         }
         strings
+    }
+
+    // lol, this appoints a chieftain
+    pub fn chieftain(&self, name: &str) -> bool {
+        // Only set chieftain if it's an actual database bro
+        if let Some(_) = self.find_name_doc(&name) {
+            let filter = doc! {
+                "name": name
+            };
+            let update = doc! {
+                "$set": {
+                    "is_chieftain": true
+                }
+            };
+            self.users
+                .update_one(filter, update, None)
+                .expect("Failed to update chieftain");
+            true
+        } else {
+            false
+        }
+    }
+
+    // Shows a list of chieftains
+    pub fn chieftains(&self) -> Vec<String> {
+        let mut messages = Vec::new();
+        let doc = doc! {
+            "is_chieftain": true
+        };
+        let cursor = self
+            .users
+            .find(Some(doc.clone()), None)
+            .ok()
+            .expect("Failed to find chieftains");
+
+        messages.push(String::from("A LIST OF CHIEFTAINS RESPONSIBLE FOR MANAGEMENT OF THIS THRUSTIN SERVER IS AS FOLLOWS."));
+        let mut chieftains = Vec::new();
+        for doc in cursor {
+            if let Ok(doc) = doc {
+                if let Ok(name) = doc.get_str("name") {
+                    chieftains.push(String::from(name));
+                }
+            }
+        }
+        chieftains.sort_unstable_by(|a, b| a.cmp(&b));
+        messages.append(&mut chieftains);
+        messages
+    }
+
+    pub fn color(&self, name: &str, bg: &str, fg: &str) -> bool {
+        let filter = doc! {
+            "name": name
+        };
+        let update = doc! {
+            "$set": {
+                "bg": bg,
+                "fg": fg,
+            }
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
     }
 
     pub fn does_name_exist(&self, name: &str) -> bool {
@@ -78,6 +304,26 @@ impl MongoDB {
         }
     }
 
+    pub fn is_chieftain(&self, name: &str) -> bool {
+        if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::Boolean(is_chieftain)) = doc.get("is_chieftain") {
+                is_chieftain
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    }
+
+    pub fn is_banned(&self, ip_addr: &str) -> Option<&(i64, DateTime<Utc>)> {
+        if self.bans_cache.contains_key(&String::from(ip_addr)) {
+            self.bans_cache.get(&String::from(ip_addr))
+        } else {
+            None
+        }
+    }
+
     pub fn login(&self, user: &str, pass: &str) -> Option<Document> {
         let doc = doc! {
             "user": user,
@@ -90,8 +336,8 @@ impl MongoDB {
         let item = cursor.next();
         // Return doc if found, otherwise None
         match item {
-            Some(Ok(doc)) => match doc.get("pass") {
-                Some(&Bson::String(ref hash)) => {
+            Some(Ok(doc)) => match doc.get_str("pass") {
+                Ok(hash) => {
                     if self.verify_password(hash, pass) {
                         Some(doc)
                     } else {
@@ -105,13 +351,37 @@ impl MongoDB {
         }
     }
 
-    pub fn new(db_name: &str) -> MongoDB {
+    pub fn name(&self, old_name: &str, new_name: &str) -> bool {
+        let filter = doc! {
+            "name": old_name
+        };
+        let update = doc! {
+            "$set": {
+                "name": new_name
+            }
+        };
+        match self.users.update_one(filter, update, None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
+    pub fn new(db_name: &str) -> Database {
         let client =
             Client::connect("localhost", 27017).expect("Failed to initialize database client");
         let db = client.db(db_name);
+        let bans = db.collection("bans");
         let users = db.collection("users");
         let config = argon2::Config::default();
-        MongoDB { users, config }
+
+        let mut db = Database {
+            bans,
+            users,
+            config,
+            bans_cache: HashMap::new(),
+        };
+        db.load_bans();
+        db
     }
 
     pub fn password(&self, name: &str, pass: &str) -> bool {
@@ -130,17 +400,140 @@ impl MongoDB {
         }
     }
 
+    // Whenever user joins or starts game
+    pub fn up_games_played(&self, name: &str) {
+        if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::I32(games)) = doc.get("games_played") {
+                let filter = doc! {
+                    "name": name
+                };
+                let update = doc! {
+                    "$set": {
+                        "games_played": games + 1
+                    }
+                };
+                self.users
+                    .update_one(filter, update, None)
+                    .expect("Failed to update games played");
+            }
+        }
+    }
+
+    // Whenever user wins game
+    pub fn up_games_won(&self, name: &str) {
+        if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::I32(games)) = doc.get("games_won") {
+                let filter = doc! {
+                    "name": name
+                };
+                let update = doc! {
+                    "$set": {
+                        "games_won": games + 1
+                    }
+                };
+                self.users
+                    .update_one(filter, update, None)
+                    .expect("Failed to update games won");
+            }
+        }
+    }
+
+    // When user gets a point
+    pub fn up_points_gained(&self, name: &str) {
+        if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::I32(points)) = doc.get("points_gained") {
+                let filter = doc! {
+                    "name": name
+                };
+                let update = doc! {
+                    "$set": {
+                        "points_gained": points + 1
+                    }
+                };
+                self.users
+                    .update_one(filter, update, None)
+                    .expect("Failed to update points gained");
+            }
+        }
+    }
+
     pub fn register(&self, user: &str, pass: &str) -> bool {
         if self.find_user_doc(user).is_some() {
             return false;
         }
         let hash = self.hash_password(pass);
         let doc = doc! {
+            "bg": "b7410e",
+            "fg": "000",
             "user": user,
             "pass": &hash,
             "name": user,
+            "points_gained": 0,
+            "games_played": 0,
+            "games_won": 0,
+            "is_chieftain": false
         };
         match self.users.insert_one(doc.clone(), None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
+    // For testing purposes
+    pub fn register_chieftain(&self) -> bool {
+        let hash = self.hash_password("chieftain");
+        let doc = doc! {
+            "user": "chieftain",
+            "pass": &hash,
+            "name": "chieftain",
+            "points_gained": 0,
+            "games_played": 0,
+            "games_won": 0,
+            "is_chieftain": true
+        };
+        match self.users.insert_one(doc.clone(), None) {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+
+    pub fn unban(&mut self, ip_addr: &str) -> bool {
+        let doc = self.find_ban_doc(&ip_addr);
+        match doc {
+            // Set ban time to now if found
+            Some(doc) => {
+                let end = Utc::now();
+                let update = doc! {
+                    "$set": {
+                        "end": end,
+                    }
+                };
+                match self.bans.update_one(doc, update, None) {
+                    Ok(_) => {
+                        self.load_bans();
+                        true
+                    }
+                    _ => false,
+                }
+            }
+            None => false,
+        }
+    }
+
+    pub fn unchieftain(&self, name: &str) -> bool {
+        // Return false if user doesn't exist
+        if self.find_name_doc(name).is_none() {
+            return false;
+        }
+        let filter = doc! {
+            "name": name
+        };
+        let update = doc! {
+            "$set": {
+                "is_chieftain": false
+            }
+        };
+        match self.users.update_one(filter, update, None) {
             Ok(_) => true,
             Err(_) => false,
         }
@@ -182,7 +575,7 @@ impl MongoDB {
         let filter = doc! {
             "name": name
         };
-        let array = MongoDB::strings_to_bson_array(thrustees);
+        let array = Database::strings_to_bson_array(thrustees);
         let update = doc! {
             "$set": {
                 "thrustees": array
@@ -196,7 +589,7 @@ impl MongoDB {
 
     pub fn thrusters(&self, name: &str, thrusters: Vec<String>) -> bool {
         let filter = doc! { "name": name };
-        let array = MongoDB::strings_to_bson_array(thrusters);
+        let array = Database::strings_to_bson_array(thrusters);
         let update = doc! {
             "$set": {
                 "thrusters": array

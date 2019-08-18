@@ -242,3 +242,32 @@ fn show_player_picking_thrustee() {
         .last(4)
         .contains("2 is choosing.... get rdy to THRUST....."));
 }
+
+#[test]
+fn everyone_has_thrusted_message() {
+    let mut client = common::setup();
+    client.send(1, ".n 1");
+    client.send(1, ".m");
+    client.send(2, ".n 2");
+    client.send(2, ".j 1");
+    client.send(1, ".s");
+    client.send(1, ".t 1");
+    client.thrust(2);
+    client.read_all();
+    assert!(client.last(1).contains("Everyone has THRUSTED! By popular demand we are adding this message in to notify everyone that it's fine to choose a THRUST now. I didn't want it to have to come down to this, but I added it in due to pressure from our publishers."));
+
+    client.send(3, ".n 3");
+    client.send(3, ".j 1");
+    client.thrust(3);
+    client.read_all();
+    assert!(client.last(1).contains("Everyone has THRUSTED! By popular demand we are adding this message in to notify everyone that it's fine to choose a THRUST now. I didn't want it to have to come down to this, but I added it in due to pressure from our publishers."));
+    assert!(client.last(2).contains("Everyone has THRUSTED! By popular demand we are adding this message in to notify everyone that it's fine to choose a THRUST now. I didn't want it to have to come down to this, but I added it in due to pressure from our publishers."));
+
+    client.send(1, ".t 1");
+    client.send(2, ".t 1");
+    client.thrust(1);
+    client.thrust(3);
+    client.read_all();
+    assert!(client.last(1).contains("Everyone has THRUSTED! By popular demand we are adding this message in to notify everyone that it's fine to choose a THRUST now. I didn't want it to have to come down to this, but I added it in due to pressure from our publishers."));
+    assert!(client.last(2).contains("Everyone has THRUSTED! By popular demand we are adding this message in to notify everyone that it's fine to choose a THRUST now. I didn't want it to have to come down to this, but I added it in due to pressure from our publishers."));
+}

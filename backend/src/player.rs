@@ -1,10 +1,10 @@
 use crate::communication::Communication;
-use crate::database::MongoDB;
+use crate::database::Database;
+use crate::lobby::Lobby;
 use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
-use std::collections::HashMap;
-
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::rc::Rc;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -21,7 +21,9 @@ pub enum PlayerState {
 #[derive(Clone, Debug)]
 pub struct Player {
     comm: Rc<RefCell<dyn Communication>>,
-    db: Rc<RefCell<MongoDB>>,
+    db: Rc<RefCell<Database>>,
+    pub bg: String,
+    pub fg: String,
     pub game: PlayerGame,
     // Whether or not user is logged in through DB
     pub is_authenticated: bool,
@@ -35,6 +37,108 @@ pub struct Player {
 }
 
 impl Player {
+    pub fn account(&self) {
+        if !self.is_authenticated {
+            self.send_message("You cannot do this. You must be fully authenticated and logged in in order to get your account info with a registered account.");
+            return;
+        }
+
+        let messages = self.db.borrow().account(&self.name);
+        self.send_messages(&messages);
+    }
+
+    pub fn ban(&self, split: Vec<&str>) {
+        if !self.is_chieftain() {
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+            return;
+        }
+
+        if split.len() > 2 {
+            self.send_message(
+                "Hey Chieftain, you should know what you're doing. Invalid indexes bro.",
+            );
+            return;
+        }
+
+        // Get bans
+        if split.len() == 1 {
+            let messages = self.db.borrow().bans();
+            self.send_messages(&messages);
+        // Appoint chieftain
+        } else {
+            let ip_addr = split[1];
+            if self.db.borrow_mut().ban(&ip_addr) {
+                self.send_message(&format!("IP address {} has been banned.", ip_addr));
+            } else {
+                self.send_message(&format!("Failed to ban IP address {}", ip_addr));
+            }
+        }
+    }
+
+    pub fn chieftain(&self, split: Vec<&str>) {
+        if !self.is_chieftain() {
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+            return;
+        }
+
+        if split.len() > 2 {
+            self.send_message(
+                "Hey Chieftain, you should know what you're doing. Invalid indexes bro.",
+            );
+            return;
+        }
+
+        // Retrieve chieftains
+        if split.len() == 1 {
+            let messages = self.db.borrow().chieftains();
+            self.send_messages(&messages);
+        // Appoint chieftain
+        } else {
+            let name = split[1];
+            if self.db.borrow().chieftain(&name) {
+                self.send_message(&format!("A NEW CHIEFTAIN HAS BEEN APPOINTED: {}", name));
+            } else {
+                self.send_message(&format!("FAILED TO APPOINT CHIEFTAIN: {}", name));
+            }
+        }
+    }
+
+    pub fn color(&mut self, split: Vec<&str>) {
+        if split.len() != 3 {
+            self.send_message("Invalid parameters to color.");
+            return;
+        }
+
+        let bg = split[1];
+        let fg = split[2];
+
+        if bg == fg {
+            self.send_message("Excuse me, you can't assign your colors to the same one, that makes it too hard to see.");
+            return;
+        }
+
+        if bg == "000" && fg == "b7410e" {
+            self.send_message("Um, I'm gonna disallow you from choosing this color combination. It's mine, and I feel my identity being threatened if you choose this.");
+            return;
+        }
+
+        self.bg = String::from(bg);
+        self.fg = String::from(fg);
+
+        if !self.is_authenticated || self.db.borrow().color(&self.name, bg, fg) {
+            self.send_message(&format!(
+                "Awesome, we successfully set your chat colors to {} (bg) and {} (fg).",
+                bg, fg
+            ));
+        } else {
+            self.send_message("Failed to set your colors. Something wrong clearly happened.");
+        }
+    }
+
+    pub fn disconnect(&self) {
+        self.comm.borrow_mut().disconnect(&self.token);
+    }
+
     pub fn display_deck(&self) {
         let mut messages = Vec::new();
 
@@ -51,7 +155,7 @@ impl Player {
         self.send_messages(&messages);
     }
 
-    pub fn login(&mut self, split: Vec<&str>) {
+    pub fn login(&mut self, split: Vec<&str>, lobbies: &mut HashMap<i32, Lobby>) {
         if split.len() != 3 {
             self.send_message("You must provide USER and PASSWORD for your account.");
             return;
@@ -64,22 +168,33 @@ impl Player {
             // You get hacked u lose lmao
             // You login in from another device you chillin
             Some(doc) => {
+                if let Ok(bg) = doc.get_str("bg") {
+                    self.bg = String::from(bg);
+                }
+
+                if let Ok(fg) = doc.get_str("fg") {
+                    self.fg = String::from(fg);
+                }
+
                 if let Ok(thrustees) = doc.get_array("thrustees") {
                     self.personal_deck.thrustees =
-                        MongoDB::bson_array_to_strings(thrustees.to_vec());
+                        Database::bson_array_to_strings(thrustees.to_vec());
                 }
 
                 if let Ok(thrusters) = doc.get_array("thrusters") {
                     self.personal_deck.thrusters =
-                        MongoDB::bson_array_to_strings(thrusters.to_vec());
+                        Database::bson_array_to_strings(thrusters.to_vec());
                 }
 
                 if let Ok(name) = doc.get_str("name") {
                     self.name = String::from(name);
-                    self.send_message(&format!(
-                        "Welcome back ([USER] >>>\"{}\"<<< [USER]) to THRUSTIN.",
+                    let mut messages = vec![format!(
+                        "Welcome back ([]>>>\"{}\"<<<[]) to THRUSTIN.",
                         name
-                    ));
+                    )];
+                    messages.push(String::new());
+                    messages.append(&mut Lobby::list_messages(lobbies));
+                    self.send_messages(&messages);
                 }
                 self.state = PlayerState::OutOfLobby;
                 self.is_authenticated = true;
@@ -94,12 +209,13 @@ impl Player {
     pub fn name(
         split: Vec<&str>,
         pl: Rc<RefCell<Player>>,
+        lobbies: &mut HashMap<i32, Lobby>,
         players: &mut HashMap<u32, Rc<RefCell<Player>>>,
     ) {
         let name = {
             let pl = pl.borrow();
             if split.len() != 2 {
-                pl.send_message("You need to provide the correct arguments to the name command. Please, try again. By the way spaces are probably not allowed in game I think.");
+                pl.send_message("You need to provide the correct arguments to the name command. Please, try again.");
                 return;
             }
             split[1].to_string()
@@ -122,8 +238,16 @@ impl Player {
         }
 
         let mut pl = pl.borrow_mut();
+        if pl.is_authenticated {
+            if !pl.db.borrow().name(&pl.name, &name) {
+                pl.send_message("Catostrophic error saving name into database occurred. But it should be okay still.");
+            }
+        }
+
         pl.name = name.clone();
         let mut messages = vec![format!("Name set to: {}", &pl.name)];
+
+
 
         if pl.state == PlayerState::ChooseName {
             pl.state = PlayerState::OutOfLobby;
@@ -131,6 +255,8 @@ impl Player {
                 "ok {}, now ur redy 2 THRUST, try '.help' for sum updated information",
                 &pl.name
             ));
+            messages.push(String::new());
+            messages.append(&mut Lobby::list_messages(lobbies));
         }
 
         pl.send_messages(&messages);
@@ -139,36 +265,45 @@ impl Player {
     pub fn new(
         token: u32,
         comm: Rc<RefCell<dyn Communication>>,
-        db: Rc<RefCell<MongoDB>>,
+        db: Rc<RefCell<Database>>,
     ) -> Player {
         Player {
-            token: token,
-            name: String::new(),
-            state: PlayerState::ChooseName,
-            lobby: -1,
-            personal_deck: Deck::new(),
+            bg: String::from("b7410e"),
             comm,
-            game: PlayerGame::new(),
             db,
+            fg: String::from("000"),
+            game: PlayerGame::new(),
             is_authenticated: false,
+            lobby: -1,
+            name: String::new(),
+            personal_deck: Deck::new(),
+            state: PlayerState::ChooseName,
+            token,
         }
     }
 
     pub fn new_endless_host(
         comm: Rc<RefCell<dyn Communication>>,
-        db: Rc<RefCell<MongoDB>>,
+        db: Rc<RefCell<Database>>,
     ) -> Player {
         Player {
-            token: 0,
-            name: "EndlessLobbyHostDoggo".to_string(),
-            state: PlayerState::Playing,
-            lobby: 0,
-            personal_deck: Deck::new(),
+            bg: String::from("000"),
             comm,
-            game: PlayerGame::new(),
             db,
+            fg: String::from("b7410e"),
+            game: PlayerGame::new(),
             is_authenticated: false,
+            lobby: 0,
+            name: "EndlessLobbyHostDoggo".to_string(),
+            personal_deck: Deck::new(),
+            state: PlayerState::Playing,
+            token: 0,
         }
+    }
+
+    pub fn is_chieftain(&self) -> bool {
+        // I think it's most straightforward to let db handle calls if possible
+        self.db.borrow().is_chieftain(&self.name)
     }
 
     pub fn password(&mut self, split: Vec<&str>) {
@@ -194,7 +329,7 @@ impl Player {
         }
     }
 
-    pub fn register(&mut self, split: Vec<&str>) {
+    pub fn register(&mut self, split: Vec<&str>, lobbies: &mut HashMap<i32, Lobby>) {
         if split.len() != 4 {
             self.send_message("Ok you've got an invalid number of parameters for registration.");
             return;
@@ -210,9 +345,13 @@ impl Player {
         let user = split[1];
         if self.db.borrow().register(user, pass) {
             self.name = String::from(user);
-            self.send_message("Lol ok nice you registered and good to go.");
             self.is_authenticated = true;
             self.state = PlayerState::OutOfLobby;
+
+            let mut messages = vec![String::from("Lol ok nice you registered and good to go.")];
+            messages.push(String::new());
+            messages.append(&mut Lobby::list_messages(lobbies));
+            self.send_messages(&messages);
         } else {
             self.send_message("Registration has failed. Unable to add user to database. Maybe username isn't unique?");
         }
@@ -220,6 +359,25 @@ impl Player {
 
     pub fn send_message(&self, message: &str) {
         self.comm.borrow().send_message(&self.token, message);
+    }
+
+    pub fn send_message_from(&self, from: &str, bg: &str, fg: &str, message: &str) {
+        self.comm
+            .borrow()
+            .send_message_from(&self.token, from, bg, fg, message);
+    }
+
+    pub fn send_message_out_of_lobby(
+        from: &Player,
+        message: &str,
+        players: &mut HashMap<u32, Rc<RefCell<Player>>>,
+    ) {
+        for pl in players.values() {
+            let pl = pl.borrow();
+            if pl.state == PlayerState::OutOfLobby {
+                pl.send_message_from(&from.name, &from.bg, &from.fg, message);
+            }
+        }
     }
 
     pub fn send_messages(&self, messages: &Vec<String>) {
@@ -285,6 +443,57 @@ impl Player {
         self.send_messages(&messages);
     }
 
+    pub fn unban(&self, split: Vec<&str>) {
+        if !self.is_chieftain() {
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+            return;
+        }
+
+        if split.len() != 2 {
+            self.send_message(
+                "Hey Chieftain, you should know what you're doing. Invalid indexes bro.",
+            );
+            return;
+        }
+
+        let ip_addr = split[1];
+        if self.db.borrow_mut().unban(&ip_addr) {
+            self.send_message(&format!("The target {} has been unbanned.", &ip_addr));
+        } else {
+            self.send_message(&format!(
+                "Failed to unban {}. Something went wrong. Unexpected error.",
+                &ip_addr
+            ));
+        }
+    }
+
+    pub fn unchieftain(&self, split: Vec<&str>) {
+        if !self.is_chieftain() {
+            self.send_message("Yo dawg, this command can only be used by chieftains of THRUSTIN.");
+            return;
+        }
+
+        if split.len() != 2 {
+            self.send_message(
+                "Hey Chieftain, you should know what you're doing. Invalid indexes bro.",
+            );
+            return;
+        }
+
+        let name = split[1];
+        if self.db.borrow().unchieftain(&name) {
+            self.send_message(&format!(
+                "Congratulations, you have unchieftained {}.",
+                &name
+            ));
+        } else {
+            self.send_message(&format!(
+                "It looks like something went wrong with unchieftaining. Maybe {} isn't real?",
+                &name
+            ));
+        }
+    }
+
     pub fn unthrust(&mut self) {
         self.personal_deck = Deck::new();
         if self.is_authenticated {
@@ -320,6 +529,24 @@ impl Player {
         }
     }
 
+    pub fn up_games_played(&self) {
+        if self.is_authenticated {
+            self.db.borrow().up_games_played(&self.name);
+        }
+    }
+
+    pub fn up_games_won(&self) {
+        if self.is_authenticated {
+            self.db.borrow().up_games_won(&self.name);
+        }
+    }
+
+    pub fn up_points_gained(&self) {
+        if self.is_authenticated {
+            self.db.borrow().up_points_gained(&self.name);
+        }
+    }
+
     pub fn who(pl: Rc<RefCell<Player>>, players: &mut HashMap<u32, Rc<RefCell<Player>>>) {
         let pl = pl.borrow();
         let token = pl.token;
@@ -335,16 +562,14 @@ impl Player {
                 person = " (You)";
             }
 
-            let message = if pl.state == PlayerState::InLobby || pl.state == PlayerState::Playing {
-                format!("{} in {}{}", pl.name, pl.lobby, person).to_string()
-            } else {
-                format!("{}{}", pl.name, person).to_string()
-            };
-
-            messages.push(message);
+            if pl.state == PlayerState::InLobby || pl.state == PlayerState::Playing {
+                messages.push(format!("{} in {}{}", pl.name, pl.lobby, person).to_string());
+            } else if !pl.name.is_empty() {
+                messages.push(format!("{}{}", pl.name, person).to_string());
+            }
         }
 
-        messages.sort_unstable_by(|a, b| a.to_lowercase().cmp(&b.to_lowercase()));
+        messages.sort_unstable_by(|a, b| a.cmp(&b));
         pl.send_messages(&messages);
     }
 }

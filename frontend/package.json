@@ -1,12 +1,16 @@
 {
   "name": "thrustin",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-dev": "webpack --mode development",
-    "build-prod": "webpack --mode production"
+    "build-dev": "webpack --config webpack.dev.babel.js",
+    "build-prod": "webpack --config webpack.prod.babel.js",
+    "stats-dev": "webpack --config webpack.dev.babel.js --profile --json > stats-dev.json && webpack-bundle-analyzer stats-dev.json",
+    "stats-prod": "webpack --config webpack.prod.babel.js --profile --json > stats-prod.json && webpack-bundle-analyzer stats-prod.json",
+    "start-dev": "webpack-dev-server --config webpack.dev.babel.js --open",
+    "watch-dev": "webpack --config webpack.dev.babel.js --watch"
   },
   "keywords": [],
   "author": "",
@@ -14,12 +18,12 @@
   "dependencies": {
     "bootstrap": "^4.2.1",
     "bootstrap-material-design": "^4.1.1",
+    "crypto-js": "^3.1.9-1",
+    "dompurify": "^1.0.11",
     "react": "^16.8.5",
-    "react-bootstrap": "^1.0.0-beta.6",
     "react-bootstrap-typeahead": "^3.4.5",
     "react-dom": "^16.8.5",
-    "react-sanitized-html": "^2.0.0",
-    "sanitize-html": "^1.20.0"
+    "reactstrap": "^8.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -27,6 +31,7 @@
     "@babel/plugin-proposal-class-properties": "^7.0.0",
     "@babel/preset-env": "^7.4.2",
     "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.0.0",
     "babel-loader": "^8.0.5",
     "clean-webpack-plugin": "^2.0.1",
     "compression-webpack-plugin": "^2.0.0",
@@ -42,10 +47,14 @@
     "mini-css-extract-plugin": "^0.5.0",
     "node-sass": "^4.11.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "robotstxt-webpack-plugin": "^6.0.0",
     "sass-loader": "^7.1.0",
+    "sitemap-webpack-plugin": "^0.6.0",
     "style-loader": "^0.23.1",
     "webpack": "^4.29.6",
+    "webpack-bundle-analyzer": "^3.4.1",
     "webpack-cli": "^3.3.6",
-    "webpack-dev-server": "^3.2.1"
+    "webpack-dev-server": "^3.2.1",
+    "webpack-merge": "^4.2.1"
   }
 }

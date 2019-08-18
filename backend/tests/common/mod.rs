@@ -33,3 +33,13 @@ pub fn setup_with_db(db_name: &'static str) -> ChannelCommunication {
     });
     client
 }
+
+pub fn setup_with_db_and_logging(db_name: &'static str) -> ChannelCommunication {
+    let mut server = ChannelCommunication::new(true);
+    let mut client = ChannelCommunication::new(true);
+    ChannelCommunication::bind(&mut server, &mut client);
+    thread::spawn(move || {
+        thrustin::run_test_db_server(server, db_name);
+    });
+    client
+}

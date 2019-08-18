@@ -13,7 +13,7 @@ pub struct LobbyGame {
     pub deck_reference: Deck,
     // current thrustee (card)
     pub current_thrustee: String,
-    // Maps submitted thrust index to (token, thruster)
+    // submitted thrust index mapped to (token, thruster)
     pub current_thrusts: HashMap<usize, (u32, String)>,
     pub thrusted_players: Vec<u32>,
     pub thrustee_choices: Vec<String>,
