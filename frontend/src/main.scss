@@ -145,8 +145,8 @@ body {
 
 // Typeahead styling
 .rbt {
-	&-input-hint {
-		line-height: 1.725 !important;
+	&-input-hint input {
+		line-height: 1.975 !important;
 		color: #6c757d !important;
 		opacity: 0.65;
 	}
