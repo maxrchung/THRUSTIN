@@ -140,7 +140,7 @@ body {
 }
 // Make sure Mozzarella Fox input text aligns
 .form-control::placeholder {
-    line-height: 1.725;
+	line-height: 1.975 !important;
 }
 
 // Typeahead styling
