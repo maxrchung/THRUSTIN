@@ -55,7 +55,7 @@ pub fn choose_name_commands(
 ) {
     let com = get_command(&split);
     match &*com {
-        ".help" | ".h" => list_choose_name_commands(&pl.borrow()),
+        ".help" | ".h" => list_choose_name_commands(split, &pl.borrow()),
         ".name" | ".n" => Player::name(split, pl, lobbies, players),
         ".login" | ".l" => pl.borrow_mut().login(split, lobbies),
         ".register" | ".r" => pl.borrow_mut().register(split, lobbies),
@@ -66,7 +66,12 @@ pub fn choose_name_commands(
     }
 }
 
-fn list_choose_name_commands(pl: &Player) {
+fn list_choose_name_commands(split: Vec<&str>, pl: &Player) {
+    if split.len() != 1 {
+        pl.send_message("Failed. If you want to use the .help command please type .help by itself. That's .help or .h with no arguments. Do not do something like `.help 1 2 3`. That's wrong. Just do `.help`. Got it!");
+        return;
+    }
+
     pl.send_messages(&vec![
         String::from("Hey guys, Max here. I'm rewriting this section since it changed a bit with the addition of saved accounts. So basically, this first phase is the Choose Name phase to identify yourself. If you're lookin' for something basic, just enter something like `.name AWESOMEbruh` and continue forwards. If you register an account with `.register` and later login with `.login` though, you get some new features like saved THRUSTS and stats that go to our database. Cool, huh?"),
         generate_table(vec![
@@ -91,7 +96,7 @@ pub fn out_of_lobby_commands(
 ) {
     let com = get_command(&split);
     match &*com {
-        ".help" | ".h" => list_out_commands(&pl.borrow()),
+        ".help" | ".h" => list_out_commands(split, &pl.borrow()),
         ".join" | ".j" => Lobby::join(split, pl, lobbies),
         ".list" | ".l" => Lobby::list(pl, lobbies),
         ".make" | ".m" => Lobby::make(split, pl, lobby_id, lobbies),
@@ -123,7 +128,12 @@ pub fn out_of_lobby_commands(
     }
 }
 
-fn list_out_commands(pl: &Player) {
+fn list_out_commands(split: Vec<&str>, pl: &Player) {
+    if split.len() != 1 {
+        pl.send_message("Failed. If you want to use the .help command please type .help by itself. That's .help or .h with no arguments. Do not do something like `.help 1 2 3`. That's wrong. Just do `.help`. Got it!");
+        return;
+    }
+
     let mut commands = vec![
         (".color ffd1dc ff5b82", ".c ffd1dc ff5b82", "You assign background and foreground chat colors for yourself in hexidecimal. They must be different. They cannot be THRUSTY's colors."),
         (".help", ".h", "this is it chief"),
@@ -179,7 +189,7 @@ pub fn in_lobby_commands(
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
 
     match &*com {
-        ".help" | ".h" => list_in_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
+        ".help" | ".h" => list_in_commands(split, &pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
         ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
@@ -210,7 +220,12 @@ pub fn in_lobby_commands(
     }
 }
 
-fn list_in_commands(pl: &Player, host: bool) {
+fn list_in_commands(split: Vec<&str>, pl: &Player, host: bool) {
+    if split.len() != 1 {
+        pl.send_message("Failed. If you want to use the .help command please type .help by itself. That's .help or .h with no arguments. Do not do something like `.help 1 2 3`. That's wrong. Just do `.help`. Got it!");
+        return;
+    }
+
     let mut commands = vec![
         (".help", ".h", "this is it chief"),
         (".info", ".i", "I'm pretty sure this will give you some info about the lobby you're in."),
@@ -274,7 +289,7 @@ pub fn playing_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".h" => list_playing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
+        ".help" | ".h" => list_playing_commands(split, &pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
         ".thrust" | ".t" => lobby.thrust(split, pl),
@@ -296,7 +311,12 @@ pub fn playing_commands(
     }
 }
 
-fn list_playing_commands(pl: &Player, host: bool) {
+fn list_playing_commands(split: Vec<&str>, pl: &Player, host: bool) {
+    if split.len() != 1 {
+        pl.send_message("Failed. If you want to use the .help command please type .help by itself. That's .help or .h with no arguments. Do not do something like `.help 1 2 3`. That's wrong. Just do `.help`. Got it!");
+        return;
+    }
+
     let mut commands = vec![
         (".help", ".h", "this is it chief"),
         (
@@ -367,7 +387,7 @@ pub fn choosing_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".h" => list_choosing_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
+        ".help" | ".h" => list_choosing_commands(split, &pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
         ".thrust" | ".t" => lobby.choose(split, pl),
@@ -390,7 +410,12 @@ pub fn choosing_commands(
     }
 }
 
-fn list_choosing_commands(pl: &Player, host: bool) {
+fn list_choosing_commands(split: Vec<&str>, pl: &Player, host: bool) {
+    if split.len() != 1 {
+        pl.send_message("Failed. If you want to use the .help command please type .help by itself. That's .help or .h with no arguments. Do not do something like `.help 1 2 3`. That's wrong. Just do `.help`. Got it!");
+        return;
+    }
+
     let mut commands = vec![
         (".help", ".h", "this is it chief"),
         (
@@ -452,7 +477,7 @@ pub fn deciding_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".h" => list_deciding_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
+        ".help" | ".h" => list_deciding_commands(split, &pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
         ".thrust" | ".t" => lobby.decide(split, pl),
@@ -474,7 +499,12 @@ pub fn deciding_commands(
     }
 }
 
-fn list_deciding_commands(pl: &Player, host: bool) {
+fn list_deciding_commands(split: Vec<&str>, pl: &Player, host: bool) {
+    if split.len() != 1 {
+        pl.send_message("Failed. If you want to use the .help command please type .help by itself. That's .help or .h with no arguments. Do not do something like `.help 1 2 3`. That's wrong. Just do `.help`. Got it!");
+        return;
+    }
+
     let mut commands = vec![
         (".help", ".h", "this is it chief"),
         (".info", ".i", "Browse the inherent settings that have been configured in the presence of this lobby's settings existence."),
@@ -532,7 +562,7 @@ pub fn waiting_commands(
     let com = get_command(&split);
     let lobby = { lobbies.get_mut(&pl.borrow().lobby).unwrap() };
     match &*com {
-        ".help" | ".h" => list_waiting_commands(&pl.borrow(), lobby.is_host(pl.borrow().token)),
+        ".help" | ".h" => list_waiting_commands(split, &pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
         ".thrust" | ".t" => pl
@@ -557,7 +587,12 @@ pub fn waiting_commands(
     }
 }
 
-fn list_waiting_commands(pl: &Player, host: bool) {
+fn list_waiting_commands(split: Vec<&str>, pl: &Player, host: bool) {
+    if split.len() != 1 {
+        pl.send_message("Failed. If you want to use the .help command please type .help by itself. That's .help or .h with no arguments. Do not do something like `.help 1 2 3`. That's wrong. Just do `.help`. Got it!");
+        return;
+    }
+
     let mut commands = vec![
         (".help", ".h", "this is it chief"),
         (".info", ".i", "Wondering... what is the relevancy of the configurations to do with this lobby's present status of being set."),

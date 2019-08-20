@@ -301,3 +301,15 @@ fn chat() {
         "Broski that shall be an invalid command. enter .help"
     );
 }
+
+#[test]
+fn help_cannot_have_arguments() {
+    let mut client = common::setup();
+    client.send(1, ".help 1");
+    client.read_all();
+    assert_eq!(client.last(1), "Failed. If you want to use the .help command please type .help by itself. That's .help or .h with no arguments. Do not do something like `.help 1 2 3`. That's wrong. Just do `.help`. Got it!");
+
+    client.send(1, ".help");
+    client.read_all();
+    assert!(!client.last(1).contains("Failed. If you want to use the .help command please type .help by itself. That's .help or .h with no arguments. Do not do something like `.help 1 2 3`. That's wrong. Just do `.help`. Got it!"));
+}
