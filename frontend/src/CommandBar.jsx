@@ -3,7 +3,7 @@ import { Typeahead } from "react-bootstrap-typeahead";
 
 class CommandBar extends React.Component {
     state = {
-		options: [],
+		options: [".help", ".name", ".login", ".register", ".color", ".join", ".list", ".make", ".play", ".THRUST", ".UNTHRUST", ".who", ".account", ".username", ".password", ".ban", ".unban", ".chieftain", ".unchieftain"],
 	};
 
 	render() {

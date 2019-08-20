@@ -67,7 +67,7 @@ class Client extends React.Component {
     }
     
     getHintVal = () => {
-		return document.getElementsByClassName('rbt-input-hint')[0].value;
+		return document.getElementsByClassName('rbt-input-hint')[0].children[0].value;
 	}
 	
     handleClose = () => {
@@ -109,7 +109,7 @@ class Client extends React.Component {
             this.setState({
                 inputType
             });
-        }
+		}
     }
 
     handleMessage = e => {
