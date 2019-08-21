@@ -31,6 +31,7 @@ export default {
     new CleanWebpackPlugin({
       // Thank you https://github.com/webpack-contrib/copy-webpack-plugin/issues/385#issuecomment-508914721
       cleanStaleWebpackAssets: false,
+      cleanOnceBeforeBuildPatterns: ["**/*", "!media", "!media/*"],
     }),
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash].css"

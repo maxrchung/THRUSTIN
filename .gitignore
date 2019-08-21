@@ -16,7 +16,8 @@ node_modules/
 dist/
 
 # Ignore the built out files
-frontend/build/
+frontend/build/*
+!frontend/build/media
 
 # Ignore stats files
 frontend/stats-dev.json

@@ -554,6 +554,7 @@ impl Default for Deck {
 			"JRZ",
 			"I don't fucking care",
 			"👨🏿",
+            "<img src='media/daBoiindaMrrr.jpg'>"
         ];
 
         let thrustees = vec![
