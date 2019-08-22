@@ -102,7 +102,8 @@ fn run(communication: Rc<RefCell<dyn Communication>>, db: Rc<RefCell<Database>>)
             // User is banned
             if now < *end {
                 let message = format!("You cannot exist. You are banned until {}.", end);
-                communication.borrow().send_message(&token, &message);
+                // Set state to initial
+                communication.borrow().send_message(&token, &message, &PlayerState::ChooseName);
                 if let Some(pl) = players.get(&token) {
                     disconnect(pl.clone(), &mut players, &mut lobbies);
                 }

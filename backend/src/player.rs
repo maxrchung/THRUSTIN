@@ -5,6 +5,7 @@ use crate::player_game::PlayerGame;
 use crate::thrust::Deck;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::fmt;
 use std::rc::Rc;
 
 #[derive(Clone, PartialEq, Debug)]
@@ -16,6 +17,13 @@ pub enum PlayerState {
     Choosing,
     Deciding,
     Waiting,
+}
+
+// what the https://stackoverflow.com/a/32712140
+impl fmt::Display for PlayerState {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Debug::fmt(self, formatter)
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -358,7 +366,7 @@ impl Player {
     }
 
     pub fn send_message(&self, message: &str) {
-        self.comm.borrow().send_message(&self.token, message);
+        self.comm.borrow().send_message(&self.token, message, &self.state);
     }
 
     pub fn send_message_from(&self, from: &str, bg: &str, fg: &str, message: &str) {
@@ -381,7 +389,7 @@ impl Player {
     }
 
     pub fn send_messages(&self, messages: &Vec<String>) {
-        self.comm.borrow().send_messages(&self.token, messages);
+        self.comm.borrow().send_messages(&self.token, messages, &self.state);
     }
 
     pub fn thrust(&mut self, input: &str, split: &Vec<&str>) {
