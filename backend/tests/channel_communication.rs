@@ -41,3 +41,32 @@ fn read_all_multiple() {
     assert!(client.last(1).len() > 0);
     assert!(client.last(2).len() > 0);
 }
+
+#[test]
+fn last_state() {
+    let mut client = common::setup();
+    client.send(1, "yo");
+    client.read_all();
+    assert_eq!(client.last_state(1), "ChooseName");
+
+    client.send(1, ".n 1");
+    client.read_all();
+    assert_ne!(client.last_state(1), "ChooseName");
+    assert_eq!(client.last_state(1), "OutOfLobby");
+
+    client.send(1, ".m 1");
+    client.read_all();
+    assert_ne!(client.last_state(1), "OutOfLobby");
+    assert_eq!(client.last_state(1), "InLobby");
+
+    client.send(1, ".s");
+    client.read_all();
+    assert_ne!(client.last_state(1), "InLobby");
+    assert_eq!(client.last_state(1), "Choosing");
+
+    client.send(1, ".t 1");
+    client.read_all();
+    assert_ne!(client.last_state(1), "Choosing");
+    assert_eq!(client.last_state(1), "Deciding");
+
+}

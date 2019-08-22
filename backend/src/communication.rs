@@ -1,4 +1,5 @@
 use chrono::Local;
+use crate::player::PlayerState;
 use rocket::response::NamedFile;
 use serde_json::{json, Value};
 use std::collections::HashMap;
@@ -17,10 +18,10 @@ pub trait Communication {
     // WebSocketCommunication doesn't have mutability issue since everything is behind Arc Mutex
     fn read_message(&mut self) -> (u32, String);
     // Send message as THRUSTY
-    fn send_message(&self, token: &u32, message: &str);
+    fn send_message(&self, token: &u32, message: &str, state: &PlayerState);
     // Send message from a user
     fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str);
-    fn send_messages(&self, token: &u32, messages: &Vec<String>);
+    fn send_messages(&self, token: &u32, messages: &Vec<String>, state: &PlayerState);
     fn disconnect(&mut self, token: &u32);
 
     // Yeah this is the only way I could easily get ip_address, not sure if I want to invest time into some generic route
@@ -147,6 +148,21 @@ impl ChannelCommunication {
         from
     }
 
+    pub fn last_state(&self, token: u32) -> String {
+        let msg = self
+            .messages
+            .get(&token)
+            .expect("Token does not exist for last")
+            .last()
+            .expect("Messages does not have last element");
+        let json: Value = serde_json::from_str(&*msg).expect("Not valid JSON");
+        let msg = json["state"]
+            .as_str()
+            .expect("State is not string")
+            .to_string();
+        msg
+    }
+
     // Since THRUSTS are randomized, we aren't really sure how many THRUSTS we need
     // This will take care of default possibilities...
     pub fn thrust(&mut self, token: u32) {
@@ -158,7 +174,9 @@ impl ChannelCommunication {
     }
 
     pub fn send(&mut self, token: u32, msg: &str) {
-        self.send_message(&token, msg);
+        // It doesn't matter what state this send() function provides
+        // This is used by a client to send messages to the server
+        self.send_message(&token, msg, &PlayerState::ChooseName);
         if self.can_log {
             println!("client|{}|{}{}|{}", Local::now(), &token, ">", &msg);
         }
@@ -182,12 +200,13 @@ impl Communication for ChannelCommunication {
         (token, msg)
     }
 
-    fn send_message(&self, token: &u32, message: &str) {
+    fn send_message(&self, token: &u32, message: &str, state: &PlayerState) {
         let msg = json!({
             "bg": "000",
             "fg": "b7410e",
             "from": "THRUSTY",
             "message": message,
+            "state": state.to_string()
         })
         .to_string();
         self.to_send
@@ -212,9 +231,9 @@ impl Communication for ChannelCommunication {
             .expect("Failed to send message.");
     }
 
-    fn send_messages(&self, token: &u32, messages: &Vec<String>) {
+    fn send_messages(&self, token: &u32, messages: &Vec<String>, state: &PlayerState) {
         let message = messages.join("<br/>");
-        self.send_message(token, &message);
+        self.send_message(token, &message, state);
     }
 
     fn get_identifier(&self, token: &u32) -> String {
@@ -385,12 +404,14 @@ impl Communication for WebSocketCommunication {
     }
 
     // Send message to client with the corresponding token
-    fn send_message(&self, token: &u32, message: &str) {
+    fn send_message(&self, token: &u32, message: &str, state: &PlayerState) {
+        let a = format!("{}", state);
         let msg = json!({
             "bg": "000",
             "fg": "b7410e",
             "from": "THRUSTY",
             "message": message,
+            "state": state.to_string()
         })
         .to_string();
         let connections_lock = self.connections.lock().unwrap();
@@ -420,9 +441,9 @@ impl Communication for WebSocketCommunication {
         }
     }
 
-    fn send_messages(&self, token: &u32, messages: &Vec<String>) {
+    fn send_messages(&self, token: &u32, messages: &Vec<String>, state: &PlayerState) {
         let message = messages.join("<br/>");
-        self.send_message(token, &message);
+        self.send_message(token, &message, state);
     }
 
     fn get_identifier(&self, token: &u32) -> String {
