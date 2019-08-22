@@ -59,20 +59,15 @@ class Client extends React.Component {
         }
         this.connection.onmessage = this.handleMessage; 
         this.connection.onclose = this.handleClose;
-        document.addEventListener("keydown", this.handleKeyDown);
     }
-
-    componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
-    }
-    
+	
     getHintVal = () => {
 		return document.getElementsByClassName('rbt-input-hint')[0].children[0].value;
 	}
 	
     handleClose = () => {
         this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
-    };
+	};
 
     handleKeyDown = e => {
         const isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
@@ -84,11 +79,8 @@ class Client extends React.Component {
 		if (e.key == "Enter" && value !== "") {
 			const hintVal = this.getHintVal(); // Autocomplete check
 
-			if (hintVal) {
-				this.connection.send(hintVal);
-			}
-			else {
-				this.handleMessageMax();
+			if (!hintVal) {
+				this.handleMessageMax(); 
 				if (value.length <= MAX_INPUT) {
                     // Hash passwords if detected
                     value = this.matchPassword(value);
@@ -97,8 +89,8 @@ class Client extends React.Component {
 				else {
 					this.setMessage("BRO CHILLOUT that message is too long my man.");
 				}
+				this.typeahead.clear();
 			}
-			this.typeahead.clear();
         }
     }
 
@@ -226,7 +218,8 @@ class Client extends React.Component {
                 <CommandBar
                     onInputChange={this.handleInputChange}
                     ref={commandBar => {if (commandBar) this.typeahead = commandBar.typeahead}} 
-                    type={this.state.inputType}
+					type={this.state.inputType}
+					onKeyDown={this.handleKeyDown}
                 />
             </Container>
         );

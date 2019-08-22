@@ -554,6 +554,7 @@ impl Default for Deck {
 			"JRZ",
 			"I don't fucking care",
 			"👨🏿",
+			"Lao Gan Ma",
         ];
 
         let thrustees = vec![
