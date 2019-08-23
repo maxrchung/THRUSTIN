@@ -74,5 +74,8 @@
     "start-dev": "webpack-dev-server --config webpack.dev.babel.js --open",
     "watch-dev": "webpack --config webpack.dev.babel.js --watch"
   },
+  "sideEffects": [
+    "*.scss"
+  ],
   "version": "0.3.0"
 }
