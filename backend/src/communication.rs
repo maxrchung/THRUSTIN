@@ -405,7 +405,6 @@ impl Communication for WebSocketCommunication {
 
     // Send message to client with the corresponding token
     fn send_message(&self, token: &u32, message: &str, state: &PlayerState) {
-        let a = format!("{}", state);
         let msg = json!({
             "bg": "000",
             "fg": "b7410e",
