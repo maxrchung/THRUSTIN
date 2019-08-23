@@ -1,5 +1,13 @@
 {
-  "author": "",
+  "author": {
+    "name": "Max Chung",
+    "email": "maxrchung@gmail.com",
+    "url": "http://maxrchung.com"
+  },
+  "contributors": [
+    "Alex Liu",
+    "Royce Sato"
+  ],
   "dependencies": {
     "bootstrap": "^4.2.1",
     "bootstrap-material-design": "^4.1.1",
@@ -10,7 +18,7 @@
     "react-dom": "^16.8.5",
     "reactstrap": "^8.0.1"
   },
-  "description": "",
+  "description": "It's like Cards Against Humanity but with more THRUSTING.",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
@@ -43,7 +51,20 @@
     "webpack-dev-server": "^3.2.1",
     "webpack-merge": "^4.2.1"
   },
-  "main": "index.js",
+  "homepage": "https://THRUSTIN.rs",
+  "keywords": [
+    "THRUST",
+    "THRUSTEE",
+    "THRUSTER",
+    "THRUSTIN",
+    "THRUSTING"
+  ],
+  "license": "MIT",
+  "name": "thrustin",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/maxrchung/THRUSTIN"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-dev": "webpack --config webpack.dev.babel.js",
@@ -53,8 +74,5 @@
     "start-dev": "webpack-dev-server --config webpack.dev.babel.js --open",
     "watch-dev": "webpack --config webpack.dev.babel.js --watch"
   },
-  "keywords": [],
-  "license": "ISC",
-  "name": "thrustin",
-  "version": "0.3.0",
+  "version": "0.3.0"
 }
