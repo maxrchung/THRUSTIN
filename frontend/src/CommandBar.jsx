@@ -11,7 +11,8 @@ class CommandBar extends React.Component {
 		return (
 			<Typeahead
 				autoFocus={true}
-				id="commandBar"
+				// id is required by Typeahead component
+				id="commandBar" 
 				inputProps={{
 					type: this.props.type
 				}}
