@@ -14,6 +14,7 @@ const MAX_MSGS = 696;
 
 class Client extends React.Component {
     state = {
+		playerState: "ChooseName",
         inputType: "text",
         messageCounter: 1,
         messages: [
@@ -48,7 +49,17 @@ class Client extends React.Component {
         /^\.login \w+ \w+/,
         /^\.r \w+ \w+/,
         /^\.register \w+ \w+/,
-    ]
+	]
+	
+	stateToOptions = {
+		"ChooseName": [".help", ".name", ".login", ".register"],
+		"OutOfLobby": [".color", ".help", ".join", ".list", ".make", ".name", ".play", ".THRUST", ".UNTHRUST", ".who", ".account", ".username", ".password", ".ban", ".unban", ".chieftain", ".unchieftain"],
+		"InLobby": [".help", ".info", ".leave", ".THRUST", ".UNTHRUST", ".who", ".chief", ".house", ".kick", ".password", ".players", ".points", ".start", ".THRUSTEE", ".THRUSTERS", ".account", ".ban", ".unban", ".chieftain", ".unchieftain"],
+		"Playing": [".help", ".info", ".leave", ".THRUST", ".who", ".end", ".kick", ".account", ".ban", ".unban", ".chieftain", ".unchieftain"],
+		"Choosing": [".help", ".info", ".leave", ".THRUST", ".who", ".end", ".kick", ".account", ".chieftain", ".unchieftain"],
+		"Deciding": [".help", ".info", ".leave", ".THRUST", ".who", ".end", ".kick", ".account", ".ban", ".unban", ".chieftain", ".unchieftain"],
+		"Waiting": [".help", ".info", ".leave", ".who", ".end", ".kick", ".account", ".ban", ".unban", ".chieftain", ".unchieftain"],
+	}
 
     componentDidMount() {
         if (process.env.NODE_ENV === "production") {
@@ -84,7 +95,7 @@ class Client extends React.Component {
 			}
 			this.typeahead.clear();
         }
-    }
+	}
 
     // Validation stuff to execute when input has been changed, can't be done in keydown
     handleInputChange = value => {
@@ -97,7 +108,7 @@ class Client extends React.Component {
     }
 
     handleMessage = e => {
-        this.setJSON(e.data);
+		this.setJSON(e.data);
     }
 
     handleMessageMax = () => {
@@ -138,9 +149,12 @@ class Client extends React.Component {
 
     setJSON = data => {
         const shouldScroll = this.shouldScroll();
-        const message = JSON.parse(data);
+		const message = JSON.parse(data);
+		// Playerstate is not updated when chatting (undefined playerstate)
+		const playerState = message.state ? message.state : this.state.playerState;
         this.handleMessageMax();
         this.setState({
+			playerState,
             messages: this.state.messages.concat(
                 <Message bg={message.bg} fg={message.fg} from={message.from} key={this.updateMessageCounter()}>
                     <MessageText content={message.message} from={message.from} />
@@ -150,7 +164,7 @@ class Client extends React.Component {
 
         if (shouldScroll) {
             this.scrollToDummy();
-        }
+		}
     }
 
     setMessage = message => {
@@ -212,6 +226,8 @@ class Client extends React.Component {
                     ref={commandBar => {if (commandBar) this.typeahead = commandBar.typeahead}} 
 					type={this.state.inputType}
 					onKeyDown={this.handleKeyDown}
+					playerState={this.state.playerState}
+					options={this.stateToOptions[this.state.playerState]}
                 />
             </Container>
         );
