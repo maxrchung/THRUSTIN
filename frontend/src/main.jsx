@@ -90,6 +90,8 @@ class Client extends React.Component {
                     this.setMessage("BRO CHILLOUT that message is too long my man.");
                 }
                 this.typeahead.clear();
+            } else if (e.key == "Escape") {
+                this.typeahead.clear();
             }
         }
     }
