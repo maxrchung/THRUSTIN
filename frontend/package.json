@@ -1,20 +1,13 @@
 {
-  "name": "thrustin",
-  "version": "0.3.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build-dev": "webpack --config webpack.dev.babel.js",
-    "build-prod": "webpack --config webpack.prod.babel.js",
-    "stats-dev": "webpack --config webpack.dev.babel.js --profile --json > stats-dev.json && webpack-bundle-analyzer stats-dev.json",
-    "stats-prod": "webpack --config webpack.prod.babel.js --profile --json > stats-prod.json && webpack-bundle-analyzer stats-prod.json",
-    "start-dev": "webpack-dev-server --config webpack.dev.babel.js --open",
-    "watch-dev": "webpack --config webpack.dev.babel.js --watch"
+  "author": {
+    "name": "Max Chung",
+    "email": "maxrchung@gmail.com",
+    "url": "http://maxrchung.com"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "contributors": [
+    "Alex Liu",
+    "Royce Sato"
+  ],
   "dependencies": {
     "bootstrap": "^4.2.1",
     "bootstrap-material-design": "^4.1.1",
@@ -25,6 +18,7 @@
     "react-dom": "^16.8.5",
     "reactstrap": "^8.0.1"
   },
+  "description": "It's like Cards Against Humanity but with more THRUSTING.",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
@@ -56,5 +50,32 @@
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.2.1",
     "webpack-merge": "^4.2.1"
-  }
+  },
+  "homepage": "https://THRUSTIN.rs",
+  "keywords": [
+    "THRUST",
+    "THRUSTEE",
+    "THRUSTER",
+    "THRUSTIN",
+    "THRUSTING"
+  ],
+  "license": "MIT",
+  "name": "thrustin",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/maxrchung/THRUSTIN"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-dev": "webpack --config webpack.dev.babel.js",
+    "build-prod": "webpack --config webpack.prod.babel.js",
+    "stats-dev": "webpack --config webpack.dev.babel.js --profile --json > build/stats-dev.json && webpack-bundle-analyzer build/stats-dev.json",
+    "stats-prod": "webpack --config webpack.prod.babel.js --profile --json > build/stats-prod.json && webpack-bundle-analyzer build/stats-prod.json",
+    "start-dev": "webpack-dev-server --config webpack.dev.babel.js --open",
+    "watch-dev": "webpack --config webpack.dev.babel.js --watch"
+  },
+  "sideEffects": [
+    "*.scss"
+  ],
+  "version": "0.3.0"
 }

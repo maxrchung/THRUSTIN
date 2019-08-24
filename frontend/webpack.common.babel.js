@@ -28,10 +28,12 @@ export default {
     filename: "[name].[contenthash].js"
   },
   plugins: [
+    // Currently we clean and copy favicon files to the build folder on every build
+    // This can seem a bit inefficient and a waste of resources, but I want to be able to keep favicon in src and saved in the repo
     new CleanWebpackPlugin({
       // Thank you https://github.com/webpack-contrib/copy-webpack-plugin/issues/385#issuecomment-508914721
       cleanStaleWebpackAssets: false,
-      cleanOnceBeforeBuildPatterns: ["**/*", "!media", "!media/*"],
+      cleanOnceBeforeBuildPatterns: ["**/*", "!media", "!media/*", "!stats-*.json"],
     }),
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash].css"

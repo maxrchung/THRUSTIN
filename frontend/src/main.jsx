@@ -69,33 +69,42 @@ class Client extends React.Component {
             this.connection = new WebSocket("ws://localhost:3012")
         }
         this.connection.onmessage = this.handleMessage; 
-        this.connection.onclose = this.handleClose;
+		this.connection.onclose = this.handleClose;
+		document.addEventListener("keydown", this.handleKeyDown);
+	}
+	
+	componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
     }
 	
     handleClose = () => {
         this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
 	};
 
-    handleKeyDown = e => {
+ 	handleKeyDown = e => {
         const isWhitedModifier = e.getModifierState("Control") || e.getModifierState("Meta") || e.key == "PageDown" || e.key == "PageUp";
         if (document.activeElement !== this.typeahead && !isWhitedModifier) {
             this.typeahead.focus();
         }
 
-        let value = this.typeahead.getInput().value;
-		if (e.key == "Enter" && value !== "") {
-			this.handleMessageMax(); 
-			if (value.length <= MAX_INPUT) {
-				// Hash passwords if detected
-				value = this.matchPassword(value);
-				this.connection.send(value);
-			}
-			else {
-				this.setMessage("BRO CHILLOUT that message is too long my man.");
-			}
-			this.typeahead.clear();
+        const value = this.typeahead.getInput().value;
+        if (value) {
+            if (e.key == "Enter") {
+                this.handleMessageMax(); 
+                if (value.length <= MAX_INPUT) {
+                    // Hash passwords if detected
+                    const hash = this.matchPassword(value);
+                    this.connection.send(hash);
+                }
+                else {
+                    this.setMessage("BRO CHILLOUT that message is too long my man.");
+                }
+                this.typeahead.clear();
+            } else if (e.key == "Escape") {
+                this.typeahead.clear();
+            }
         }
-	}
+    }
 
     // Validation stuff to execute when input has been changed, can't be done in keydown
     handleInputChange = value => {
@@ -225,8 +234,6 @@ class Client extends React.Component {
                     onInputChange={this.handleInputChange}
                     ref={commandBar => {if (commandBar) this.typeahead = commandBar.typeahead}} 
 					type={this.state.inputType}
-					onKeyDown={this.handleKeyDown}
-					playerState={this.state.playerState}
 					options={this.stateToOptions[this.state.playerState]}
                 />
             </Container>

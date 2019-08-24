@@ -6,7 +6,8 @@ class CommandBar extends React.Component {
 		return (
 			<Typeahead
 				autoFocus={true}
-				id="commandBar"
+				// id is required by Typeahead component
+				id="commandBar" 
 				inputProps={{
 					type: this.props.type
 				}}
@@ -14,7 +15,6 @@ class CommandBar extends React.Component {
 				options={this.props.options}
 				placeholder="Enter command..."
 				ref={typeahead => this.typeahead = typeahead}
-				onKeyDown={this.props.onKeyDown}
 			/>
 		);
 	}
