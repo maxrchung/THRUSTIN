@@ -561,6 +561,10 @@ impl Default for Deck {
             "TRUEEE",
             "feels kind of bad man",
             "full retard",
+			"<audio controls><source src='media/Bruh.mp3'/></audio>", // Bruh
+			"<audio controls><source src='media/Camellia Roblox.mp3'/></audio>", // Camellia - Exit This Earth's Atomosphere | Roblox death sound remix
+			"<audio controls><source src='media/Blue Zenith.mp3'/></audio>", // Blue Zenith
+			"<img src='media/yakub.png'>"
         ];
 
         let thrustees = vec![
