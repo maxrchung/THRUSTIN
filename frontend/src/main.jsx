@@ -59,7 +59,13 @@ class Client extends React.Component {
         }
         this.connection.onmessage = this.handleMessage; 
         this.connection.onclose = this.handleClose;
+        document.addEventListener("keydown", this.handleKeyDown);
     }
+
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyDown);
+    }
+
 	
     handleClose = () => {
         this.setMessage("Yo the connection broke so that probably means you were inactive too long or the server blew up. Try refreshing maybe.");
@@ -71,18 +77,20 @@ class Client extends React.Component {
             this.typeahead.focus();
         }
 
-        let value = this.typeahead.getInput().value;
-		if (e.key == "Enter" && value !== "") {
-			this.handleMessageMax(); 
-			if (value.length <= MAX_INPUT) {
-				// Hash passwords if detected
-				value = this.matchPassword(value);
-				this.connection.send(value);
-			}
-			else {
-				this.setMessage("BRO CHILLOUT that message is too long my man.");
-			}
-			this.typeahead.clear();
+        const value = this.typeahead.getInput().value;
+        if (value) {
+            if (e.key == "Enter") {
+                this.handleMessageMax(); 
+                if (value.length <= MAX_INPUT) {
+                    // Hash passwords if detected
+                    const hash = this.matchPassword(value);
+                    this.connection.send(hash);
+                }
+                else {
+                    this.setMessage("BRO CHILLOUT that message is too long my man.");
+                }
+                this.typeahead.clear();
+            }
         }
     }
 
@@ -211,7 +219,6 @@ class Client extends React.Component {
                     onInputChange={this.handleInputChange}
                     ref={commandBar => {if (commandBar) this.typeahead = commandBar.typeahead}} 
 					type={this.state.inputType}
-					onKeyDown={this.handleKeyDown}
                 />
             </Container>
         );
