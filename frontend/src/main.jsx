@@ -90,7 +90,6 @@ class Client extends React.Component {
         const value = this.typeahead.getInput().value;
         if (value) {
             if (e.key == "Enter") {
-                this.handleMessageMax(); 
                 if (value.length <= MAX_INPUT) {
                     // Hash passwords if detected
                     const hash = this.matchPassword(value);
@@ -160,7 +159,8 @@ class Client extends React.Component {
         const shouldScroll = this.shouldScroll();
 		const message = JSON.parse(data);
 		// Playerstate is not updated when chatting (undefined playerstate)
-		const playerState = message.state ? message.state : this.state.playerState;
+        const playerState = message.state ? message.state : this.state.playerState;
+        
         this.handleMessageMax();
         this.setState({
 			playerState,
@@ -213,7 +213,11 @@ class Client extends React.Component {
 
     renderTop() {
         if (this.state.messageCounter > MAX_MSGS) {
-            return <div id="ellipsis" className="py-2">...</div>;
+            return (
+                <Message>
+                    <div id="ellipsis">...</div>
+                </Message>
+            );
         }
         return (
             <Message>
