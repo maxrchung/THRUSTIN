@@ -572,6 +572,11 @@ impl Default for Deck {
 			"<video controls><source src='media/Vaxei.mp4'/></video>",
 			"<video controls><source src='media/Kynan.mp4'/></video>",
 			"<video controls><source src='media/Osu Rage.mp4'/></video>",
+			"<video controls><source src='media/Karthy.mp4'/></video>",
+			"<img src='media/DeanAndAlexandr.png'>",
+			"<img src='media/Varvalian.png'>",
+			"<img src='media/ShigeTPose.png'>",
+			"<img src='media/shigeBlessTroll.jpg'>",
         ];
 
         let thrustees = vec![
