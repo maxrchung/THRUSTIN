@@ -178,6 +178,7 @@ class Client extends React.Component {
 
     setMessage = message => {
         const data = JSON.stringify({
+            from: THRUSTY,
             message: message
         });
        this.setJSON(data);
