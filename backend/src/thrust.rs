@@ -561,10 +561,17 @@ impl Default for Deck {
             "TRUEEE",
             "feels kind of bad man",
             "full retard",
-			"<audio controls><source src='media/Bruh.mp3'/></audio>", // Bruh
-			"<audio controls><source src='media/Camellia Roblox.mp3'/></audio>", // Camellia - Exit This Earth's Atomosphere | Roblox death sound remix
-			"<audio controls><source src='media/Blue Zenith.mp3'/></audio>", // Blue Zenith
-			"<img src='media/yakub.png'>"
+			"<audio controls><source src='media/Bruh.mp3'/></audio>", 
+			"<audio controls><source src='media/Camellia Roblox.mp3'/></audio>", 
+			"<audio controls><source src='media/Blue Zenith.mp3'/></audio>",
+			"<img src='media/yakub.png'>",
+			"<video controls><source src='media/Yakub Intro.mp4'/></video>",
+			"<video controls><source src='media/TBF.mp4'/></video>",
+			"<video controls><source src='media/Lao Gan Ma.mp4'/></video>",
+			"<video controls><source src='media/GmaulRush.mp4'/></video>",
+			"<video controls><source src='media/Vaxei.mp4'/></video>",
+			"<video controls><source src='media/Kynan.mp4'/></video>",
+			"<video controls><source src='media/Osu Rage.mp4'/></video>",
         ];
 
         let thrustees = vec![
