@@ -4,7 +4,6 @@ class Message extends React.Component {
     static defaultProps = {
         bg: "000",
         fg: "b7410e",
-        from: "THRUSTY"
     }
 
     // Fade foreground by about 50%

@@ -20,8 +20,7 @@ class Client extends React.Component {
         messages: [
             <Message key={0}>
                 <MessageText 
-                    content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game similar to Cards Against Humanity and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>. Ok enter '.help' below if you need some more help (obviously). If you wanta keep up with our development check us out on <a href=&quot;https://github.com/maxrchung/THRUSTIN/&quot;>GitHub.com</a> and <a href=&quot;https://twitter.com/THRUSTIN_rs?iloveducks&quot;>Twitter.com</a>."
-                    from="THRUSTY" 
+                    content="Welcome to THRUSTIN! I'm THRUSTY, your trusty guide to THRUSTING! Yeah aite THRUSTIN is a really neat THRUST in the blank game similar to Cards Against Humanity and you can make your own THRUSTS and play them in this console terminal shell interface web format in lobbies. Yeah it's lit thanks to our swaggy devs <a href=&quot;https://osu.ppy.sh/users/1472763&quot;>max</a>, <a href=&quot;https://osu.ppy.sh/users/3071659&quot;>alex</a>, <a href=&quot;https://osu.ppy.sh/users/2747929&quot;>royce</a>. Ok enter '.help' below if you need some more help (obviously). If you wanta keep up with our development check us out on <a href=&quot;https://github.com/maxrchung/THRUSTIN/&quot;>GitHub.com</a> and <a href=&quot;https://twitter.com/THRUSTIN_rs?iloveducks&quot;>Twitter.com</a>."
                 />
             </Message>
         ],
@@ -165,8 +164,8 @@ class Client extends React.Component {
         this.setState({
 			playerState,
             messages: this.state.messages.concat(
-                <Message bg={message.bg} fg={message.fg} from={message.from} key={this.updateMessageCounter()}>
-                    <MessageText content={message.message} from={message.from} />
+                <Message bg={message.bg} fg={message.fg} key={this.updateMessageCounter()}>
+                    <MessageText bg={message.bg} content={message.message} fg={message.fg} from={message.from} level={message.level}/>
                 </Message>
             )
         });
