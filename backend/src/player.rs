@@ -112,6 +112,11 @@ impl Player {
     }
 
     pub fn color(&mut self, split: Vec<&str>) {
+		if !self.is_authenticated {
+			self.send_message("Bro. You need a registered account to set color. You can't just be doin that man.");
+			return;
+		}
+
         if split.len() != 3 {
             self.send_message("Invalid parameters to color.");
             return;
@@ -133,7 +138,7 @@ impl Player {
         self.bg = String::from(bg);
         self.fg = String::from(fg);
 
-        if !self.is_authenticated || self.db.borrow().color(&self.name, bg, fg) {
+        if self.db.borrow().color(&self.name, bg, fg) {
             self.send_message(&format!(
                 "Awesome, we successfully set your chat colors to {} (bg) and {} (fg).",
                 bg, fg
@@ -393,6 +398,11 @@ impl Player {
     }
 
     pub fn thrust(&mut self, input: &str, split: &Vec<&str>) {
+		if !self.is_authenticated {
+			self.send_message("Brother. You cannot have a custom deck without being registered.");
+			return;
+		}
+
         if split.len() < 2 {
             self.display_deck();
             return;
