@@ -153,18 +153,15 @@ fn update_account_stats() {
     client.send(1, ".a");
     client.read_all();
     assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
-
     client.send(2, ".r 2 2 2");
     client.send(2, ".j 1");
     client.send(2, ".a");
     client.read_all();
     assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
-
     client.send(1, ".t 1");
     client.thrust(2);
     client.send(1, ".t 1");
     client.read_all();
-
     client.send(1, ".a");
     client.send(2, ".a");
     client.read_all();
@@ -337,7 +334,7 @@ fn ban() {
 #[test]
 fn color() {
     let mut client = common::setup_with_db("color");
-    client.send(1, ".n 1");
+    client.send(1, ".l chieftain chieftain");
     client.send(1, ".c 000");
     client.read_all();
     assert_eq!(client.last(1), "Invalid parameters to color.");
@@ -388,9 +385,9 @@ fn color() {
 #[test]
 fn multiplayer_color() {
     let mut client = common::setup_with_db("color");
-    client.send(1, ".n 1");
+    client.send(1, ".l chieftain chieftain");
     client.send(1, ".c 000 111");
-    client.send(2, ".n 2");
+    client.send(2, ".r testerboy 69 69");
     client.send(2, ".c 111 000");
     client.send(1, "yo");
     client.read_all();
@@ -398,7 +395,7 @@ fn multiplayer_color() {
         client.last_bg(1),
         "000"
     );
-        assert_eq!(
+    assert_eq!(
         client.last_fg(2),
         "111"
     );
@@ -433,4 +430,22 @@ fn login_after_rename() {
     client.send(3, "Holler at your male.");
     client.read_all();
     assert_eq!(client.last_from(2), "chieftain2");
+}
+
+#[test]
+fn unauthenticated_color() {
+	let mut client = common::setup_with_db("unathenticated_color");
+	client.send(1, ".n 1");
+	client.send(1, ".color ffffff 000000");
+	client.read_all();
+	assert_eq!(client.last(1), "Bro. You need a registered account to set color. You can't just be doin that man.");	
+}
+
+#[test]
+fn authenticated_color() {
+	let mut client = common::setup_with_db("authenticated_color");
+	client.send(1, ".l chieftain chieftain");
+	client.send(1, ".color ffffff 000000");
+	client.read_all();
+	assert_eq!(client.last(1), "Awesome, we successfully set your chat colors to ffffff (bg) and 000000 (fg).");
 }

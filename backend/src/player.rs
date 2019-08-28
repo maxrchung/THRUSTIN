@@ -30,6 +30,8 @@ impl fmt::Display for PlayerState {
 pub struct Player {
     comm: Rc<RefCell<dyn Communication>>,
     db: Rc<RefCell<Database>>,
+	// pub exp: i32,
+	// pub level: i32,
     pub bg: String,
     pub fg: String,
     pub game: PlayerGame,
@@ -181,6 +183,10 @@ impl Player {
             // You get hacked u lose lmao
             // You login in from another device you chillin
             Some(doc) => {
+				// if let Ok(exp) = doc.get_i32("total_exp") {
+				// 	self.exp = exp;
+				// }
+
                 if let Ok(bg) = doc.get_str("bg") {
                     self.bg = String::from(bg);
                 }
@@ -292,6 +298,8 @@ impl Player {
             personal_deck: Deck::new(),
             state: PlayerState::ChooseName,
             token,
+			// exp: 0,
+			// level: 0,
         }
     }
 
@@ -311,6 +319,8 @@ impl Player {
             personal_deck: Deck::new(),
             state: PlayerState::Playing,
             token: 0,
+			// exp: 0,
+			// level: 0,
         }
     }
 
@@ -564,6 +574,12 @@ impl Player {
             self.db.borrow().up_points_gained(&self.name);
         }
     }
+
+	pub fn up_total_exp(&self, exp_gained: i32) {
+		if self.is_authenticated {
+			self.db.borrow().up_total_exp(&self.name, exp_gained);
+		}
+	}
 
     pub fn who(pl: Rc<RefCell<Player>>, players: &mut HashMap<u32, Rc<RefCell<Player>>>) {
         let pl = pl.borrow();

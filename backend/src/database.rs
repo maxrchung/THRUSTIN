@@ -457,6 +457,45 @@ impl Database {
         }
     }
 
+	// Whenever a player is in a lobby that has ended, winner or not
+	pub fn up_total_exp(&self, name: &str, exp_gained: i32) {
+		if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::I32(total_exp)) = doc.get("total_exp") {
+                let filter = doc! {
+                    "name": name
+                };
+                let update = doc! {
+                    "$set": {
+                        "total_exp": total_exp + exp_gained
+                    }
+                };
+                self.users
+                    .update_one(filter, update, None)
+                    .expect("Failed to update total exp");
+            }
+        }
+	}
+
+
+	// When a player gains enough EXP to level up
+	pub fn up_level(&self, name: &str) {
+        if let Some(doc) = self.find_name_doc(&name) {
+            if let Some(&Bson::I32(level)) = doc.get("level") {
+                let filter = doc! {
+                    "name": name
+                };
+                let update = doc! {
+                    "$set": {
+                        "level": level + 1
+                    }
+                };
+                self.users
+                    .update_one(filter, update, None)
+                    .expect("Failed to update points gained");
+            }
+        }
+    }
+
     pub fn register(&self, user: &str, pass: &str) -> bool {
         if self.find_user_doc(user).is_some() {
             return false;

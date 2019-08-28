@@ -55,8 +55,8 @@ fn fail_thrustee_validation() {
 
 #[test]
 fn fail_thruster_validation() {
-    let mut client = common::setup();
-    client.send(1, ".n 1");
+    let mut client = common::setup_with_db("fail_thruster_validation");
+    client.send(1, ".r pleaseletmeinbro 1 1");
     client.send(1, ".m");
     client.send(1, ".ho 0");
     client.send(1, ".t \"Now this is _____\"");

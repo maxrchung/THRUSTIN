@@ -301,6 +301,7 @@ impl Lobby {
     }
 
     pub fn end_game(&mut self) {
+		// self.give_players_exp();
         self.state = LobbyState::Waiting;
         // Change players to inlobby state
         for rc in &self.list {
@@ -308,6 +309,37 @@ impl Lobby {
             player.state = PlayerState::InLobby;
         }
     }
+
+	pub fn give_players_exp(&mut self) {
+		let mut exp_gained = 0;
+		let num_player = self.list.len();
+
+		for rc in &self.list {
+			let mut player = rc.borrow_mut();
+			let points_won = player.game.points;
+			// if winner
+			if points_won >= self.max_points {
+				exp_gained += self.points_in_lobby() + num_player as u8;
+			}
+			else {
+				exp_gained += points_won + num_player as u8;
+			}
+			//player.up_total_exp(exp_gained as i32);
+
+			// if self.ready_to_level(player) {
+			// 	player.up_level();
+			// }
+		}
+	}
+
+	pub fn points_in_lobby(&self) -> u8 {
+		let mut total_points = 0;
+		for rc in &self.list {
+			let player = rc.borrow();
+			total_points += player.game.points;
+		}
+		return total_points
+	}
 
     pub fn choose(&mut self, input: Vec<&str>, pl: Rc<RefCell<Player>>) {
         if input.len() != 2 {
