@@ -603,7 +603,9 @@ impl Default for Deck {
 			"jerking off to voice actors instead of anime girls",
 			"sucking dick at League",
 			"chocomint ice",
-			"Kazuki"
+			"Kazuki",
+			"<img src='media/vaxei.png'>",
+			"<img src='media/rowlette.png'>",
         ];
 
         let thrustees = vec![
@@ -869,6 +871,9 @@ impl Default for Deck {
 			"_____, the bane of my existence.",
 			"Damn I really suck at _____.",
 			"Hello ^^! Please describe the opposite of me in one THRUST 😊: _____.",
+			"<br/><video controls><source src='media/Yakub Intro.mp4'/></video><br/>Thoughts? _____.",
+			"<br/><video controls><source src='media/Osu Rage.mp4'/></video><br/>This man seems to be upset. What do you do? _____.",
+			"<br/><img src='media/yakubtemple.png'><br/>Welcome to the Church of Yakub. _____.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),

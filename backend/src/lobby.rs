@@ -301,7 +301,7 @@ impl Lobby {
     }
 
     pub fn end_game(&mut self) {
-		// self.give_players_exp();
+		self.give_players_exp();
         self.state = LobbyState::Waiting;
         // Change players to inlobby state
         for rc in &self.list {
@@ -311,25 +311,40 @@ impl Lobby {
     }
 
 	pub fn give_players_exp(&mut self) {
-		let mut exp_gained = 0;
+		let points_in_lobby = self.points_in_lobby();
 		let num_player = self.list.len();
 
 		for rc in &self.list {
 			let mut player = rc.borrow_mut();
-			let points_won = player.game.points;
-			// if winner
-			if points_won >= self.max_points {
-				exp_gained += self.points_in_lobby() + num_player as u8;
-			}
-			else {
-				exp_gained += points_won + num_player as u8;
-			}
-			//player.up_total_exp(exp_gained as i32);
+			if player.is_authenticated {
+				let mut exp_gained = 0;
+				let points_won = player.game.points;
 
-			// if self.ready_to_level(player) {
-			// 	player.up_level();
-			// }
+				// if winner
+				if points_won >= self.max_points {
+					exp_gained += points_in_lobby + num_player as u8;
+				}
+				else {
+					exp_gained += points_won + num_player as u8;
+				}
+				player.up_total_exp(exp_gained as i32);
+				
+				// Possible to level multiple times in earlier levels so I used While Loop
+				while player.level != 100 && self.ready_to_level(player.level, player.exp) {
+					player.up_level();
+				}
+			}
 		}
+	}
+
+	pub fn ready_to_level(&self, level: i32, exp: i32) -> bool {
+		return exp >= self.exp_from_level(level + 1);
+	}
+
+	pub fn exp_from_level(&self, level: i32) -> i32 {
+		let exponent: f32 = 2.15;
+		let level = level as f32;
+    	level.powf(exponent).round() as i32
 	}
 
 	pub fn points_in_lobby(&self) -> u8 {

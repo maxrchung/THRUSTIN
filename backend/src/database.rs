@@ -476,7 +476,6 @@ impl Database {
         }
 	}
 
-
 	// When a player gains enough EXP to level up
 	pub fn up_level(&self, name: &str) {
         if let Some(doc) = self.find_name_doc(&name) {
@@ -510,7 +509,9 @@ impl Database {
             "points_gained": 0,
             "games_played": 0,
             "games_won": 0,
-            "is_chieftain": false
+            "is_chieftain": false,
+			"total_exp": 0,
+			"level": 0,
         };
         match self.users.insert_one(doc.clone(), None) {
             Ok(_) => true,
