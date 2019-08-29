@@ -137,6 +137,11 @@ impl Player {
             return;
         }
 
+        if (bg.len() != 3 && bg.len() != 6) || (fg.len() != 3 && fg.len() != 6) {
+            self.send_message("Yo, I have identified error with color. You must submit a hex color argument as either 3 or 6 characters.");
+            return;
+        }
+
         self.bg = String::from(bg);
         self.fg = String::from(fg);
 

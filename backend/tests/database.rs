@@ -449,3 +449,20 @@ fn authenticated_color() {
 	client.read_all();
 	assert_eq!(client.last(1), "Awesome, we successfully set your chat colors to ffffff (bg) and 000000 (fg).");
 }
+
+#[test]
+fn color_arguments() {
+    let mut client = common::setup_with_db("color_arguments");
+    client.send(1, ".l chieftain chieftain");
+	client.send(1, ".c #000 #fff");
+    client.read_all();
+    assert_eq!(client.last(1), "Yo, I have identified error with color. You must submit a hex color argument as either 3 or 6 characters.");
+
+    client.send(1, ".c 000 ffff");
+    client.read_all();
+    assert_eq!(client.last(1), "Yo, I have identified error with color. You must submit a hex color argument as either 3 or 6 characters.");
+
+    client.send(1, ".c 000 fff");
+    client.read_all();
+	assert_eq!(client.last(1), "Awesome, we successfully set your chat colors to 000 (bg) and fff (fg).");
+}
