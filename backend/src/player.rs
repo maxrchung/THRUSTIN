@@ -591,11 +591,12 @@ impl Player {
 		self.exp += exp_gained;
 	}
 
-	pub fn up_level(&mut self) {
+	pub fn up_level(&mut self, exp_to_level: i32) {
 		if self.is_authenticated {
-			self.db.borrow().up_level(&self.name);
+			self.db.borrow().up_level(&self.name, exp_to_level);
 		}
 		self.level += 1;
+		self.exp -= exp_to_level;
 	}
 
     pub fn who(pl: Rc<RefCell<Player>>, players: &mut HashMap<u32, Rc<RefCell<Player>>>) {

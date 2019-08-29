@@ -327,21 +327,23 @@ impl Lobby {
 				else {
 					exp_gained += points_won + num_player as u8;
 				}
+
 				player.up_total_exp(exp_gained as i32);
 				
 				// Possible to level multiple times in earlier levels so I used While Loop
 				while player.level != 100 && self.ready_to_level(player.level, player.exp) {
-					player.up_level();
+					let current_level: i32 = player.level;
+					player.up_level(self.get_exp_from_level(current_level));
 				}
 			}
 		}
 	}
 
 	pub fn ready_to_level(&self, level: i32, exp: i32) -> bool {
-		return exp >= self.exp_from_level(level + 1);
+		return exp >= self.get_exp_from_level(level);
 	}
 
-	pub fn exp_from_level(&self, level: i32) -> i32 {
+	pub fn get_exp_from_level(&self, level: i32) -> i32 {
 		let exponent: f32 = 2.15;
 		let level = level as f32;
     	level.powf(exponent).round() as i32

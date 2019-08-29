@@ -476,22 +476,25 @@ impl Database {
         }
 	}
 
-	// When a player gains enough EXP to level up
-	pub fn up_level(&self, name: &str) {
+	// When a player gains enough EXP to level up, level is increased and EXP decreases by amount required to level up
+	pub fn up_level(&self, name: &str, exp_to_level: i32) {
         if let Some(doc) = self.find_name_doc(&name) {
-            if let Some(&Bson::I32(level)) = doc.get("level") {
-                let filter = doc! {
-                    "name": name
-                };
-                let update = doc! {
-                    "$set": {
-                        "level": level + 1
-                    }
-                };
-                self.users
-                    .update_one(filter, update, None)
-                    .expect("Failed to update points gained");
-            }
+			if let Some(&Bson::I32(total_exp)) = doc.get("total_exp") {
+				if let Some(&Bson::I32(level)) = doc.get("level") {
+					let filter = doc! {
+						"name": name
+					};
+					let update = doc! {
+						"$set": {
+							"level": level + 1,
+							"total_exp": total_exp - exp_to_level
+						}
+					};
+					self.users
+						.update_one(filter, update, None)
+						.expect("Failed to update level");
+				}
+			}
         }
     }
 
