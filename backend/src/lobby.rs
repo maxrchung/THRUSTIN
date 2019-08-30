@@ -328,7 +328,7 @@ impl Lobby {
 					exp_gained += points_won + num_player as u8;
 				}
 
-				player.up_total_exp(exp_gained as i32);
+				player.up_exp(exp_gained as i32);
 				
 				// Possible to level multiple times in earlier levels so I used While Loop
 				while player.level != 100 && self.ready_to_level(player.level, player.exp) {

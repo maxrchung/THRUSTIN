@@ -1,3 +1,4 @@
+use crate::lobby::Lobby;
 use argon2;
 use chrono::{DateTime, Duration, TimeZone, Utc};
 use mongodb::coll::Collection;
@@ -149,6 +150,20 @@ impl Database {
                 } else {
                     messages.push(String::from("Games Won So Far - 0"));
                 }
+				if let Some(&Bson::I32(level)) = doc.get("level") {
+					if let Some(exp) = doc.get("exp") {
+						messages.push(format!("Level - {}", level));
+						let exponent: f32 = 2.15;
+						let exp_needed = (level as f32).powf(exponent).round() as i32;
+						messages.push(format!("Experience - {} / {}", exp, exp_needed));
+					} else {
+						messages.push(String::from("Level - 1"));
+						messages.push(String::from("Experience - 0 / 1"));
+					}
+				} else {
+					messages.push(String::from("Level - 1"));
+					messages.push(String::from("Experience - 0 / 1"));
+				}
             }
             None => {
                 messages.push(String::from("Yo there's a bit of an epic problem. We couldn't find your account data lmao. What is going on."));
@@ -458,28 +473,42 @@ impl Database {
     }
 
 	// Whenever a player is in a lobby that has ended, winner or not
-	pub fn up_total_exp(&self, name: &str, exp_gained: i32) {
+	pub fn up_exp(&self, name: &str, exp_gained: i32) {
 		if let Some(doc) = self.find_name_doc(&name) {
-            if let Some(&Bson::I32(total_exp)) = doc.get("total_exp") {
+            if let Some(&Bson::I32(exp)) = doc.get("exp") {
                 let filter = doc! {
                     "name": name
                 };
                 let update = doc! {
                     "$set": {
-                        "total_exp": total_exp + exp_gained
+                        "exp": exp + exp_gained
                     }
                 };
                 self.users
                     .update_one(filter, update, None)
-                    .expect("Failed to update total exp");
+                    .expect("Failed to update exp");
             }
+			else {
+				let filter = doc! {
+                    "name": name
+                };
+                let update = doc! {
+                    "$set": {
+                        "exp": exp_gained,
+						"level": 1
+                    }
+                };
+                self.users
+                    .update_one(filter, update, None)
+                    .expect("Failed to update exp");
+			}
         }
 	}
 
 	// When a player gains enough EXP to level up, level is increased and EXP decreases by amount required to level up
 	pub fn up_level(&self, name: &str, exp_to_level: i32) {
         if let Some(doc) = self.find_name_doc(&name) {
-			if let Some(&Bson::I32(total_exp)) = doc.get("total_exp") {
+			if let Some(&Bson::I32(exp)) = doc.get("exp") {
 				if let Some(&Bson::I32(level)) = doc.get("level") {
 					let filter = doc! {
 						"name": name
@@ -487,7 +516,7 @@ impl Database {
 					let update = doc! {
 						"$set": {
 							"level": level + 1,
-							"total_exp": total_exp - exp_to_level
+							"exp": exp - exp_to_level
 						}
 					};
 					self.users
@@ -513,8 +542,8 @@ impl Database {
             "games_played": 0,
             "games_won": 0,
             "is_chieftain": false,
-			"total_exp": 0,
-			"level": 0,
+			"exp": 0,
+			"level": 1,
         };
         match self.users.insert_one(doc.clone(), None) {
             Ok(_) => true,
@@ -532,6 +561,8 @@ impl Database {
             "points_gained": 0,
             "games_played": 0,
             "games_won": 0,
+			"level": 1,
+			"exp": 0,
             "is_chieftain": true
         };
         match self.users.insert_one(doc.clone(), None) {

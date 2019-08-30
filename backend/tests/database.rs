@@ -140,7 +140,7 @@ fn view_account() {
     client.send(2, ".r user2 2 2");
     client.send(2, ".a");
     client.read_all();
-    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - user2<br/>Name - user2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 0<br/>Games Won So Far - 0");
+    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - user2<br/>Name - user2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 0<br/>Games Won So Far - 0<br/>Level - 1<br/>Experience - 0 / 1");
 }
 
 #[test]
@@ -152,12 +152,12 @@ fn update_account_stats() {
     client.send(1, ".s");
     client.send(1, ".a");
     client.read_all();
-    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
+    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0<br/>Level - 1<br/>Experience - 0 / 1");
     client.send(2, ".r 2 2 2");
     client.send(2, ".j 1");
     client.send(2, ".a");
     client.read_all();
-    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
+    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0<br/>Level - 1<br/>Experience - 0 / 1");
     client.send(1, ".t 1");
     client.thrust(2);
     client.send(1, ".t 1");
@@ -165,8 +165,8 @@ fn update_account_stats() {
     client.send(1, ".a");
     client.send(2, ".a");
     client.read_all();
-    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0");
-    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 1<br/>Games Played So Far - 1<br/>Games Won So Far - 1");
+    assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 1<br/>Name - 1<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0<br/>Level - 2<br/>Experience - 1 / 4");
+    assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - 2<br/>Name - 2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 1<br/>Games Played So Far - 1<br/>Games Won So Far - 1<br/>Level - 2<br/>Experience - 2 / 4");
 }
 
 #[test]

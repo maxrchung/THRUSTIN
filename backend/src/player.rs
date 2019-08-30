@@ -192,10 +192,10 @@ impl Player {
 					self.level = level;
 				}
 
-				if let Ok(exp) = doc.get_i32("total_exp") {
+				if let Ok(exp) = doc.get_i32("exp") {
 					self.exp = exp;
 				}
-
+				
                 if let Ok(bg) = doc.get_str("bg") {
                     self.bg = String::from(bg);
                 }
@@ -308,7 +308,7 @@ impl Player {
             state: PlayerState::ChooseName,
             token,
 			exp: 0,
-			level: 0,
+			level: 1,
         }
     }
 
@@ -329,7 +329,7 @@ impl Player {
             state: PlayerState::Playing,
             token: 0,
 			exp: 0,
-			level: 0,
+			level: 1,
         }
     }
 
@@ -584,9 +584,9 @@ impl Player {
         }
     }
 
-	pub fn up_total_exp(&mut self, exp_gained: i32) {
+	pub fn up_exp(&mut self, exp_gained: i32) {
 		if self.is_authenticated {
-			self.db.borrow().up_total_exp(&self.name, exp_gained);
+			self.db.borrow().up_exp(&self.name, exp_gained);
 		}
 		self.exp += exp_gained;
 	}
