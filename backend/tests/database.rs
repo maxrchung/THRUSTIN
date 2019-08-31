@@ -466,3 +466,50 @@ fn color_arguments() {
     client.read_all();
 	assert_eq!(client.last(1), "Awesome, we successfully set your chat colors to 000 (bg) and fff (fg).");
 }
+
+#[test]
+fn level() {
+	let mut client = common::setup_with_db("level");
+	client.send(1, ".r boy 1 1");
+	client.send(1, ".m");
+	client.send(1, ".po 3");
+	client.send(1, ".s");
+	client.send(1, ".a");
+	client.read_all();
+	assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - boy<br/>Name - boy<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0<br/>Level - 1<br/>Experience - 0 / 1");
+
+	client.send(2, ".r boy2 2 2");
+	client.send(2, ".j 1");
+	client.send(2, ".a");
+	client.read_all();
+	assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - boy2<br/>Name - boy2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0<br/>Level - 1<br/>Experience - 0 / 1");
+
+	client.send(1, ".t 1");
+	client.send(2, ".t 1");
+	client.send(1, ".t 1");
+	// boy2 - 1
+	client.send(2, ".t 1");
+	client.send(1, ".t 1");
+	client.send(2, ".t 1");
+	// boy - 1
+	client.send(1, ".t 1");
+	client.send(2, ".t 1");
+	client.send(1, ".t 1");
+	// boy2 - 2
+	client.send(2, ".t 1");
+	client.send(1, ".t 1");
+	client.send(2, ".t 1");
+	// boy - 2
+	client.send(1, ".t 1");
+	client.send(2, ".t 1");
+	client.send(1, ".t 1");
+	// boy2 - 3 WIN
+	// boy gains 4 EXP, boy2 gains 7 EXP
+	client.send(1, ".a");
+	client.read_all();
+	assert_eq!(client.last(1), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - boy<br/>Name - boy<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 2<br/>Games Played So Far - 1<br/>Games Won So Far - 0<br/>Level - 2<br/>Experience - 3 / 4");
+
+	client.send(2, ".a");
+	client.read_all();
+	assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - boy2<br/>Name - boy2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 3<br/>Games Played So Far - 1<br/>Games Won So Far - 1<br/>Level - 3<br/>Experience - 2 / 11");
+}
