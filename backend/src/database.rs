@@ -488,20 +488,6 @@ impl Database {
                     .update_one(filter, update, None)
                     .expect("Failed to update exp");
             }
-			else {
-				let filter = doc! {
-                    "name": name
-                };
-                let update = doc! {
-                    "$set": {
-                        "exp": exp_gained,
-						"level": 1
-                    }
-                };
-                self.users
-                    .update_one(filter, update, None)
-                    .expect("Failed to update exp");
-			}
         }
 	}
 
