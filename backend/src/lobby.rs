@@ -881,7 +881,7 @@ impl Lobby {
 
     pub fn send_message_from(&self, from: &Player, message: &str) {
         for pl in &self.list {
-            pl.borrow().send_message_from(&from.name, &from.bg, &from.fg, message);
+            pl.borrow().send_message_from(&from.name, &from.bg, &from.fg, message, from.level);
         }
     }
 

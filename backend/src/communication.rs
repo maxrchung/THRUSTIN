@@ -20,7 +20,7 @@ pub trait Communication {
     // Send message as THRUSTY
     fn send_message(&self, token: &u32, message: &str, state: &PlayerState);
     // Send message from a user
-    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str);
+    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str, level: i32);
     fn send_messages(&self, token: &u32, messages: &Vec<String>, state: &PlayerState);
     fn disconnect(&mut self, token: &u32);
 
@@ -216,12 +216,13 @@ impl Communication for ChannelCommunication {
             .expect("Failed to send message.");
     }
 
-    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str) {
+    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str, level: i32) {
         let msg = json!({
             "bg": bg,
             "fg": fg,
             "from": from,
             "message": message,
+			"level": level
         })
         .to_string();
         self.to_send
@@ -423,12 +424,13 @@ impl Communication for WebSocketCommunication {
     }
 
     // Send message with from
-    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str) {
+    fn send_message_from(&self, token: &u32, from: &str, bg: &str, fg: &str, message: &str, level: i32) {
         let msg = json!({
             "bg": bg,
             "fg": fg,
             "from": from,
             "message": message,
+			"level": level
         })
         .to_string();
         let connections_lock = self.connections.lock().unwrap();

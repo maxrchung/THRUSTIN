@@ -159,7 +159,7 @@ class Client extends React.Component {
 		const message = JSON.parse(data);
 		// Playerstate is not updated when chatting (undefined playerstate)
         const playerState = message.state ? message.state : this.state.playerState;
-        
+        console.log(message.level, message.from);
         this.handleMessageMax();
         this.setState({
 			playerState,

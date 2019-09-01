@@ -393,10 +393,10 @@ impl Player {
         self.comm.borrow().send_message(&self.token, message, &self.state);
     }
 
-    pub fn send_message_from(&self, from: &str, bg: &str, fg: &str, message: &str) {
+    pub fn send_message_from(&self, from: &str, bg: &str, fg: &str, message: &str, level: i32) {
         self.comm
             .borrow()
-            .send_message_from(&self.token, from, bg, fg, message);
+            .send_message_from(&self.token, from, bg, fg, message, level);
     }
 
     pub fn send_message_out_of_lobby(
@@ -407,7 +407,7 @@ impl Player {
         for pl in players.values() {
             let pl = pl.borrow();
             if pl.state == PlayerState::OutOfLobby {
-                pl.send_message_from(&from.name, &from.bg, &from.fg, message);
+                pl.send_message_from(&from.name, &from.bg, &from.fg, message, from.level);
             }
         }
     }
