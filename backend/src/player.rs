@@ -589,6 +589,7 @@ impl Player {
 			self.db.borrow().up_exp(&self.name, exp_gained);
 		}
 		self.exp += exp_gained;
+		self.send_message(&format!("Bro congratulation! You have receive {} experience points, congratulation!", exp_gained));
 	}
 
 	pub fn up_level(&mut self, exp_to_level: i32) {
@@ -597,7 +598,7 @@ impl Player {
 		}
 		self.level += 1;
 		self.exp -= exp_to_level;
-	}
+	} 
 
     pub fn who(pl: Rc<RefCell<Player>>, players: &mut HashMap<u32, Rc<RefCell<Player>>>) {
         let pl = pl.borrow();

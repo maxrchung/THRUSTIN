@@ -313,6 +313,7 @@ impl Lobby {
 	pub fn give_players_exp(&mut self) {
 		let points_in_lobby = self.points_in_lobby();
 		let num_player = self.list.len();
+		let mut messages = vec![];
 
 		for rc in &self.list {
 			let mut player = rc.borrow_mut();
@@ -334,9 +335,13 @@ impl Lobby {
 				while player.level != 100 && self.ready_to_level(player.level, player.exp) {
 					let current_level: i32 = player.level;
 					player.up_level(self.get_exp_from_level(current_level));
+					messages.push(format!(
+						"{} has LEVELED UP!!!! Congratulation, {}, you are now level {}!!", 
+						player.name, player.name, player.level));
 				}
 			}
 		}
+		self.send_messages(messages);
 	}
 
 	pub fn ready_to_level(&self, level: i32, exp: i32) -> bool {
