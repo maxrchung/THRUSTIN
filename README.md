@@ -72,9 +72,6 @@ Register an account to get some sick as hell features like saved THRUSTS and sta
 ## Out of Lobby
 The zone outside of lobbies where you can chill and organize yourself.
 
-##### `.c(olor) 000 ffd1dc`
-Set your chat colors. Must be hexadecimal colors. Here, 000 (black) is set to the background color and ffd1dc (pastel faded out dull pinkish color) is set to the text/foreground color.
-
 ##### `.h(elp)`
 [See](#help)
 
@@ -93,17 +90,20 @@ Change your name to LEETMAKERiamTHIS.
 ##### `.p(lay)`
 Join the endless lobby.
 
-##### `.T(HRUST) ("I'm going to f_____unk a THRUSTEE" "I'm going to add a THRUSTER" "I'm going to add another THRUSTER")`
-If you do .THRUST by itself, it'll show all your current THRUSTS. If you add quoted arguments, THRUSTEES and THRUSTERS  are added into your personal pile.
-
-##### `.U(NTHRUST)`
-Destroy all your personal THRUSTS lol.
-
 ##### `.w(ho)`
 Shows everyone out and in lobbies.
 
 ##### `.a(ccount)`
 If logged in, view account information and game stats that are relevant to your account, of course.
+
+##### `.c(olor) 000 ffd1dc`
+Set your chat colors. Must be hexadecimal colors. Must be 3 or 6 characters. Here, 000 (black) is set to the background color and ffd1dc (pastel faded out dull pinkish color) is set to the text/foreground color.
+
+##### `.T(HRUST) ("I'm going to f_____unk a THRUSTEE" "I'm going to add a THRUSTER" "I'm going to add another THRUSTER")`
+If logged in, if you do .THRUST by itself, it'll show all your current THRUSTS. If you add quoted arguments, THRUSTEES and THRUSTERS  are added into your personal pile.
+
+##### `.U(NTHRUST)`
+If logged in, destroy all your personal THRUSTS lol.
 
 ##### `.u(ser)n(ame) SomeOtherUserName__ SomeOtherUserName__`
 If logged in, changes your username to SomeOtherUserName__. It's kind of weird the more I think about it how Username and Name are so closely related. I could have done something to make them closer to the same, but in the end I decided not to. I personally find the use case of just logging in with a standard User/Pass account, then making up some random Name to troll with, quite appealing so yeah that's that.
@@ -134,12 +134,6 @@ Shows info about this lobby.
 
 ##### `.l(eave)`
 Leave this lobby.
-
-##### `.T(HRUST) ("yeah _____")`
-[See](#thrust-im-going-to-f_____unk-a-thrustee-im-going-to-add-a-thruster-im-going-to-add-another-thruster)
-
-##### `.U(NTHRUST)`
-[See](#unthrust)
 
 ##### `.w(ho)`
 Shows everyone in this lobby.
@@ -173,6 +167,12 @@ Shows everyone in this lobby.
 
 ##### `.a(ccount)`
 [See](#account)
+
+##### `.T(HRUST) ("yeah _____")`
+[See](#thrust-im-going-to-f_____unk-a-thrustee-im-going-to-add-a-thruster-im-going-to-add-another-thruster)
+
+##### `.U(NTHRUST)`
+[See](#unthrust)
 
 ##### `.b(an) (69.69.69.69)`
 [See](#ban-69696969)

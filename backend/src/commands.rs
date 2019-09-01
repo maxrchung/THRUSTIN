@@ -102,11 +102,11 @@ pub fn out_of_lobby_commands(
         ".make" | ".m" => Lobby::make(split, pl, lobby_id, lobbies),
         ".name" | ".n" => Player::name(split, pl, lobbies, players),
         ".play" | ".p" => Lobby::join(vec![".join", "0"], pl, lobbies),
-        ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
-        ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".who" | ".w" => Player::who(pl, players),
         ".account" | ".a" => pl.borrow().account(),
         ".color" | ".c" => pl.borrow_mut().color(split),
+        ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
+        ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".username" | ".un" => pl.borrow_mut().username(split),
         ".password" | ".pw" => pl.borrow_mut().password(split),
         ".ban" | ".b" => pl.borrow().ban(split),
@@ -135,7 +135,6 @@ fn list_out_commands(split: Vec<&str>, pl: &Player) {
     }
 
     let mut commands = vec![
-        (".color ffd1dc ff5b82", ".c ffd1dc ff5b82", "You assign background and foreground chat colors for yourself in hexidecimal. They must be different. They cannot be THRUSTY's colors."),
         (".help", ".h", "this is it chief"),
         (".join 1", ".j 1", "Join the lobby with ID 1."),
         (".list", ".l", "Lists info for lobbies that are available"),
@@ -143,15 +142,16 @@ fn list_out_commands(split: Vec<&str>, pl: &Player) {
         (".make passW0RD", ".m passW0RD", "Make a new lobby and give it a password set to passW0RD."),
         (".name xx69SWAGGER911xx", ".n xx69SWAGGER911xx", "If you must, do this to change your name to xx69SWAGGER911xx"),
         (".play", ".p", "Join an endless public lobby with some other big doggos."),
-        (".THRUST", ".t", "This will list out your added THRUSTEES and THRUSTERS. (THRUSTERS are THRUSTED into the THRUSTEES's underscores.) Lobbies will combine and use everyone's awesome THRUSTS."),
-        (".THRUST \"Some _____ THRUSTEE\" \"Some THRUSTER\"", ".t \"Some _____ THRUSTEE\" \"Some THRUSTER\"", "Add THRUSTS to your wonderful collection. THRUSTS with an underscore will be put into your THRUSTEES otherwise yeah you guessed it they're put into THRUSTERS. Also, remember to encapsulate each THRUST with a quotation."),
-        (".UNTHRUST", ".u", "Destroy all your THRUSTS... [*** !!!CAUTION THIS IS IRREVERSIBLE!!! ***]"),
         (".who", ".w", "See who else is swaggin' up in this whack with you")
     ];
 
     if pl.is_authenticated {
         commands.append(&mut vec![
             (".account", ".a", "Retrieve some statistical information regarding the state of your account."),
+            (".color ffd1dc ff5b82", ".c ffd1dc ff5b82", "You assign background and foreground chat colors for yourself in hexidecimal. They must be different. They cannot be THRUSTY's colors."),
+            (".THRUST", ".t", "This will list out your added THRUSTEES and THRUSTERS. (THRUSTERS are THRUSTED into the THRUSTEES's underscores.) Lobbies will combine and use everyone's awesome THRUSTS."),
+            (".THRUST \"Some _____ THRUSTEE\" \"Some THRUSTER\"", ".t \"Some _____ THRUSTEE\" \"Some THRUSTER\"", "Add THRUSTS to your wonderful collection. THRUSTS with an underscore will be put into your THRUSTEES otherwise yeah you guessed it they're put into THRUSTERS. Also, remember to encapsulate each THRUST with a quotation."),
+            (".UNTHRUST", ".u", "Destroy all your THRUSTS... [*** !!!CAUTION THIS IS IRREVERSIBLE!!! ***]"),
             (".username NewMeNewUser NewMeNewUser", ".un NewMeNewUser NewMeNewUser", "Change your account username and confirmation applied thereafter."),
             (".password D1Ff3rentP@$$420 D1Ff3rentP@$$420", ".pw D1Ff3rentP@$$420 D1Ff3rentP@$$420", "Change your account password, maybe to D1Ff3rentP@$$420? lmao, also you gotta confirm it."),
         ]);
@@ -192,8 +192,6 @@ pub fn in_lobby_commands(
         ".help" | ".h" => list_in_commands(split, &pl.borrow(), lobby.is_host(pl.borrow().token)),
         ".info" | ".i" => lobby.info(pl),
         ".leave" | ".l" => Lobby::leave_and_delete(pl, lobbies),
-        ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
-        ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".who" | ".w" => lobby.who(pl),
         ".chief" | ".c" => lobby.host(split, pl),
         ".house" | ".ho" => lobby.house(split, pl),
@@ -205,6 +203,8 @@ pub fn in_lobby_commands(
         ".thrustees" | ".e" => lobby.thrustees(split, pl),
         ".thrusters" | ".r" => lobby.thrusters(split, pl),
         ".account" | ".a" => pl.borrow().account(),
+        ".thrust" | ".t" => pl.borrow_mut().thrust(&input, &split),
+        ".unthrust" | ".u" => pl.borrow_mut().unthrust(),
         ".ban" | ".b" => pl.borrow().ban(split),
         ".unban" | ".ub" => pl.borrow().unban(split),
         ".chieftain" | ".ct" => pl.borrow().chieftain(split),
