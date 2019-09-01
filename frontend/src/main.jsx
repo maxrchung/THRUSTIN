@@ -52,8 +52,8 @@ class Client extends React.Component {
 	
 	stateToOptions = {
 		"ChooseName": [".help", ".name", ".login", ".register"],
-		"OutOfLobby": [".color", ".help", ".join", ".list", ".make", ".name", ".play", ".THRUST", ".UNTHRUST", ".who", ".account", ".username", ".password", ".ban", ".unban", ".chieftain", ".unchieftain"],
-		"InLobby": [".help", ".info", ".leave", ".THRUST", ".UNTHRUST", ".who", ".chief", ".house", ".kick", ".password", ".players", ".points", ".start", ".THRUSTEE", ".THRUSTERS", ".account", ".ban", ".unban", ".chieftain", ".unchieftain"],
+		"OutOfLobby": [".help", ".join", ".list", ".make", ".name", ".play", ".who", ".account", ".color", ".username", ".password", ".ban", ".unban", ".chieftain", ".unchieftain"],
+		"InLobby": [".help", ".info", ".leave", ".THRUST", ".UNTHRUST", ".who", ".chief", ".house", ".kick", ".password", ".players", ".points", ".start", ".THRUSTEE", ".THRUSTERS", ".account", ".THRUST", ".UNTHRUST", ".ban", ".unban", ".chieftain", ".unchieftain"],
 		"Playing": [".help", ".info", ".leave", ".THRUST", ".who", ".end", ".kick", ".account", ".ban", ".unban", ".chieftain", ".unchieftain"],
 		"Choosing": [".help", ".info", ".leave", ".THRUST", ".who", ".end", ".kick", ".account", ".chieftain", ".unchieftain"],
 		"Deciding": [".help", ".info", ".leave", ".THRUST", ".who", ".end", ".kick", ".account", ".ban", ".unban", ".chieftain", ".unchieftain"],
