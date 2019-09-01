@@ -314,6 +314,7 @@ impl Lobby {
 		let points_in_lobby = self.points_in_lobby();
 		let num_player = self.list.len();
 		let mut messages = vec![];
+		let mut level_messages = vec![];
 
 		for rc in &self.list {
 			let mut player = rc.borrow_mut();
@@ -330,18 +331,33 @@ impl Lobby {
 				}
 
 				player.up_exp(exp_gained as i32);
-				
+				messages.push(format!("Bro congratulation! You have receive {} experience points, congratulation!", exp_gained));
+
+				let mut leveled = false;
 				// Possible to level multiple times in earlier levels so I used While Loop
 				while player.level != 100 && self.ready_to_level(player.level, player.exp) {
+					leveled = true;
 					let current_level: i32 = player.level;
 					player.up_level(self.get_exp_from_level(current_level));
-					messages.push(format!(
+				}
+
+				if leveled {
+					level_messages.push(format!(
 						"{} has LEVELED UP!!!! Congratulation, {}, you are now level {}!!", 
 						player.name, player.name, player.level));
 				}
 			}
 		}
-		self.send_messages(messages);
+		let level_messages = level_messages.join("<br/>");
+		// Append leveling messages to individual players' EXP gain messages
+		for i in 0..messages.len() {
+			messages[i] = format!("{}<br/>{}", messages[i], level_messages);
+		}
+		// Send the respective messages to each player
+		for i in 0..messages.len() {
+			let player = self.list[i].borrow();
+			player.send_message(&messages[i]);
+		}
 	}
 
 	pub fn ready_to_level(&self, level: i32, exp: i32) -> bool {
