@@ -609,6 +609,8 @@ impl Default for Deck {
 			"the cocky grin of my cousin pisses me off so fucking much I want to slam him in the face",
 			"coding has drained me of all joy in life",
 			"enjoying the scenery",
+            "5 Centimetres Per Second",
+            "HELP",
         ];
 
         let thrustees = vec![
@@ -879,6 +881,9 @@ impl Default for Deck {
 			"<br/><img src='media/yakubtemple.png'><br/>Welcome to the Church of Yakub. _____.",
 			"<br/><video controls><source src='media/RafisNanahira.mp4'/></video><br/>Thoughts? _____.",
 			"_____ has drained me of all joy in life.",
+            "Help! I need _____.",
+            "<img src='media/super cool guy.jpg'><br/>What am I looking at? _____.",
+            "<img src='media/what are voids.jpg'><br/>Voids are _____.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
