@@ -1,4 +1,3 @@
-use crate::lobby::Lobby;
 use argon2;
 use chrono::{DateTime, Duration, TimeZone, Utc};
 use mongodb::coll::Collection;
@@ -155,14 +154,14 @@ impl Database {
 						messages.push(format!("Level - {}", level));
 						let exponent: f32 = 2.15;
 						let exp_needed = (level as f32).powf(exponent).round() as i32;
-						messages.push(format!("Experience - {} / {}", exp, exp_needed));
+						messages.push(format!("Experience - {}/{}", exp, exp_needed));
 					} else {
 						messages.push(String::from("Level - 1"));
-						messages.push(String::from("Experience - 0 / 1"));
+						messages.push(String::from("Experience - 0/1"));
 					}
 				} else {
 					messages.push(String::from("Level - 1"));
-					messages.push(String::from("Experience - 0 / 1"));
+					messages.push(String::from("Experience - 0/1"));
 				}
             }
             None => {
