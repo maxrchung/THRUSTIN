@@ -1,10 +1,10 @@
 [package]
-name = "thrustin"
-version = "0.3.0"
 authors = ["Max Chung, Alex Liu, Royce Sato"]
-edition = "2018"
 description = "xperience epic adventures by THRUSTING some THRUSTERS into THRUSTEES https://THRUSTIN.rs. E"
+edition = "2018"
 license = "MIT"
+name = "thrustin"
+version = "1.0.0"
 
 [dependencies]
 chrono = "^0.4"
