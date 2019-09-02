@@ -207,8 +207,8 @@ fn end_midgame() {
     );
     client.send(1, ".e");
     client.read_all();
-    assert_eq!(client.last(1), "Yo guys, the game's been manually ended by the chief almighty. Yall have been returned to the lobby setup area.");
-    assert_eq!(client.last(2), "Yo guys, the game's been manually ended by the chief almighty. Yall have been returned to the lobby setup area.");
+    assert_eq!(client.last(1), "Yo guys, the game's been manually ended by the chief almighty. Yall have been returned to the lobby setup area.<br/>");
+    assert_eq!(client.last(2), "Yo guys, the game's been manually ended by the chief almighty. Yall have been returned to the lobby setup area.<br/>");
 }
 
 #[test]

@@ -296,28 +296,30 @@ impl Lobby {
             }
         }
 
-        self.end_game();
-        self.send_message("Yo guys, the game's been manually ended by the chief almighty. Yall have been returned to the lobby setup area.")
+        self.end_game("Yo guys, the game's been manually ended by the chief almighty. Yall have been returned to the lobby setup area.".to_string());
     }
 
-    pub fn end_game(&mut self) {
-		self.give_players_exp();
+    pub fn end_game(&mut self, end_message: String) {
+		// Each player will have a unique message depending on EXP gained & whether authenticated or not. End_messages contains each unique one
+		let end_messages: Vec<String> = self.give_players_exp(end_message);
         self.state = LobbyState::Waiting;
-        // Change players to inlobby state
-        for rc in &self.list {
-            let mut player = rc.borrow_mut();
-            player.state = PlayerState::InLobby;
-        }
+        // Change players to inlobby state and send respective end_message to each. 
+		// Assumes playerlist is accessed in same order as give_players_exp loop does
+		for i in 0..end_messages.len() {
+			let mut player = self.list[i].borrow_mut();
+			player.state = PlayerState::InLobby;
+			player.send_message(&end_messages[i]);
+		}
     }
 
-	pub fn give_players_exp(&mut self) {
+	pub fn give_players_exp(&mut self, end_message: String) -> Vec<String> {
 		let points_in_lobby = self.points_in_lobby();
 		let num_player = self.list.len();
-		let mut messages = vec![];
+		let mut messages = vec![end_message; self.list.len()];
 		let mut level_messages = vec![];
 
-		for rc in &self.list {
-			let mut player = rc.borrow_mut();
+		for i in 0..self.list.len() {
+			let mut player = self.list[i].borrow_mut();
 			if player.is_authenticated {
 				let mut exp_gained = 0;
 				let points_won = player.game.points;
@@ -331,7 +333,7 @@ impl Lobby {
 				}
 
 				player.up_exp(exp_gained as i32);
-				messages.push(format!("Bro congratulation! You have receive {} experience points, congratulation!", exp_gained));
+				messages[i] = format!("{}<br/>Bro congratulation! You have receive {} experience points, congratulation!", messages[i], exp_gained);
 
 				let mut leveled = false;
 				// Possible to level multiple times in earlier levels so I used While Loop
@@ -353,11 +355,7 @@ impl Lobby {
 		for i in 0..messages.len() {
 			messages[i] = format!("{}<br/>{}", messages[i], level_messages);
 		}
-		// Send the respective messages to each player
-		for i in 0..messages.len() {
-			let player = self.list[i].borrow();
-			player.send_message(&messages[i]);
-		}
+		return messages;
 	}
 
 	pub fn ready_to_level(&self, level: i32, exp: i32) -> bool {
@@ -494,10 +492,9 @@ impl Lobby {
                                     self.list[index].borrow().up_games_won();
                                     let messages = vec![
                                         format!("{} has chosen this THRUSTER as the chosen THRUST, bois:<br/>{}<br/>", &name, &chosen_thrust),
-                                        format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!",  winner)
+                                        format!("Congratulations, {}! You're Winner! Everyone else, You're Loser! Game has been put into waiting state, THRUSTIN'ers!<br/>",  winner)
                                     ];
-                                    self.send_messages(messages);
-                                    self.end_game();
+                                    self.end_game(messages.join("<br/>"));
                                     return;
                                 }
                                 (pts, winner)

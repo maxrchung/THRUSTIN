@@ -532,7 +532,7 @@ fn level_messages() {
 	client.send(1, ".t 1");
 	client.read_all();
 
-	assert_eq!(client.last(1), "Bro congratulation! You have receive 3 experience points, congratulation!<br/>gamer has LEVELED UP!!!! Congratulation, gamer, you are now level 2!!<br/>gamer2 has LEVELED UP!!!! Congratulation, gamer2, you are now level 2!!<br/>gamer3 has LEVELED UP!!!! Congratulation, gamer3, you are now level 2!!");
-	assert_eq!(client.last(2), "Bro congratulation! You have receive 4 experience points, congratulation!<br/>gamer has LEVELED UP!!!! Congratulation, gamer, you are now level 2!!<br/>gamer2 has LEVELED UP!!!! Congratulation, gamer2, you are now level 2!!<br/>gamer3 has LEVELED UP!!!! Congratulation, gamer3, you are now level 2!!");
-	assert_eq!(client.last(3), "Bro congratulation! You have receive 3 experience points, congratulation!<br/>gamer has LEVELED UP!!!! Congratulation, gamer, you are now level 2!!<br/>gamer2 has LEVELED UP!!!! Congratulation, gamer2, you are now level 2!!<br/>gamer3 has LEVELED UP!!!! Congratulation, gamer3, you are now level 2!!");
+	assert!(client.last(1).contains("Bro congratulation! You have receive 3 experience points, congratulation!<br/>gamer has LEVELED UP!!!! Congratulation, gamer, you are now level 2!!<br/>gamer2 has LEVELED UP!!!! Congratulation, gamer2, you are now level 2!!<br/>gamer3 has LEVELED UP!!!! Congratulation, gamer3, you are now level 2!!"));
+	assert!(client.last(2).contains("Bro congratulation! You have receive 4 experience points, congratulation!<br/>gamer has LEVELED UP!!!! Congratulation, gamer, you are now level 2!!<br/>gamer2 has LEVELED UP!!!! Congratulation, gamer2, you are now level 2!!<br/>gamer3 has LEVELED UP!!!! Congratulation, gamer3, you are now level 2!!"));
+	assert!(client.last(3).contains("Bro congratulation! You have receive 3 experience points, congratulation!<br/>gamer has LEVELED UP!!!! Congratulation, gamer, you are now level 2!!<br/>gamer2 has LEVELED UP!!!! Congratulation, gamer2, you are now level 2!!<br/>gamer3 has LEVELED UP!!!! Congratulation, gamer3, you are now level 2!!"));
 }
