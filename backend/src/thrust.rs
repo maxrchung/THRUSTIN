@@ -555,7 +555,7 @@ impl Default for Deck {
 			"I don't fucking care",
 			"👨🏿",
 			"Lao Gan Ma",
-            "<img src='media/daBoiindaMrrr.jpg'>",
+            "<img src='media/daBOiindaMrrr.jpg'>",
             "#ffd1dc",
             "gnomes",
             "TRUEEE",
