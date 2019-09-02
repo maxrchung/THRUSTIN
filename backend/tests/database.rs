@@ -485,23 +485,23 @@ fn level() {
 	assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - boy2<br/>Name - boy2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 0<br/>Games Played So Far - 1<br/>Games Won So Far - 0<br/>Level - 1<br/>Experience - 0 / 1");
 
 	client.send(1, ".t 1");
-	client.send(2, ".t 1");
+	client.thrust(2);
 	client.send(1, ".t 1");
 	// boy2 - 1
 	client.send(2, ".t 1");
-	client.send(1, ".t 1");
+	client.thrust(1);
 	client.send(2, ".t 1");
 	// boy - 1
 	client.send(1, ".t 1");
-	client.send(2, ".t 1");
+	client.thrust(2);
 	client.send(1, ".t 1");
 	// boy2 - 2
 	client.send(2, ".t 1");
-	client.send(1, ".t 1");
+	client.thrust(1);
 	client.send(2, ".t 1");
 	// boy - 2
 	client.send(1, ".t 1");
-	client.send(2, ".t 1");
+	client.thrust(2);
 	client.send(1, ".t 1");
 	// boy2 - 3 WIN
 	// boy gains 4 EXP, boy2 gains 7 EXP
@@ -512,4 +512,27 @@ fn level() {
 	client.send(2, ".a");
 	client.read_all();
 	assert_eq!(client.last(2), "A display of your account information and statistical information. Please enjoy THRUSTIN!<br/>Username - boy2<br/>Name - boy2<br/>Password - [ENCRYPTED_CONTENT__UNVIEWABLE]<br/>Points Earned So Far - 3<br/>Games Played So Far - 1<br/>Games Won So Far - 1<br/>Level - 3<br/>Experience - 2 / 11");
+}
+
+#[test]
+fn level_messages() {
+	let mut client = common::setup_with_db("level_message");
+	client.send(1, ".r gamer gamer gamer");
+	client.send(1, ".m");
+	client.send(1, ".po 1");
+	client.send(1 ,".s");
+	client.send(2, ".r gamer2 gamer2 gamer2");
+	client.send(2, ".j 1");
+	client.send(3, ".r gamer3 gamer3 gamer3");
+	client.send(3, ".j 1");
+
+	client.send(1, ".t 1");
+	client.thrust(2);
+	client.thrust(3);
+	client.send(1, ".t 1");
+	client.read_all();
+
+	assert_eq!(client.last(1), "Bro congratulation! You have receive 3 experience points, congratulation!<br/>gamer has LEVELED UP!!!! Congratulation, gamer, you are now level 2!!<br/>gamer2 has LEVELED UP!!!! Congratulation, gamer2, you are now level 2!!<br/>gamer3 has LEVELED UP!!!! Congratulation, gamer3, you are now level 2!!");
+	assert_eq!(client.last(2), "Bro congratulation! You have receive 4 experience points, congratulation!<br/>gamer has LEVELED UP!!!! Congratulation, gamer, you are now level 2!!<br/>gamer2 has LEVELED UP!!!! Congratulation, gamer2, you are now level 2!!<br/>gamer3 has LEVELED UP!!!! Congratulation, gamer3, you are now level 2!!");
+	assert_eq!(client.last(3), "Bro congratulation! You have receive 3 experience points, congratulation!<br/>gamer has LEVELED UP!!!! Congratulation, gamer, you are now level 2!!<br/>gamer2 has LEVELED UP!!!! Congratulation, gamer2, you are now level 2!!<br/>gamer3 has LEVELED UP!!!! Congratulation, gamer3, you are now level 2!!");
 }
