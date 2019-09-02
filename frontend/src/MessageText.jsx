@@ -5,19 +5,8 @@ class MessageText extends React.Component {
     static defaultProps = {
         bg: "000",
         fg: "b7410e",
-        from: "THRUSTY"
-    }
-
-    getLevel = () => {
-        if (this.props.level) {
-            return this.props.level;
-        }
-
-        if (this.props.from === "THRUSTY") {
-            return 100;
-        }
-
-        return 0;
+        from: "THRUSTY",
+        level: 0
     }
 
     render() {
@@ -26,15 +15,17 @@ class MessageText extends React.Component {
             <>
                 <div className="mb-1">
                     <strong>{props.from}</strong> {(new Date).toLocaleTimeString()}
-                    <div 
-                        className="float-right px-1" 
-                        style={{
-                            color: `#${props.bg}`, 
-                            backgroundColor: `#${props.fg}`
-                        }}
-                    >
-                        Level {this.getLevel()}
-                    </div>
+                    {props.from !== "THRUSTY" &&
+                        <div 
+                            className="float-right px-1" 
+                            style={{
+                                color: `#${props.bg}`, 
+                                backgroundColor: `#${props.fg}`
+                            }}
+                        >
+                            Level {props.level}
+                        </div>
+                    }
                 </div>
                 <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(props.content)}} />
             </>
