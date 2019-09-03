@@ -615,6 +615,9 @@ impl Default for Deck {
             "<img src='media/heh.png'>",
             "<img src='media/exte.jpg'>",
             "breathing air",
+            "breathing air",
+			"<video controls><source src='media/dog and kid dance.webm'/></video>",
+			"<audio controls><source src='media/tentacle.ogg'/></audio>", 
         ];
 
         let thrustees = vec![
@@ -889,9 +892,13 @@ impl Default for Deck {
             "<img src='media/super cool guy.jpg'><br/>What am I looking at? _____.",
             "<img src='media/what are voids.jpg'><br/>Voids are _____.",
             "I'm getting mad right now bro. Don't make me mad bro. I'm literally going to be fuming right now bro. Bro don't make me _____.",
-            "<br><img src='media/junya.jpg'><br/>Me when I'm _____.",
-            "<br><img src='media/orang.png'><br/>Orang, why you _____?",
-            "<br><video controls><source src='media/welcome.webm'/></video><br/>Welcome _____. Please come inside.",
+            "<br/><img src='media/junya.jpg'><br/>Me when I'm _____.",
+            "<br/><img src='media/orang.png'><br/>Orang, why you _____?",
+            "<br/><video controls><source src='media/welcome.webm'/></video><br/>Welcome _____. Please come inside.",
+            "<br/><img src='media/love live sucks.png'><br/>After careful consideration, I decided to give up being a school idol. This is because _____.",
+            "<br/><img src='media/thumbs up.png'><br/>Great job! You get an A+ for _____.",
+            "<br/><video controls><source src='media/basketball people.webm'/></video><br/>Come on and _____.",
+            "<br/><video controls><source src='media/basketball people.webm'/></video><br/>Come on and _____.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
