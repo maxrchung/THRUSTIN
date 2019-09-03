@@ -611,6 +611,10 @@ impl Default for Deck {
 			"enjoying the scenery",
             "5 Centimetres Per Second",
             "HELP",
+            "<img src='media/osuuki.png'>",
+            "<img src='media/heh.png'>",
+            "<img src='media/exte.jpg'>",
+            "breathing air",
         ];
 
         let thrustees = vec![
@@ -884,7 +888,10 @@ impl Default for Deck {
             "Help! I need _____.",
             "<img src='media/super cool guy.jpg'><br/>What am I looking at? _____.",
             "<img src='media/what are voids.jpg'><br/>Voids are _____.",
-            "I'm getting mad right now bro. Don't make me mad bro. I'm literally going to be fuming right now bro. Bro don't make me _____."
+            "I'm getting mad right now bro. Don't make me mad bro. I'm literally going to be fuming right now bro. Bro don't make me _____.",
+            "<br><img src='media/junya.jpg'><br/>Me when I'm _____.",
+            "<br><img src='media/orang.png'><br/>Orang, why you _____?",
+            "<br><video controls><source src='media/welcome.webm'/></video><br/>Welcome _____. Please come inside.",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
