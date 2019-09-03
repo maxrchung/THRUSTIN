@@ -1155,6 +1155,7 @@ impl Lobby {
         for pl_rc in &self.list {
             let pl = pl_rc.borrow();
             let name = &pl.name;
+            let level = &pl.level;
 
             let mut person = "";
             if token == &pl.token {
@@ -1162,9 +1163,9 @@ impl Lobby {
             }
 
             let message = if self.is_host(pl.token) {
-                format!("{}: chief{}", name, person).to_string()
+                format!("{} ({}): chief{}", name, level, person).to_string()
             } else {
-                format!("{}{}", name, person).to_string()
+                format!("{} ({}){}", name, level, person).to_string()
             };
 
             messages.push(message);

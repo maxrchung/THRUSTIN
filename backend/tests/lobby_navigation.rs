@@ -134,11 +134,11 @@ fn who_out_of_lobby() {
     client.send(1, ".n 1");
     client.send(1, ".w");
     client.read_all();
-    assert_eq!(client.last(1), "1 (You)");
+    assert_eq!(client.last(1), "1 (1) (You)");
     client.send(2, ".n 2");
     client.send(2, ".w");
     client.read_all();
-    assert_eq!(client.last(2), "1<br/>2 (You)");
+    assert_eq!(client.last(2), "1 (1)<br/>2 (1) (You)");
 }
 
 #[test]
@@ -148,12 +148,12 @@ fn who_in_lobby() {
     client.send(1, ".m");
     client.send(1, ".w");
     client.read_all();
-    assert_eq!(client.last(1), "1: chief (You)");
+    assert_eq!(client.last(1), "1 (1): chief (You)");
     client.send(2, ".n 2");
     client.send(2, ".j 1");
     client.send(2, ".w");
     client.read_all();
-    assert_eq!(client.last(2), "1: chief<br/>2 (You)");
+    assert_eq!(client.last(2), "1 (1): chief<br/>2 (1) (You)");
 }
 
 // Bug: If THRUSTEE chooser is not a host and leaves, next user is unable to see THRUSTEE choices to pick

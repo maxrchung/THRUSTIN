@@ -615,9 +615,10 @@ impl Player {
             }
 
             if pl.state == PlayerState::InLobby || pl.state == PlayerState::Playing {
-                messages.push(format!("{} in {}{}", pl.name, pl.lobby, person).to_string());
+                messages.push(format!("{} ({}) in {}{}", pl.name, pl.level, pl.lobby, person).to_string());
+            // Not THRUSTY? I think
             } else if !pl.name.is_empty() {
-                messages.push(format!("{}{}", pl.name, person).to_string());
+                messages.push(format!("{} ({}){}", pl.name, pl.level, person).to_string());
             }
         }
 
