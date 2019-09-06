@@ -897,8 +897,7 @@ impl Default for Deck {
             "<br/><img src='media/orang.png'><br/>Orang, why you _____?",
             "<br/><video controls><source src='media/welcome.webm'/></video><br/>Welcome _____. Please come inside.",
             "<br/><img src='media/love live sucks.png'><br/>After careful consideration, I decided to give up being a school idol. This is because _____.",
-            "<br/><img src='media/thumbs up.png'><br/>Great job! You get an A+ for _____.",
-            "<br/><video controls><source src='media/basketball people.webm'/></video><br/>Come on and _____.",
+            "<br/><img src='media/thumbs up.jpg'><br/>Great job! You get an A+ for _____.",
             "<br/><video controls><source src='media/basketball people.webm'/></video><br/>Come on and _____.",
             "I can’t believe it. We’ve done it. THRUSTIN is finished. It’s done. We’re done. We’re finished. It has finally reached completion. Thank you everyone for playing the game. You’ve literally won the game now. Good job and congratulations.<br/><br/>Wait, what about the _____ feature?",
         ];
