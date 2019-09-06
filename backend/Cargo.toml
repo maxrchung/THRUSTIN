@@ -4,7 +4,7 @@ description = "xperience epic adventures by THRUSTING some THRUSTERS into THRUST
 edition = "2018"
 license = "MIT"
 name = "thrustin"
-version = "1.0.0"
+version = "1.0.1"
 
 [dependencies]
 chrono = "^0.4"
