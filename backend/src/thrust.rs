@@ -617,7 +617,8 @@ impl Default for Deck {
             "breathing air",
             "breathing air",
 			"<video controls><source src='media/dog and kid dance.webm'/></video>",
-			"<audio controls><source src='media/tentacle.ogg'/></audio>", 
+			"<audio controls><source src='media/tentacle.ogg'/></audio>",
+            "skrr skrr",
         ];
 
         let thrustees = vec![
@@ -899,6 +900,7 @@ impl Default for Deck {
             "<br/><img src='media/thumbs up.png'><br/>Great job! You get an A+ for _____.",
             "<br/><video controls><source src='media/basketball people.webm'/></video><br/>Come on and _____.",
             "<br/><video controls><source src='media/basketball people.webm'/></video><br/>Come on and _____.",
+            "I can’t believe it. We’ve done it. THRUSTIN is finished. It’s done. We’re done. We’re finished. It has finally reached completion. Thank you everyone for playing the game. You’ve literally won the game now. Good job and congratulations.<br/><br/>Wait, what about the _____ feature?",
         ];
         Deck {
             thrustees: thrustees.iter().map(ToString::to_string).collect(),
