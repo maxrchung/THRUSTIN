@@ -57,278 +57,113 @@ Now let us dive into all the commands you can use. We shall divide each section 
 ## Name
 In this phase you're responsible for giving yourself a name. We want you to give yourself a name before you get into game.
 
-##### `.h(elp)`
-Get help explanation for this section.
-
-##### `.n(ame) SWAGGYSWAG`
-Give yourself the name SWAGGYSWAG. Note that you probably shouldn't put spaces in there I'm not sure what's gonna happen probably bad.
-
-##### `.l(ogin) SecretUser SecretPassword!!!!`
-Login to a registered account. Yo you get some epic perks for logging in...
-
-##### `.r(egister) SecretUser SecretPassword!!!! SecretPassword!!!!`
-Register an account to get some sick as hell features like saved THRUSTS and stats (eventually).
+- `.h(elp)` Get help explanation for this section.
+- `.n(ame) SWAGGYSWAG` Give yourself the name SWAGGYSWAG. Note that you probably shouldn't put spaces in there I'm not sure what's gonna happen probably bad.
+- `.l(ogin) SecretUser SecretPassword!!!!` Login to a registered account. Yo you get some epic perks for logging in...
+- `.r(egister) SecretUser SecretPassword!!!! SecretPassword!!!!` Register an account to get some sick as hell features like saved THRUSTS and stats (eventually).
 
 ## Out of Lobby
 The zone outside of lobbies where you can chill and organize yourself.
 
-##### `.h(elp)`
-[See](#help)
-
-##### `.j(oin) 1`
-Join lobby 1.
-
-##### `.l(ist)`
-Show list of all lobies.
-
-##### `.m(ake) (super_________SECRET___________P@$$WoRD`
-Make a new lobby. Optionally, provide a password for your new lobby.
-
-##### `.n(ame) LEETMAKERiamTHIS`
-Change your name to LEETMAKERiamTHIS.
-
-##### `.p(lay)`
-Join the endless lobby.
-
-##### `.w(ho)`
-Shows everyone out and in lobbies.
-
-##### `.a(ccount)`
-If logged in, view account information and game stats that are relevant to your account, of course.
-
-##### `.c(olor) 000 ffd1dc`
-Set your chat colors. Must be hexadecimal colors. Must be 3 or 6 characters. Here, 000 (black) is set to the background color and ffd1dc (pastel faded out dull pinkish color) is set to the text/foreground color.
-
-##### `.T(HRUST) ("I'm going to f_____unk a THRUSTEE" "I'm going to add a THRUSTER" "I'm going to add another THRUSTER")`
-If logged in, if you do .THRUST by itself, it'll show all your current THRUSTS. If you add quoted arguments, THRUSTEES and THRUSTERS  are added into your personal pile.
-
-##### `.U(NTHRUST)`
-If logged in, destroy all your personal THRUSTS lol.
-
-##### `.u(ser)n(ame) SomeOtherUserName__ SomeOtherUserName__`
-If logged in, changes your username to SomeOtherUserName__. It's kind of weird the more I think about it how Username and Name are so closely related. I could have done something to make them closer to the same, but in the end I decided not to. I personally find the use case of just logging in with a standard User/Pass account, then making up some random Name to troll with, quite appealing so yeah that's that.
-
-##### `.p(ass)w(ord) Y0L0Ep1C420420420 Y0L0Ep1C420420420`
-If logged in, changes your password to Y0L0Ep1C420420420, so you know, if you're a hacker you can screw the hacked guys' account over lol.
-
-##### `.b(an) (69.69.69.69)`
-(Chieftain-only) Bans an IP address from a server. If no argument is provided, a list of banned IP addresses will become listed to the chieftain that produced this command.
-
-##### `.u(n)b(an) (69.69.69.69)`
-(Chieftain-only) Unbans the given IP address from the THRUSTIN server.
-
-##### `.c(hief)t(ain) (NewAdministratorHere)`
-(Chieftain-only) By itself, `.chieftain` shall show a list of all chieftains in the server. With an argument, you will attempt to appoint the targetted Name as a Chieftain. Note that we use `.ct` because `.c` is for `.chief` and damn I'm no so sure if I want to make these too closely related anymore, but whatever.
-
-##### `.u(n)c(hieftain) NewAdministratorNoLonger`
-(Chieftain-only) Removes the selected Chieftain as a chieftain.
+- `.h(elp)` *See above*
+- `.j(oin) 1` Join lobby 1.
+- `.l(ist)` Show list of all lobies.
+- `.m(ake) (super_________SECRET___________P@$$WoRD` Make a new lobby. Optionally, provide a password for your new lobby.
+- `.n(ame) LEETMAKERiamTHIS` Change your name to LEETMAKERiamTHIS.
+- `.p(lay)` Join the endless lobby.
+- `.w(ho)` Shows everyone out and in lobbies.
+- `.a(ccount)` If logged in, view account information and game stats that are relevant to your account, of course.
+- `.c(olor) 000 ffd1dc` Set your chat colors. Must be hexadecimal colors. Must be 3 or 6 characters. Here, 000 (black) is set to the background color and ffd1dc (pastel faded out dull pinkish color) is set to the text/foreground color.
+- `.T(HRUST) ("I'm going to f_____unk a THRUSTEE" "I'm going to add a THRUSTER" "I'm going to add another THRUSTER")` If logged in, if you do .THRUST by itself, it'll show all your current THRUSTS. If you add quoted arguments, THRUSTEES and THRUSTERS  are added into your personal pile.
+- `.U(NTHRUST)`If logged in, destroy all your personal THRUSTS lol.
+- `.u(ser)n(ame) SomeOtherUserName__ SomeOtherUserName__` If logged in, changes your username to SomeOtherUserName__. It's kind of weird the more I think about it how Username and Name are so closely related. I could have done something to make them closer to the same, but in the end I decided not to. I personally find the use case of just logging in with a standard User/Pass account, then making up some random Name to troll with, quite appealing so yeah that's that.
+- `.p(ass)w(ord) Y0L0Ep1C420420420 Y0L0Ep1C420420420` If logged in, changes your password to Y0L0Ep1C420420420, so you know, if you're a hacker you can screw the hacked guys' account over lol.
+- `.b(an) (69.69.69.69)` (Chieftain-only) Bans an IP address from a server. If no argument is provided, a list of banned IP addresses will become listed to the chieftain that produced this command.
+- `.u(n)b(an) (69.69.69.69)` (Chieftain-only) Unbans the given IP address from the THRUSTIN server.
+- `.c(hief)t(ain) (NewAdministratorHere)` (Chieftain-only) By itself, `.chieftain` shall show a list of all chieftains in the server. With an argument, you will attempt to appoint the targetted Name as a Chieftain. Note that we use `.ct` because `.c` is for `.chief` and damn I'm no so sure if I want to make these too closely related anymore, but whatever.
+- `.u(n)c(hieftain) NewAdministratorNoLonger` (Chieftain-only) Removes the selected Chieftain as a chieftain.
 
 ## In Lobby
 Commands when you are in a lobby. Note that now you'll see some (Chief-Only) commands that only chiefs may do.
 
-##### `.h(elp)`
-[See](#help)
-
-##### `.i(nfo)`
-Shows info about this lobby.
-
-##### `.l(eave)`
-Leave this lobby.
-
-##### `.w(ho)`
-Shows everyone in this lobby.
-
-##### `.c(hief) TheOtherSwagger`
-(Chief-Only) Set TheOtherSwagger as the chief.
-
-##### `.ho(use) 69`
-(Chief-Only) Set how many house THRUSTS to use. We divide the number in half to split for THRUSTEES and THRUSTERS. Do `.ho 0` for zero house THRUSTS.
-
-##### `.k(ick) HeyMan`
-(Chief-Only) Kick HeyMan from the lobby.
-
-##### `.p(ass)w(ord) YOOOOoooo0000`
-(Chief-Only) Set YOOOOoooo0000 as the password for the lobby.
-
-##### `.pl(ayers) 3`
-(Chief-Only) Set the max amount of players to 3.
-
-##### `.po(ints) 3`
-(Chief-Only) Set the points max to 3.
-
-##### `.s(tart)`
-(Chief-Only) Start the game barring there's no issues.
-
-##### `.(THRUSTE)E(S) 3`
-(Chief-Only) Set the number of THRUSTEE choices to 3.
-
-##### `.(THRUSTE)R(S) 3`
-(Chief-Only) Set the number of THRUSTERS you can have to 3.
-
-##### `.a(ccount)`
-[See](#account)
-
-##### `.T(HRUST) ("yeah _____")`
-[See](#thrust-im-going-to-f_____unk-a-thrustee-im-going-to-add-a-thruster-im-going-to-add-another-thruster)
-
-##### `.U(NTHRUST)`
-[See](#unthrust)
-
-##### `.b(an) (69.69.69.69)`
-[See](#ban-69696969)
-
-##### `.u(n)b(an) (69.69.69.69)`
-[See](#unban-69696969)
-
-##### `.c(hief)t(ain) (NewAdministratorHere)`
-[See](#chieftain-newadministratorhere)
-
-##### `.u(n)c(hieftain) NewAdministratorNoLonger`
-[See](#unchieftain-newadministratornolonger)
+- `.h(elp)` *See above*
+- `.i(nfo)` Shows info about this lobby.
+- `.l(eave)` Leave this lobby.
+- `.w(ho)` Shows everyone in this lobby.
+- `.c(hief) TheOtherSwagger` (Chief-Only) Set TheOtherSwagger as the chief.
+- `.ho(use) 69` (Chief-Only) Set how many house THRUSTS to use. We divide the number in half to split for THRUSTEES and THRUSTERS. Do `.ho 0` for zero house THRUSTS.
+- `.k(ick) HeyMan` (Chief-Only) Kick HeyMan from the lobby.
+- `.p(ass)w(ord) YOOOOoooo0000` (Chief-Only) Set YOOOOoooo0000 as the password for the lobby.
+- `.pl(ayers) 3` (Chief-Only) Set the max amount of players to 3.
+- `.po(ints) 3` (Chief-Only) Set the points max to 3.
+- `.s(tart)` (Chief-Only) Start the game barring there's no issues.
+- `.(THRUSTE)E(S) 3` (Chief-Only) Set the number of THRUSTEE choices to 3.
+- `.(THRUSTE)R(S) 3` (Chief-Only) Set the number of THRUSTERS you can have to 3.
+- `.a(ccount)` *See above*
+- `.T(HRUST) ("yeah _____")` *See above*
+- `.U(NTHRUST)` *See above*
+- `.b(an) (69.69.69.69)` *See above*
+- `.u(n)b(an) (69.69.69.69)` *See above*
+- `.c(hief)t(ain) (NewAdministratorHere)` *See above*
+- `.u(n)c(hieftain) NewAdministratorNoLonger` *See above*
 
 ## In Game (Choosing THRUSTEE)
 When you are the THRUSTEE choosing a THRUSTEE for THRUSTERS to THRUST into.
 
-##### `.h(elp)`
-[See](#help)
-
-##### `.i(nfo)`
-[See](#info)
-
-##### `.l(eave)`
-[See](#leave)
-
-##### `.T(HRUST) 1`
-Choose the THRUSTEE at index 1 to use.
-
-##### `.w(ho)`
-Show who's got how many points in the lobby and also who's in this lobby yo.
-
-##### `.e(nd)`
-(Chief-Only) End the game.
-
-##### `.k(ick) YoloDWAG`
-[See](#kick-heyman)
-
-##### `.a(ccount)`
-[See](#account)
-
-##### `.c(hief)t(ain)(NewAdministratorHere)`
-[See](#chieftain)
-
-##### `.u(n)c(hieftain) NewAdministratorNoLonger`
-[See](#unchieftain)
+- `.h(elp)` *See above*
+- `.i(nfo)` *See above*
+- `.l(eave)` *See above*
+- `.T(HRUST) 1` Choose the THRUSTEE at index 1 to use.
+- `.w(ho)` Show who's got how many points in the lobby and also who's in this lobby yo.
+- `.e(nd)` (Chief-Only) End the game.
+- `.k(ick) YoloDWAG` *See above*
+- `.a(ccount)` *See above*
+- `.c(hief)t(ain)(NewAdministratorHere)` *See above*
+- `.u(n)c(hieftain) NewAdministratorNoLonger` *See above*
 
 ## In Game (Waiting for THRUSTEE)
 When you are a THRUSTER waiting for THRUSTEE to be chosen.
 
-##### `.h(elp)`
-[See](#help)
-
-##### `.i(nfo)`
-[See](#info)
-
-##### `.l(eave)`
-[See](#leave)
-
-##### `.w(ho)`
-[See](#who-2)
-
-##### `.e(nd)`
-[See](#end)
-
-##### `.k(ick) YoloDWAG`
-[See](#kick-heyman)
-
-##### `.a(ccount)`
-[See](#account)
-
-##### `.b(an) (69.69.69.69)`
-[See](#ban-69696969)
-
-##### `.u(n)b(an) (69.69.69.69)`
-[See](#unban-69696969)
-
-##### `.c(hief)t(ain) (NewAdministratorHere)`
-[See](#chieftain-newadministratorhere)
-
-##### `.u(n)c(hieftain) NewAdministratorNoLonger`
-[See](#unchieftain-newadministratornolonger)
+- `.h(elp)` *See above*
+- `.i(nfo)` *See above*
+- `.l(eave)` *See above*
+- `.w(ho)` *See above*
+- `.e(nd)` *See above*
+- `.k(ick) YoloDWAG` *See above*
+- `.a(ccount)` *See above*
+- `.b(an) (69.69.69.69)` *See above*
+- `.u(n)b(an) (69.69.69.69)` *See above*
+- `.c(hief)t(ain) (NewAdministratorHere)` *See above*
+- `.u(n)c(hieftain) NewAdministratorNoLonger` *See above*
 
 ## In Game (THRUSTING into chosen THRUSTEE)
 When a THRUSTEE is chosen and you are a THRUSTER ready to THRUST one of your THRUSTERS into the THRUSTEE.
 
-##### `.h(elp)`
-[See](#help)
-
-##### `.i(nfo)`
-[See](#info)
-
-##### `.l(eave)`
-[See](#leave)
-
-##### `.T(HRUST) 1`
-Choose to use your THRUSTER at index 1 to THRUST into the chosen THRUSTEE. After THRUSTING, you cannot THRUST again. Note that for a THRUSTEE that requires multiple THRUSTERS, you can THRUST the same THRUSTER into it multiple times. I wanted to do this so that you can have more options in the digital era of video games where you are not reliant on physical cards and can have possibilities such as this one.
-
-##### `.w(ho)`
-[See](#who-2)
-
-##### `.e(nd)`
-[See](#end)
-
-##### `.k(ick) YoloDWAG`
-[See](#kick-heyman)
-
-##### `.a(ccount)`
-[See](#account)
-
-##### `.b(an) (69.69.69.69)`
-[See](#ban-69696969)
-
-##### `.u(n)b(an) (69.69.69.69)`
-[See](#unban-69696969)
-
-##### `.c(hief)t(ain) (NewAdministratorHere)`
-[See](#chieftain-newadministratorhere)
-
-##### `.u(n)c(hieftain) NewAdministratorNoLonger`
-[See](#unchieftain-newadministratornolonger)
+- `.h(elp)` *See above*
+- `.i(nfo)` *See above*
+- `.l(eave)` *See above*
+- `.T(HRUST) 1` Choose to use your THRUSTER at index 1 to THRUST into the chosen THRUSTEE. After THRUSTING, you cannot THRUST again. Note that for a THRUSTEE that requires multiple THRUSTERS, you can THRUST the same THRUSTER into it multiple times. I wanted to do this so that you can have more options in the digital era of video games where you are not reliant on physical cards and can have possibilities such as this one.
+- `.w(ho)` *See above*
+- `.e(nd)` *See above*
+- `.k(ick) YoloDWAG` *See above*
+- `.a(ccount)` *See above*
+- `.b(an) (69.69.69.69)` *See above*
+- `.u(n)b(an) (69.69.69.69)` *See above*
+- `.c(hief)t(ain) (NewAdministratorHere)` *See above*
+- `.u(n)c(hieftain) NewAdministratorNoLonger` *See above*
 
 ## In Game (Deciding best THRUSTER)
 When you are the THRUSTEE and ready to pick your favorite THRUST.
 
-##### `.h(elp)`
-[See](#help)
-
-##### `.i(nfo)`
-[See](#info)
-
-##### `.l(eave)`
-[See](#leave)
-
-##### `.T(HRUST) 1`
-Okay, you select the completed THRUST at index 1 as the best one.
-
-##### `.w(ho)`
-[See](#who-2)
-
-##### `.e(nd)`
-[See](#end)
-
-##### `.k(ick) YoloDWAG`
-[See](#kick-heyman)
-
-##### `.a(ccount)`
-[See](#account)
-
-##### `.b(an) (69.69.69.69)`
-[See](#ban-69696969)
-
-##### `.u(n)b(an) (69.69.69.69)`
-[See](#unban-69696969)
-
-##### `.c(hief)t(ain) (NewAdministratorHere)`
-[See](#chieftain-newadministratorhere)
-
-##### `.u(n)c(hieftain) NewAdministratorNoLonger`
-[See](#unchieftain-newadministratornolonger)
+- `.h(elp)` *See above*
+- `.i(nfo)` *See above*
+- `.l(eave)` *See above*
+- `.T(HRUST) 1` Okay, you select the completed THRUST at index 1 as the best one.
+- `.w(ho)` *See above*
+- `.e(nd)` *See above*
+- `.k(ick) YoloDWAG` *See above*
+- `.a(ccount)` *See above*
+- `.b(an) (69.69.69.69)` *See above*
+- `.u(n)b(an) (69.69.69.69)` *See above*
+- `.c(hief)t(ain) (NewAdministratorHere)` *See above*
+- `.u(n)c(hieftain) NewAdministratorNoLonger` *See above*
