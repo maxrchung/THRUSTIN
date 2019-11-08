@@ -118,7 +118,7 @@ When you are the THRUSTEE choosing a THRUSTEE for THRUSTERS to THRUST into.
 - `.e(nd)` (Chief-Only) End the game.
 - `.k(ick) YoloDWAG` *See above*
 - `.a(ccount)` *See above*
-- `.c(hief)t(ain)(NewAdministratorHere)` *See above*
+- `.c(hief)t(ain) (NewAdministratorHere)` *See above*
 - `.u(n)c(hieftain) NewAdministratorNoLonger` *See above*
 
 ## In Game (Waiting for THRUSTEE)
