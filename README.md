@@ -68,7 +68,7 @@ The zone outside of lobbies where you can chill and organize yourself.
 - `.h(elp)` *See above*
 - `.j(oin) 1` Join lobby 1.
 - `.l(ist)` Show list of all lobies.
-- `.m(ake) (super_________SECRET___________P@$$WoRD` Make a new lobby. Optionally, provide a password for your new lobby.
+- `.m(ake) (super_________SECRET___________P@$$WoRD)` Make a new lobby. Optionally, provide a password for your new lobby.
 - `.n(ame) LEETMAKERiamTHIS` Change your name to LEETMAKERiamTHIS.
 - `.p(lay)` Join the endless lobby.
 - `.w(ho)` Shows everyone out and in lobbies.
