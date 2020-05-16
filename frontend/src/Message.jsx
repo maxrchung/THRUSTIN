@@ -11,7 +11,7 @@ class Message extends React.Component {
         let hex = this.props.fg;
         if (hex.length === 3) {
             // 0008
-            return hex + "8"; 
+            return hex + "8";
         } else if (hex.length === 6) {
             // 00000088
             return hex + "88";
@@ -27,10 +27,10 @@ class Message extends React.Component {
         let border = this.borderColor();
         return (
             <div className="mr-3" style={{
-                color: `#${fg}`, 
+                color: `#${fg}`,
                 backgroundColor: `#${bg}`
             }}>
-                <div className="py-3 px-3">
+                <div className="py-3">
                     {props.children}
                 </div>
                 <hr className="m-0" style={{
