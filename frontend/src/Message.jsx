@@ -30,7 +30,8 @@ class Message extends React.Component {
                 color: `#${fg}`,
                 backgroundColor: `#${bg}`
             }}>
-                <div className="py-3">
+                {/* px-3 is necessary so that colored name sections look good */}
+                <div className="py-3 px-3">
                     {props.children}
                 </div>
                 <hr className="m-0" style={{
