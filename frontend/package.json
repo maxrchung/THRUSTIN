@@ -12,7 +12,7 @@
     "bootstrap": "^4.2.1",
     "bootstrap-material-design": "^4.1.1",
     "crypto-js": "^3.1.9-1",
-    "dompurify": "^1.0.11",
+    "dompurify": "^2.0.17",
     "react": "^16.8.5",
     "react-bootstrap-typeahead": "^3.4.5",
     "react-dom": "^16.8.5",
