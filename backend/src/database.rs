@@ -1,15 +1,16 @@
 use argon2;
 use chrono::{DateTime, Duration, TimeZone, Utc};
-use mongodb::coll::Collection;
-use mongodb::db::ThreadedDatabase;
-use mongodb::{bson, doc, Array, Bson, Client, Document, ThreadedClient};
+use mongodb::bson::{doc, Array, Bson, Document};
+use mongodb::bson;
+use mongodb::sync::{Client, Collection};
 use rand::Rng;
 use std::collections::HashMap;
+use std::env;
 
 #[derive(Debug)]
 pub struct Database {
-    pub bans: Collection,
-    pub users: Collection,
+    pub bans: Collection<Document>,
+    pub users: Collection<Document>,
     // Cache bans so we don't have to constantly load from database for each call
     bans_cache: HashMap<String, (i64, DateTime<Utc>)>,
     config: argon2::Config<'static>,
@@ -98,14 +99,14 @@ impl Database {
                     0
                 };
 
-                let end = if let Ok(end) = doc.get_utc_datetime("end") {
+                let end = if let Ok(end) = doc.get_datetime("end") {
                     end.clone()
                 } else {
-                    Utc.timestamp(0, 0)
+                    bson::DateTime::from_chrono(Utc.timestamp(0, 0))
                 };
 
                 self.bans_cache
-                    .insert(String::from(ip_addr), (duration, end));
+                    .insert(String::from(ip_addr), (duration, end.to_chrono()));
             }
         }
     }
@@ -149,7 +150,7 @@ impl Database {
                 } else {
                     messages.push(String::from("Games Won So Far - 0"));
                 }
-				if let Some(&Bson::I32(level)) = doc.get("level") {
+				if let Some(&Bson::Int32(level)) = doc.get("level") {
 					if let Some(exp) = doc.get("exp") {
 						messages.push(format!("Level - {}", level));
 						let exponent: f32 = 2.15;
@@ -381,11 +382,11 @@ impl Database {
     }
 
     pub fn new(db_name: &str) -> Database {
-        let client =
-            Client::connect("localhost", 27017).expect("Failed to initialize database client");
-        let db = client.db(db_name);
-        let bans = db.collection("bans");
-        let users = db.collection("users");
+        let connection_string = env::var("DATABASE_CONNECTION_STRING").unwrap_or("mongodb://localhost:27017".to_string());
+        let client = Client::with_uri_str(connection_string).unwrap();
+        let db = client.database(db_name);
+        let bans = db.collection::<Document>("bans");
+        let users = db.collection::<Document>("users");
         let config = argon2::Config::default();
 
         let mut db = Database {
@@ -417,7 +418,7 @@ impl Database {
     // Whenever user joins or starts game
     pub fn up_games_played(&self, name: &str) {
         if let Some(doc) = self.find_name_doc(&name) {
-            if let Some(&Bson::I32(games)) = doc.get("games_played") {
+            if let Some(&Bson::Int32(games)) = doc.get("games_played") {
                 let filter = doc! {
                     "name": name
                 };
@@ -436,7 +437,7 @@ impl Database {
     // Whenever user wins game
     pub fn up_games_won(&self, name: &str) {
         if let Some(doc) = self.find_name_doc(&name) {
-            if let Some(&Bson::I32(games)) = doc.get("games_won") {
+            if let Some(&Bson::Int32(games)) = doc.get("games_won") {
                 let filter = doc! {
                     "name": name
                 };
@@ -455,7 +456,7 @@ impl Database {
     // When user gets a point
     pub fn up_points_gained(&self, name: &str) {
         if let Some(doc) = self.find_name_doc(&name) {
-            if let Some(&Bson::I32(points)) = doc.get("points_gained") {
+            if let Some(&Bson::Int32(points)) = doc.get("points_gained") {
                 let filter = doc! {
                     "name": name
                 };
@@ -474,7 +475,7 @@ impl Database {
 	// Whenever a player is in a lobby that has ended, winner or not
 	pub fn up_exp(&self, name: &str, exp_gained: i32) {
 		if let Some(doc) = self.find_name_doc(&name) {
-            if let Some(&Bson::I32(exp)) = doc.get("exp") {
+            if let Some(&Bson::Int32(exp)) = doc.get("exp") {
                 let filter = doc! {
                     "name": name
                 };
@@ -493,8 +494,8 @@ impl Database {
 	// When a player gains enough EXP to level up, level is increased and EXP decreases by amount required to level up
 	pub fn up_level(&self, name: &str, exp_to_level: i32) {
         if let Some(doc) = self.find_name_doc(&name) {
-			if let Some(&Bson::I32(exp)) = doc.get("exp") {
-				if let Some(&Bson::I32(level)) = doc.get("level") {
+			if let Some(&Bson::Int32(exp)) = doc.get("exp") {
+				if let Some(&Bson::Int32(level)) = doc.get("level") {
 					let filter = doc! {
 						"name": name
 					};

@@ -1,16 +1,14 @@
 use chrono::Local;
 use crate::player::PlayerState;
-use rocket::response::NamedFile;
 use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::collections::VecDeque;
 use std::fmt::{self, Debug, Formatter};
-use std::path::{Path, PathBuf};
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use std::vec::Vec;
-use std::{io, thread};
+use std::{thread};
 use ws::{CloseCode, Handler, Handshake, Message, Result};
 
 pub trait Communication {
@@ -246,18 +244,6 @@ impl Communication for ChannelCommunication {
     }
 }
 
-// Returns main site file
-#[get("/")]
-fn index() -> io::Result<NamedFile> {
-    NamedFile::open("../frontend/build/index.html")
-}
-
-// Allows access to static folder for grabbing CSS/JavaScript files
-#[get("/<file..>")]
-fn file(file: PathBuf) -> Option<NamedFile> {
-    NamedFile::open(Path::new("../frontend/build/").join(file)).ok()
-}
-
 // Specifies handler for processing an incoming websocket connection
 struct WebSocketListener {
     out: ws::Sender,
@@ -342,15 +328,6 @@ impl WebSocketCommunication {
 
     // Spawn threads for web server use
     fn spawn(&self) {
-        // Only ` rocket on development build
-        // Production will have NGINX return static files rather than rocket
-        if cfg!(debug_assertions) {
-            // Serve static files for client website
-            thread::spawn(|| {
-                rocket::ignite().mount("/", routes![index, file]).launch();
-            });
-        }
-
         // Websockets
         let connections_clone = Arc::clone(&self.connections);
         let send_clone = self.send.clone();

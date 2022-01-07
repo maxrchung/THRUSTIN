@@ -1,7 +1,3 @@
-#![feature(proc_macro_hygiene, decl_macro)] // Macro stuff to make rocket work
-#![feature(vec_remove_item)] // for remove item in vector
-#[macro_use]
-extern crate rocket; // Macro stuff to make rocket work
 #[macro_use]
 extern crate lazy_static; //alexgarbage
 extern crate chrono;
@@ -37,11 +33,11 @@ pub fn run_test_db_server(comm: ChannelCommunication, db_name: &str) {
     // When testing db, drop the users store on load
     db.borrow()
         .users
-        .drop()
+        .drop(None)
         .expect(&format!("Unable to drop users collection: {}", db_name));
     db.borrow()
         .bans
-        .drop()
+        .drop(None)
         .expect(&format!("Unable to drop bans collection: {}", db_name));
     // Reinitialize db so cache is recached ok this is a lil wucky ducky
     let db = Rc::new(RefCell::new(Database::new(db_name)));
