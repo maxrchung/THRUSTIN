@@ -62,7 +62,7 @@ class Client extends React.Component {
 
     componentDidMount() {
         if (process.env.NODE_ENV === "production") {
-            this.connection = new WebSocket("wss://THRUSTIN.rs:3011")
+            this.connection = new WebSocket("wss://THRUSTIN.rs:3012")
         }
         else {
             this.connection = new WebSocket("ws://localhost:3012")
