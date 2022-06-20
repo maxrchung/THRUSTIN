@@ -17,6 +17,6 @@ RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=builder /usr/local/cargo/bin/thrustin /usr/local/bin/thrustin
 
-ENV RUST_LOG debug
+ENV RUST_LOG info
 
 CMD [ "thrustin"]
