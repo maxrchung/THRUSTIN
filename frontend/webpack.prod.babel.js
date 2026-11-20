@@ -23,10 +23,10 @@ export default merge(common, {
             // Try and compress all files, probably better for NGINX serving this
             minRatio: 1
         }),
-        new SitemapPlugin("https://THRUSTIN.rs", ["/"]),
+        new SitemapPlugin("https://THRUSTIN.max.rodeo", ["/"]),
         new RobotstxtPlugin({
-            sitemap: "https://THRUSTIN.rs/sitemap.xml",
-            host: "https://THRUSTIN.rs"
+            sitemap: "https://THRUSTIN.max.rodeo/sitemap.xml",
+            host: "https://THRUSTIN.max.rodeo"
         })
     ],
 });

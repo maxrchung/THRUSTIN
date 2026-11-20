@@ -1,6 +1,6 @@
 [package]
 authors = ["Max Chung, Alex Liu, Royce Sato"]
-description = "xperience epic adventures by THRUSTING some THRUSTERS into THRUSTEES https://THRUSTIN.rs. E"
+description = "xperience epic adventures by THRUSTING some THRUSTERS into THRUSTEES. E"
 edition = "2018"
 license = "MIT"
 name = "thrustin"
