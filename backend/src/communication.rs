@@ -9,6 +9,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use std::vec::Vec;
 use std::{thread};
+use ws::util::{Timeout, Token};
 use ws::{CloseCode, Handler, Handshake, Message, Result};
 
 pub trait Communication {
@@ -244,12 +245,16 @@ impl Communication for ChannelCommunication {
     }
 }
 
+const IDLE_TIMEOUT_TOKEN: Token = Token(1);
+const IDLE_TIMEOUT_MS: u64 = 60 * 60 * 1000; // 1 hour
+
 // Specifies handler for processing an incoming websocket connection
 struct WebSocketListener {
     out: ws::Sender,
     connections: Arc<Mutex<HashMap<u32, (String, ws::Sender)>>>,
     send: mpsc::Sender<(u32, String)>,
     uuid: u32,
+    timeout: Option<Timeout>,
 }
 
 impl Handler for WebSocketListener {
@@ -264,7 +269,7 @@ impl Handler for WebSocketListener {
 
         let mut connections_lock = self.connections.lock().unwrap();
         connections_lock.insert(self.uuid, (ip_addr, self.out.clone()));
-        Ok(())
+        self.out.timeout(IDLE_TIMEOUT_MS, IDLE_TIMEOUT_TOKEN)
     }
 
     // Adds message to queue for processing
@@ -272,11 +277,32 @@ impl Handler for WebSocketListener {
         self.send
             .send((self.uuid, msg.to_string()))
             .expect("Unable to send on message");
+        self.out.timeout(IDLE_TIMEOUT_MS, IDLE_TIMEOUT_TOKEN)
+    }
+
+    fn on_new_timeout(&mut self, event: Token, timeout: Timeout) -> Result<()> {
+        if event == IDLE_TIMEOUT_TOKEN {
+            if let Some(old) = self.timeout.take() {
+                self.out.cancel(old)?;
+            }
+            self.timeout = Some(timeout);
+        }
+        Ok(())
+    }
+
+    fn on_timeout(&mut self, event: Token) -> Result<()> {
+        if event == IDLE_TIMEOUT_TOKEN {
+            self.timeout = None;
+            return self.out.close(CloseCode::Away);
+        }
         Ok(())
     }
 
     // Notifies of disconnected client
     fn on_close(&mut self, code: CloseCode, reason: &str) {
+        if let Some(t) = self.timeout.take() {
+            let _ = self.out.cancel(t);
+        }
         let mut connections_lock = self.connections.lock().unwrap();
         connections_lock.remove(&self.uuid).unwrap();
 
@@ -344,6 +370,7 @@ impl WebSocketCommunication {
                     *uuid_lock += 1;
                     uuid
                 },
+                timeout: None,
             })
             .unwrap()
         });
