@@ -72,7 +72,7 @@ impl Player {
 
         // Get bans
         if split.len() == 1 {
-            let messages = self.db.borrow().bans();
+            let messages = self.db.borrow().list_bans();
             self.send_messages(&messages);
         // Appoint chieftain
         } else {

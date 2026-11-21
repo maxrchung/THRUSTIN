@@ -1,28 +1,80 @@
 use argon2;
 use chrono::{DateTime, Duration, TimeZone, Utc};
+use log::info;
 use mongodb::bson::{doc, Array, Bson, Document};
 use mongodb::bson;
 use mongodb::sync::{Client, Collection};
 use rand::Rng;
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::env;
 
 #[derive(Debug)]
 pub struct Database {
-    pub bans: Collection<Document>,
-    pub users: Collection<Document>,
+    connection_string: String,
+    db_name: String,
+    client: RefCell<Option<Client>>,
     // Cache bans so we don't have to constantly load from database for each call
     bans_cache: HashMap<String, (i64, DateTime<Utc>)>,
     config: argon2::Config<'static>,
 }
 
 impl Database {
+    fn get_client(&self) -> Client {
+        let existing = self.client.borrow().clone();
+        if let Some(client) = existing {
+            return client;
+        }
+        let client = Client::with_uri_str(&self.connection_string)
+            .expect("Failed to connect to MongoDB");
+        info!("MongoDB client connected.");
+        *self.client.borrow_mut() = Some(client.clone());
+        client
+    }
+
+    fn users(&self) -> Collection<Document> {
+        self.get_client()
+            .database(&self.db_name)
+            .collection::<Document>("users")
+    }
+
+    fn bans(&self) -> Collection<Document> {
+        self.get_client()
+            .database(&self.db_name)
+            .collection::<Document>("bans")
+    }
+
+    pub fn connect(&mut self) {
+        if self.client.borrow().is_none() {
+            self.get_client();
+            self.load_bans();
+        }
+    }
+
+    pub fn disconnect(&self) {
+        let client = self.client.borrow_mut().take();
+        if let Some(client) = client {
+            client.shutdown();
+            info!("MongoDB client disconnected (no active players).");
+        }
+    }
+
+    pub fn drop_collections(&mut self) {
+        self.users()
+            .drop(None)
+            .expect(&format!("Unable to drop users collection: {}", self.db_name));
+        self.bans()
+            .drop(None)
+            .expect(&format!("Unable to drop bans collection: {}", self.db_name));
+        self.bans_cache.clear();
+    }
+
     fn find_ban_doc(&self, ip_addr: &str) -> Option<Document> {
         let doc = doc! {
             "ip_addr": ip_addr
         };
         let mut cursor = self
-            .bans
+            .bans()
             .find(Some(doc.clone()), None)
             .ok()
             .expect("Failed to find ban");
@@ -39,7 +91,7 @@ impl Database {
             "name": name
         };
         let mut cursor = self
-            .users
+            .users()
             .find(Some(doc.clone()), None)
             .ok()
             .expect("Failed to find name");
@@ -56,7 +108,7 @@ impl Database {
             "user": user
         };
         let mut cursor = self
-            .users
+            .users()
             .find(Some(doc.clone()), None)
             .ok()
             .expect("Failed to find user");
@@ -79,7 +131,7 @@ impl Database {
 
     fn load_bans(&mut self) {
         let cursor = self
-            .bans
+            .bans()
             .find(Some(doc! {}), None)
             .ok()
             .expect("Failed to load bans");
@@ -189,7 +241,7 @@ impl Database {
                         "end": end,
                     }
                 };
-                match self.bans.update_one(doc, update, None) {
+                match self.bans().update_one(doc, update, None) {
                     Ok(_) => {
                         self.load_bans();
                         true
@@ -207,7 +259,7 @@ impl Database {
                     "duration": duration,
                     "end": end,
                 };
-                match self.bans.insert_one(doc.clone(), None) {
+                match self.bans().insert_one(doc.clone(), None) {
                     Ok(_) => {
                         self.load_bans();
                         true
@@ -218,7 +270,7 @@ impl Database {
         }
     }
 
-    pub fn bans(&self) -> Vec<String> {
+    pub fn list_bans(&self) -> Vec<String> {
         let mut messages = vec![String::from("Banned fellows from this server. Kill'em.")];
         let mut bans = Vec::new();
         for (ip_addr, (duration, end)) in self.bans_cache.clone() {
@@ -251,7 +303,7 @@ impl Database {
                     "is_chieftain": true
                 }
             };
-            self.users
+            self.users()
                 .update_one(filter, update, None)
                 .expect("Failed to update chieftain");
             true
@@ -267,7 +319,7 @@ impl Database {
             "is_chieftain": true
         };
         let cursor = self
-            .users
+            .users()
             .find(Some(doc.clone()), None)
             .ok()
             .expect("Failed to find chieftains");
@@ -296,7 +348,7 @@ impl Database {
                 "fg": fg,
             }
         };
-        match self.users.update_one(filter, update, None) {
+        match self.users().update_one(filter, update, None) {
             Ok(_) => true,
             Err(_) => false,
         }
@@ -307,7 +359,7 @@ impl Database {
             "name": name
         };
         let mut cursor = self
-            .users
+            .users()
             .find(Some(doc.clone()), None)
             .ok()
             .expect("Failed to find login");
@@ -344,7 +396,7 @@ impl Database {
             "user": user,
         };
         let mut cursor = self
-            .users
+            .users()
             .find(Some(doc.clone()), None)
             .ok()
             .expect("Failed to find user");
@@ -375,28 +427,24 @@ impl Database {
                 "name": new_name
             }
         };
-        match self.users.update_one(filter, update, None) {
+        match self.users().update_one(filter, update, None) {
             Ok(_) => true,
             Err(_) => false,
         }
     }
 
     pub fn new(db_name: &str) -> Database {
-        let connection_string = env::var("DATABASE_CONNECTION_STRING").unwrap_or("mongodb://localhost:27017".to_string());
-        let client = Client::with_uri_str(connection_string).unwrap();
-        let db = client.database(db_name);
-        let bans = db.collection::<Document>("bans");
-        let users = db.collection::<Document>("users");
+        let connection_string = env::var("DATABASE_CONNECTION_STRING")
+            .unwrap_or("mongodb://localhost:27017".to_string());
         let config = argon2::Config::default();
 
-        let mut db = Database {
-            bans,
-            users,
+        Database {
+            connection_string,
+            db_name: db_name.to_string(),
+            client: RefCell::new(None),
             config,
             bans_cache: HashMap::new(),
-        };
-        db.load_bans();
-        db
+        }
     }
 
     pub fn password(&self, name: &str, pass: &str) -> bool {
@@ -409,7 +457,7 @@ impl Database {
                 "pass": &hash
             }
         };
-        match self.users.update_one(filter, update, None) {
+        match self.users().update_one(filter, update, None) {
             Ok(_) => true,
             Err(_) => false,
         }
@@ -427,7 +475,7 @@ impl Database {
                         "games_played": games + 1
                     }
                 };
-                self.users
+                self.users()
                     .update_one(filter, update, None)
                     .expect("Failed to update games played");
             }
@@ -446,7 +494,7 @@ impl Database {
                         "games_won": games + 1
                     }
                 };
-                self.users
+                self.users()
                     .update_one(filter, update, None)
                     .expect("Failed to update games won");
             }
@@ -465,7 +513,7 @@ impl Database {
                         "points_gained": points + 1
                     }
                 };
-                self.users
+                self.users()
                     .update_one(filter, update, None)
                     .expect("Failed to update points gained");
             }
@@ -484,7 +532,7 @@ impl Database {
                         "exp": exp + exp_gained
                     }
                 };
-                self.users
+                self.users()
                     .update_one(filter, update, None)
                     .expect("Failed to update exp");
             }
@@ -505,7 +553,7 @@ impl Database {
 							"exp": exp - exp_to_level
 						}
 					};
-					self.users
+					self.users()
 						.update_one(filter, update, None)
 						.expect("Failed to update level");
 				}
@@ -531,7 +579,7 @@ impl Database {
 			"exp": 0,
 			"level": 1,
         };
-        match self.users.insert_one(doc.clone(), None) {
+        match self.users().insert_one(doc.clone(), None) {
             Ok(_) => true,
             Err(_) => false,
         }
@@ -551,7 +599,7 @@ impl Database {
 			"exp": 0,
             "is_chieftain": true
         };
-        match self.users.insert_one(doc.clone(), None) {
+        match self.users().insert_one(doc.clone(), None) {
             Ok(_) => true,
             Err(_) => false,
         }
@@ -568,7 +616,7 @@ impl Database {
                         "end": end,
                     }
                 };
-                match self.bans.update_one(doc, update, None) {
+                match self.bans().update_one(doc, update, None) {
                     Ok(_) => {
                         self.load_bans();
                         true
@@ -593,7 +641,7 @@ impl Database {
                 "is_chieftain": false
             }
         };
-        match self.users.update_one(filter, update, None) {
+        match self.users().update_one(filter, update, None) {
             Ok(_) => true,
             Err(_) => false,
         }
@@ -610,7 +658,7 @@ impl Database {
                 "thrustees": array,
             }
         };
-        match self.users.update_one(filter, update, None) {
+        match self.users().update_one(filter, update, None) {
             Ok(_) => true,
             Err(_) => false,
         }
@@ -625,7 +673,7 @@ impl Database {
                 "user": user
             }
         };
-        match self.users.update_one(filter, update, None) {
+        match self.users().update_one(filter, update, None) {
             Ok(_) => true,
             Err(_) => false,
         }
@@ -641,7 +689,7 @@ impl Database {
                 "thrustees": array
             }
         };
-        match self.users.update_one(filter, update, None) {
+        match self.users().update_one(filter, update, None) {
             Ok(_) => true,
             Err(_) => false,
         }
@@ -655,7 +703,7 @@ impl Database {
                 "thrusters": array
             }
         };
-        match self.users.update_one(filter, update, None) {
+        match self.users().update_one(filter, update, None) {
             Ok(_) => true,
             Err(_) => false,
         }
